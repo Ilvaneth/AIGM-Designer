@@ -152,7 +152,7 @@ revision_log: []
 
 ## Session Flags
 - session_status: open
-*(tutor_mode, autorun, autorun_interval, tts_voice, sfx_languages, autosave — session-scoped flags set via /dnd commands or by the display companion)*
+*(autosave and other session-scoped flags set via /dm:dnd commands)*
 *(autosave: on|off — default on. Governs the behind-the-scenes continuity checkpoint (Live State Flags + graph + session tail). Toggle with /dm:dnd autosave on|off.)*
 *(session_status: open|closed — drives whether the NEXT `/dm:dnd load` increments Session count. `/dm:dnd end` sets this to `closed`; `/dm:dnd load` then increments and flips it back to `open`. While `open`, any number of loads/saves across any number of real-world days all count as the same session — session boundaries are explicit, never calendar-based.)*
 

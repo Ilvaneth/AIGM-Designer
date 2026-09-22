@@ -3,7 +3,7 @@
 xp.py — XP calculation and award for D&D 5e encounters.
 
 Handles combat (CR-based or difficulty-rated) and qualifying non-combat encounters.
-Reads campaign character files for current state, updates XP, and pushes to the display.
+Reads campaign character files for current state and updates XP.
 
 Usage:
     # Preview calculation (no file changes):
@@ -27,7 +27,6 @@ import sys
 import os
 import re
 import argparse
-import subprocess
 import pathlib
 
 # ── Difficulty thresholds — XP per character per level (Easy/Medium/Hard/Deadly) ──
@@ -93,9 +92,8 @@ LEVEL_XP: dict[int, int] = {
 DIFF_IDX: dict[str, int] = {"easy": 0, "medium": 1, "hard": 2, "deadly": 3}
 DIFF_LABELS: dict[int, str] = {0: "Easy", 1: "Medium", 2: "Hard", 3: "Deadly"}
 
-from paths import find_campaign as _find_campaign, campaigns_dir as _campaigns_dir, display_dir as _display_dir
+from paths import find_campaign as _find_campaign, campaigns_dir as _campaigns_dir
 CAMPAIGNS_DIR = _campaigns_dir()
-DISPLAY_SCRIPT = _display_dir() / "push_stats.py"
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -279,16 +277,6 @@ def _write_char_xp(path: pathlib.Path, new_xp: int, current_level: int) -> bool:
     return leveled
 
 
-def _push_xp_display(char_name: str, new_xp: int, current_level: int) -> None:
-    """Push updated XP to the display sidebar (fire-and-forget)."""
-    next_lvl = _next_level_xp(current_level)
-    subprocess.run(
-        [sys.executable, str(DISPLAY_SCRIPT),
-         "--player", char_name, "--xp", str(new_xp), str(next_lvl)],
-        capture_output=True,
-    )
-
-
 # ── Subcommands ───────────────────────────────────────────────────────────────
 
 def cmd_calc(args: argparse.Namespace) -> None:
@@ -386,7 +374,6 @@ def cmd_award(args: argparse.Namespace) -> None:
         old_xp  = c["xp"]
         new_xp  = old_xp + per_player
         leveled = _write_char_xp(c["path"], new_xp, c["level"])
-        _push_xp_display(c["name"], new_xp, c["level"])
 
         next_lvl   = _next_level_xp(c["level"])
         up_tag     = f"  ⚠ LEVEL {c['level'] + 1} UP!" if leveled else ""
@@ -424,7 +411,7 @@ def main() -> None:
                         help="name:cr:count,... e.g. 'goblin:1/4:3,orc:1/2:2'")
 
     # ── award ─────────────────────────────────────────────────────────────────
-    award_p = sub.add_parser("award", help="Award XP — updates character files and display")
+    award_p = sub.add_parser("award", help="Award XP — updates character files")
     award_p.add_argument("--campaign",   required=True, metavar="NAME",
                          help="Campaign folder name (e.g. my-campaign)")
     award_p.add_argument("--characters", required=True, metavar="NAMES",

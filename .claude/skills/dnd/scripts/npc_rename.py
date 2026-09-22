@@ -100,8 +100,7 @@ def random_name(taken_slugs: set[str]) -> str:
 # ── File-set discovery ────────────────────────────────────────────────────
 
 _TEXT_FILES_ALWAYS = ["npcs.md", "npcs-full.md", "state.md",
-                      "session-log.md", "world.md",
-                      "session_tail.json"]  # display companion's last-N events
+                      "session-log.md", "world.md"]
 _TEXT_FILES_OPTIONAL = ["session-log-archive.md"]
 
 # Honorific prefixes to strip when computing title-stripped variants.
