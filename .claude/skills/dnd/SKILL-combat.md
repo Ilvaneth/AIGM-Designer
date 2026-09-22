@@ -146,6 +146,10 @@ Some armor imposes disadvantage on DEX (Stealth) checks — this is a rules-as-w
 
 ## Before running a deliberately-unfinalized solo boss
 
+See `SKILL-encounter-design.md` for how the fight should have been built in the first place; this section covers tuning one at the table.
+
+
+
 Some prepared dungeons leave their final boss's exact HP/Legendary Resistance unset on purpose, to be tuned against the party's real sheet at the time of the fight rather than guessed months in advance. Immediately before that fight:
 
 ```bash
