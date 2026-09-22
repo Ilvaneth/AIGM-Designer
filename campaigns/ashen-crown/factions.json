@@ -1,7 +1,7 @@
 {
  "_meta": {
   "week_length": 7,
-  "ticked_day": 207
+  "ticked_day": 204
  },
  "factions": [
   {
@@ -507,7 +507,7 @@
    "move_points": {
     "per_week": 3,
     "available": 3,
-    "refreshed_day": 0
+    "refreshed_day": 204
    },
    "assets": [
     "A century-old mask and the Varn name",
@@ -559,7 +559,7 @@
    "move_points": {
     "per_week": 3,
     "available": 3,
-    "refreshed_day": 0
+    "refreshed_day": 204
    },
    "assets": [
     "Procedural control of the succession",
