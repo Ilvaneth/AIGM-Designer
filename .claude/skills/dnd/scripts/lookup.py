@@ -47,6 +47,9 @@ else:
 DATA_FILE_2014    = os.path.join(_DATA_DIR, "dnd5e_srd.json")
 DATA_FILE_2024    = os.path.join(_DATA_DIR, "dnd5e_srd_2024.json")
 SUPPLEMENTAL_FILE_2014 = os.path.join(_DATA_DIR, "dnd5e_supplemental.json")
+# Rules prose (grappling, cover, resting, travel, traps...), built from the
+# bundled SRD 5.1 text by build_rules_index.py. Ruleset-independent file.
+RULES_FILE        = os.path.join(_DATA_DIR, "dnd5e_rules.json")
 SUPPLEMENTAL_FILE_2024 = os.path.join(_DATA_DIR, "dnd5e_supplemental_2024.json")
 
 # Backwards-compat alias used by older callers (e.g. app.py)
@@ -68,12 +71,14 @@ CATEGORY_MAP = {
     "conditions":  "conditions",
     "monster":     "monsters",
     "monsters":    "monsters",
+    "rule":        "rules",
+    "rules":       "rules",
     "feature":     "features",
     "features":    "features",
     "feat":        "features",
 }
 
-ALL_CATEGORIES = ["spells", "equipment", "magic_items", "conditions", "monsters", "features"]
+ALL_CATEGORIES = ["spells", "equipment", "magic_items", "conditions", "monsters", "features", "rules"]
 
 # ─── Data loading / index ─────────────────────────────────────────────────────
 
@@ -126,6 +131,12 @@ def _load_ruleset(ruleset: str) -> None:
             for r in v:
                 if _norm(r.get("name", "")) not in existing_names:
                     data.setdefault(k, []).append(r)
+
+    # Rules prose is SRD 5.1 and applies to both rulesets; 2024 changed some of
+    # it (exhaustion, surprise), so a 2024 campaign gets a caveat at print time.
+    if os.path.exists(RULES_FILE):
+        with open(RULES_FILE, encoding="utf-8") as f:
+            data["rules"] = list(json.load(f).get("rules", []))
 
     index: dict = {}
     for cat, records in data.items():
@@ -328,7 +339,18 @@ def _fmt_feature(r: dict) -> str:
     return "\n".join(lines)
 
 
+def _fmt_rule(r: dict) -> str:
+    lines = [f"## {r.get('name','?')}", f"*{r.get('path','')}*  ·  SRD 5.1", ""]
+    if _active_ruleset == "2024":
+        lines += ["(This campaign runs the 2024 ruleset; the text below is SRD 5.1. "
+                  "Check the 2014/2024 differences table in SKILL.md before quoting it "
+                  "on exhaustion, surprise, or weapon mastery.)", ""]
+    lines.append(r.get("description", ""))
+    return "\n".join(lines)
+
+
 FORMATTERS = {
+    "rules":       _fmt_rule,
     "spells":      _fmt_spell,
     "equipment":   _fmt_equipment,
     "magic_items": _fmt_magic_item,

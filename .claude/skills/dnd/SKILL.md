@@ -211,6 +211,8 @@ Resolve `~` to the user's home directory. Scripts locate both roots via
 | **Sonnet** | `claude-sonnet-4-6` (session default) | All DM work: narration, NPC dialogue, skill outcomes, plot decisions, combat |
 | **Opus** | `claude-opus-4-6` | `/dm:dnd new` world generation; `/dm:dnd character new` pillar derivation |
 
+**Rules-lookup rule:** a 5e rules question is answered from `lookup.py rules "<topic>"` (grappling, cover, falling, suffocation, exhaustion, resting, travel pace, hiding, traps…), not from memory. The SRD text is bundled; quoting it correctly costs one Bash call, and misremembering it is how a ruleset quietly drifts away from the one the campaign declared.
+
 **Script-first rule:** Before reaching for the LLM for any calculation, check whether a script handles it:
 `dice.py` · `combat.py` · `ability-scores.py` · `character.py` · `tracker.py` · `calendar.py` · `lookup.py`
 

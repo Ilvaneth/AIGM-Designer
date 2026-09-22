@@ -385,6 +385,12 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py condition "poisoned"
 python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py monster "goblin"
 python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py monster "dragon" --all   # all fuzzy matches
 
+# Rules prose — grappling, cover, resting, travel pace, traps, madness, planes:
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py rules "grappling"
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py rules "cover"
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py rules "travel pace"
+
+
 # Programmatic (importable from other scripts):
 from lookup import lookup, lookup_record, lookup_with_level, suggest
 lookup("fireball", category="spell")                  # → formatted string
@@ -393,6 +399,13 @@ suggest("poisonned", category="condition")            # → [("Poisoned", "condi
 ```
 
 **Did-you-mean recovery.** A mistyped name doesn't dead-end. When a lookup misses, the CLI prints a `Did you mean: …?` line and the display's SRD modal offers tappable near-miss chips — both powered by `suggest()`, which fuzzy-matches the query against real names (`poisonned` → Poisoned, `fireballl` → Fireball, `gobblin` → Goblin). Suggestions respect the category when one is given, and search all categories otherwise. Use the suggested name rather than guessing at a spelling.
+
+**Rules lookups.** 212 entries from the SRD 5.1 chapters on combat, general mechanics, running the
+game, spellcasting procedure, conditions, equipment and the planes — built by
+`build_rules_index.py` into `data/dnd5e_rules.json`. **Use it instead of answering a rules question
+from memory**: grapple and escape contests, cover degrees, suffocation, falling, exhaustion levels,
+long/short rest, travel pace, hiding and unseen attackers, traps, madness. Rebuild with
+`python3 ${CLAUDE_SKILL_DIR}/scripts/build_rules_index.py` if the YAML source changes.
 
 **When to use:** combat (monster stat blocks before using them); spellcasting (range, components, duration, at-higher-levels); conditions (rule text before applying); loot and equipment; NPC generation (monster stat block as mechanical base). The display companion's character sheet modal handles lookups automatically during play — these CLI calls are for DM reference outside the UI.
 
