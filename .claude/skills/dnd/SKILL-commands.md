@@ -65,6 +65,12 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
    `set` the calendar to it, paste `stateline` into state.md's date line). Exit 1 means the campaign has
    no calendar yet — offer `calendar.py init` from the world.md calendar block.
 
+0.8. **Faction board check.** Run `python3 ${CLAUDE_SKILL_DIR}/scripts/factions.py -c <campaign-name> check --day <current in-world day>`.
+   Exit 0 means every active faction has a live operation. Exit 2 lists factions with no plan, overdue
+   steps, or no move in two weeks — resolve those before the session opens, because they are the moves
+   the world owes the party. Also run `factions.py tick --day N` if in-world days have passed since the
+   last session: it refreshes weekly move-point budgets and surfaces what came due while nobody was watching.
+
 1. **Backwards-compat: ruleset migration check.** Before reading state.md, run:
 
    ```bash
@@ -278,8 +284,19 @@ If nothing changed in a category this session, leave it as-is. If a fact was wro
 
 **Structured (imported) campaigns — keep the arc window and arc.md in sync.** Advancing the pointer is not optional bookkeeping — it is what keeps the campaign on its own rails, and a pointer that never moves is how an imported module quietly becomes an improvised one. Before you decide "no chapter advanced," check honestly: **if this session cleared the last of the current chapter's `outstanding_beats`, or the party has plainly moved into the next chapter's location or situation, the chapter advanced — treat it as such and move the pointer now.** When a chapter advances: mark the completed chapter `status: complete` in `arc.md`, set the new chapter `status: current`, and update `state.md → ## Campaign Arc` so its `current_chapter`, `current_chapter_detail`, `next_chapter`, and `outstanding_beats` reflect the new window. The full tree stays in `arc.md`; `state.md` carries only the current + next chapter so the load stays light. Only when the party is genuinely still mid-chapter, update `outstanding_beats`/`steering_notes` inline in `state.md` — no need to touch `arc.md`. (Dynamic/sandbox campaigns have no `arc.md`; update the inline arc in `state.md` as before.)
 
-Then update `## Faction Moves` in state.md: for each active faction, answer *"what did they do while the party was occupied?"* One line per faction — even if nothing visible yet. Confirm what was written.
+Then run the faction board. `python3 ${CLAUDE_SKILL_DIR}/scripts/factions.py -c <name> sweep --day N`
+prints every active faction with its objective, its next step and its remaining budget, and asks the
+forward question for each: *what is their next step, by when, and what would make them abandon it?*
+Record what actually happened with `factions.py move <id> --spend N --day N --text "..."`, advance
+completed steps with `factions.py step <id> N`, and set the next operation when one finishes.
 
+**Anything this session that shifted the balance gets a `factions.py react` pass** — an alliance made
+or broken, a faction asset destroyed, a secret made public, a leader killed. Write the answering move
+for every faction the tool names as compelled; those moves are what the party walks into next session.
+
+Keep `state.md → ## Faction Moves` as the short, player-facing record: what the world visibly did, one
+line per event, pruned as things resolve. The plans, stances and budgets live in `factions.json` — do
+not duplicate them into prose. 
 **Session log archival (run on every save after session count > 3):**
 session-log.md keeps only the **2 most recent full session entries**. Older entries move to `session-log-archive.md` (append, never delete). Before archiving each entry, extract a 3–5 bullet continuity summary and write it to `## Continuity Archive` in state.md. Format:
 

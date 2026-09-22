@@ -1,0 +1,448 @@
+{
+ "_meta": {
+  "week_length": 7,
+  "ticked_day": 207
+ },
+ "factions": [
+  {
+   "id": "house-shestendeliath",
+   "name": "House Shestendeliath (Kriv)",
+   "status": "active",
+   "objective": "Restore the house as a real power: land, troops, a seat that cannot be revoked",
+   "power": 3,
+   "intel": 2,
+   "move_points": {
+    "per_week": 3,
+    "available": 3,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "92-man garrison",
+    "Gallowmere + Hold + Harrowgate territory",
+    "Wardensteel",
+    "Sereth Corr's sponsorship"
+   ],
+   "stances": {
+    "party": 3,
+    "house-corr": 2,
+    "house-sablewood": 1,
+    "house-ilvane": 1,
+    "whisper-court": -3,
+    "ashlord-concordat": -2,
+    "ironclad-compact": 2,
+    "karsgate-undertow": 1,
+    "unfinished-circle": 1
+   },
+   "operation": {
+    "name": "Hold what was taken",
+    "steps": [
+     {
+      "text": "Roskel completes the Gallowmere recruitment quota",
+      "due_day": 209,
+      "done": false
+     }
+    ],
+    "abandon_if": ""
+   },
+   "reactions": {
+    "alliance": "Kriv answers in the open, with title and banner"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "house-corr",
+   "name": "House Corr (Lady Sereth Corr)",
+   "status": "active",
+   "objective": "Keep the Corr seat first among the three houses without paying for open war",
+   "power": 3,
+   "intel": 2,
+   "move_points": {
+    "per_week": 3,
+    "available": 3,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Chancellery influence",
+    "old money",
+    "Ser Aldric Vane's loyalty"
+   ],
+   "stances": {
+    "party": 1,
+    "house-shestendeliath": 1,
+    "house-ilvane": -2,
+    "house-sablewood": -1,
+    "whisper-court": -1
+   },
+   "operation": {
+    "name": "First among three",
+    "steps": [
+     {
+      "text": "Sereth quietly buys the Chancellery succession clerk",
+      "due_day": 209,
+      "done": false
+     },
+     {
+      "text": "Force a vote while Ilvane is still weak",
+      "due_day": 216,
+      "done": false
+     }
+    ],
+    "abandon_if": ""
+   },
+   "reactions": {
+    "alliance": "Makes itself indispensable to the winning side before the losing side can beg",
+    "loss": "Calls in an old debt in public, so the loss reads as a choice"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "house-sablewood",
+   "name": "House Sablewood (Lord Berengar)",
+   "status": "active",
+   "objective": "Profit from the succession whoever wins; owe nothing that cannot be sold",
+   "power": 3,
+   "intel": 1,
+   "move_points": {
+    "per_week": 3,
+    "available": 3,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Mercenary contracts via the Compact",
+    "Voss usury house",
+    "trade income"
+   ],
+   "stances": {
+    "party": 1,
+    "house-shestendeliath": 1,
+    "house-corr": -1,
+    "house-ilvane": -1,
+    "ironclad-compact": 2,
+    "whisper-court": -1
+   },
+   "operation": {
+    "name": "Sell the war",
+    "steps": [
+     {
+      "text": "Berengar brokers Compact mercenaries to Corr and Ilvane both",
+      "due_day": 211,
+      "done": false
+     }
+    ],
+    "abandon_if": ""
+   },
+   "reactions": {
+    "alliance": "Prices it — offers the new bloc a service it cannot refuse at a rate that binds it",
+    "loss": "Sells what it can no longer hold to whoever will owe for it"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "house-ilvane",
+   "name": "House Ilvane (Lord Cassian)",
+   "status": "active",
+   "objective": "Rebuild a house hollowed out by eight months of infiltration, and find who else was turned",
+   "power": 2,
+   "intel": 2,
+   "move_points": {
+    "per_week": 2,
+    "available": 2,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Spymaster Elian Rook",
+    "remaining coalition votes",
+    "Kingsward holdings"
+   ],
+   "stances": {
+    "party": 2,
+    "house-shestendeliath": 2,
+    "whisper-court": -3,
+    "house-corr": -2,
+    "house-sablewood": -1
+   },
+   "operation": {
+    "name": "Purge and rebuild",
+    "steps": [
+     {
+      "text": "Elian Rook audits every servant hired in the last year",
+      "due_day": 208,
+      "done": false
+     },
+     {
+      "text": "Cassian names Iskra a traitor before the Chancellery",
+      "due_day": 213,
+      "done": false
+     }
+    ],
+    "abandon_if": "The audit points at Rook himself"
+   },
+   "reactions": {
+    "alliance": "Seeks the same patron rather than a rival one; Cassian no longer trusts his own counsel",
+    "exposure": "Purges first, explains afterwards"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "whisper-court",
+   "name": "The Whisper Court (Iskra Vantrel)",
+   "status": "active",
+   "objective": "Own the succession from behind every throne at once; never be seen doing it",
+   "power": 4,
+   "intel": 3,
+   "move_points": {
+    "per_week": 4,
+    "available": 4,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Rakshasa longevity",
+    "doppelganger agents",
+    "blackmail ledgers",
+    "Kesh Amara contract house"
+   ],
+   "stances": {
+    "party": -3,
+    "house-shestendeliath": -3,
+    "house-ilvane": -2,
+    "house-corr": -1,
+    "house-sablewood": -1,
+    "ashlord-concordat": 0
+   },
+   "operation": {
+    "name": "Reform and retaliate",
+    "steps": [
+     {
+      "text": "Iskra and Sathriel finish reforming in the Ember Cradle",
+      "due_day": 206,
+      "done": false
+     },
+     {
+      "text": "Trace the Kesh Amara ambush through surviving contract records",
+      "due_day": 210,
+      "done": false
+     },
+     {
+      "text": "Replace one member of the three-house bloc with a double",
+      "due_day": 218,
+      "done": false
+     }
+    ],
+    "abandon_if": "Both rakshasa are destroyed inside the Ember Court"
+   },
+   "reactions": {
+    "alliance": "Never confronts a new bloc head-on: buys or replaces one person inside it, then waits for the bloc to distrust itself",
+    "loss": "Cuts the exposed limb off entirely and denies it existed; the handler dies, not the agent"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "ashlord-concordat",
+   "name": "Ashlord Concordat",
+   "status": "active",
+   "objective": "Hold the ritual monopoly over legitimacy now that Sarelle is dead",
+   "power": 3,
+   "intel": 2,
+   "move_points": {
+    "per_week": 3,
+    "available": 3,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Archive and ritualists",
+    "Solenne Kavash's garrison",
+    "relic-appraisal income"
+   ],
+   "stances": {
+    "party": -2,
+    "house-shestendeliath": -2,
+    "ironclad-compact": -2,
+    "kindled-circle": -1
+   },
+   "operation": {
+    "name": "Succession of the archive",
+    "steps": [
+     {
+      "text": "Solenne Kavash consolidates the Karsgate branch",
+      "due_day": 207,
+      "done": false
+     },
+     {
+      "text": "Tain's reform report accepted or rejected at the Emberhold chapter",
+      "due_day": 214,
+      "done": false
+     }
+    ],
+    "abandon_if": ""
+   },
+   "reactions": {
+    "alliance": "Declares the new bloc ritually illegitimate and starts the paperwork that makes it true",
+    "loss": "Closes ranks around the archive, tightens escort protocol, suspects its own"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "ironclad-compact",
+   "name": "Ironclad Compact (Coren Ashvale)",
+   "status": "active",
+   "objective": "Stay the indispensable third party to every war without being owned by any side",
+   "power": 4,
+   "intel": 2,
+   "move_points": {
+    "per_week": 4,
+    "available": 4,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Mercenary army",
+    "trade fleet",
+    "Gallowmere smuggling economy"
+   ],
+   "stances": {
+    "party": 2,
+    "house-shestendeliath": 2,
+    "ashlord-concordat": -2,
+    "house-sablewood": 2
+   },
+   "operation": {
+    "name": "The Table problem",
+    "steps": [
+     {
+      "text": "Coren tests which Table members would back a coup",
+      "due_day": 212,
+      "done": false
+     }
+    ],
+    "abandon_if": "Ilse Drummel moves against him first"
+   },
+   "reactions": {
+    "alliance": "Sells arms to whoever is now surrounded — the profit is always on the losing side",
+    "betrayal": "Ends the contract without warning and collects on the bond"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "kindled-circle",
+   "name": "The Kindled Circle (Odalys Ferrant)",
+   "status": "active",
+   "objective": "Keep arcane practice in Emberhold licensed, watched, and answerable to the Circle",
+   "power": 2,
+   "intel": 2,
+   "move_points": {
+    "per_week": 2,
+    "available": 2,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Guild register of magical signatures",
+    "Conservatory",
+    "city sanction"
+   ],
+   "stances": {
+    "party": 1,
+    "ashlord-concordat": -1,
+    "unfinished-circle": -1
+   },
+   "operation": {
+    "name": "Register the new power",
+    "steps": [
+     {
+      "text": "Odalys summons Ilvaneth to account for the signature match",
+      "due_day": 215,
+      "done": false
+     }
+    ],
+    "abandon_if": ""
+   },
+   "reactions": {
+    "alliance": "Requires the newly powerful to register; licensing is how the Circle stays relevant"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "karsgate-undertow",
+   "name": "Karsgate Undertow (Doss / Iron Sella Dray)",
+   "status": "active",
+   "objective": "Keep the underside of Karsgate theirs while the surface tears itself apart",
+   "power": 2,
+   "intel": 3,
+   "move_points": {
+    "per_week": 2,
+    "available": 2,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Ninefinger network",
+    "Red Tally book",
+    "dock and warren informants"
+   ],
+   "stances": {
+    "party": 2,
+    "ashlord-concordat": -1,
+    "whisper-court": -1
+   },
+   "operation": {
+    "name": "Collect what was promised",
+    "steps": [
+     {
+      "text": "Doss sends a collector to Harrowgate for the first payment",
+      "due_day": 217,
+      "done": false
+     }
+    ],
+    "abandon_if": ""
+   },
+   "reactions": {
+    "alliance": "Raises the tariff under the city on the side that just gained"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "unfinished-circle",
+   "name": "The Unfinished Circle (Sylandra Cael)",
+   "status": "active",
+   "objective": "Complete a three-hundred-year-old immortality that was finished wrong",
+   "power": 2,
+   "intel": 1,
+   "move_points": {
+    "per_week": 2,
+    "available": 2,
+    "refreshed_day": 207
+   },
+   "assets": [
+    "Kule-i Mensuh",
+    "apprentice chain",
+    "three centuries of research"
+   ],
+   "stances": {
+    "party": 3,
+    "kindled-circle": -1
+   },
+   "operation": {
+    "name": "Finish the phylactery",
+    "steps": [
+     {
+      "text": "Sylandra tests the volunteered-power principle on a subject",
+      "due_day": 220,
+      "done": false
+     }
+    ],
+    "abandon_if": ""
+   },
+   "reactions": {
+    "other": "Cares only for the research; trades knowledge to whoever removes an obstacle"
+   },
+   "knows": [],
+   "history": []
+  }
+ ]
+}

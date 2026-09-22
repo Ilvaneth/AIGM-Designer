@@ -329,6 +329,51 @@ Likelihoods: `sure-thing`, `likely`, `50/50`, `unlikely`, `no-way`. Verdict suff
 
 ---
 
+## Faction Board — `scripts/factions.py`
+
+The chessboard between factions: objectives, running operations with in-world due days, a weekly
+move-point budget, an intelligence rating, and stances toward every other faction and the party.
+Without it, "the rivals respond when the party allies with someone" has no data to compute from and
+degrades into whatever the DM can reconstruct from prose at session end — which is how factions come
+to feel like scenery.
+
+```bash
+CAMP=my-campaign
+python3 ${CLAUDE_SKILL_DIR}/scripts/factions.py -c $CAMP list          # the board at a glance
+python3 ${CLAUDE_SKILL_DIR}/scripts/factions.py -c $CAMP show whisper-court
+
+# Build it
+factions.py -c $CAMP add --id house-corr --name "House Corr" --power 3 --intel 2     --objective "Hold the seat without paying for open war" --assets "Chancellery influence; old money"
+factions.py -c $CAMP stance --from house-corr --to house-ilvane --level -2   # -3..+3, or --to party
+factions.py -c $CAMP set house-corr --reaction "alliance=Makes itself indispensable to the winner first"
+factions.py -c $CAMP op house-corr --name "First among three"     --step "Buy the succession clerk@209" --step "Force a vote while Ilvane is weak@216"     --abandon-if "Veskin rules the seat vacant"
+
+# Run it
+factions.py -c $CAMP tick --day 207        # refresh budgets, surface due/overdue steps
+factions.py -c $CAMP react --actor house-corr --trigger alliance --visibility public --day 204     --event "House Corr backed the party openly at the Chancellery"
+factions.py -c $CAMP move whisper-court --spend 1 --day 204 --text "Buys the clerk's brother"
+factions.py -c $CAMP step house-ilvane 1   # mark step 1 complete
+factions.py -c $CAMP sweep --day 204       # end-of-session forward pass
+factions.py -c $CAMP check --day 204       # quiet unless the board needs a move (exit 2)
+```
+
+**`react` is the important one.** Give it the event, who caused it, how visible it was
+(`public` / `rumored` / `secret`) and the day. It prints, for every faction: whether they learn it at
+all (secret events only reach intel 2+), on what day (delay shrinks with intelligence), their stance
+toward the actor, their standing doctrine for that trigger, their current operation and their
+remaining budget — then separates those **compelled to answer** from those merely aware. Write a move
+for each compelled faction before play moves on.
+
+**Move points** scale with `power` and refresh weekly. Spending them is what makes a move cost
+something; when the party destroys a faction's asset, lower its `power` and the budget falls with it.
+A faction that is out of points this week cannot also be acting everywhere — that is the constraint
+that turns "they watch and wait" from a free default into a decision.
+
+**Triggers** for `--trigger`: `alliance`, `loss`, `gain`, `exposure`, `death`, `betrayal`, `other`.
+Each faction can carry a doctrine line per trigger (`set --reaction "loss=..."`).
+
+---
+
 ## Goal Tracker — `scripts/goals.py`
 
 Structured NPC/faction goal tracking, backed by `<campaign>/goals.json`. Built so a crossed threshold gets the same loud, unmissable treatment `xp.py` gives a level-up (`⚠⚠⚠ ... HEDEFE ULAŞILDI`) instead of living only in prose that's easy to forget to check. See `templates/npcs.md`'s Goal Tracker section for the record format, and SKILL.md's "Goal Tracker check" (same cadence as the continuity micro-save) for when to touch this during play.
