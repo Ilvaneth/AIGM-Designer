@@ -1,0 +1,27 @@
+{
+  "day": 43,
+  "year": 1188,
+  "months": [
+    "Ashfall",
+    "Cinderwake",
+    "Thawmere",
+    "Greentide",
+    "Suncrown",
+    "Harrowtide",
+    "Emberfall",
+    "Hollowdark"
+  ],
+  "month": 1,
+  "hour": 8,
+  "month_length": 45,
+  "day_names": [
+    "Ashday",
+    "Cinderday",
+    "Duskday",
+    "Hollowday",
+    "Warday",
+    "Emberday",
+    "Restday"
+  ],
+  "events": []
+}

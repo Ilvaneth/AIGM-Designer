@@ -1,0 +1,50 @@
+{
+  "campaign": "ashen-crown",
+  "encounter": "cindermoor-moor-ghost",
+  "round": 1,
+  "active_index": 1,
+  "combatants": [
+    {
+      "name": "The Moor-Ghost (Ettin)",
+      "type": "enemy",
+      "initiative": 15,
+      "hp_current": 0,
+      "hp_max": 85,
+      "ac": 12,
+      "conditions": [
+        "Surprised (round 1 only)"
+      ],
+      "death_saves": {
+        "successes": 0,
+        "failures": 0
+      }
+    },
+    {
+      "name": "Kriv Shestendeliath",
+      "type": "pc",
+      "initiative": 14,
+      "hp_current": 80,
+      "hp_max": 87,
+      "ac": 21,
+      "conditions": [],
+      "death_saves": {
+        "successes": 0,
+        "failures": 0
+      }
+    },
+    {
+      "name": "Ilvaneth Duskmere",
+      "type": "pc",
+      "initiative": 13,
+      "hp_current": 53,
+      "hp_max": 53,
+      "ac": 18,
+      "conditions": [],
+      "death_saves": {
+        "successes": 0,
+        "failures": 0
+      }
+    }
+  ],
+  "xp_awarded": true
+}

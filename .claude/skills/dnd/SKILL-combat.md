@@ -1,0 +1,178 @@
+# D&D Skill — Combat Discipline
+
+Load this file the moment combat starts (`combat.py init` is called), alongside `SKILL-scripts.md`. It exists because knowing a rule and applying it under the pressure of a fast-moving fight are two different failure modes — this file fixes the first with reference tables, and the second with concrete, checkable triggers to stop and check at specific moments, not vague vigilance.
+
+**In the same breath as `combat.py init`, also run:**
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> triggers --all
+```
+This prints every PC's own `## Combat Triggers` section straight from their character sheet — the mechanical backstop for the "crit/kill bonus action" and similar rules below.
+
+**Then, at the start of EVERY PC's own turn — not just once at combat init — run:**
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> turn "<PC name>"
+```
+This is a hard gate, not a reminder to remember: it is the *only* sanctioned way a PC's turn begins. It merges `effect tick` (round/duration bookkeeping) and a fresh re-print of that PC's `## Combat Triggers` + `## Passive Item Effects` with a loud `▶ TURN START` banner into one unskippable call — added 2026-09-14 after "pull it once at combat start, then rely on memory for the rest of the fight" repeatedly cost feats, item passives, Ascension gains, and character bonuses mid-fight (a real, repeated failure mode, not a hypothetical one). Do **not** narrate a single roll, ask for a single dice request, or resolve a single action for that PC's turn before this has run. No-ops harmlessly (prints a short note) if pointed at an NPC/monster name — safe to call on anything, so there's no need to first check whether the acting combatant is a PC.
+
+**Dice ownership in this campaign — read `state.md → ## DM Style Notes` first.** Some tables run the SRD default (DM rolls initiative and PC damage dice); this campaign has overridden that: **every die tied to a player's character — d20 test, initiative, and damage/effect dice — is rolled by the player, never by the DM.** Only NPC/monster-side rolls are DM-rolled. Check the campaign's own Style Notes before assuming either convention.
+
+---
+
+## Initiative & Surprise
+
+1. **Determine surprise.** A side unaware of the threat is surprised: it cannot take an action or reaction on its first turn, and cannot move either — but it still exists in the initiative order from the start.
+2. **Roll initiative for every combatant before anyone acts** — including a surprised combatant, and including a combatant who *readied* an action for this exact moment. Surprise removes a turn's worth of action; it never removes the initiative roll itself, and it never grants the ambusher a free round that happens *before* initiative exists.
+   - Wrong: "Surprise round — the ambusher acts, then we roll initiative."
+   - Right: roll initiative for everyone, then run round 1 normally, with the surprised side simply passing when their turn comes up.
+   - The practical difference matters: if the surprised side would have rolled higher initiative than the ambusher, they still act *before* the ambusher's second action, the moment their own surprised turn passes.
+3. **A readied action is the same rule, not an exception.** Readying still happens on the reader's own turn, in the established order; it resolves later as a reaction when the trigger fires. Never resolve a readied (or any declared) attack against a hostile creature before `combat.py init` has been run for the scene — if it hasn't, stop, roll initiative first, then resolve the action at its proper place in the order.
+4. **Establish positions before resolving anything with an area or a chase.** Know roughly where each combatant stands and how far apart, *before* rolling an AoE spell or narrating a group splitting up. This prevents two common errors: an escort/formation being treated as spread across an unrealistic distance, and an area spell's actual origin/shape being glossed over (see below).
+
+## Action Economy
+
+| Type | What it covers |
+|---|---|
+| **Movement** | Up to speed, splittable before/after the action |
+| **Action** | Attack, Cast a Spell, Dash, Disengage, Dodge, Help, Hide, Ready, Search, Use an Object |
+| **Bonus Action** | Only if a class feature, spell, or item explicitly grants one |
+| **Reaction** | Opportunity attack, a few spells (Shield, Counterspell, etc.), a readied action's trigger |
+| **Free** | Draw/sheathe a weapon, open an unstuck door, a short sentence |
+
+**A turn is not over until the player says it is.** Resolving one action does not imply the others (bonus action, a second spell, giving a command to a summon) were declined — ask "başka bir şey yapmak ister misin?" before advancing the turn pointer, and name known once-per-rest resources the character hasn't used yet (Action Surge, an unspent Second Wind, unburned spell slots) rather than waiting for the player to remember them unprompted.
+
+## Attack Resolution
+
+1. Declare target and the specific attack/spell.
+2. Roll d20 + modifier vs. target AC (per the dice-ownership rule above — PC rolls their own).
+3. Natural 20: always hits, critical (double the *dice*, not flat modifiers, on the damage roll). Natural 1: always misses.
+4. On a hit, roll damage dice + modifiers.
+5. Spell save DC = 8 + spellcasting modifier + proficiency bonus (already computed on each character sheet — use the sheet's stated DC, don't re-derive it live unless checking for an error).
+
+**A multi-attack turn resolves one hit at a time, never as a pre-committed block.** State the target's remaining HP (or at least "still standing" vs. "looks close to dropping") after each individual attack lands, before rolling or resolving the next one in the same Attack action. The instant a declared target's HP hits 0 with attacks still unresolved, stop — ask where the remainder goes (a different enemy in reach, or explicitly wasted if the player chooses). Never silently mark leftover attacks in a sequence "moot."
+
+**Crit-or-kill bonus actions never offer themselves — check for them.** The moment a melee attack either scores a natural 20 or drops a target to 0 HP, before narrating the kill/crit and moving on, check that attacker's `tracker.py triggers <name>` output (pulled at combat start, per above) for a triggered bonus action — Great Weapon Master's "crit or kill → one more melee attack as a bonus action" is the concrete example this campaign has already needed twice. If one applies, offer it before advancing the turn.
+
+**A retreating or repositioning enemy can provoke an Opportunity Attack — check reach, don't wait to be asked.** Trigger: a hostile creature leaves any PC's reach without taking the Disengage action. The moment a fleeing/repositioning enemy's movement is narrated, check whether it left a PC's melee reach first; if so, offer that PC the reaction before the enemy's move fully resolves.
+
+### Battle Master maneuvers — which die goes where
+
+Not universally in every free SRD dataset, so this table is written down rather than resolved from memory each time. **Every maneuver's own text says whether its superiority die goes to the attack roll, the damage roll, or neither — never both, and never the player's free choice.**
+
+| Maneuver | Die goes to | Effect | Doubles on a crit? |
+|---|---|---|---|
+| **Precision Attack** | Attack roll | Add the die to the attack roll, before or after the roll (declare before knowing hit/miss) | No — never a damage die |
+| **Goading Attack** | Damage roll | Add to damage; target WIS-saves or has disadvantage on attacks against anyone but the maneuver's user until the end of their next turn | Yes — it's a damage die |
+| **Distracting Strike** | Neither | On a hit, the next ally's attack against that target has advantage. Die is still spent, adds to no roll | N/A |
+| **Bait and Switch** | Neither (AC bonus) | No attack required — swap places with a willing creature within 5 ft; add the die as an AC bonus to either of them until the start of the user's next turn | N/A |
+| **Lunging Attack** | Damage roll | +5 ft reach on one melee attack; on a hit, add the die to damage | Yes — it's a damage die |
+
+**For any maneuver not listed here**: read what its own text does with the die — attack roll, damage roll, or a rider effect with no roll at all — and slot it into one of the three columns above before using it, rather than guessing from the name.
+
+**Worked example** (Goading Attack, on a crit): base weapon dice (doubled) + static modifier (never doubled) + superiority die (doubled, since it's a damage die) — e.g. `2d12 + 6 + 2d8`, not `2d12 + 6 + 1d8`.
+
+## Damage & Healing
+
+- **Damage types**: Bludgeoning, Piercing, Slashing, Fire, Cold, Lightning, Thunder, Poison, Acid, Necrotic, Radiant, Force, Psychic.
+- **Resistance** halves; **Vulnerability** doubles; **Immunity** zeroes.
+
+**Check the target's resistances/immunities before finalizing ANY damage roll against it — every hit, not just the first one of the fight.** This is the exact mirror of the PC-side discipline above (checking a PC's own Combat Triggers/Passive Item Effects before resolving a roll against them): a monster's defensive traits are just as easy to silently skip, and skipping them just as silently makes a fight easier than it was designed to be — which then gets misdiagnosed as "monsters need to be stronger" when the real fix was to apply what the stat block already grants. Concrete, recurring case: devils (Bone Devils, Erinyes, Pit Fiends, etc.) are immune to fire and poison and resistant to cold and to nonmagical bludgeoning/piercing/slashing — a fire-enchanted weapon's flat fire-damage dice must be dropped from every hit against one, every time, not just noticed after a player flags it.
+
+**`lookup.py`'s bundled dataset can be incomplete for a given monster — a missing resistance/immunity line is not proof the creature has none.** If a monster is a member of a family with well-known standard traits (devils' fire/poison immunity, most elementals' immunity to their own element, many undead's necrotic immunity and turn resistance, etc.) and the lookup output doesn't mention it, apply the standard trait from real 5e knowledge rather than assuming the tool's silence means "no resistance." Treat the gap as a data-completeness issue, not a ruling.
+
+### At 0 HP
+1. Falls unconscious and prone.
+2. Death saving throws begin on that creature's own turn: d20, no modifiers. 10+ succeeds, 9-or-under fails. Natural 20 regains 1 HP and wakes the creature up. Natural 1 counts as two failures.
+3. Three successes stabilizes (unconscious, not dying). Three failures kills.
+4. Taking damage while at 0 HP is an automatic failure; a critical hit against them counts as two failures.
+
+### Massive damage
+If the damage remaining *after* a hit drops a creature to 0 HP is itself ≥ that creature's max HP, it dies outright instead of starting death saves.
+
+## Common Conditions
+
+| Condition | Effect |
+|---|---|
+| Blinded | Auto-fail sight-based checks; attacks against have advantage, its own attacks have disadvantage |
+| Charmed | Can't attack the charmer; charmer has advantage on social checks against it |
+| Frightened | Disadvantage on checks/attacks while the fear source is visible; can't willingly move closer to it |
+| Grappled | Speed 0; ends if the grappler is incapacitated or something moves the grappled creature out of reach |
+| Incapacitated | No actions, no reactions |
+| Invisible | Heavily obscured; its attacks have advantage, attacks against it have disadvantage |
+| Paralyzed | Incapacitated; auto-fails STR/DEX saves; attacks against have advantage; a hit within 5 ft is a crit |
+| Poisoned | Disadvantage on attack rolls and ability checks |
+| Prone | Disadvantage on its own attacks; melee attacks against it have advantage, ranged attacks against it have disadvantage; standing costs half movement |
+| Restrained | Speed 0; its attacks have disadvantage; attacks against it have advantage; disadvantage on DEX saves |
+| Stunned | Incapacitated; auto-fails STR/DEX saves; attacks against have advantage |
+| Unconscious | Incapacitated, drops held items, falls prone; auto-fails STR/DEX saves; attacks against have advantage; a hit within 5 ft is a crit |
+
+## Armor and Stealth
+
+Some armor imposes disadvantage on DEX (Stealth) checks — this is a rules-as-written property of the armor itself, not a house rule, and it applies to every wearer, every time, whether or not it's dramatically convenient:
+
+| Armor | Stealth |
+|---|---|
+| Padded | Disadvantage |
+| Leather, Studded Leather | — |
+| Hide, Chain Shirt, Scale Mail, Breastplate, Half Plate | — |
+| Ring Mail | Disadvantage |
+| Chain Mail, Splint, Plate | Disadvantage |
+
+**Before ruling a Stealth check, check the wearer's actual armor and any equipment that overrides the default** (a specific magic armor identified as not imposing it, an item granting advantage that cancels the disadvantage) — read the character's own sheet, don't apply the table from memory alone. When advantage and disadvantage both apply from different sources, they cancel: roll a single die, no re-roll.
+
+## Cover
+
+- **Half cover** — +2 AC, +2 DEX saves (low wall, furniture, another creature).
+- **Three-quarters cover** — +5 AC, +5 DEX saves (arrow slit, portcullis).
+- **Total cover** — can't be targeted directly.
+
+## Environmental Hazards
+
+- **Difficult terrain**: half movement speed to cross.
+- **Falling**: 1d6 bludgeoning per 10 feet fallen, capped at 20d6.
+- **Suffocation**: survives (1 + CON modifier) minutes without air, then drops to 0 HP after CON-modifier more rounds (minimum 1).
+- **Fire exposure**: typically 1d10 fire per round of contact, may ignite flammable gear.
+
+## Before running a deliberately-unfinalized solo boss
+
+Some prepared dungeons leave their final boss's exact HP/Legendary Resistance unset on purpose, to be tuned against the party's real sheet at the time of the fight rather than guessed months in advance. Immediately before that fight:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/burst_check.py --campaign <name> --vs <creature-type-or-keyword> --target-hp <base-HP>
+```
+
+This reads every PC's own `## Burst Reference` table (see `templates/character-sheet.md`) and sums the single worst-case round of damage the party can put on one target, then reports whether the boss's base HP survives the opening round. If it doesn't (or barely does), raise HP, add Legendary Resistance, or build in a hard phase/escape trigger before running the fight — don't run the base stat block unmodified just because a source lists it that way.
+
+## Narrating Combat — pacing discipline
+
+**Never batch more than one combatant's turn into a single message.** Every turn — PC or NPC, including a surprised combatant's skipped turn — gets its own narrated beat before the next combatant acts, even when Claude is the one rolling for an NPC. Rolling several turns via tool calls and then presenting them as one compressed jump (e.g. straight to "Round 2" with a status summary) is technically accurate but costs the table the experience of watching the fight happen. Before writing any message that shows a round-end status block, count how many turns have passed since the table last saw an update — if it's more than one, split the message.
+
+**The combat tracker (`combat.py`/`tracker.py` state) is the single source of truth for HP, initiative order, and conditions — re-read it before narrating a turn, don't reconstruct it from memory.** Two concrete failure modes this prevents:
+- Feeding a monster's *already-damaged* HP back into the tracker as if it were its max HP (re-derive max HP from the stat block, not from the last combat message).
+- Re-rolling initiative when the actual intent was only to correct an HP value — a state update should touch only the field that changed.
+
+**Keep a running kill/defeat tally for the encounter, as a structured count, not a narrative impression.** At the end of a multi-wave or reinforcement-heavy fight, XP is calculated from this tally — recounting from memory ("I think it was four") is exactly how a fight ends up under- or mis-reported. Track it the same deliberate way the tracker state itself is tracked.
+
+**Narration comes first, mechanics come after, in two visibly separate blocks — never interleaved.** A hit reported as "24 vs AC21 — isabet! [tasvir], 21 hasar" puts the mechanics first and the description as an afterthought; that ordering is wrong even when every sensory word is present. The narration block must be readable with zero dice, zero AC, zero damage numbers in it — a pure account of what happened in the fiction — and the mechanical reference sits in its own block immediately after, separated by a visual break (e.g. an em dash `—` on its own line). This applies down to the level of a single attack within a multiattack turn, not just once per combatant-turn — a boss's 3-attack Multiattack gets three narration beats, not one paragraph covering all three followed by three mechanics lines.
+
+**Worked example — NPC multiattack (three attacks, one combatant's turn):**
+
+> Vashti'nin sol pençesi havada bir yay çiziyor, buz kaplı parmaklar keskin bir orak gibi ışık alıyor son anda — Kriv'in omuz zırhına çarpıyor, metal çığlık atar gibi çatlıyor, soğuk anında kemiğe işliyor.
+>
+> Aynı anda sağ pençe geliyor, ilkinin bıraktığı boşluktan — bu sefer zırh değil et buluyor, yanını yırtıyor; sıcak kan hemen donmaya başlıyor buz temasıyla.
+>
+> Ve son olarak eli, neredeyse *nazikçe*, göğsüne uzanıyor — bir şifacının refleksiyle, üç yüz yıl önce kalmış. Ama Kriv bir adım geri kayıp darbeyi savuşturuyor, dokunuş boşlukta kalıyor.
+>
+> **—**
+> Frost Claw 1: 24 vs AC21 — isabet, 21 hasar.
+> Frost Claw 2: 30 vs AC21 — isabet, 21 hasar.
+> Harrow Touch: 14 vs AC21 — ıska.
+> Kriv: 143 → 101/143 HP.
+
+**Worked example — PC attack (one hit):**
+
+> Kılıç, golemin göğsündeki çatlağa tam oturuyor — radyan ışık taşın içinden sızıp bir anlığına gözleri kamaştırıyor, çatlak genişliyor, bir parça kopup yere düşüyor.
+>
+> **—**
+> Atak: 27 vs AC18 — isabet. Hasar: 1d12(6)+1d8(3)+STR9+GWM10 = 35.
+
+The player must always be able to reconstruct the real HP/position/resource state from the mechanics block alone — the narration block's job is purely to make the moment land, never to carry information the mechanics block doesn't also state plainly. A trivial/low-stakes hit (one of a rolled group of random mooks, say) can collapse both blocks into a single line if the table's pace calls for it — but a boss, a PC, or any narratively significant moment keeps the two-block separation every time.

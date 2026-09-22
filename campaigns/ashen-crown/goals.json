@@ -1,0 +1,117 @@
+[
+  {
+    "id": "sarelle",
+    "name": "Sarelle Duskbourne",
+    "kind": "npc",
+    "goal": "Ashen Crown'un tum 9 parcasini kendisi toplayip olumu yenip kendisi hukmetmek",
+    "metric_type": "numeric",
+    "status": "permanent_loss",
+    "responses": {
+      "threatened": "Parti Ashvale'e yaklasirsa/fragman sayisini artirirsa: Solenne Kavash garnizonu sikilastirir, ozel arastirmayi hizlandirir, yeni bir avci gorevlendirir.",
+      "blocked": "Bir eli/araci olduruluyor/yakalaniyorsa (Vayle, Reyna Sorrel gibi): paranoyasi artar, kendi Concordat'i icinde tasfiyeye baslar, Solenne Kavash'tan bile suphelenir.",
+      "permanent_loss": "Tum 9 parca parti/baskasi tarafindan toplanirsa ya da o olurse: kirk yillik arayisi biter, son bir caresiz/intihara yakin hamle yapar (Ashvale'i kendi eliyle yikmak, Imparator'un lahdini zorla acmaya calisip kendi olumune sebep olmak)."
+    },
+    "last_updated_session": 31,
+    "current": 0,
+    "target": 9,
+    "metric_label": "Crown parcasi (kendi elinde)"
+  },
+  {
+    "id": "coren",
+    "name": "Coren Ashvale",
+    "kind": "npc",
+    "goal": "Concordat'a karsi Ashvale Necropolis'in (ailesinin mezari) intikamini almak, Compact'in gercek bir guc olarak hayatta kalmasini saglamak",
+    "metric_type": "boolean",
+    "status": "on_track",
+    "responses": {
+      "threatened": "Concordat'in Ashvale'deki gucu artarsa (yeni asker/kazi): sabri tasar, Compact'in tam ordusunu harekete gecirir, gizli ittifaki riske atar.",
+      "blocked": "Parti/Kriv verdigi sozu tutmazsa (istihbarat paylasmazsa): guvenini tamamen ceker, gizli ittifak sona erer.",
+      "permanent_loss": "Sethra'nin ihaneti (Compact'in Kriv'in evini yiktigi gercegi) ona resmen kanitlanir ve affetmezse: B senaryosu tetiklenir, sinirsiz misilleme, Gallowmere/Hold hedef olur."
+    },
+    "last_updated_session": 31,
+    "condition": "Concordat, Ashvale Necropolis'ten (ve Sarelle'den) kalici olarak uzaklastirilirsa",
+    "achieved": true
+  },
+  {
+    "id": "veskin",
+    "name": "Maro Veskin",
+    "kind": "npc",
+    "goal": "Uc aday hane arasindaki dengeyi sonsuza kadar surdurmek, tahtin asla dolmamasini saglamak",
+    "metric_type": "boolean",
+    "status": "threatened",
+    "responses": {
+      "threatened": "Bir hane (ozellikle Sereth Corr) gercek bir avantaj kazanirsa: digerlerini o haneye karsi sessizce kiskirtir, burokratik engeller cikarir.",
+      "blocked": "Freya Grimwell'in kendi sigortasi (Veskin'in usulsuzlukleri) ortaya cikarsa: once inkar eder, sonra sessizce Grimwell'i tatmin etmeye/susturmaya calisir.",
+      "permanent_loss": "Sereth Corr (en cok korktugu) resmen tahta otururse: iki yillik defter oyunlari ortaya cikar, kacmaya ya da kose siki bir ihanete basvurur."
+    },
+    "last_updated_session": 31,
+    "condition": "Uc haneden biri (ya da Kriv gibi disaridan biri) kararli bir avantaj kazanip dengeyi kalici olarak bozarsa",
+    "achieved": false
+  },
+  {
+    "id": "whisper_court",
+    "name": "Whisper Court (Iskra Vantrel)",
+    "kind": "faction",
+    "goal": "Uc hanenin de zayif noktalarini toplayip kaosu surdurmek, hicbirinin kesin kazanmasina izin vermemek",
+    "metric_type": "numeric",
+    "status": "threatened",
+    "responses": {
+      "threatened": "Bir ajan daha ifsa olma riski belirirse (orn. Elian Rook kanit bulursa): Iskra ajanlarini ceker/gizler, riskli bir temizlik operasyonu baslatir.",
+      "blocked": "Bir hanenin (Corr/Sablewood) kontrolunu tamamen kaybederse: o haneye karsi daha agresif bir yontem (santaj, suikast) dener.",
+      "permanent_loss": "3. ajan da ifsa olursa: agin gercek dogasi (rakshasa+doppelganger) acik hale gelir, Iskra Emberhold'dan cekilmeyi ya da acik catismayi secer, gizlilik biter."
+    },
+    "last_updated_session": 35,
+    "current": 3,
+    "target": 3,
+    "metric_label": "ifsa olan ajan (Wrenna, Arnholt zaten ifsa oldu)"
+  },
+  {
+    "id": "sereth",
+    "name": "Sereth Corr",
+    "kind": "npc",
+    "goal": "House Corr'u Bos Koltuk'a oturtmak, iki yillik taht bosluguna kalici bir son vermek",
+    "metric_type": "boolean",
+    "status": "on_track",
+    "responses": {
+      "threatened": "Bir rakip hane (Sablewood/Ilvane) gercek bir avantaj kazanirsa: ittifaklarini (Kriv dahil) daha agresif kullanir, riskli bir kamuya acik hamle yapar.",
+      "blocked": "Kriv'in destegi geri cekilirse ya da House Ilvane'in Iskra baglantisi kanitlanamazsa: stratejisi sekteye ugrar, daha savunmaci bir tavra doner.",
+      "permanent_loss": "Rakip bir hane resmen tahta otururse: on yillik plani biter, Dorren'in intikami da yarim kalir — acik isyan ya da tam geri cekilme."
+    },
+    "last_updated_session": 31,
+    "condition": "Sereth Corr resmen Bos Koltuk'a otururse (ya da rakip bir haneye kaybederse)",
+    "achieved": false
+  },
+  {
+    "id": "tain_takeover",
+    "name": "Orell Tain — Concordat'ı devralma",
+    "kind": "npc",
+    "goal": "Kavash'ın mührüyle Karsgate Grand Archive'ında sessizce vekil olarak yerleşmek, Sarelle'e sadık kalanları temizlemek, gerçek araştırmayı sürdürmek",
+    "metric_type": "boolean",
+    "status": "on_track",
+    "responses": {
+      "threatened": "Sahte belge/vekillik şüpheyle karşılanır, bir rakip iddia sahibi çıkar",
+      "blocked": "Grand Archive'daki Sarelle sadıkları Tain'i tanımayı reddeder, açık bir iç çatışma başlar",
+      "permanent_loss": "Tain'in kimliği/geçmişi (fugitive olduğu) ifşa olur, tamamen güvenilirliğini kaybeder ya da öldürülür"
+    },
+    "last_updated_session": null,
+    "condition": "Tain, Karsgate (ve mümkünse Emberhold) şubesinde tartışmasız, tanınmış bir otorite olarak yerleşti",
+    "achieved": false
+  },
+  {
+    "id": "coren_coup",
+    "name": "Coren Ashvale — Ironclad Table darbesi",
+    "kind": "npc",
+    "goal": "Ironclad Table'dan kopup ~900 askeriyle bagimsizlasmak, partinin desteğiyle",
+    "metric_type": "numeric",
+    "status": "on_track",
+    "responses": {
+      "threatened": "Ilse Drummel plani kesfederse, ya da bir Table uyesi erken uyarilirsa",
+      "blocked": "Coren'in kendi askerleri arasinda sadakat cozulurse",
+      "permanent_loss": "Coren, Table tarafindan tasfiye edilir ya da plan tamamen ifsa olursa"
+    },
+    "last_updated_session": 34,
+    "current": 6000,
+    "target": 40000,
+    "metric_label": "gp yatirim (~35-40k gerekli)"
+  }
+]

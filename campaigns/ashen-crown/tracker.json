@@ -1,0 +1,266 @@
+{
+  "kriv shestendeliath": {
+    "name": "Kriv Shestendeliath",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "ilvaneth duskmere": {
+    "name": "Ilvaneth Duskmere",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "orell tain": {
+    "name": "Orell Tain",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "vashti coldharrow": {
+    "name": "Vashti Coldharrow",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "ajan 1": {
+    "name": "Ajan 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "ghast 2": {
+    "name": "Ghast 2",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "kriv": {
+    "name": "Kriv",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "carrion crawler b": {
+    "name": "Carrion Crawler B",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "wight 4": {
+    "name": "Wight 4",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "wight 1": {
+    "name": "Wight 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "wight 2": {
+    "name": "Wight 2",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "wight 3": {
+    "name": "Wight 3",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "priest 1": {
+    "name": "Priest 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "wight captain": {
+    "name": "Wight Captain",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "corwen (doppelganger)": {
+    "name": "Corwen (doppelganger)",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "iskra vantrel": {
+    "name": "Iskra Vantrel",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "sathriel": {
+    "name": "Sathriel",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "rakshasa muhafiz 1": {
+    "name": "Rakshasa Muhafiz 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "barbed devil 3": {
+    "name": "Barbed Devil 3",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "barghest 1": {
+    "name": "Barghest 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "barghest 2": {
+    "name": "Barghest 2",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "barghest 3": {
+    "name": "Barghest 3",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "barghest 4": {
+    "name": "Barghest 4",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "kıdemli bone devil": {
+    "name": "Kıdemli Bone Devil",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  }
+}

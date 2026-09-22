@@ -1,0 +1,4 @@
+# Runtime / cache — not project content
+.runtime/
+__pycache__/
+*.pyc
