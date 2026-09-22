@@ -8,11 +8,19 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> triggers --all
 ```
 This prints every PC's own `## Combat Triggers` section straight from their character sheet — the mechanical backstop for the "crit/kill bonus action" and similar rules below.
 
-**Then, at the start of EVERY PC's own turn — not just once at combat init — run:**
+**Then, at the start of EVERY turn — PC *and* NPC, not just once at combat init — run:**
 ```bash
+# a PC's own turn: prints their Combat Triggers + Passive Item Effects
 python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> turn "<PC name>"
+
+# an NPC/monster turn: prints the DEFENSES of the PCs it can act against
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> turn "<NPC name>" --targets "<PC>,<PC>"
 ```
-This is a hard gate, not a reminder to remember: it is the *only* sanctioned way a PC's turn begins. It merges `effect tick` (round/duration bookkeeping) and a fresh re-print of that PC's `## Combat Triggers` + `## Passive Item Effects` with a loud `▶ TURN START` banner into one unskippable call — added 2026-09-14 after "pull it once at combat start, then rely on memory for the rest of the fight" repeatedly cost feats, item passives, Ascension gains, and character bonuses mid-fight (a real, repeated failure mode, not a hypothetical one). Do **not** narrate a single roll, ask for a single dice request, or resolve a single action for that PC's turn before this has run. No-ops harmlessly (prints a short note) if pointed at an NPC/monster name — safe to call on anything, so there's no need to first check whether the acting combatant is a PC.
+This is a hard gate, not a reminder to remember: it is the *only* sanctioned way a turn begins. Do **not** roll a die, call for a player's roll, or narrate a single action of that turn before it has run.
+
+**Run it on enemy turns too — that half is not optional.** The gate used to be keyed on who *acts*, and printed "no PC triggers to check" on an NPC's turn. But a defensive passive belongs to whoever is *targeted*: a Cloak of Displacement's disadvantage, a damage immunity, a reaction like Riposte or Counterspell all apply on the enemy's turn, and that is exactly where they kept getting missed — in one session the same Cloak was skipped twice after the player had flagged it, because the printed checklist only ever appeared on the wrong turn. `--targets` prints each named PC's `## Defenses` section; with no `--targets` it prints every PC in the campaign.
+
+**Reading it is not applying it.** The output is a checklist to cross-reference against each individual roll *before* you make it: advantage/disadvantage before the attack roll, resistance/immunity/vulnerability before the damage total, a reaction before you move on to the next attack. A multiattack is resolved one attack at a time for this reason — a Cloak that switches off on the first hit cannot be applied correctly to three attacks rolled in one batch.
 
 **Dice ownership (see SKILL.md for the full table).** Every die tied to a player's character — d20 test, initiative, damage and effect dice — is rolled by that player, never by you. You roll NPC and monster dice, and damage arriving at a PC from a trap or hazard. Watch the handoff points inside a single resolution: an NPC attack that triggers a PC's saving throw, and an NPC's failed save that leads into the PC's damage dice, are where a DM-held die most often crosses the line by accident. `dice.py` refuses a PC-owned roll outright — if it stops you, that is the rule working, so ask the player for the number.
 
@@ -38,7 +46,7 @@ This is a hard gate, not a reminder to remember: it is the *only* sanctioned way
 | **Reaction** | Opportunity attack, a few spells (Shield, Counterspell, etc.), a readied action's trigger |
 | **Free** | Draw/sheathe a weapon, open an unstuck door, a short sentence |
 
-**A turn is not over until the player says it is.** Resolving one action does not imply the others (bonus action, a second spell, giving a command to a summon) were declined — ask "başka bir şey yapmak ister misin?" before advancing the turn pointer, and name known once-per-rest resources the character hasn't used yet (Action Surge, an unspent Second Wind, unburned spell slots) rather than waiting for the player to remember them unprompted.
+**A turn is not over until the player says it is.** Resolving one action does not imply the others (bonus action, a second spell, giving a command to a summon) were declined — ask whether they want to do anything else before advancing the turn pointer, and name known once-per-rest resources the character hasn't used yet (Action Surge, an unspent Second Wind, unburned spell slots) rather than waiting for the player to remember them unprompted.
 
 ## Attack Resolution
 
@@ -152,27 +160,27 @@ This reads every PC's own `## Burst Reference` table (see `templates/character-s
 
 **Keep a running kill/defeat tally for the encounter, as a structured count, not a narrative impression.** At the end of a multi-wave or reinforcement-heavy fight, XP is calculated from this tally — recounting from memory ("I think it was four") is exactly how a fight ends up under- or mis-reported. Track it the same deliberate way the tracker state itself is tracked.
 
-**Narration comes first, mechanics come after, in two visibly separate blocks — never interleaved.** A hit reported as "24 vs AC21 — isabet! [tasvir], 21 hasar" puts the mechanics first and the description as an afterthought; that ordering is wrong even when every sensory word is present. The narration block must be readable with zero dice, zero AC, zero damage numbers in it — a pure account of what happened in the fiction — and the mechanical reference sits in its own block immediately after, separated by a visual break (e.g. an em dash `—` on its own line). This applies down to the level of a single attack within a multiattack turn, not just once per combatant-turn — a boss's 3-attack Multiattack gets three narration beats, not one paragraph covering all three followed by three mechanics lines.
+**Narration comes first, mechanics come after, in two visibly separate blocks — never interleaved.** A hit reported as "24 vs AC21 — hit! [description], 21 damage" puts the mechanics first and the description as an afterthought; that ordering is wrong even when every sensory word is present. The narration block must be readable with zero dice, zero AC, zero damage numbers in it — a pure account of what happened in the fiction — and the mechanical reference sits in its own block immediately after, separated by a visual break (e.g. an em dash `—` on its own line). This applies down to the level of a single attack within a multiattack turn, not just once per combatant-turn — a boss's 3-attack Multiattack gets three narration beats, not one paragraph covering all three followed by three mechanics lines.
 
 **Worked example — NPC multiattack (three attacks, one combatant's turn):**
 
-> Vashti'nin sol pençesi havada bir yay çiziyor, buz kaplı parmaklar keskin bir orak gibi ışık alıyor son anda — Kriv'in omuz zırhına çarpıyor, metal çığlık atar gibi çatlıyor, soğuk anında kemiğe işliyor.
+> Her left claw carves an arc through the air, ice-sheathed fingers catching the light like a scythe at the last moment — it lands on his shoulder plate, the metal cracks with a sound like a scream, and the cold reaches bone instantly.
 >
-> Aynı anda sağ pençe geliyor, ilkinin bıraktığı boşluktan — bu sefer zırh değil et buluyor, yanını yırtıyor; sıcak kan hemen donmaya başlıyor buz temasıyla.
+> The right claw follows through the gap the first one opened — this time it finds flesh instead of armour, tearing along his side; the hot blood starts freezing the moment it meets her touch.
 >
-> Ve son olarak eli, neredeyse *nazikçe*, göğsüne uzanıyor — bir şifacının refleksiyle, üç yüz yıl önce kalmış. Ama Kriv bir adım geri kayıp darbeyi savuşturuyor, dokunuş boşlukta kalıyor.
+> And then her hand reaches for his chest almost *gently*, with a healer's reflex three hundred years out of date. He slides back a step and the touch closes on empty air.
 >
 > **—**
-> Frost Claw 1: 24 vs AC21 — isabet, 21 hasar.
-> Frost Claw 2: 30 vs AC21 — isabet, 21 hasar.
-> Harrow Touch: 14 vs AC21 — ıska.
+> Frost Claw 1: 24 vs AC21 — hit, 21 damage.
+> Frost Claw 2: 30 vs AC21 — hit, 21 damage.
+> Harrow Touch: 14 vs AC21 — miss.
 > Kriv: 143 → 101/143 HP.
 
 **Worked example — PC attack (one hit):**
 
-> Kılıç, golemin göğsündeki çatlağa tam oturuyor — radyan ışık taşın içinden sızıp bir anlığına gözleri kamaştırıyor, çatlak genişliyor, bir parça kopup yere düşüyor.
+> The blade seats itself in the crack running down the golem's chest — radiant light bleeds out through the stone, blinding for a heartbeat, and the crack widens until a slab of it shears off and hits the floor.
 >
 > **—**
-> Atak: 27 vs AC18 — isabet. Hasar: 1d12(6)+1d8(3)+STR9+GWM10 = 35.
+> Attack: 27 vs AC18 — hit. Damage: 1d12(6)+1d8(3)+STR9+GWM10 = 35.
 
 The player must always be able to reconstruct the real HP/position/resource state from the mechanics block alone — the narration block's job is purely to make the moment land, never to carry information the mechanics block doesn't also state plainly. A trivial/low-stakes hit (one of a rolled group of random mooks, say) can collapse both blocks into a single line if the table's pace calls for it — but a boss, a PC, or any narratively significant moment keeps the two-block separation every time.

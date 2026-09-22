@@ -32,12 +32,12 @@
 
 ### Goal Tracker *(major NPCs and faction leaders only — anyone with a single, central, campaign-level goal, not every walk-on)*
 *Structured, not just prose — mirrors `xp.py`'s loud "LEVEL UP PENDING" flag so a crossed threshold is never a silent state.md edit. Backed by `scripts/goals.py` and `<campaign>/goals.json` — see that script's own docstring for the CLI. Create the record with `goals.py add`, update progress with `goals.py set`/`achieve`, and mirror the current values here by hand so the prose stays readable without opening the JSON.*
-- Hedef: <one sentence>
-- İlerleme metriği: <a concrete number if numeric ("Fragment: 5/9"), otherwise a plain yes/no-answerable condition — never a vague "more worried">
-- Eşik tepkileri:
-  - Tehdit altında → <a pre-written move, phrased as an action, not a mood>
-  - Engellendi → <a pre-written move>
-  - Kalıcı kayıp → <a decisive, irreversible pre-written move>
+- Goal: <one sentence>
+- Progress metric: <a concrete number if numeric ("Fragment: 5/9"), otherwise a plain yes/no-answerable condition — never a vague "more worried">
+- Threshold responses:
+  - Threatened → <a pre-written move, phrased as an action, not a mood>
+  - Blocked → <a pre-written move>
+  - Permanent loss → <a decisive, irreversible pre-written move>
 
 ### Known Facts — What They Actually Know & How
 *The source of truth checked before writing this NPC's dialogue (see SKILL.md's "Narration principles" — mandatory source-of-knowledge check). A dated ledger, not a summary: one line per fact, naming the channel it came through. This NPC never references, hints at, or reacts to anything not listed here — no DM meta-knowledge, no other PC's private information, no fact from a scene this NPC wasn't in and wasn't told about.*

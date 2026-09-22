@@ -55,6 +55,32 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 
 ---
 
+## Defenses
+*Everything that changes an attack, a save, or a damage total **aimed at him**. Printed by `tracker.py turn <NPC> --targets "Kriv Shestendeliath"` at the start of every enemy turn — check it before the attack roll, not after.*
+
+**Before the attack roll**
+- **AC 22** (Warden's Oathplate, Dwarven Plate 18 +2, +2 Ascension Stage 3 scales — already included).
+
+**Before the damage total**
+- **Immune:** fire (Ascension Stage 2 — upgraded from resistance, gün 169).
+- **Resistant:** nonmagical bludgeoning / piercing / slashing (Warden's Core); cold (Frostheart).
+- **★ VULNERABLE: lightning — double damage** (Warden's Core, gün 196). Apply it every time; it is the one thing that hurts him more than it should.
+
+**Saves**
+- **Legendary Resistance (1/day, Stage 4):** on a failed save he may choose success instead, before the result is announced. Offer it the first time a save would otherwise fail.
+- **Indomitable (3/3 per long rest):** reroll a failed save, must use the new roll. Offer after Legendary Resistance is spent.
+
+**Reactions he may take on an enemy's turn**
+- **Riposte** (Battle Master, superiority die): an enemy **misses him with a melee attack** → one melee attack, add the die to damage. Offer it the instant a melee attack misses.
+- **Opportunity Attack:** an enemy leaves his reach without Disengaging. Competes with Riposte for the same reaction.
+- His reaction refreshes at the **start of his own turn**, not once per round — check whether his turn has come round since he last spent it.
+
+**Other**
+- **Warden's Aegis** (passive, Wardensteel): allies within 10 ft have fire resistance.
+- **Second Wind (1/rest)** — bonus action, heals him; name it when he is badly hurt.
+
+---
+
 ## Saving Throws
 
 | Save | Modifier | Proficient? |

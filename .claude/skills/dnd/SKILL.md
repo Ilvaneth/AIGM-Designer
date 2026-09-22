@@ -293,7 +293,9 @@ Read `## Campaign Arc` at every session load alongside `## DM Style Notes`. The 
 
 **Per-turn combat sequence (follow exactly):**
 ```
-a. tracker.py turn <actor>   ← ALWAYS first, before any roll of this turn (see SKILL-combat.md)
+a. tracker.py turn <actor> [--targets "<PCs this turn can hit>"]
+                             ← ALWAYS first, before any roll of this turn. On an NPC turn this
+                               prints the targeted PCs' Defenses (see SKILL-combat.md)
 b. Resolve the turn one action at a time — call for the player's own dice, roll NPC dice yourself
 c. tracker.py                ← conditions, concentration, death saves, effects that changed
 d. Narration block for this turn — no dice, no AC, no damage numbers

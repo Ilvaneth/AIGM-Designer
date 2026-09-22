@@ -322,7 +322,7 @@ Always supply `--since <current-session-N>` from state.md. Never write proposed 
 
 If `graph.json` doesn't exist yet for this campaign, skip the sweep entirely (no proposal block) — graph isn't seeded.
 
-**Goal Tracker sweep:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/goals.py check --campaign <name>` (no-ops cleanly with a "goals.json boş" message if the system isn't in use for this campaign — skip the rest of this step then). Two things to check in its output:
+**Goal Tracker sweep:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/goals.py check --campaign <name>` (no-ops cleanly with an empty-goals message if the system isn't in use for this campaign — skip the rest of this step then). Two things to check in its output:
 1. **Any record whose `threatened`/`blocked`/`permanent_loss` responses are incomplete** — the script flags these. If this session made an NPC/faction from that list newly important (a real scene, a real decision that touched their goal) and they still have no tracker at all, draft one now (`goals.py add`) rather than leaving it prose-only, the same way the campaign-graph sweep drafts missing edges.
 2. **Any record not `on_track`** — confirm the DM actually narrated that state this session (a threatened/blocked NPC should visibly be reacting, not just flagged in the file). If a threshold was crossed mid-session, it should already have been surfaced live per SKILL.md's Goal Tracker check — this is a backstop, not the primary mechanism.
 

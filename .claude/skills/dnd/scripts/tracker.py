@@ -54,6 +54,12 @@ Usage:
     # note, does nothing else) when called on an NPC/monster name with no
     # matching character sheet.
     python3 tracker.py -c $CAMPAIGN turn <character-name>
+
+    # NPC/monster turn — prints the DEFENSES of the PCs it can act against, so a
+    # Cloak of Displacement, a damage immunity or a Counterspell reaction cannot
+    # be missed just because the actor is not a PC.
+    python3 tracker.py -c $CAMPAIGN turn "Bone Devil" --targets "Kriv Shestendeliath"
+    python3 tracker.py -c $CAMPAIGN defense "Ilvaneth Duskmere"
 """
 
 import json
@@ -451,17 +457,88 @@ def _print_one_triggers(name: str, path: str) -> bool:
     return combat_body is not None or items_body is not None
 
 
-def cmd_turn(campaign: str, entity_name: str) -> None:
-    """Single mandatory call at the start of EVERY PC's turn (skip for NPCs
-    the DM controls directly — see SKILL-combat.md). Combines what used to be
-    two separately-rememberable steps (`effect tick` + `triggers <name>`) into
-    one, because in practice the DM kept forgetting to re-pull a PC's own
-    Combat Triggers / Passive Item Effects mid-fight after the initial
-    combat-start read (feats, item passives, character bonuses, Ascension
-    gains getting missed — a real, repeated failure mode, added 2026-09-14).
-    This is the fix: there is no longer a "just triggers" or "just tick" path
-    for a PC's turn — running this command is now the only sanctioned way to
-    start one.
+def _print_defenses(name: str, path: str) -> bool:
+    """Print one character's incoming-attack defenses.
+
+    Prefers the sheet's own `## Defenses` quick-reference. Falls back to the
+    passive/trigger sections when a sheet predates that section, with a loud
+    note — an absent section means "nobody has written it yet", never "this
+    character has no defenses".
+    """
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError as e:
+        print(f"  ! Could not read {path}: {e}")
+        return False
+
+    print(f"\n{'='*68}")
+    print(f"  DEFENSES — {name}   (check BEFORE rolling anything against them)")
+    print(f"{'='*68}")
+
+    body = _extract_section(text, "Defenses")
+    if body:
+        print(body)
+        print()
+        return True
+
+    print("  (no '## Defenses' section on this sheet yet — falling back to the")
+    print("   passive/trigger sections. Add one: see templates/character-sheet.md.)")
+    for heading in ("Passive Item Effects — Quick Reference", "Combat Triggers"):
+        section = _extract_section(text, heading)
+        if section:
+            print(f"\n  -- from '{heading}' --")
+            print(section)
+    print()
+    return False
+
+
+def cmd_defense(campaign: str, entity_name: str, show_all: bool = False) -> None:
+    """Print the defenses of one PC, or of every PC in the campaign."""
+    chars_dir = _characters_dir(campaign)
+    if show_all:
+        if not os.path.isdir(chars_dir):
+            print(f"  ! No characters/ directory found for campaign '{campaign}'.")
+            return
+        for fname in sorted(os.listdir(chars_dir)):
+            if fname.lower().endswith(".md"):
+                _print_defenses(fname[:-3], os.path.join(chars_dir, fname))
+        return
+
+    path = _resolve_sheet(chars_dir, entity_name)
+    if path:
+        _print_defenses(entity_name, path)
+    else:
+        print(f"  ! No character sheet found for '{entity_name}' in {chars_dir}")
+
+
+def _resolve_sheet(chars_dir: str, entity_name: str) -> "str | None":
+    """Path to a character sheet by name, case-insensitively."""
+    path = os.path.join(chars_dir, f"{entity_name}.md")
+    if os.path.isfile(path):
+        return path
+    if os.path.isdir(chars_dir):
+        for fname in os.listdir(chars_dir):
+            if fname.lower() == f"{entity_name.lower()}.md":
+                return os.path.join(chars_dir, fname)
+    return None
+
+
+def cmd_turn(campaign: str, entity_name: str, targets: "list[str] | None" = None) -> None:
+    """The mandatory call at the start of EVERY combatant's turn, PC or NPC.
+
+    For a PC it prints that character's own `## Combat Triggers` and
+    `## Passive Item Effects` — what they can do on their turn.
+
+    For an NPC/monster it prints the DEFENSES of every PC that turn can touch,
+    because that is the half the actor-keyed version used to miss: the gate was
+    keyed on who acts, while a defensive passive (Cloak of Displacement's
+    disadvantage, a damage immunity, a reaction like Riposte or Counterspell)
+    belongs to whoever is *targeted*. Pass `--targets "A,B"` to narrow it to
+    the PCs actually in reach; with no --targets, every PC in the campaign is
+    printed, since any of them could be the target.
+
+    Nothing in this turn may be rolled or narrated before this has run.
     """
     print(f"\n{'#'*68}")
     print(f"  ▶ TURN START — {entity_name}")
@@ -470,22 +547,37 @@ def cmd_turn(campaign: str, entity_name: str) -> None:
     # Step 1: effect tick (existing behavior, silent if nothing to report)
     cmd_effect(campaign, "tick", entity_name)
 
-    # Step 2: Combat Triggers + Passive Item Effects, straight from the
-    # character sheet — this is the part that kept getting skipped when it
-    # lived as a separate, easy-to-forget command.
+    # Step 2: what this turn needs checked. A PC acting → their own triggers.
+    # An NPC acting → the defenses of the PCs it can act against.
     chars_dir = _characters_dir(campaign)
-    path = os.path.join(chars_dir, f"{entity_name}.md")
-    if not os.path.isfile(path) and os.path.isdir(chars_dir):
-        for fname in os.listdir(chars_dir):
-            if fname.lower() == f"{entity_name.lower()}.md":
-                path = os.path.join(chars_dir, fname)
-                break
-    if os.path.isfile(path):
+    path = _resolve_sheet(chars_dir, entity_name)
+    if path:
         _print_one_triggers(entity_name, path)
-    else:
-        print(f"  (no character sheet for '{entity_name}' — NPC/monster turn, "
-              f"no PC triggers to check. If this IS a PC, the name didn't "
-              f"match characters/{entity_name}.md — check spelling.)")
+        if targets:
+            for target in targets:
+                target_path = _resolve_sheet(chars_dir, target)
+                if target_path:
+                    _print_defenses(target, target_path)
+                else:
+                    print(f"  ! No character sheet for target '{target}'")
+        return
+
+    # NPC/monster turn.
+    print(f"  ({entity_name} has no character sheet — NPC/monster turn.)")
+    names = targets or [f[:-3] for f in sorted(os.listdir(chars_dir))
+                        if f.lower().endswith(".md")] if os.path.isdir(chars_dir) else []
+    if not names:
+        print("  ! No PC sheets found to check defenses against.")
+        return
+    print(f"  Anything this turn rolls against a PC must be checked against the")
+    print(f"  defenses below FIRST — advantage/disadvantage before the attack roll,")
+    print(f"  resistance/immunity before the damage total, reactions before moving on.")
+    for target in names:
+        target_path = _resolve_sheet(chars_dir, target)
+        if target_path:
+            _print_defenses(target, target_path)
+        else:
+            print(f"  ! No character sheet for target '{target}'")
 
 
 def cmd_triggers(campaign: str, entity: str, show_all: bool) -> None:
@@ -576,8 +668,15 @@ def main() -> None:
                      help="Print every character sheet's Combat Triggers + Passive Item Effects sections")
 
     # turn — mandatory start-of-turn call for PCs (effect tick + triggers, merged)
-    trn = sub.add_parser("turn", help="Run at the start of EVERY PC turn — merges 'effect tick' + 'triggers' into one unskippable call")
-    trn.add_argument("entity", help="Character name (matches characters/<name>.md)")
+    trn = sub.add_parser("turn", help="Run at the start of EVERY combatant's turn — PC triggers, or (NPC turn) the targeted PCs' defenses")
+    trn.add_argument("entity", help="Whoever is acting: a character name, or an NPC/monster name")
+    trn.add_argument("--targets", default="",
+                     help="Comma-separated PC names this turn can act against "
+                          "(NPC turn: defaults to every PC in the campaign)")
+
+    dfn = sub.add_parser("defense", help="Print a PC's incoming-attack defenses (resistances, passives, reactions)")
+    dfn.add_argument("entity", nargs="?", default="", help="Character name")
+    dfn.add_argument("--all", action="store_true", help="Every PC in the campaign")
 
     args = p.parse_args()
 
@@ -598,7 +697,10 @@ def main() -> None:
     elif args.cmd == "triggers":
         cmd_triggers(args.campaign, args.entity, getattr(args, "all", False))
     elif args.cmd == "turn":
-        cmd_turn(args.campaign, args.entity)
+        targets = [t.strip() for t in args.targets.split(",") if t.strip()]
+        cmd_turn(args.campaign, args.entity, targets)
+    elif args.cmd == "defense":
+        cmd_defense(args.campaign, args.entity, getattr(args, "all", False))
     else:
         p.print_help()
 

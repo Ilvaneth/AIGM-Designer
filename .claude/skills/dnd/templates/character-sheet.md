@@ -58,8 +58,23 @@
 | Stealth | DEX | +0 | — |
 | Survival | WIS | +0 | — |
 
+## Defenses
+*Everything that changes an attack roll, a saving throw, or a damage total **aimed at this character**. The DM reads this on the ENEMY's turn — `tracker.py -c <campaign> turn "<NPC>" --targets "<name>"` prints it — so it must be complete on its own. Keep it in the order it gets used: before the attack roll, before the damage total, saves, reactions.*
+
+**Before the attack roll**
+- <AC and what it already includes; anything granting attackers advantage/disadvantage, and exactly when it switches off>
+
+**Before the damage total**
+- **Immune:** <damage types> · **Resistant:** <damage types> · **Vulnerable:** <damage types>
+
+**Saves**
+- <rerolls, auto-successes, save bonuses: Legendary Resistance, Indomitable, Magic Resistance, …>
+
+**Reactions on an enemy's turn**
+- <Shield, Counterspell, Riposte, Opportunity Attack — what triggers each one, and when the reaction refreshes>
+
 ## Combat Triggers
-*Quick-scan checklist — re-read this at the start of every combat, check it after every hit, not the full Features table below. One line per feature that a DM could plausibly forget to offer mid-fight (a bonus-action trigger on crit/kill, a reaction, a resource that's easy to leave unused). Pull this with `tracker.py -c <campaign> triggers <name>` at the start of any fight.*
+*Quick-scan checklist for this character's OWN turn — re-read at the start of every one of their turns, not just once per fight. One line per feature that a DM could plausibly forget to offer (a bonus-action trigger on crit/kill, a resource that's easy to leave unused). Defensive traits belong in `## Defenses` above, since those are needed on the enemy's turn. Pulled by `tracker.py -c <campaign> turn <name>`.*
 -
 
 ## Passive Item Effects — Quick Reference

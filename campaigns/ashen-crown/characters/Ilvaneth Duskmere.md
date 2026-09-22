@@ -58,6 +58,29 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 
 ---
 
+## Defenses
+*Everything that changes an attack, a save, or a damage total **aimed at her**. Printed by `tracker.py turn <NPC> --targets "Ilvaneth Duskmere"` at the start of every enemy turn — check it before the attack roll, not after.*
+
+**Before the attack roll**
+- **Cloak of Displacement** (attuned): attackers have **disadvantage** against her — *suppressed the moment she takes damage*, returns at the **start of her next turn**. Also suppressed while incapacitated/restrained/unable to move. Resolve a multiattack one attack at a time: the first hit that deals damage turns this off for the rest of the round.
+- **AC 19** (13 + DEX 4 Mage Armor + 2 Bracers of Defense — already included, never add the bracers again).
+
+**Before the damage total**
+- **Immune:** necrotic, poison, disease, exhaustion (Ascension Stage 4). Poison damage AND the poisoned condition simply do not land.
+- **Resistant:** cold (Ascension Stage 3).
+- No vulnerabilities.
+
+**Reactions she may take on an enemy's turn**
+- **Counterspell** (3rd, prepared): interrupt a spell being cast within 60 ft. Offer it whenever an enemy casts in range.
+- **War Caster:** advantage on CON saves to keep concentration; may cast a spell as the opportunity-attack reaction.
+
+**Other**
+- CR ½ or lower undead will not attack her unless commanded (Ascension Stage 4).
+- **Cannot be permanently killed by ordinary means** (Stage 4): reforms within 24 hours, no long-rest limiter, at the cost of one orphanage memory.
+- Short rests and hit dice restore her nothing (Stage 2 cost) — only spells/magic or a full long rest.
+
+---
+
 ## Saving Throws
 
 | Save | Modifier | Proficient? |

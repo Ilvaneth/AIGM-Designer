@@ -262,5 +262,16 @@
       "failures": 0,
       "stable": false
     }
+  },
+  "erinyes 2": {
+    "name": "Erinyes 2",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
   }
 }
