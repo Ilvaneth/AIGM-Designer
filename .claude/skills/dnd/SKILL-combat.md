@@ -156,6 +156,12 @@ This reads every PC's own `## Burst Reference` table (see `templates/character-s
 
 ## Narrating Combat — pacing discipline
 
+**Open every combat, and every new room of one, with a real description before asking for an action.** The room, what the enemies look like, where everyone stands and how far apart — all of it comes *before* "what do you do", not after the player asks for it. A fight that opens on a bare initiative order gives the player nothing to make a decision with.
+
+**Speed never costs description.** "Don't ask, just run it" means skip the confirmations between turns — it does not mean collapsing turns into bare mechanics. Several NPC turns played back to back still get one real sensory sentence each, with the mechanics in their own block afterwards. The pace lives in not stopping to ask; it never lives in dropping the fiction.
+
+**Scale the narration to what the fight actually is.** A campaign-defining fight — a chapter's final boss, a named antagonist built up over months, a creature the party has been hunting — is written at full weight from its first round, not after the player asks for more. Deciding how many paragraphs a moment deserves is a judgement you make when the fight starts; the default two-block shape is a floor, not a ceiling.
+
 **Never batch more than one combatant's turn into a single message.** Every turn — PC or NPC, including a surprised combatant's skipped turn — gets its own narrated beat before the next combatant acts, even when Claude is the one rolling for an NPC. Rolling several turns via tool calls and then presenting them as one compressed jump (e.g. straight to "Round 2" with a status summary) is technically accurate but costs the table the experience of watching the fight happen. Before writing any message that shows a round-end status block, count how many turns have passed since the table last saw an update — if it's more than one, split the message.
 
 **The combat tracker (`combat.py`/`tracker.py` state) is the single source of truth for HP, initiative order, and conditions — re-read it before narrating a turn, don't reconstruct it from memory.** Two concrete failure modes this prevents:

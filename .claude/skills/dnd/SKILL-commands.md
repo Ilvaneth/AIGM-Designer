@@ -257,7 +257,9 @@ Campaign "<name>" created from <source title>.
 ---
 
 ## `/dm:dnd save`
-Write session events to session-log.md, update state.md (location, active quests, party HP/resources, recent events), update any characters/*.md that changed. Mirror each updated character to global roster (`~/.claude/dnd/characters/<name>.md`).
+Write session events to session-log.md, update state.md (location, active quests, party HP/resources, recent events), update any characters/*.md that changed.
+
+**Write the small beats, not just the headline events.** A save that records only what obviously mattered is how continuity breaks: a threat an NPC made in passing, a name someone dropped, who was standing there when a secret was said out loud, a promise made to get out of a conversation. Those are the lines a later session turns out to depend on, and they are invisible at save time precisely because they looked minor. The moment you think "this detail is too small to write down" is the moment to write it down. Record, at minimum: who learned what this session, who said what to whom, and every commitment made in either direction. Mirror each updated character to global roster (`~/.claude/dnd/characters/<name>.md`).
 
 **Inspiration tracking:** On every save, record each PC's Inspiration state in `state.md → ## Current Situation → Party status`. Use explicit text: `Inspiration ✓` if held, omit or `No Inspiration` if not. Inspiration persists across sessions and is NOT cleared by long rests. Example: `Mara: HP 24/24. Inspiration ✓. Theo: HP 24/24.`
 
