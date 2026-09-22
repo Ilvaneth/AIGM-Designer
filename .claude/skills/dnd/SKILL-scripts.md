@@ -43,7 +43,12 @@ Roll mode: generates 3 arrays (4d6kh3 × 6 each). Point buy mode: prints cost ta
 ---
 
 ## XP Script — `scripts/xp.py`
-Awards XP for combat and qualifying non-combat encounters. Reads character files from the campaign directory and updates XP. All tables (difficulty thresholds, CR→XP, monster multipliers, level advancement) are codified in the script — the DM only decides the difficulty tier or provides a monster list.
+Awards XP for combat and qualifying non-combat encounters. Reads character files from the campaign directory and updates XP. All tables (difficulty thresholds, CR→XP, level advancement) are codified in the script — the DM only decides the difficulty tier or provides a monster list.
+
+**Combat XP is the raw CR sum ÷ party size.** The DMG encounter-size multiplier (×1.5/×2/×3) is
+off by default: it exists to express how much harder a group fight *feels*, and awarding that
+inflated number as XP levels a party far faster than the CR budget intends. `--group-multiplier`
+restores the DMG behaviour for a single call.
 
 ```bash
 # Preview — no files modified:

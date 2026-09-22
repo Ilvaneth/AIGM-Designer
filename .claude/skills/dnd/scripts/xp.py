@@ -153,11 +153,19 @@ def _parse_monsters(monsters_str: str) -> list[tuple[str, str, int]]:
     return result
 
 
-def _calc_monster_xp(monsters: list[tuple[str, str, int]], players: int = 4) -> tuple[int, float, int]:
-    """Returns (raw_xp, multiplier, adjusted_xp)."""
+def _calc_monster_xp(monsters: list[tuple[str, str, int]], players: int = 4,
+                     group_multiplier: bool = False) -> tuple[int, float, int]:
+    """Returns (raw_xp, multiplier, adjusted_xp).
+
+    The DMG's encounter-size multiplier (x1.5 / x2 / x3 ...) is OFF by default:
+    it inflates a CR sum for a group fight to express difficulty, but awarding
+    that inflated number as XP levels a party far faster than the CR budget
+    intends. Combat XP here is the raw CR sum divided by party size. Pass
+    --group-multiplier to restore the DMG behaviour for one call.
+    """
     raw = sum(CR_XP[cr] * cnt for _, cr, cnt in monsters)
     total_count = sum(cnt for _, _, cnt in monsters)
-    mult = _monster_multiplier(total_count, players)
+    mult = _monster_multiplier(total_count, players) if group_multiplier else 1.0
     return raw, mult, int(raw * mult)
 
 
@@ -289,7 +297,7 @@ def cmd_calc(args: argparse.Namespace) -> None:
         if not monsters:
             print("No valid monsters parsed.", file=sys.stderr)
             sys.exit(1)
-        raw_xp, mult, adj_xp = _calc_monster_xp(monsters, players)
+        raw_xp, mult, adj_xp = _calc_monster_xp(monsters, players, args.group_multiplier)
         total_count = sum(c for _, _, c in monsters)
         per_player  = adj_xp // players
         diff        = _classify_difficulty(per_player, level)
@@ -297,9 +305,10 @@ def cmd_calc(args: argparse.Namespace) -> None:
         print(f"\n  Combat encounter — CR-based calculation")
         for name, cr, count in monsters:
             print(f"    {count}× {name} (CR {cr}): {CR_XP[cr] * count:,} XP")
-        print(f"\n  Raw XP:       {raw_xp:,}")
-        print(f"  Multiplier:   ×{mult}  ({total_count} monsters)")
-        print(f"  Adjusted XP:  {adj_xp:,}")
+        print(f"\n  Raw XP:       {raw_xp:,}  ({total_count} monsters)")
+        if args.group_multiplier:
+            print(f"  Multiplier:   ×{mult}  (DMG group multiplier, opt-in)")
+            print(f"  Adjusted XP:  {adj_xp:,}")
         print(f"  Difficulty:   {diff.upper()}  (Level {level} party of {players})")
         print(f"  Per player:   {per_player:,} XP")
         print(f"  Total:        {per_player * players:,} XP")
@@ -343,15 +352,18 @@ def cmd_award(args: argparse.Namespace) -> None:
         if not monsters:
             print("No valid monsters parsed.", file=sys.stderr)
             sys.exit(1)
-        raw_xp, mult, adj_xp = _calc_monster_xp(monsters, players)
+        raw_xp, mult, adj_xp = _calc_monster_xp(monsters, players, args.group_multiplier)
         total_count = sum(c for _, _, c in monsters)
         per_player  = adj_xp // players
         diff        = _classify_difficulty(per_player, avg_level)
 
-        print(f"\n  Combat — CR-based  [{total_count} monsters, ×{mult} multiplier]")
+        mult_tag = f", ×{mult} DMG group multiplier" if args.group_multiplier else ""
+        print(f"\n  Combat — CR-based  [{total_count} monsters{mult_tag}]")
         for name, cr, count in monsters:
             print(f"    {count}× {name} (CR {cr}): {CR_XP[cr] * count:,} XP")
-        print(f"  Raw {raw_xp:,} × {mult} = Adjusted {adj_xp:,} | Difficulty: {diff.upper()}")
+        total_line = (f"  Raw {raw_xp:,} × {mult} = Adjusted {adj_xp:,}"
+                      if args.group_multiplier else f"  Raw CR sum: {raw_xp:,}")
+        print(f"{total_line} | Difficulty: {diff.upper()}")
         print(f"  Per player: {per_player:,} XP")
 
     else:
@@ -407,6 +419,8 @@ def main() -> None:
                         help="Encounter difficulty tier")
     calc_p.add_argument("--type",       choices=["combat", "noncombat"], default="combat",
                         help="Encounter type (default: combat)")
+    calc_p.add_argument("--group-multiplier", action="store_true",
+                        help="Apply the DMG encounter-size multiplier (off by default)")
     calc_p.add_argument("--monsters",   metavar="LIST",
                         help="name:cr:count,... e.g. 'goblin:1/4:3,orc:1/2:2'")
 
@@ -420,6 +434,8 @@ def main() -> None:
                          help="Encounter difficulty tier (required unless --monsters provided)")
     award_p.add_argument("--type",       choices=["combat", "noncombat"],
                          help="Encounter type (default: combat if --monsters, else noncombat)")
+    award_p.add_argument("--group-multiplier", action="store_true",
+                         help="Apply the DMG encounter-size multiplier (off by default)")
     award_p.add_argument("--monsters",   metavar="LIST",
                          help="name:cr:count,... for exact CR-based calculation")
     award_p.add_argument("--note",       metavar="TEXT",

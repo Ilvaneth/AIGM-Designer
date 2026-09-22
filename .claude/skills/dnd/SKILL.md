@@ -346,7 +346,11 @@ Both tables use the same scale. Rate the encounter *as it was experienced*, not 
 ```bash
 CAMP=<campaign-name>
 
-# After combat (exact CR calculation — preferred):
+# After combat (exact CR calculation — preferred).
+# Combat XP is the raw CR sum divided by party size; the DMG encounter-size
+# multiplier is off by default because awarding the inflated group number
+# levels a party far faster than the CR budget intends. Add --group-multiplier
+# for one call if a table wants the DMG behaviour back.:
 python3 ${CLAUDE_SKILL_DIR}/scripts/xp.py award \
   --campaign $CAMP --characters "Max of Thraxx,Ethros the 19th" \
   --monsters "goblin:1/4:3,hobgoblin:1:1" --note "description"
