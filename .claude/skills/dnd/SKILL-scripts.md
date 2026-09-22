@@ -208,7 +208,36 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP time night
 python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP events
 ```
 
-**When to run:** after every rest; after significant travel or time skip; when manually updating `state.md` date — use `calendar.py set` to keep them in sync.
+**When to run:** at the end of **every scene that costs in-world time** — not only rests and travel. A day
+that never reaches evening is the signature of a clock that only moves for long rests. Scene costs live in
+the script (`scene --list`), so the DM picks a type rather than inventing a duration:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene conversation    # +30m
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene meeting         # +1h30m
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene research        # +3h
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP advance 20 minutes    # anything else
+```
+
+**One clock, one source.** `calendar.json` is authoritative; `state.md`'s date line is a copy produced by
+`calendar.py -c $CAMP stateline`, never composed by hand. `calendar.py -c $CAMP check` compares the two and
+exits 2 with a loud banner when they disagree — run it at `/dm:dnd load` and `/dm:dnd save`.
+
+**Other planes.** Time elsewhere can run at a different rate than the material plane. Declare it on arrival
+and the arithmetic follows automatically: `material_minutes = local_minutes x rate`.
+
+```bash
+calendar.py -c $CAMP plane enter "The Ember Court" --rate 3    # 1h inside = 3h outside
+calendar.py -c $CAMP plane enter "Feywild" --rate-range 0.5:30 # rate rolled once, hidden from players
+calendar.py -c $CAMP plane rate --rate 6                       # revise it mid-stay
+calendar.py -c $CAMP plane status
+calendar.py -c $CAMP plane exit                                # prints experienced vs elapsed
+```
+
+While a plane is active, `advance`/`scene` count the time the **party experiences**; the material clock moves
+by that amount times the rate, so the world they return to is already correct. `now` prints both.
+
+**Legacy note:** when manually updating `state.md` date — use `calendar.py set` to keep them in sync.
 
 **Long Rest discipline (added 2026-09-14, after a live confusion where a rest called mid-afternoon mechanically landed on "9 PM" and then got narrated as "morning" anyway):**
 1. **Check the 24-hour rule before granting one.** A character can't gain the benefit of more than one long rest in a 24-hour period (and needs ≥1 hour since the last one ended). If a player calls for a Long Rest sooner than that, say so plainly — don't silently grant or silently block it.

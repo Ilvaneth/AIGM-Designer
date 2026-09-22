@@ -1,5 +1,5 @@
 {
-  "day": 43,
+  "day": 38,
   "year": 1188,
   "months": [
     "Ashfall",
@@ -12,7 +12,7 @@
     "Hollowdark"
   ],
   "month": 1,
-  "hour": 8,
+  "hour": 2,
   "month_length": 45,
   "day_names": [
     "Ashday",
@@ -23,5 +23,15 @@
     "Emberday",
     "Restday"
   ],
-  "events": []
+  "events": [],
+  "minute": 0,
+  "day_counter": 204,
+  "plane": {
+    "name": "The Ember Court",
+    "rate": 1.0,
+    "local_minutes": 240,
+    "material_minutes": 240,
+    "carry": 0.0,
+    "entered_at": "Cinderday, 37 Ashfall 1188 — night (22:00)  [Day 203]"
+  }
 }

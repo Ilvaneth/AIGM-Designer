@@ -39,8 +39,8 @@
 - **Takvim sistemi:** "AR" — **After the Reckoning**, Ashen Crown'un ilk kez kırıldığı, son gerçek kül-kralın düştüğü an. Dünyanın kendi sıfır noktası, kampanyanın merkezindeki olayla aynı (session 20'de eklendi, `calendar.py` ile başlatıldı).
 - **8 ay, 45 gün/ay** (360 günlük yıl): Ashfall, Cinderwake, Thawmere, Greentide, Suncrown, Harrowtide, Emberfall, Hollowdark.
 - **7 günlük hafta:** Ashday, Cinderday, Duskday, Hollowday, Warday, Emberday, Restday.
-- **Current in-world date:** 15 Emberfall 1187 AR (Gün 94-95, kampanya başlangıcından itibaren) — sonbahar, hasat ve çöküşün havası.
-- **Son oturum konumu:** Karsgate, Gallow's Rest
+- **Güncel tarih burada tutulmaz** — tek kaynak `calendar.json`, okunuşu `calendar.py -c ashen-crown now`. (Bu satır eskiden elle güncellenen bir kopyaydı ve 1187'de kalmıştı; iki ayrı yerde tutulan saat kaçınılmaz olarak birbirinden ayrılıyor.)
+- **Mevsimler:** Ashfall/Cinderwake kış sonu–erken ilkbahar tonunda, Suncrown/Harrowtide yaz, Emberfall sonbahar/hasat, Hollowdark kışın en karanlığı. Tarih verildiğinde mevsim duyusal bir detaya çevrilir (bkz. SKILL.md anlatım ilkeleri).
 
 ---
 

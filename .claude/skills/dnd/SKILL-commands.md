@@ -59,6 +59,12 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
    - **`session_status: closed`** → the last sitting was properly ended via `/dm:dnd end`. This load starts a genuinely new session: increment `**Session count:**` by 1, update `**Last session:**` to today's date, and immediately set `session_status: open` (so the campaign is "mid-session" again until the table runs `/dm:dnd end`).
    A freshly-created campaign (`/dm:dnd new`) starts at `session_status: open`, session count 1 — its first load never increments.
 
+0.7. **Clock check.** Run `python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c <campaign-name> check`.
+   Exit 0 prints the current in-world date — open the session knowing what time it is. Exit 2 means
+   `state.md` and `calendar.json` disagree: reconcile before narrating anything (decide the true time,
+   `set` the calendar to it, paste `stateline` into state.md's date line). Exit 1 means the campaign has
+   no calendar yet — offer `calendar.py init` from the world.md calendar block.
+
 1. **Backwards-compat: ruleset migration check.** Before reading state.md, run:
 
    ```bash
@@ -323,6 +329,11 @@ For each candidate, draft an `add-edge` or `close-edge` call. Then **present the
 Always supply `--since <current-session-N>` from state.md. Never write proposed edges silently.
 
 If `graph.json` doesn't exist yet for this campaign, skip the sweep entirely (no proposal block) — graph isn't seeded.
+
+**Clock check:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c <name> check`. Exit 2 means
+`state.md`'s date line and `calendar.json` disagree — reconcile before saving (advance or `set` the
+calendar to the true time, then paste `stateline` into the date line). A clock that silently drifts is
+how a campaign ends up with three different "today"s in three different files.
 
 **Goal Tracker sweep:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/goals.py check --campaign <name>` (no-ops cleanly with an empty-goals message if the system isn't in use for this campaign — skip the rest of this step then). Two things to check in its output:
 1. **Any record whose `threatened`/`blocked`/`permanent_loss` responses are incomplete** — the script flags these. If this session made an NPC/faction from that list newly important (a real scene, a real decision that touched their goal) and they still have no tracker at all, draft one now (`goals.py add`) rather than leaving it prose-only, the same way the campaign-graph sweep drafts missing edges.
