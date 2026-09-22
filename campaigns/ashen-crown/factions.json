@@ -245,18 +245,19 @@
    "id": "ashlord-concordat",
    "name": "Ashlord Concordat",
    "status": "active",
-   "objective": "Hold the ritual monopoly over legitimacy now that Sarelle is dead",
-   "power": 3,
-   "intel": 2,
+   "objective": "Hold the ritual monopoly over legitimacy after Sarelle — and find out who is actually running Karsgate",
+   "power": 2,
+   "intel": 1,
    "move_points": {
-    "per_week": 3,
-    "available": 3,
+    "per_week": 2,
+    "available": 2,
     "refreshed_day": 207
    },
    "assets": [
     "Archive and ritualists",
-    "Solenne Kavash's garrison",
-    "relic-appraisal income"
+    "relic-appraisal income",
+    "Emberhold chapter (uncompromised)",
+    "Karsgate garrison, held through Orell Tain's forged deputyship"
    ],
    "stances": {
     "party": -2,
@@ -265,24 +266,30 @@
     "kindled-circle": -1
    },
    "operation": {
-    "name": "Succession of the archive",
+    "name": "Verify Karsgate",
     "steps": [
      {
-      "text": "Solenne Kavash consolidates the Karsgate branch",
+      "text": "Emberhold chapter weighs Tain's internal-reform report",
       "due_day": 207,
       "done": false
      },
      {
-      "text": "Tain's reform report accepted or rejected at the Emberhold chapter",
+      "text": "A ritualist is sent to Karsgate to see Kavash in person",
       "due_day": 214,
+      "done": false
+     },
+     {
+      "text": "If the seal cannot be vouched for, the deputyship is declared void",
+      "due_day": 220,
       "done": false
      }
     ],
-    "abandon_if": ""
+    "abandon_if": "Someone the chapter trusts vouches for Tain face to face"
    },
    "reactions": {
     "alliance": "Declares the new bloc ritually illegitimate and starts the paperwork that makes it true",
-    "loss": "Closes ranks around the archive, tightens escort protocol, suspects its own"
+    "loss": "Closes ranks around the archive, tightens escort protocol, suspects its own",
+    "exposure": "Declares the appointment void, seals the archive, and sends its own people instead of asking again"
    },
    "knows": [],
    "history": []

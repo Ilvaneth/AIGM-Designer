@@ -229,7 +229,11 @@ def cmd_set(campaign: str, args) -> None:
         f["intel"] = int(args.intel)
     if args.power:
         f["power"] = int(args.power)
-        _mp(f)["per_week"] = int(args.power)
+        mp = _mp(f)
+        mp["per_week"] = int(args.power)
+        # Losing power takes effect immediately: a faction that just lost an
+        # asset cannot still be sitting on the larger budget that asset bought.
+        mp["available"] = min(mp["available"], mp["per_week"])
     if args.assets:
         f["assets"] = [a.strip() for a in args.assets.split(";") if a.strip()]
     if args.reaction:
