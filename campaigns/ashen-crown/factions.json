@@ -7,8 +7,8 @@
   {
    "id": "house-shestendeliath",
    "name": "House Shestendeliath (Kriv)",
-   "status": "active",
-   "objective": "Restore the house as a real power: land, troops, a seat that cannot be revoked",
+   "status": "dormant",
+   "objective": "PLAYER-RUN power base, not a DM-run faction — listed only as a stance target and as an actor in react calls. Its moves are the party's decisions.",
    "power": 3,
    "intel": 2,
    "move_points": {
@@ -214,7 +214,7 @@
     "ashlord-concordat": 0
    },
    "operation": {
-    "name": "Reform and retaliate",
+    "name": "Survive the Ember Court",
     "steps": [
      {
       "text": "Iskra and Sathriel finish reforming in the Ember Cradle",
@@ -222,21 +222,21 @@
       "done": false
      },
      {
-      "text": "Trace the Kesh Amara ambush through surviving contract records",
-      "due_day": 210,
+      "text": "Buy back the Kesh Amara contract book before anyone reads it",
+      "due_day": 211,
       "done": false
      },
      {
-      "text": "Replace one member of the three-house bloc with a double",
-      "due_day": 218,
+      "text": "Make the three houses pay for the ambush — every debt called in at once",
+      "due_day": 216,
       "done": false
      }
     ],
-    "abandon_if": "Both rakshasa are destroyed inside the Ember Court"
+    "abandon_if": "Both rakshasa are destroyed inside the Ember Court; the Court dies with them"
    },
    "reactions": {
     "alliance": "Never confronts a new bloc head-on: buys or replaces one person inside it, then waits for the bloc to distrust itself",
-    "loss": "Cuts the exposed limb off entirely and denies it existed; the handler dies, not the agent"
+    "loss": "Cuts the exposed limb off and denies it existed; the handler dies, not the agent"
    },
    "knows": [],
    "history": []
@@ -309,7 +309,8 @@
    "assets": [
     "Mercenary army",
     "trade fleet",
-    "Gallowmere smuggling economy"
+    "Gallowmere smuggling economy",
+    "Sethra Shestendeliath (Kriv's sister) inside the Compact"
    ],
    "stances": {
     "party": 2,
@@ -323,6 +324,11 @@
      {
       "text": "Coren tests which Table members would back a coup",
       "due_day": 212,
+      "done": false
+     },
+     {
+      "text": "Sethra brokers the Shestendeliath guarantee that makes the coup survivable",
+      "due_day": 218,
       "done": false
      }
     ],
@@ -339,7 +345,7 @@
    "id": "kindled-circle",
    "name": "The Kindled Circle (Odalys Ferrant)",
    "status": "active",
-   "objective": "Keep arcane practice in Emberhold licensed, watched, and answerable to the Circle",
+   "objective": "Keep arcane practice in Emberhold licensed and answerable — and take custody of what the Concordat's ritual archive can no longer guard",
    "power": 2,
    "intel": 2,
    "move_points": {
@@ -354,22 +360,27 @@
    ],
    "stances": {
     "party": 1,
-    "ashlord-concordat": -1,
+    "ashlord-concordat": -2,
     "unfinished-circle": -1
    },
    "operation": {
-    "name": "Register the new power",
+    "name": "Claim the ash archive",
     "steps": [
      {
-      "text": "Odalys summons Ilvaneth to account for the signature match",
-      "due_day": 215,
+      "text": "Petition the Chancellery for custody of the Concordat's unguarded ritual holdings",
+      "due_day": 213,
+      "done": false
+     },
+     {
+      "text": "Send two adepts to inventory what Ashvale left behind",
+      "due_day": 219,
       "done": false
      }
     ],
-    "abandon_if": ""
+    "abandon_if": "The Concordat produces a leader the Chancellery will recognise"
    },
    "reactions": {
-    "alliance": "Requires the newly powerful to register; licensing is how the Circle stays relevant"
+    "alliance": "Licenses the winner and taxes the practice; legitimacy is the Circle's product"
    },
    "knows": [],
    "history": []
@@ -447,6 +458,134 @@
    },
    "reactions": {
     "other": "Cares only for the research; trades knowledge to whoever removes an obstacle"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "cinder-choir",
+   "name": "The Cinder Choir",
+   "status": "dormant",
+   "objective": "Feed the Hollow Prophet's furnace; the chain above the destroyed Gallowmere cell is still intact",
+   "power": 2,
+   "intel": 1,
+   "move_points": {
+    "per_week": 2,
+    "available": 2,
+    "refreshed_day": 0
+   },
+   "assets": [
+    "Manufacture program",
+    "cells beyond Gallowmere",
+    "the Hollow Prophet"
+   ],
+   "stances": {},
+   "operation": {},
+   "reactions": {},
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "house-varn",
+   "name": "House Varn (\"Lord Dorian Varn\" / D.V. — rakshasa)",
+   "status": "active",
+   "objective": "Inherit the Ashen Crown's power at the moment it is made whole — never by his own hand, always through someone else's",
+   "power": 3,
+   "intel": 3,
+   "move_points": {
+    "per_week": 3,
+    "available": 3,
+    "refreshed_day": 0
+   },
+   "assets": [
+    "A century-old mask and the Varn name",
+    "immunity to 6th-level and lower spells",
+    "the party's unnamed debt",
+    "whatever is left of Draven Holt's and Sarelle's networks"
+   ],
+   "stances": {
+    "party": 1,
+    "whisper-court": -1,
+    "ashlord-concordat": -1
+   },
+   "operation": {
+    "name": "The collector's patience",
+    "steps": [
+     {
+      "text": "Learn how many fragments the party actually holds — through the debt, never by asking",
+      "due_day": 225,
+      "done": false
+     },
+     {
+      "text": "Call in the unnamed debt at the moment refusing it would cost the party most",
+      "due_day": 240,
+      "done": false
+     },
+     {
+      "text": "Be present, unseen, when the last fragment is set (arc 3a)",
+      "due_day": null,
+      "done": false
+     }
+    ],
+    "abandon_if": "The party proves able to hold the Crown's power themselves — then he moves to replace them, not to inherit from them"
+   },
+   "reactions": {
+    "gain": "Never contests a gain; invests further in whoever is winning and positions to inherit it",
+    "exposure": "The mask IS the power. He kills to keep it, and he does not warn first",
+    "death": "Notes which tool broke and reaches for the next one; he has never mourned an instrument"
+   },
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "chancellery",
+   "name": "The Chancellery (Chancellor Maro Veskin)",
+   "status": "active",
+   "objective": "Keep the three houses balanced so that authority runs through the seat — no house may win outright",
+   "power": 3,
+   "intel": 2,
+   "move_points": {
+    "per_week": 3,
+    "available": 3,
+    "refreshed_day": 0
+   },
+   "assets": [
+    "Procedural control of the succession",
+    "the hearing calendar",
+    "the seal and its clerks"
+   ],
+   "stances": {
+    "party": -1,
+    "house-shestendeliath": -1,
+    "house-corr": 0,
+    "house-ilvane": 0,
+    "house-sablewood": 0,
+    "whisper-court": -1
+   },
+   "operation": {
+    "name": "Keep the gap open",
+    "steps": [
+     {
+      "text": "Replace Ostwin Kade with a clerk he can trust — and find out how Kade died",
+      "due_day": 208,
+      "done": false
+     },
+     {
+      "text": "Quietly restore Ilvane's standing so no single bloc dominates",
+      "due_day": 212,
+      "done": false
+     },
+     {
+      "text": "Set the next succession hearing for a date that suits the weakest claim",
+      "due_day": 219,
+      "done": false
+     }
+    ],
+    "abandon_if": "One house secures an advantage the Chancellery can no longer reverse"
+   },
+   "reactions": {
+    "alliance": "Answers any bloc by elevating its weakest rival; the seat's power is the gap between the houses",
+    "loss": "Slows the calendar — a hearing postponed is a decision unmade"
    },
    "knows": [],
    "history": []

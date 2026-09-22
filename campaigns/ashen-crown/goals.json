@@ -96,22 +96,5 @@
     "last_updated_session": null,
     "condition": "Tain, Karsgate (ve mümkünse Emberhold) şubesinde tartışmasız, tanınmış bir otorite olarak yerleşti",
     "achieved": false
-  },
-  {
-    "id": "coren_coup",
-    "name": "Coren Ashvale — Ironclad Table darbesi",
-    "kind": "npc",
-    "goal": "Ironclad Table'dan kopup ~900 askeriyle bagimsizlasmak, partinin desteğiyle",
-    "metric_type": "numeric",
-    "status": "on_track",
-    "responses": {
-      "threatened": "Ilse Drummel plani kesfederse, ya da bir Table uyesi erken uyarilirsa",
-      "blocked": "Coren'in kendi askerleri arasinda sadakat cozulurse",
-      "permanent_loss": "Coren, Table tarafindan tasfiye edilir ya da plan tamamen ifsa olursa"
-    },
-    "last_updated_session": 34,
-    "current": 6000,
-    "target": 40000,
-    "metric_label": "gp yatirim (~35-40k gerekli)"
   }
 ]
