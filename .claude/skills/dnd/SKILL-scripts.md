@@ -356,7 +356,16 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py extract --campaign $CAMP \
 
 Dataset is bundled at `${CLAUDE_SKILL_DIR}/data/dnd5e_srd.json`. No runtime download required.
 
+**Monster defenses** (damage immunities/resistances/vulnerabilities, condition immunities, saving
+throws, skills, senses) come from the SRD 5.1 text bundled at `${CLAUDE_SKILL_DIR}/data/srd-5.1-yaml/`
+(OGL 1.0a, see `00-legal.yaml`). `build_srd.py`'s importers drop these fields, so
+`merge_srd_defenses.py` puts them back; re-run it after any dataset rebuild or the
+`-- DEFENSES --` block disappears from monster lookups.
+
 ```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/merge_srd_defenses.py --dry-run   # report, write nothing
+python3 ${CLAUDE_SKILL_DIR}/scripts/merge_srd_defenses.py             # merge (backs the JSON up first)
+
 # Check / rebuild dataset (only needed when upstream sources update):
 python3 ${CLAUDE_SKILL_DIR}/scripts/sync_srd.py             # rebuild if 5e-bits or FoundryVTT has new commits
 python3 ${CLAUDE_SKILL_DIR}/scripts/sync_srd.py --check     # check upstream SHAs, don't rebuild

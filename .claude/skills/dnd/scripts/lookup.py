@@ -289,6 +289,29 @@ def _fmt_monster(r: dict) -> str:
     row1 = " | ".join(f"{a:3}" for a in abbr)
     row2 = " | ".join(f"{r.get(k,10):3}({_mod(r.get(k,10)):+d})" for k in keys)
     lines += [row1, row2, ""]
+
+    # Defenses first: these decide whether a damage total lands at all, and are
+    # the half most easily skipped once a fight is moving.
+    defense_rows = [
+        ("IMMUNE", r.get("damage_immunities")),
+        ("RESIST", r.get("damage_resistances")),
+        ("VULNERABLE", r.get("damage_vulnerabilities")),
+        ("Condition immunities", r.get("condition_immunities")),
+    ]
+    shown = [(label, value) for label, value in defense_rows if value]
+    if shown:
+        lines.append("-- DEFENSES (apply before finalizing any damage) --")
+        lines += [f"  {label}: {value}" for label, value in shown]
+        lines.append("")
+    else:
+        lines += ["-- DEFENSES: none listed in the dataset --", ""]
+
+    if r.get("saving_throws"):
+        lines.append(f"Saving Throws: {r['saving_throws']}")
+    if r.get("skills"):
+        lines.append(f"Skills: {r['skills']}")
+    if r.get("senses"):
+        lines.append(f"Senses: {r['senses']}")
     if r.get("languages"):
         lines.append(f"Languages: {r['languages']}")
     desc = r.get("description", "")
