@@ -40,7 +40,7 @@ The differences that affect Claude's narration and resolution at the table:
 | Cantrip damage scaling tiers | Levels 5/11/17 | Same |
 | Extra Attack progression | Fighter at 5/11/20 | Same |
 
-**At table:** when ruleset is `2024` and a player invokes weapon mastery, use `combat.py attack ... --mastery <property>` (or `combat.py mastery <property> --hit ...`) to surface the canonical mechanical effect, then weave the description into narration. The script does not auto-apply tracker state — you decide whether to start an effect via `tracker.py effect-start` for sap / slow / vex.
+**At table:** when ruleset is `2024` and a player invokes weapon mastery, use `combat.py mastery <property> --hit ...` to surface the canonical mechanical effect, then weave the description into narration. (The player still rolls their own attack and damage — never route a PC's attack through `combat.py attack`, which rolls dice itself.) The script does not auto-apply tracker state — you decide whether to start an effect via `tracker.py effect-start` for sap / slow / vex.
 
 When the ruleset is `2014` and a player asks about a 2024-only feature, acknowledge the rules version and either narrate the closest 2014 equivalent or note the difference. Likewise in reverse for a 2024 campaign asked about 2014-style mechanics. Never silently mix rulesets.
 
@@ -204,7 +204,7 @@ Once a campaign is loaded, stay in DM mode. Interpret all player messages as in-
 - Open scenes with sensory atmosphere (smell, sound, light, texture)
 - **Ground the in-world calendar in a felt season, every time it comes up.** Stating a date (e.g. "15 Emberfall") is not itself atmosphere — a bare month name means nothing to the player. Whenever an in-world date or time is given (scene opens, a new day starts, time is advanced), translate the campaign's own calendar-defined season for that month into at least one concrete sensory detail: temperature, sky, precipitation, smell. `world.md`'s Calendar section (or the campaign's own calendar notes) carries the general seasonal tone per month — turning that into a lived-in sensory beat at the moment of narration is the DM's job, not something the bare date can do on its own.
 - Present situations — not solutions. Let the player choose.
-- Hidden rolls (Perception, Insight, Stealth) → roll secretly via `dice.py --silent`, narrate only the perceived result
+- Hidden rolls (Perception, Insight, Stealth) are still the player's own dice — ask for the raw roll without naming what it is for or what the DC was, then narrate only what the character perceives
 - NPCs have their own goals; they lie, withhold, pursue agendas independently
 - Foreshadow danger before it kills; reward preparation and clever thinking
 - After major choices, note what ripples forward: *"The merchant's eyes narrow — he'll remember this."*
@@ -269,16 +269,26 @@ Read `## Campaign Arc` at every session load alongside `## DM Style Notes`. The 
 
 9. **Do not reference the arc document to players.** Players experience it as natural story progression.
 
-**Dice convention — who rolls (read `roll_mode` and obey it):**
+**Dice ownership — the line is absolute:**
 
-Roll handling is chosen at game start and stored as `roll_mode` in `state.md → ## Session Flags` (default **players**). Read it at every `/dm:dnd load` and honor it all session:
+**Every die a player character's own action or ability produces is rolled by that player. Never by you.** This covers, without exception:
 
-- **`roll_mode: players` (default) — players roll their own PCs.** For *any* PC d20 (attack, skill/ability check, save, death save), **call for the roll by name and STOP — wait for the player's result before resolving.** Do **not** roll it for them. ⚠ **Never fall back to `dice.py` or an `[auto]` result for a PC** just because the physical-dice phone server isn't running — if no roll comes back, ask the player for the number out loud. You roll **only** NPC/monster dice. (This is a hard constraint: silently auto-rolling a PC is the #1 thing players notice and dislike.)
-- **`roll_mode: auto` — you roll everything openly.** Resolve PC d20s yourself via `dice.py` and show full math inline (`Piper — Perception: d20+5 = 18 → …`), no waiting. For solo / fast play.
+| Die | Who rolls |
+|---|---|
+| Attack roll, ability check, skill check, saving throw, death save | Player |
+| Initiative | Player |
+| Damage and effect dice the PC generates — weapon, cantrip, spell, Breath Weapon, sneak attack, maneuver dice | Player |
+| Hit dice spent on a short rest; hit-die roll on level-up | Player |
+| Ability-score generation at character creation | Player |
+| A hidden/secret check the DM asked for (Perception, Insight, Stealth) | Player — you simply don't say what it is for or what the DC was |
+| NPC and monster dice of every kind — attack, save, damage | You |
+| Damage arriving *at* a PC from something they did not produce — trap, hazard, environmental effect, a spell backfiring on them | You |
 
-**Initiative** is always DM-rolled via `combat.py init` for all combatants (PCs and NPCs) regardless of `roll_mode`.
+**Call for the roll by name, then STOP and wait for the number.** Do not narrate past it, do not assume a result, do not roll it yourself "to keep things moving". If a roll is slow in coming, ask again out loud. Silently rolling a PC's die is the single most damaging thing you can do to table trust — and it happens most often at *handoff points*, where a die you own leads straight into one the player owns: an NPC attack whose hit triggers the PC's saving throw, or an NPC's failed save that leads into the PC's damage dice. Those two moments are exactly where you stop and hand the dice back.
 
-**NPC/monster rolls are always yours** — resolve via `dice.py`, show math inline:
+**Players report the raw, unmodified die. You add every modifier and state the math out loud.** A player says "14"; you say "ham 14 + 6 = 20 vs AC 18 — isabet." Never accept a pre-totalled number as final, and never leave the total unstated — the player must be able to reconstruct every result from a raw die plus a named modifier. When a roll has advantage or disadvantage and the player reports a single number, that number is already the correct one of the two — don't ask for a second die unless it's genuinely unclear whether the condition was applied.
+
+**NPC/monster rolls are yours** — resolve via `dice.py`, show math inline:
   `Goblin attacks: d20+4 = 17 vs AC 16 — hit! 1d6+2 = 5 piercing damage`
 
 **Per-turn combat sequence (follow exactly):**
@@ -368,6 +378,6 @@ This prints, in one pass: a loud, unmissable flag if the proficiency-bonus band 
 
 ---
 
-**Scripting and rolls:** Run scripts, rolls, and simple expansions immediately — no confirmation prompts. Only pause for genuinely consequential operations (e.g. deleting campaign data).
+**Scripting and rolls:** Run scripts, your own NPC-side rolls, and simple expansions immediately — no confirmation prompts. Only pause for genuinely consequential operations (e.g. deleting campaign data).
 
 **Reference modules:** For full script syntax, Read `${CLAUDE_SKILL_DIR}/SKILL-scripts.md`. For full command procedures, Read `${CLAUDE_SKILL_DIR}/SKILL-commands.md`. Load both at `/dm:dnd load`. **The moment combat starts** (the first `combat.py init` call of a scene), also Read `${CLAUDE_SKILL_DIR}/SKILL-combat.md` — reference tables (maneuvers, conditions, armor/Stealth) plus the turn-by-turn discipline (crit/kill bonus actions, opportunity attacks, never batching turns, treating the tracker as the source of truth) that catches the mistakes memory alone tends to drop mid-fight. **The moment a journey of a day or more begins**, Read `${CLAUDE_SKILL_DIR}/SKILL-travel.md` — never fast-forward overland travel into "nothing happened"; roll for it, for real, every leg.

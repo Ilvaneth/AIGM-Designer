@@ -6,8 +6,21 @@ Rolls locally and prints the result. Used for DM-side dice only: NPC and
 monster rolls, environmental/trap damage, and random tables. Dice belonging to
 a player character are never rolled here — see SKILL.md "Dice ownership".
 
+Every roll must declare its owner with --owner. If the owner matches a player
+character in the active campaign, the script refuses to roll: that die belongs
+to the player, who reports the raw result for the DM to add modifiers to.
+
 Usage:
-    python3 dice.py <notation> [--silent] [--label "..."]
+    python3 dice.py <notation> --owner "<who rolls this>" [--campaign N] [--silent] [--label "..."]
+
+    python3 dice.py d20+8 --owner "Bone Devil" --label "Sting vs Kriv AC22"
+    python3 dice.py 5d6 --owner "Bone Devil" --label "Sting poison damage"
+    python3 dice.py 4d6 --owner trap --label "Falling rocks"
+
+Exit codes:
+    0  rolled
+    2  no --owner given
+    3  owner is a player character — ask the player for their raw roll
 
 Notation supported:
     d20               single d20
@@ -21,9 +34,65 @@ Notation supported:
     2d6+3             multiple dice + modifier
 """
 
+import json
+import os
 import random
 import re
 import sys
+
+# Windows consoles default to a legacy codepage that mangles the glyphs used in
+# this script's output; force UTF-8 where the streams support it.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+
+# ── PC-ownership guard ───────────────────────────────────────────────────────
+# A die a player character's own action produces is never rolled here. The
+# guard is deliberately mechanical: the DM has to name an owner before rolling,
+# and naming a PC stops the roll instead of quietly producing a number.
+
+def _active_campaign() -> str | None:
+    """Campaign marked active at /dm:dnd load, if any."""
+    try:
+        from paths import runtime_dir
+        marker = runtime_dir() / "active-campaign.json"
+        if marker.is_file():
+            return json.loads(marker.read_text(encoding="utf-8")).get("name")
+    except Exception:
+        pass
+    return None
+
+
+def _pc_names(campaign: str | None) -> list[str]:
+    """Character-sheet names for the campaign (empty list if none resolvable)."""
+    if not campaign:
+        return []
+    try:
+        from paths import find_campaign
+        chars = find_campaign(campaign) / "characters"
+        return [f.stem for f in chars.glob("*.md")] if chars.is_dir() else []
+    except Exception:
+        return []
+
+
+def owner_is_pc(owner: str, campaign: str | None = None) -> str | None:
+    """Return the matching PC's sheet name if `owner` names a player character."""
+    who = owner.strip().lower()
+    if not who:
+        return None
+    for sheet in _pc_names(campaign or _active_campaign()):
+        name = sheet.lower()
+        if who == name or name.startswith(who + " ") or who.startswith(name + " "):
+            return sheet
+        if who == name.split()[0]:          # "Kriv" matches "Kriv Shestendeliath"
+            return sheet
+    return None
 
 
 def parse_notation(notation: str):
@@ -105,16 +174,42 @@ if __name__ == "__main__":
     argv = sys.argv[1:]
     silent = "--silent" in argv
     label = ""
-    if "--label" in argv:
-        i = argv.index("--label")
-        if i + 1 < len(argv):
-            label = argv[i + 1]
-            del argv[i:i + 2]
+    owner = ""
+    campaign = None
+    for flag in ("--label", "--owner", "--campaign"):
+        if flag in argv:
+            i = argv.index(flag)
+            if i + 1 < len(argv):
+                value = argv[i + 1]
+                if flag == "--label":
+                    label = value
+                elif flag == "--owner":
+                    owner = value
+                else:
+                    campaign = value
+                del argv[i:i + 2]
     args = [a for a in argv if a != "--silent"]
 
     if not args:
-        print("Usage: python3 dice.py <notation>  e.g. d20+5  2d6  4d6kh3  d20 adv")
+        print('Usage: python3 dice.py <notation> --owner "<who rolls this>"\n'
+              '  e.g. dice.py d20+5 --owner "Goblin Boss" --label "attack vs Piper"')
         sys.exit(1)
+
+    if not owner:
+        print('dice.py: --owner is required — name whose die this is '
+              '(an NPC, a monster, "trap", "environment", "table").\n'
+              '  A player character\'s own die is never rolled here: ask the player '
+              'for their raw roll instead (SKILL.md "Dice ownership").', file=sys.stderr)
+        sys.exit(2)
+
+    pc = owner_is_pc(owner, campaign)
+    if pc:
+        print(f'dice.py: REFUSED — "{owner}" is a player character ({pc}).\n'
+              f'  This die belongs to the player. Call for it by name, wait for the raw '
+              f'result, then add the modifiers yourself and state the total.\n'
+              f'  (If this is damage arriving AT {pc} from a trap or hazard, roll it with '
+              f'--owner trap / --owner environment instead.)', file=sys.stderr)
+        sys.exit(3)
 
     notation = " ".join(args)
     result = run(notation, silent=silent, label=label)

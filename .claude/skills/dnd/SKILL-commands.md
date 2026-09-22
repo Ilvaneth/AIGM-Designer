@@ -7,32 +7,25 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
 ---
 
 ## `/dm:dnd new <campaign-name> [theme]`
-1. **Session setup — call `AskUserQuestion`**:
-
-   ***"Dice rolls?"*** — set how PC d20s are handled (see SKILL.md "Dice convention"):
-   - `Players roll their own` (default) → write `roll_mode: players` to `state.md → ## Session Flags`. You will call for each PC roll and wait — never auto-roll a PC.
-   - `DM rolls everything openly` → write `roll_mode: auto`. You resolve PC rolls yourself with full math shown.
-
-   Default to `roll_mode: players` if the question is dismissed.
-2. **Ruleset selection (added 2026-05-08).** Ask: *"D&D 5e ruleset for this campaign? **2014** (SRD 5.1, default — full mechanics, classic Player's Handbook structure) or **2024** (SRD 5.2, weapon mastery + origin feats + background ASIs + revised exhaustion)?"* Default to `2014` if no answer or ambiguous. Write the chosen value to `state.md` header line as `**Ruleset:** 2014` or `**Ruleset:** 2024`.
+1. **Ruleset selection (added 2026-05-08).** Ask: *"D&D 5e ruleset for this campaign? **2014** (SRD 5.1, default — full mechanics, classic Player's Handbook structure) or **2024** (SRD 5.2, weapon mastery + origin feats + background ASIs + revised exhaustion)?"* Default to `2014` if no answer or ambiguous. Write the chosen value to `state.md` header line as `**Ruleset:** 2014` or `**Ruleset:** 2024`.
 
    If 2024 was chosen: verify the dataset exists with `ls ${CLAUDE_SKILL_DIR}/data/dnd5e_srd_2024.json`. If missing, run `python3 ${CLAUDE_SKILL_DIR}/scripts/build_srd.py --ruleset 2024` (one-time, ~3 min). Until the dataset exists, lookup-based features will fall back to 2014.
-3. `mkdir -p ~/.claude/dnd/campaigns/<name>/characters`
-4. Copy and populate templates from `${CLAUDE_SKILL_DIR}/templates/` — state.md, world.md, npcs.md, session-log.md. The state.md header keeps the `**Ruleset:**` field set in step 2.
-5. Ask: **party size** and **starting level**
-6. **Tone/Genre Wizard** — present all four in one message:
+2. `mkdir -p ~/.claude/dnd/campaigns/<name>/characters`
+3. Copy and populate templates from `${CLAUDE_SKILL_DIR}/templates/` — state.md, world.md, npcs.md, session-log.md. The state.md header keeps the `**Ruleset:**` field set in step 2.
+4. Ask: **party size** and **starting level**
+5. **Tone/Genre Wizard** — present all four in one message:
    - Tone: `grimdark / dark fantasy / heroic / horror / political / swashbuckling / cosmic`
    - Magic level: `none / low / medium / high`
    - Setting type: `medieval / renaissance / ancient / nautical / underground`
    - Danger level: `lethal / gritty / standard / heroic`
    *(If `[theme]` supplied, pre-fill Tone and ask remaining three. Randomise any blank via dice.py and log `"d6=N → [result]"` in world.md.)*
-7. **World Foundations** — geography/biome/climate, magic system, pantheon (2–3 active deities), calendar. Write to `## World Foundations` in world.md. Seed `state.md → ## World State → In-world date`.
-8. **Three Truths** — one settlement, one nearby threat, one mystery (with clue trail). Write to respective sections in world.md.
-9. **Threat Escalation Arc** — fill the five-stage table in world.md immediately after threat generation. Set current stage to 1. Write `Threat arc stage: 1 — Now` to `state.md → ## World State`.
-10. **2 Factions** — archetype, all fields including current activity. Write to `## Factions` in world.md. Write one-line faction states to `state.md → ## World State`.
-11. **3 NPCs with relationship web** — full entries (role, stats, demeanor, motivation, secret, speech quirk, faction, current goal, schedule, personality axes). Generate all three first, then fill Relationships (every NPC needs ≥2 links to others). Update index table.
-12. **3–5 Quest Seeds** from threat, factions, mystery, NPC motivations. Write to `## Quest Seed Bank` in world.md.
-13. **Dynamic Campaign Arc** — auto-generate the arc from all world data just created. Use Opus for this step. Ask: *"Generate a committed narrative arc? [y/n — recommended]"*
+6. **World Foundations** — geography/biome/climate, magic system, pantheon (2–3 active deities), calendar. Write to `## World Foundations` in world.md. Seed `state.md → ## World State → In-world date`.
+7. **Three Truths** — one settlement, one nearby threat, one mystery (with clue trail). Write to respective sections in world.md.
+8. **Threat Escalation Arc** — fill the five-stage table in world.md immediately after threat generation. Set current stage to 1. Write `Threat arc stage: 1 — Now` to `state.md → ## World State`.
+9. **2 Factions** — archetype, all fields including current activity. Write to `## Factions` in world.md. Write one-line faction states to `state.md → ## World State`.
+10. **3 NPCs with relationship web** — full entries (role, stats, demeanor, motivation, secret, speech quirk, faction, current goal, schedule, personality axes). Generate all three first, then fill Relationships (every NPC needs ≥2 links to others). Update index table.
+11. **3–5 Quest Seeds** from threat, factions, mystery, NPC motivations. Write to `## Quest Seed Bank` in world.md.
+12. **Dynamic Campaign Arc** — auto-generate the arc from all world data just created. Use Opus for this step. Ask: *"Generate a committed narrative arc? [y/n — recommended]"*
 
    **If yes:** Drawing from theme, threat arc stages, factions, Three Truths, NPC motivations, and quest seeds, derive:
    - **`theme`** — one sentence: what is this story ultimately about? Not the threat — its meaning.
@@ -54,8 +47,8 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
 
    **If no:** Write `type: sandbox` to `## Campaign Arc`. The story remains open-ended with no arc tracking.
 
-14. Write state.md with session count 0, starting location, and `session_status: open` in `## Session Flags` (see `/dm:dnd load` step 0.5 and `/dm:dnd end` — session-count increments are driven only by an explicit `/dm:dnd end`, not by the calendar).
-15. Confirm creation, offer `/dm:dnd character new`.
+13. Write state.md with session count 0, starting location, and `session_status: open` in `## Session Flags` (see `/dm:dnd load` step 0.5 and `/dm:dnd end` — session-count increments are driven only by an explicit `/dm:dnd end`, not by the calendar).
+14. Confirm creation, offer `/dm:dnd character new`.
 
 ---
 
@@ -442,7 +435,7 @@ Default to `Step by step` if the question is dismissed. Either path lands in the
    - If answered: derive ONE pillar — **Bond**, **Flaw**, **Ideal**, or **Goal** (whichever fits best). Store both the raw sentence and derived pillar in `## Character Pillar`.
    - If skipped: leave `## Character Pillar` blank. Do not invent one. Do not re-prompt.
 3. Ask: roll or point buy
-   - Roll → `ability-scores.py roll`, present 3 arrays, player assigns
+   - Roll → the player rolls their own 4d6-drop-lowest six times and reports the raw results; feed those numbers in for validation/assignment rather than generating them yourself
    - Point buy → `ability-scores.py pointbuy --check <scores>` to validate
 4. Apply racial bonuses. Run `character.py calc` to derive all secondary stats.
 5. Ask: Fighting Style (Fighter/Paladin/Ranger), spells (if caster)
@@ -565,7 +558,7 @@ Run `scripts/dice.py <notation>`. Display output verbatim. Examples: `d20`, `2d6
 
 ## `/dm:dnd combat start`
 1. Identify combatants; collect name, DEX mod, HP, AC, type (pc/npc) for each.
-2. Run `combat.py init '<JSON>'` — auto-roll initiative for every combatant including PCs. Display tracker and per-combatant roll breakdown.
+2. Ask each player for their PC's raw initiative d20 and pass it in that PC's entry as `"init": N`; `combat.py init` rolls only the NPC/monster entries. Display tracker and per-combatant roll breakdown.
 3. Save STATE_JSON to `state.md` under `## Active Combat`.
 4. Step through turns using the per-turn sequence (in SKILL.md Active DM Mode).
 5. On combat end: update HP in character sheets, clear `## Active Combat`, narrate aftermath, send XP summary, run `tracker.py -c <campaign> clear`.
@@ -576,7 +569,7 @@ Run `scripts/dice.py <notation>`. Display output verbatim. Examples: `d20`, `2d6
 
 ## `/dm:dnd rest <short|long>`
 **Short (1 hour):**
-1. Ask how many Hit Dice the player spends. Roll `d[hit-die] + CON mod` per die via `dice.py`. Update HP.
+1. Ask how many Hit Dice the player spends, then ask them to roll each die and report the raw result; you add CON mod per die and state the total. Update HP.
 2. Note class features that recharge.
 3. Advance time: `calendar.py -c <campaign> rest short`
 4. Clear encounter conditions: `tracker.py -c <campaign> clear` (concentration may persist — ask)

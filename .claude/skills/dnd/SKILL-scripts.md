@@ -13,19 +13,21 @@ environmental and trap damage, random tables — must be produced by invoking th
 **Never sample dice mentally or with inline `random` calls.** Dice belonging to a player character
 are never rolled here; the player rolls them (see SKILL.md "Dice ownership").
 
-```bash
-python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+5
-python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py 2d6+3
-python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20 adv       # advantage
-python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+3 dis     # disadvantage + modifier
-python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20 --silent  # returns integer only
+**`--owner` is required on every roll** — name whose die it is. If the owner resolves to a
+player character in the active campaign the script refuses to roll (exit 3) and tells you to ask
+the player. That refusal is the rule working, not a bug: ask for the raw number instead.
 
-# Always pass --label so the roll reads clearly in the transcript:
-python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+5 --label "Goblin Boss attack vs Piper"
-python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py 2d8+3 --label "Ogre greatclub damage"
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+8 --owner "Bone Devil" --label "Sting vs Kriv AC22"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py 5d6 --owner "Bone Devil" --label "Sting poison damage"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20 adv --owner "Erinyes" --label "WIS save (Magic Resistance)"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py 4d6 --owner trap --label "Falling rocks onto the party"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+2 --owner "Goblin" --silent   # integer only
 ```
 
-Flags nat 20 (CRITICAL HIT) and nat 1 (FUMBLE) automatically.
+Owners that are not characters — `trap`, `environment`, `table`, a monster name — always roll.
+Pass `--campaign <name>` if no campaign is marked active. Flags nat 20 (CRITICAL HIT) and nat 1
+(FUMBLE) automatically.
 
 ---
 
@@ -75,15 +77,20 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/xp.py award \
 
 ## Combat Script — `scripts/combat.py`
 ```bash
-# Roll initiative and print tracker
+# Order initiative and print tracker. NPC entries are rolled here; every "pc" entry
+# must carry the player's own raw d20 as "init" — the script never rolls for a PC
+# (it exits 2 and names the PCs whose roll is missing).
 python3 ${CLAUDE_SKILL_DIR}/scripts/combat.py init '<JSON>'
-# JSON: [{"name":"Flerb","dex_mod":0,"hp":12,"ac":16,"type":"pc"}, ...]
+# JSON: [{"name":"Flerb","dex_mod":0,"hp":12,"ac":16,"type":"pc","init":14},
+#        {"name":"Goblin","dex_mod":1,"hp":7,"ac":15,"type":"npc"}, ...]
 
 # Reprint tracker from saved state
 python3 ${CLAUDE_SKILL_DIR}/scripts/combat.py tracker '<JSON>' <round_num>
 
-# Resolve a single attack
+# Resolve a single NPC/monster attack
 python3 ${CLAUDE_SKILL_DIR}/scripts/combat.py attack --atk 4 --ac 15 --dmg 2d6+2
+# A PC's attack: pass the player's own raw d20 — never let the script roll it
+python3 ${CLAUDE_SKILL_DIR}/scripts/combat.py attack --atk 15 --ac 18 --dmg 1d12+9 --d20 13
 ```
 `init` outputs `STATE_JSON:` line — store in `state.md` under `## Active Combat` between turns.
 

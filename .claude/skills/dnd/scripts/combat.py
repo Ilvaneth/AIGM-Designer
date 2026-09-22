@@ -5,19 +5,26 @@ combat.py — D&D 5e combat tracker
 
 Usage:
     python3 combat.py init <combatants_json>
-        Rolls initiative for all combatants and prints turn order.
-        combatants_json: JSON array of {"name": str, "dex_mod": int, "hp": int, "ac": int, "type": "pc"|"npc"}
+        Orders combatants by initiative and prints the turn order. NPC entries are
+        rolled here; a PC entry must carry the player's own raw d20 as "init": N
+        (see SKILL.md "Dice ownership") -- this script never rolls for a PC.
+        combatants_json: JSON array of
+            {"name": str, "dex_mod": int, "hp": int, "ac": int, "type": "pc"|"npc",
+             "init": int  # required for type "pc" -- the player's raw d20}
 
     python3 combat.py tracker <state_json>
         Prints the current combat tracker table from a JSON state blob.
 
-    python3 combat.py attack --atk <bonus> --ac <target_ac> --dmg <notation> [--crit]
-        Resolves a single attack roll and damage.
+    python3 combat.py attack --atk <bonus> --ac <target_ac> --dmg <notation> [--crit] [--d20 N]
+        Resolves a single NPC/monster attack roll and damage. For a PC's attack the
+        player rolls: pass their raw d20 with --d20 N (and their damage dice as the
+        --dmg notation's fixed values) or resolve it by hand -- never let this script
+        roll a die that belongs to a player.
 
 Input / Output is JSON-friendly so the DM (Claude) can pipe state between turns.
 
 Example:
-    python3 combat.py init '[{"name":"Flerb","dex_mod":0,"hp":12,"ac":16,"type":"pc"},
+    python3 combat.py init '[{"name":"Flerb","dex_mod":0,"hp":12,"ac":16,"type":"pc","init":14},
                               {"name":"Goblin","dex_mod":1,"hp":7,"ac":15,"type":"npc"}]'
 """
 
@@ -25,11 +32,12 @@ from __future__ import annotations  # PEP 604 annotations on Python 3.9
 
 # Windows UTF-8 fix: GBK stdout crashes on unicode glyphs (► etc.) when piped.
 import sys
-if hasattr(sys.stdout, "reconfigure"):
-    try: sys.stdout.reconfigure(encoding="utf-8")
-    # Swallowed on purpose: a stdout we cannot reconfigure is still a usable
-    # stdout, and refusing to start a combat over it would be the worse trade.
-    except Exception: pass
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try: _stream.reconfigure(encoding="utf-8")
+        # Swallowed on purpose: a stream we cannot reconfigure is still usable,
+        # and refusing to start a combat over it would be the worse trade.
+        except Exception: pass
 
 import json
 import random
@@ -54,9 +62,26 @@ def dice(notation: str) -> tuple[int, list[int]]:
 
 
 def initiative_order(combatants: list[dict]) -> list[dict]:
-    """Roll d20+dex_mod for each combatant, sort descending."""
+    """Order combatants by initiative.
+
+    NPC/monster entries are rolled here. A player character's initiative is the
+    player's own die (SKILL.md "Dice ownership"), so a `"type": "pc"` entry must
+    carry the raw d20 the player reported as `"init"` (or `"initiative_roll"`);
+    this function never rolls one. Missing it is an error, not a cue to roll.
+    """
+    missing = [c.get("name", "?") for c in combatants
+               if c.get("type") == "pc" and c.get("init") is None
+               and c.get("initiative_roll") is None]
+    if missing:
+        raise ValueError(
+            "PC initiative is the player's own roll — ask for the raw d20 and pass it "
+            'as "init": N. Missing for: ' + ", ".join(missing))
+
     for c in combatants:
-        raw = random.randint(1, 20)
+        if c.get("type") == "pc":
+            raw = int(c.get("init", c.get("initiative_roll")))
+        else:
+            raw = random.randint(1, 20)
         c["initiative_roll"] = raw
         c["initiative"] = raw + c.get("dex_mod", 0)
         c["conditions"] = []
@@ -78,8 +103,9 @@ def print_tracker(combatants: list[dict], round_num: int = 1):
     print(f"{'='*68}\n")
 
 
-def resolve_attack(atk_bonus: int, target_ac: int, dmg_notation: str, is_crit: bool = False) -> dict:
-    raw = random.randint(1, 20)
+def resolve_attack(atk_bonus: int, target_ac: int, dmg_notation: str, is_crit: bool = False,
+                   d20: int | None = None) -> dict:
+    raw = int(d20) if d20 is not None else random.randint(1, 20)
     total_atk = raw + atk_bonus
     hit = raw == 20 or (raw != 1 and total_atk >= target_ac)
     crit = raw == 20
@@ -273,7 +299,11 @@ if __name__ == "__main__":
         # Store max_hp
         for c in combatants:
             c["max_hp"] = c["hp"]
-        ordered = initiative_order(combatants)
+        try:
+            ordered = initiative_order(combatants)
+        except ValueError as e:
+            print(f"combat.py: {e}", file=sys.stderr)
+            sys.exit(2)
         print_tracker(ordered)
         print("Initiative rolls:")
         for c in ordered:
@@ -292,7 +322,8 @@ if __name__ == "__main__":
         ac = int(args[args.index("--ac") + 1])
         dmg = args[args.index("--dmg") + 1]
         crit = "--crit" in args
-        result = resolve_attack(atk, ac, dmg, crit)
+        supplied = int(args[args.index("--d20") + 1]) if "--d20" in args else None
+        result = resolve_attack(atk, ac, dmg, crit, d20=supplied)
 
         # Optional 2024 weapon mastery
         if "--mastery" in args:
