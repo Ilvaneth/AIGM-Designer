@@ -330,13 +330,25 @@
       "text": "Sethra brokers the Shestendeliath guarantee that makes the coup survivable",
       "due_day": 218,
       "done": false
+     },
+     {
+      "text": "Break from the Table with ~900 soldiers once the war chest is full",
+      "due_day": null,
+      "done": false
      }
     ],
-    "abandon_if": "Ilse Drummel moves against him first"
+    "abandon_if": "Ilse Drummel moves against him first, or loyalty among his own soldiers cracks",
+    "metric": {
+     "label": "gp raised for the break",
+     "current": 6000.0,
+     "target": 40000.0
+    }
    },
    "reactions": {
     "alliance": "Sells arms to whoever is now surrounded — the profit is always on the losing side",
-    "betrayal": "Ends the contract without warning and collects on the bond"
+    "betrayal": "Ends the contract without warning and collects on the bond",
+    "exposure": "If Drummel uncovers the plan or a Table member is warned early, Coren moves immediately rather than be caught mid-preparation",
+    "loss": "If the Table purges him or the plan is fully exposed, he goes independent early and undermanned — the worst version of the same war"
    },
    "knows": [],
    "history": []

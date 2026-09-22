@@ -364,6 +364,11 @@ toward the actor, their standing doctrine for that trigger, their current operat
 remaining budget — then separates those **compelled to answer** from those merely aware. Write a move
 for each compelled faction before play moves on.
 
+**A plan's countable prerequisite lives on the operation**, not in a second tracker: coin raised,
+votes secured, troops sworn, fragments held. `op <id> --metric "gp raised:6000/40000"` sets it,
+`metric <id> --add 1500` moves it, and `sweep` prints how far short the plan still is — a faction
+whose plan needs 40,000 gp and holds 6,000 is not about to act, and the board should say so.
+
 **Move points** scale with `power` and refresh weekly. Spending them is what makes a move cost
 something; when the party destroys a faction's asset, lower its `power` and the budget falls with it.
 A faction that is out of points this week cannot also be acting everywhere — that is the constraint

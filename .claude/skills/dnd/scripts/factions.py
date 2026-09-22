@@ -121,6 +121,16 @@ def _last_move_day(f: dict) -> "int | None":
     return history[-1].get("day") if history else None
 
 
+def _fmt_metric(op: dict) -> str:
+    m = op.get("metric")
+    if not m:
+        return ""
+    cur, tgt = m.get("current", 0), m.get("target", 0)
+    pct = int(100 * cur / tgt) if tgt else 0
+    fmt = (lambda v: f"{v:,.0f}")
+    return f"{m.get('label','progress')}: {fmt(cur)}/{fmt(tgt)} ({pct}%)"
+
+
 def _next_step(f: dict) -> "dict | None":
     op = f.get("operation") or {}
     for step in op.get("steps", []):
@@ -167,6 +177,8 @@ def cmd_show(campaign: str, fid: str) -> None:
         for i, step in enumerate(op.get("steps", []), 1):
             mark = "x" if step.get("done") else " "
             print(f"    [{mark}] {i}. {step['text']}  (day {step.get('due_day','?')})")
+        if op.get("metric"):
+            print(f"    requires: {_fmt_metric(op)}")
         if op.get("abandon_if"):
             print(f"    abandons if: {op['abandon_if']}")
     else:
@@ -273,10 +285,27 @@ def cmd_op(campaign: str, args) -> None:
             text, day = raw, ""
         steps.append({"text": text.strip(), "due_day": int(day) if day.strip().isdigit() else None,
                       "done": False})
-    f["operation"] = {"name": args.name or "(unnamed)", "steps": steps,
-                      "abandon_if": args.abandon_if}
+    op = {"name": args.name or "(unnamed)", "steps": steps,
+          "abandon_if": args.abandon_if}
+    # A plan often has a countable prerequisite — coin raised, votes secured,
+    # troops sworn, fragments held. Keeping it on the operation means the plan
+    # and the number it depends on live in one place instead of two.
+    if args.metric:
+        label, _, nums = args.metric.partition(":")
+        current, _, target = nums.partition("/")
+        try:
+            op["metric"] = {"label": label.strip(),
+                            "current": float(current), "target": float(target)}
+        except ValueError:
+            print("  ! --metric wants LABEL:CURRENT/TARGET, e.g. \"gp raised:6000/40000\"")
+            sys.exit(1)
+    elif (f.get("operation") or {}).get("metric"):
+        op["metric"] = f["operation"]["metric"]     # keep it across a re-plan
+    f["operation"] = op
     _save(campaign, data)
     print(f"  {f['name']}: operation '{f['operation']['name']}' with {len(steps)} step(s)")
+    if op.get("metric"):
+        print(f"    requires: {_fmt_metric(op)}")
     for i, s in enumerate(steps, 1):
         print(f"    {i}. {s['text']}  (day {s['due_day']})")
 
@@ -318,6 +347,29 @@ def cmd_move(campaign: str, args) -> None:
     f.setdefault("history", []).append({"day": args.day, "text": args.text, "cost": spend})
     _save(campaign, data)
     print(f"  {f['name']} (day {args.day}, -{spend} MP, {mp['available']} left): {args.text}")
+
+
+def cmd_metric(campaign: str, args) -> None:
+    """Move an operation's countable prerequisite."""
+    data = _load(campaign)
+    f = _find(data, args.id)
+    if not f or not (f.get("operation") or {}).get("metric"):
+        print(f"  ! '{args.id}' has no operation metric — set one with "
+              f"`op {args.id} --metric \"label:current/target\"`")
+        sys.exit(1)
+    m = f["operation"]["metric"]
+    if args.add:
+        m["current"] += float(args.add)
+    if args.current:
+        m["current"] = float(args.current)
+    if args.target:
+        m["target"] = float(args.target)
+    _save(campaign, data)
+    print(f"  {f['name']}: {_fmt_metric(f['operation'])}")
+    if m["current"] >= m["target"]:
+        print("  " + "=" * 60)
+        print("  *** PREREQUISITE MET — this plan can now move ***")
+        print("  " + "=" * 60)
 
 
 def cmd_tick(campaign: str, day: int) -> None:
@@ -461,6 +513,12 @@ def cmd_sweep(campaign: str, day: int) -> None:
         print(f"    objective : {f.get('objective','(none set)')}")
         print(f"    next step : " + (f"{step['text']} (day {step.get('due_day','?')})"
                                      if step else "NONE — set one now"))
+        op = f.get("operation") or {}
+        if op.get("metric"):
+            m = op["metric"]
+            short = m.get("target", 0) - m.get("current", 0)
+            print(f"    requires  : {_fmt_metric(op)}"
+                  + (f"  — still short by {short:,.0f}" if short > 0 else "  — MET"))
         if f.get("assets"):
             print(f"    can spend : {'; '.join(f['assets'][:3])}")
         print()
@@ -539,6 +597,14 @@ def main() -> None:
     op.add_argument("--name", default="")
     op.add_argument("--step", action="append", default=[], metavar="TEXT@DAY")
     op.add_argument("--abandon-if", default="", dest="abandon_if")
+    op.add_argument("--metric", default="", metavar="LABEL:CURRENT/TARGET",
+                    help='Countable prerequisite, e.g. "gp raised:6000/40000"')
+
+    met = sub.add_parser("metric", help="Move an operation's countable prerequisite")
+    met.add_argument("id")
+    met.add_argument("--add", default="", help="Add this much to current")
+    met.add_argument("--current", default="")
+    met.add_argument("--target", default="")
 
     stp = sub.add_parser("step", help="Mark an operation step done")
     stp.add_argument("id")
@@ -579,6 +645,7 @@ def main() -> None:
     elif args.cmd == "op":      cmd_op(c, args)
     elif args.cmd == "step":    cmd_step(c, args)
     elif args.cmd == "move":    cmd_move(c, args)
+    elif args.cmd == "metric":  cmd_metric(c, args)
     elif args.cmd == "tick":    cmd_tick(c, args.day)
     elif args.cmd == "react":   cmd_react(c, args)
     elif args.cmd == "sweep":   cmd_sweep(c, args.day)
