@@ -60,6 +60,27 @@
    ],
    "note": "",
    "facts": []
+  },
+  {
+   "id": "stone-coren",
+   "name": "Sending Stone — Kriv / Coren (Halden'in taşı, gün 222'de Coren'e devredildi)",
+   "type": "sending-stone",
+   "participants": [
+    "Kriv Shestendeliath",
+    "Coren Ashvale"
+   ],
+   "note": "",
+   "facts": [
+    {
+     "day": 223,
+     "text": "Coren -> Kriv: Corwyn kuzey yolunda, Vesper izde; Cinder Bell'deki kagidi bir kurye aldi. Kriv -> Coren: aferin, devam edin.",
+     "keywords": [
+      "Corwyn",
+      "Vesper",
+      "Cinder Bell"
+     ]
+    }
+   ]
   }
  ]
 }

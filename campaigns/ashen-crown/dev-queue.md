@@ -10,6 +10,14 @@
 
 ## Open
 
+- **Campaign content, not tool: rename the Bonewrights' spokesperson in `npcs-full.md` and the graph.** The entry "Vashti Coldharrow (Bonewrights — lich)" collides with the Vashti Coldharrow of Sylandra's test (destroyed, session 27). `reference/bonewrights-hall.md` (written session 39) uses **Thessaly Ondrel** for the Bonewrights' lich; `npcs-full.md`, `npcs.md` and `graph.json` still say Vashti. *(noted 2026-09-23)*
+
+- **`xp.py award` cannot write XP into the character sheets.** Session 39 (gün 222): it warned "no XP field found in kriv shestendeliath.md" and reported "0 + 3,600 = 3,600 / 300 LEVEL 2 UP" for two level-18 characters. The sheet's `| **Experience Points** | 290942 (...long annotation...) |` row has a long parenthetical after the number, which the field parser evidently cannot read. It should parse the leading integer and ignore the annotation, and refuse to print a level-up banner when it found no XP. XP was written by hand this time. *(noted 2026-09-23)*
+
+- **Kriv's combat shorthand note in `state.md → DM Style Notes` gives a stale flat modifier.** It says "+9 (STR 7 + weapon 2)", written when his STR was 25. The sheet's Attacks table (STR 29, Wardensteel) says 1d12+11. The table is right, the note is not; whatever the DM Style Notes mean by "already summed on the sheet" should not carry its own number. *(noted 2026-09-23)*
+
+- **Save gaps from session 38 that the next load could not recover.** (a) The Umm-Halad road entrance ("found on the way to Ivrathax, Ilvaneth wrote a detailed description in her spellbook") appears nowhere in the sheet or logs; state.md only says "standing stone clue, not visited". (b) The verification method Ilvaneth proposed to Ashen Corwyn at the coronation feast is not written anywhere. Both were only recoverable because the player restated them. `/dm:dnd save` should ask for "what did the party learn about routes, entrances and offers made to strangers". *(noted 2026-09-23)*
+
 - **No LICENSE or README.** Needed only if the GitHub repo ever goes public: OGL 1.0a notice for `data/srd-5.1-yaml/` and the JSON built from it, attribution for the upstream fork (`neuralinitiative/claude-dnd-skill`), and a README describing the AIGM vision. *(noted 2026-09-23, repo is private for now)*
 
 ## Done
