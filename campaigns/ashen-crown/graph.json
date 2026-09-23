@@ -3850,6 +3850,33 @@
       "type": "killed",
       "since_session": 36,
       "until_session": null
+    },
+    {
+      "id": "e248",
+      "from": "party",
+      "to": "npc_iskra_vantrel",
+      "type": "killed",
+      "since_session": 37,
+      "until_session": null,
+      "note": "Kor Besigi'nde infaz edildi, bu kez kalici - reform tamamlanmadan"
+    },
+    {
+      "id": "e249",
+      "from": "party",
+      "to": "npc_sathriel",
+      "type": "killed",
+      "since_session": 37,
+      "until_session": null,
+      "note": "Iskra ile ayni anda, Kor Besigi'nde kalici infaz edildi"
+    },
+    {
+      "id": "e250",
+      "from": "party",
+      "to": "faction_whisper_court",
+      "type": "crippled",
+      "since_session": 37,
+      "until_session": null,
+      "note": "Iskra ve Sathriel kalici oldu, otuz yillik operasyon liderliksiz kaldi, gercek dogasi (rakshasa+doppelganger) yakinda acik olacak"
     }
   ]
 }

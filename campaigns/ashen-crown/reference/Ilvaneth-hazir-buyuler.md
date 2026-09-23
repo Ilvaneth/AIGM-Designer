@@ -4,7 +4,7 @@
 
 *Cantrip'ler ve rituteller her zaman kullanilabilir, bu listeye dahil degil.*
 
-## Su An Hazir (21 / 21)
+## Su An Hazir (22 / 22)
 
 - Chain Lightning (6th)
 - Draconic Transformation (7th)
@@ -26,6 +26,7 @@
 - True Polymorph (Sylandra Cael'in versiyonu) (9th)
 - Wish (9th)
 - Protection from Evil and Good (1st)
-- Magic Missile (1st)
+- Control Weather (8th)
+- Invisibility (2nd)
 
-*Son guncelleme: 2026-09-21 22:59*
+*Son guncelleme: 2026-09-23 13:24*

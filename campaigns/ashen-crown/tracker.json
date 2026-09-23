@@ -372,5 +372,49 @@
       "failures": 0,
       "stable": false
     }
+  },
+  "bone devil kidemli 1": {
+    "name": "Bone Devil Kidemli 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "bone devil kidemli 2": {
+    "name": "Bone Devil Kidemli 2",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "pit fiend": {
+    "name": "Pit Fiend",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "rakshasa rajah": {
+    "name": "Rakshasa Rajah",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
   }
 }

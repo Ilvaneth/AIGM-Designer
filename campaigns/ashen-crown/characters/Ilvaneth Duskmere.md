@@ -6,10 +6,10 @@
 | **Race** | Elf (High Elf) |
 | **Class** | Wizard |
 | **Subclass** | School of Necromancy |
-| **Level** | 17 |
+| **Level** | 18 (session 37, long rest ile işlendi — HP +7, 5. seviye slot 2→3, Spell Mastery: Mage Armor+Invisibility slotsuz, 2 yeni büyü: Control Weather (8th) + Foresight (9th)) |
 | **Background** | Charlatan |
 | **Alignment** | Neutral Evil |
-| **Experience Points** | 276242 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8) — Raw 3.970÷2.** **★ LEVEL UP PENDING (Level 18, eşik 265.000) — bir sonraki Long Rest'te işlenecek, henüz uygulanmadı.**) |
+| **Experience Points** | 284642 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8).** **+8.400, session 37, Oda 23 (2× Bone Devil Kıdemli CR12).** **Oda 24 final boss (Rakshasa Rajah + Pit Fiend) XP'si oyuncu talebiyle atlandı — final loot yeterli ödül sayıldı, +23.500 XP eklenmedi.** **★ LEVEL UP (Level 18, eşik 265.000) — session 37 sonunda long rest ile işlendi.**) |
 
 ---
 
@@ -48,11 +48,11 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 |------|-------|
 | **Armor Class** | 19 (13 + DEX 4 Mage Armor, +2 Bracers of Defense) — **gün 162, session 26'da güncellendi: Ring of Protection çıkarıldı, Bracers of Defense attune edildi** |
 | **HP Maximum** | 116 (level 17, +5 — raw d6 roll 3 (oyuncu zarı) + CON mod 2, gün 203, session 35) |
-| **Current HP** | 114/116 (Oda 8'de Erinyes ok saldırılarından 20 piercing aldı — 3d8 zehir hasarı Stage 4 bağışıklığıyla etkisizdi; Vampiric Touch'la Erinyes 2'yi öldürünce Grim Harvest (+9, Necromancy 3.sv×3) + büyünün kendi vampirik iyileşmesi (+9) toplam +18 geri kazandı) |
+| **Current HP** | 123/123 (session 37, Emberhold konağı — long rest ile tam iyileşti, level 18'in +7 HP'si dahil) |
 | **Temporary HP** | 0 |
 | **Speed** | 30 ft |
 | **Initiative Modifier** | +4 |
-| **Hit Dice** | 17d6 (remaining: 16, tam uzun mola değil — yeni zar henüz kullanılmadı) |
+| **Hit Dice** | 18d6 (remaining: 18/18 — level 18, long rest ile tam yenilendi) |
 | **Death Saves** | Successes: 0 / Failures: 0 |
 | **Inspiration** | 1 (gün 186, session 31 — Mireille Osk'u özgürleştirdi) |
 
@@ -172,17 +172,19 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 
 | Level | Total | Remaining |
 |-------|-------|-----------|
-| 1st | 4 | 2 |
+| 1st | 4 | 4 |
 | 2nd | 3 | 3 |
 | 3rd | 3 | 3 |
 | 4th | 3 | 3 |
-| 5th | 2 | 2 |
+| 5th | 3 | 3 |
 | 6th | 1 | 1 |
 | 7th | 1 | 1 |
 | 8th | 1 | 1 |
 | 9th | 1 | 1 |
 
-*★ Level 17'de yeni açıldı (gün 203, session 35) — True Polymorph (Sylandra'nın versiyonu, spellbook'ta bekliyordu) ve Power Word Kill (Sarelle'in spellbook'undan, henüz kopyalanmadı) artık kullanılabilir.*
+*★ Level 18'de güncellendi (session 37, long rest) — 5. seviye slot 2→3. Tüm slotlar long rest ile tam dolu.*
+*★ Level 17'de açılmıştı (gün 203, session 35) — True Polymorph (Sylandra'nın versiyonu) ve Power Word Kill (Sarelle'in spellbook'undan, henüz kopyalanmadı) artık kullanılabilir.*
+*★ Spell Mastery (level 18): **Mage Armor** (1st) ve **Invisibility** (2nd) artık slot harcamadan sınırsız castlenebiliyor.*
 
 *Tüm slotlar gün 203, session 35 (Sonnward Promenade, Kesh Amara baskınından sonraki uzun mola) tam yenilendi — Iskra Vantrel + Sathriel öldürüldü, tüm slotlar sıfırlandı. Arcane Recovery kullanılabilir, henüz kullanılmadı.*
 
@@ -271,7 +273,9 @@ Spellbook contains 10 first-level + 9 second-level + 5 third-level + 5 fourth-le
 | 8th | Power Word Stun | [ ] | New (gün 194, session 34, level 16'da eklenen 2 ücretsiz büyüden biri — standart Wizard kuralı; SRD'de yok, standart yayınlanmış kurallardan uygulandı) — Enchantment, save yok (150 HP altındaki hedefte otomatik işler). Hedef anında stunned olur; her turun sonunda CON save (DC17) ile etkiyi sonlandırabilir |
 | 7th | Mordenkainen's Magnificent Mansion | [x] | New (gün 194, session 34, level 16'da eklenen ikinci ücretsiz büyü — SRD'de yok, standart yayınlanmış kurallardan uygulandı) — Conjuration, concentration 24 saat. 300 ft içinde bir kapı çağırır, ardında geçici, lüks bir cep-boyutu konak (hizmetkar-benzeri kuvvetli el'ler dahil) — dinlenme/toplantı/sığınak için ideal, ritüel olarak da castlenebilir |
 | 9th | Meteor Swarm | [ ] | New (gün 203, session 35, level 17'de eklenen 2 ücretsiz büyüden biri — standart Wizard kuralı; SRD'de yok, standart yayınlanmış kurallardan uygulandı) — Evocation. Her biri 40 ft yarıçaplı, birbirinden en az 40 ft uzak dört noktaya kadar meteor çağırır; her nokta DEX save, 20d6 fire + 20d6 bludgeoning (yarısı başarıda). Kampanyanın en yıkıcı AoE'si |
-| 9th | Wish | [x] | New (gün 203, session 35, level 17'de eklenen ikinci ücretsiz büyü — SRD'de yok, standart yayınlanmış kurallardan uygulandı) — Conjuration, concentration yok. Herhangi bir 8. seviye ya da altı büyüyü hazırlamadan/slot harcamadan kopyalayabilir, ya da DM'in onayıyla neredeyse her etkiyi yaratabilir. **Bedel:** basit kullanım (bir büyüyü kopyalamak) risksiz; daha büyük bir dilek sonrası %33 ihtimalle bir daha asla Wish castleyemez, ayrıca 1d10×10 gün boyunca büyü castleyemeyecek kadar bitkin düşebilir (2 gün süren istisna). Kampanyanın en güçlü, en tehlikeli aracı — dikkatli kullanılmalı |
+| 9th | Wish | [x] | New (gün 203, session 35, level 17'de eklenen ikinci ücretsiz büyü — SRD'de yok, standart yayınlanmış kurallardan uygulandı) — Conjuration, concentration yok. Herhangi bir 8. seviye ya da altı büyüyü hazırlamadan/slot harcamadan kopyalayabilir, ya da DM'in onayıyla neredeyse her etkiyi yaratabilir. **Bedel:** basit kullanım (bir büyüyü kopyalamak) risksiz; daha büyük bir dilek sonrası %33 ihtimalle bir daha asla Wish castleyemez, ayrıca 1d10×10 gün boyunca büyü castleyemeyecek kadar bitkin düşebilir (2 gün süren istisna). Kampanyanın en güçlü, en tehlikeli aracı — dikkatli kullanılmalı. **Gün 204/session 37'de kullanıldı** — Kriv'i tam HP'ye iyileştirmek için (güvenli, listelenmiş etki — "20 yaratığa tam HP + Greater Restoration" — hiçbir bedel/stres tetiklenmedi) |
+| 8th | Control Weather | [ ] | New (gün 205, session 37, level 18'de eklenen 2 ücretsiz büyüden biri — standart Wizard kuralı) — Transmutation, concentration 8 saat, 10 dakika casting. 5 mil içinde hava koşullarını (yağış/sıcaklık/rüzgar) kademeli olarak değiştirir, açık gökyüzü gerektirir |
+| 9th | Foresight | [ ] | New (gün 205, session 37, level 18'de eklenen ikinci ücretsiz büyü) — Divination, concentration yok, 8 saat. Bir yaratığa dokunarak ona büyü süresince saldırı/check/save'lerde avantaj, ona karşı atılan saldırılarda dezavantaj verir — sürpriz edilemez |
 
 ---
 
@@ -348,7 +352,7 @@ Spellbook contains 10 first-level + 9 second-level + 5 third-level + 5 fourth-le
 - **Gümüş saç tokası, göz motifli (gün 179, The Rookery)** — mühürlü kutuda mektup ve altınla birlikte bulundu, işlevi/anlamı belirsiz, garip bir şekilde kişisel duruyor. Saklanıyor, henüz kimliği/kaynağı çözülmedi.
 ~~**Frostheart**~~ — Vashti Coldharrow'un yenilmesinden sonra alındı (gün 178). **Kriv'e verildi, gün 193/session 33** (Warden's Core'un yerine attune etti) — bkz. `Kriv Shestendeliath.md`.
 - **★ Sylandra Cael'in Crown notları — özet (gün 175, Ash Reeve)**: (1) Parçaların birleşmesinde "geri dönüşü olmayan bir eşik" var — son parça yerine oturduğu an, durdurulamaz bir şey başlıyor, tam ne olduğu belirsiz. (2) Sylandra'nın kendi teorisi: tacın etkisi tamamlanana kadar süreç durdurulamaz, yarım bırakmak mümkün olmayabilir. (3) Ash-kralların "korunması" ile "kendi için kullanılması" arasındaki fark, bölünmenin gerçek sebebiydi — niyet, sonucu etkiliyor olabilir (kanıtlanmamış bir teori, sadece bir sezgi). Ilvaneth bunları kişisel notlarına geçirdi, gelecekte referans için.
-- **★ Efreeti Bottle — TAMAMEN SATIN ALINDI (gün 180, The Reagent Hall, Emberhold).** Kalan 5.300 gp ödendi, şişe artık tamamen Ilvaneth'e ait. **Legendary, attunement gerektiriyor — henüz attune edilmedi** (3 slot dolu: Ring of Mind Shielding, Cloak of Displacement, Bracers of Defense). 1 fitlik pirinç bir şişe, tıpalı. Action ile tıpayı çıkarıp komut kelimesini söylerseniz içindeki efreeti belirir, 1 saat boyunca hizmet eder (sonra şişeye geri döner) — bir kez tamamen serbest bırakılırsa geri zorlanamaz, ama isterse bir dilek karşılığında hizmetini sunabilir.
+- **★ Efreeti Bottle — İLK KEZ AÇILDI (gün 204, session 37, Ember Court Oda 24).** **Düzeltme: Very Rare, attunement GEREKTİRMİYOR** (eski kayıt hataliydi). d100 ile ilk açılış sonucu: 51 (11-90 aralığı) — efreeti 1 saat hizmet etti (Oda 24 final boss fightında, Kriv'in emriyle), sonra şişeye geri döndü. **Tıpa 24 saat boyunca çıkarılamaz** (gün 205, öğle sonrası tekrar açılabilir). **2 açılış hakkı kaldı** — sonraki ikisi otomatik "1 saat hizmet" verir (zar yok), 4. açılışta efreeti kaçar ve şişe büyüsünü kaybeder.
 - **Emberhold merkez şube üyelik madalyonu** — The Grand Spire, gümüş, Kindled Circle'ın merkez şube simgesi işlenmiş (gün 172, Ebrim Voss tarafından verildi, 100 gp yıllık aidat).
 - **Kindled Circle üyelik madalyonu** — gümüş, Lonca'nın simgesi işlenmiş. Gün 125, session 25 devamı, Magistrix Odalys Ferrant tarafından bizzat verildi (50 gp yıllık aidat ödendi, gerçek adıyla kayıt). Tam arşiv erişimi, loncalı fiyat, üç büyük güce karşı Lonca'nın koruması sağlıyor — mekanik bir eşya değil, bir statü kanıtı.
 - **Boots of Elvenkind** — found on a long-dead scout/relic-hunter's cocooned remains, The Weeping Wood, Area 5 (Spider Hollow), day 69, session 17 — fallen from the ceiling after her own Fireball burned through the silk. No attunement required. Steps make no sound on any surface; advantage on Dexterity (Stealth) checks that rely on moving silently. Worn.

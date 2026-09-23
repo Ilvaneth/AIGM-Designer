@@ -1,7 +1,7 @@
 {
  "_meta": {
   "week_length": 7,
-  "ticked_day": 204
+  "ticked_day": 205
  },
  "factions": [
   {
@@ -196,7 +196,7 @@
    "intel": 3,
    "move_points": {
     "per_week": 4,
-    "available": 4,
+    "available": 0,
     "refreshed_day": 207
    },
    "assets": [
@@ -214,32 +214,33 @@
     "ashlord-concordat": 0
    },
    "operation": {
-    "name": "Survive the Ember Court",
+    "name": "Bir el arayisi (liderliksiz)",
     "steps": [
      {
-      "text": "Iskra and Sathriel finish reforming in the Ember Cradle",
-      "due_day": 206,
+      "text": "Kalan ajanlarin (Wrenna, Arnholt) sadakatini yeni birine devretmek",
+      "due_day": 225,
       "done": false
      },
      {
-      "text": "Buy back the Kesh Amara contract book before anyone reads it",
-      "due_day": 211,
-      "done": false
-     },
-     {
-      "text": "Make the three houses pay for the ambush — every debt called in at once",
-      "due_day": 216,
+      "text": "Iskra'nin gercek ustunu (bilinmeyen) Emberhold'a haberdar etmek",
+      "due_day": 230,
       "done": false
      }
     ],
-    "abandon_if": "Both rakshasa are destroyed inside the Ember Court; the Court dies with them"
+    "abandon_if": "Kalan tum ajanlar da ifsa olur ya da olurse, ag tamamen coker"
    },
    "reactions": {
     "alliance": "Never confronts a new bloc head-on: buys or replaces one person inside it, then waits for the bloc to distrust itself",
     "loss": "Cuts the exposed limb off and denies it existed; the handler dies, not the agent"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 210,
+     "text": "Iskra Vantrel ve Sathriel'in kalici yok edilmesiyle 'Survive the Ember Court' operasyonu terk edildi - the Court kendi icinde parcalaniyor, kalan uyeler sessizce yeni bir el arayisina giriyor, House Ilvane icindeki bosluk fark edilmeye baslaniyor",
+     "cost": 4
+    }
+   ]
   },
   {
    "id": "ashlord-concordat",
@@ -558,7 +559,7 @@
    "intel": 2,
    "move_points": {
     "per_week": 3,
-    "available": 3,
+    "available": 2,
     "refreshed_day": 204
    },
    "assets": [
@@ -600,7 +601,13 @@
     "loss": "Slows the calendar — a hearing postponed is a decision unmade"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 211,
+     "text": "Veskin, Kade'nin olumunu arastirirken Iskra Vantrel'in de gunlerdir gorulmedigini fark ediyor - iki kayip arasinda bir bagi sezgiyle hissediyor, henuz kanit yok",
+     "cost": 1
+    }
+   ]
   }
  ]
 }

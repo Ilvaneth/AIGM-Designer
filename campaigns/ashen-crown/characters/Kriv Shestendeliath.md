@@ -6,10 +6,10 @@
 | **Race** | Dragonborn (Red ancestry) |
 | **Class** | Fighter |
 | **Subclass** | Battle Master |
-| **Level** | 17 |
+| **Level** | 18 (session 37, long rest ile işlendi — HP +9, Improved Combat Superiority: Superiority Dice artık d12) |
 | **Background** | Noble |
 | **Alignment** | Neutral Evil |
-| **Experience Points** | 276242 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8) — Raw 3.970÷2.** **★ LEVEL UP PENDING (Level 18, eşik 265.000) — bir sonraki Long Rest'te işlenecek, henüz uygulanmadı.**) |
+| **Experience Points** | 284642 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8).** **+8.400, session 37, Oda 23 (2× Bone Devil Kıdemli CR12).** **Oda 24 final boss (Rakshasa Rajah + Pit Fiend) XP'si oyuncu talebiyle atlandı — final loot (61.000+28.000+27.000 gp, Kaal'ın Zulüm Bıçakları, Boyun Eğmeyenin Tacı, İblis Topuzu, vb.) yeterli ödül sayıldı, +23.500 XP eklenmedi.** **★ LEVEL UP (Level 18, eşik 265.000) — session 37 sonunda long rest ile işlendi.**) |
 
 ---
 
@@ -44,12 +44,13 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 | Stat | Value |
 |------|-------|
 | **Armor Class** | 22 (Warden's Oathplate — Dwarven Plate, base 18 + 2, +2 Ascension Stage 3 scales — Stage 1'in +1'inin yerine geçti, gün 192) |
-| **HP Maximum** | 196 (level 17, +8 — d10 roll 5 (oyuncu zarı) + CON mod 3, gün 203, session 35) |
-| **Current HP** | 196/196 (session 37, Oda 12/13 hiç hasar almadan geçildi — Oda 13 sonrası Tiny Hut içinde kısa mola, 3 hit dice ile tavana kadar iyileşti) |
+| **HP Maximum** | 205 (level 18, +9 — d10 roll 6 (oyuncu zarı) + CON mod 3, gün 205, session 37) |
+| **Current HP** | 205/205 (session 37, Emberhold konağı — long rest ile tam iyileşti, level 18'in +9 HP'si dahil) |
 | **Temporary HP** | 0 |
 | **Speed** | 30 ft walk (60 ft with Boots of Striding and Springing) / **60 ft fly** (new, Ascension Stage 4, gün 203) |
 | **Initiative Modifier** | +2 |
-| **Hit Dice** | 17d10 (remaining: 13 — session 37, Oda 13 sonrası kısa mola, 3 zar harcandı: 7+3, 6+3, 9+3 = +31 HP, 196'da tavana çarptı) |
+| **Hit Dice** | 18d10 (remaining: 18/18 — level 18, long rest ile tam yenilendi) |
+| **Superiority Dice** | 6/6 d12 (Improved Combat Superiority, level 18 — d10'dan yükseldi, long rest ile tam yenilendi) |
 | **Death Saves** | Successes: 0 / Failures: 0 |
 | **Inspiration** | 1 |
 
@@ -234,7 +235,7 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 
 - **Extra Attack (2) (level 11):** Attacks **three times**, instead of once, whenever he takes the Attack action on his turn — upgraded from twice at level 5.
 - **Fighting Style — Great Weapon Fighting:** When rolling a 1 or 2 on a damage die from a melee weapon held in two hands, reroll the die once and use the new roll.
-- **Second Wind(0/1 uses):** Bonus action to regain 1d10 + fighter level (17) HP. Resets on a short or long rest. Gained level 2. *(Formula is always current fighter level — updated gün 203/session 35 level-up to 17; keep updating this note on future level-ups too.)* **Kullanıldı, session 36, Oda 9 — 1d10(7)+17=24 HP.**
+- **Second Wind(1/1 uses):** Bonus action to regain 1d10 + fighter level (18) HP. Resets on a short or long rest. Gained level 2 — **düzeltme: her zaman 1 kullanım, 2'ye çıkmıyor** (önceki "2/2" notu hatalıydı). *(Formula is always current fighter level — updated gün 205/session 37 level-up to 18.)*
 - **Action Surge(2/2 uses, level 17 — upgraded from 1 use):** On his turn, take one additional action. Resets on a short or long rest. Gained level 2.
 - **Indomitable (3/3 uses, level 17 — upgraded from 2 uses at level 13):** When he fails a saving throw, he can reroll it and must use the new roll. Resets on a long rest.
 - **Martial Archetype — Battle Master** (gained level 3; not in the free SRD, applied from standard published rules — flagged in `system-register.md`):

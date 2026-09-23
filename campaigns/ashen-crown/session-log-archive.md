@@ -1011,3 +1011,44 @@ Bu oturumda oyuncu tarafından canlı yakalanan, kalıcı hale getirilen düzelt
 - **Son Crown parçası (9/9)** — Ser Oskar Thrune, Bonewrights' Hall — hâlâ gidilmedi.
 - **Ilse Drummel'in Coren'i izlemesi** — Coren'in darbe planı ile doğrudan çatışan bir risk.
 
+---
+
+## Session 35 — 2026-09-21 — Kesh Amara, Iskra Vantrel ağır yaralandı (kalıcı öldürülemedi), Level 17, Ember Court'a giriş, gün 197-203
+**Location:** Emberhold (Sonnward Promenade, Kırık Kemer köprüsü, House Sablewood, House Ilvane, Kingsward Dış Mahalle/Kesh Amara, Grand Spire) → Karsgate (Gallow's Rest, House Varn) → **The Ember Court (Kaal hanesinin sınır düzlemi, yeni)**  **In-world date:** Gün 197-203  **Duration:** —
+
+### Recap
+**"V."nin teklifi reddedildi, Kesh Amara bulundu.** Gece konağa bırakılan mühürlü bir mesajla "V." (Whisper Court/kırık daire ağı) partiyi Kırık Kemer köprüsünde bir buluşmaya çağırdı — sözcü Pike Rourke (Halfling fixer, işvereninin fiend olduğunu bilmiyor) aracılığıyla karşılıklı çekilme teklif etti. Kriv hakaretle reddetti. Scrying + Invisibility ile mesajın House Ilvane'in hizmetçi girişine taşındığı doğrulandı. Berengar Sablewood aracılığıyla (önce yanlışlıkla Iskra Vantrel sanılan bir talep düzeltilip) Cassian Ilvane gizlice görüşüldü — kendi evinde 8 aylık bir doppelganger (gerçek Corwen'in yerini almış) Dominate Monster ile yakalanıp sorgulandı: **"V." = Lady Iskra Vantrel, Cassian'ın kendi 20 yıllık danışmanı.** Doppelganger öldürüldü, Iskra kaçtı (araba tuzaktı) — geride eldivenleri + "Kaal'ın Aynası" (artık işlevsiz bir Abjuration koruma eşyası) bıraktı. Scrying'in düşük seviyeli büyülere hiç tutmaması + D.V. deneyimiyle **Iskra'nın bir rakshasa olduğu sonucuna varıldı.**
+
+**Üç hane yemeği, sert bir yüzleşme.** Cassian'la kurulan ittifak sonrası, Corr/Sablewood/Ilvane üçü de Sonnward Promenade'a yemeğe davet edildi. "V."nin (artık gizlenmeyen) bir tehdit mektubu masaya geldi. Kriv, siyasi kaosu bitirip kendisinin tahta çıkması gerektiğini savundu — Sereth Corr'a, ağabeyi Dorren'in ölümünü ve onun "hak etmediğini" hatırlatarak sert bir kaldıraç kullandı. Sereth destek verdi ama ilişkiyi kalıcı olarak "borç ödeşmesi"ne indirdi, sıcaklık kalmadı. Berengar kâr güvencesiyle ikna oldu. Üçü de İskra'ya karşı (dolaylı olarak tahta doğru) ittifaka girdi.
+
+**Kesh Amara bulundu ve baskın düzenlendi.** D.V.'nin yönlendirmesiyle Elian Rook'a (House Ilvane'in Spymaster'ı, artık açık müttefik) ulaşıldı — defterinde "Kesh Amara" adı **Cinderday** gecelerine denk gelen kayıtlar olarak geçiyordu. Kriv (Chancellery kayıtları) + İlvaneth (Grand Spire arşivi, "Kesh Amara" = Infernal "Ödenmemiş Ev") çapraz doğruladı: Kingsward Dış Mahalle'de gizli bir "sözleşme evi." Kısa bir gözlemin ardından (imp-muhafızın hafızası Modify Memory ile silinip) **Cinderday gecesi (37 Ashfall, gün 203)** sızıldı — arşivden üç şehrin (Karsgate/Harrowgate/Emberhold) tam Kaal borç kayıtları alındı (Cassian'ın kendi hanesi "bilinçsiz taraf," Maro Veskin "bilinçli taraf," 8 yıldır bilgi karşılığı sessizlik).
+
+**★★★★★ IŞKRA VANTREL VE SATHRIEL AĞIR YARALANDI — KALICI ÖLMEDİ.** Sözleşme odasının ardındaki toplantıda Iskra, kıdemli yoldaşı Sathriel, bir yazman-imp ve gönüllü bir insan aday (Ostwin Kade, Veskin'in kâtibi) yakalandı. İlvaneth'in Draconic Transformation nefesi + Kriv'in Trip/Goading/Action Surge/GWM kombosu ikisini de 2 round'da neredeyse devirdi, hiç PC hasarı kalıcı olmadan (imp ve Kade anında öldü) — ama rakshasa doğaları gereği Iskra/Sathriel'in bedenleri Kaal'ın kendi düzlemine (Ember Court) çekildi, Oda 24'teki Kor Beşiği'nde reform sürecine girdiler. **Loot (Kaal Muhafızının Bileziği, kırık Sözleşme Taşı) henüz alınmadı — Oda 24'e ulaşınca ele geçecek.** Kalıcı Teleportation Circle'ın sigil dizisi ele geçirildi (Ember Court'a giriş için kullanıldı). Araştırma (Grand Spire + D.V.): Kaal-bağlı rakshasa'lar öldüklerinde sözleşmeleri açık kaldığı sürece geri dönebiliyor — Sözleşme Taşı bunu engelleyebilir, bu yüzden peşlerinden gidildi.
+
+**Ember Court'a giriş.** Kopyalanan sigil ile Teleportation Circle'dan Kaal'ın kendi sınır düzlemine (24 odalık, tam tasarlanmış — `reference/ember-court.md`) geçildi. Asıl hedef: Oda 24'teki "Kor Beşiği"nde reform olan Iskra/Sathriel'in özlerini kalıcı olarak yok etmek. Oda 1 (2 Rakshasa muhafız) ve Oda 2 (Kor Köprüsü, 4 Barbed Devil) temizlendi — ikisi de tek PC hasarı almadan. **Level 17'ye geçildi (ikisi de, Long Rest beklenmeden, oyuncu talebiyle)** — proficiency +6, İlvaneth 9. seviye slot (Meteor Swarm + Wish eklendi), Kriv Action Surge 2/2 + Indomitable 3/3.
+
+### Key Events
+- **"V." (Whisper Court) teklifi reddedildi, açık bir düşmanlığa dönüştü.**
+- **★★★★★★★ Iskra Vantrel'in kimliği çözüldü VE ağır yaralandı (kalıcı öldürülemedi)** — House Ilvane'in 20 yıllık danışmanı, Kaal hanesinden bir rakshasa. Sathriel (Kaal'ın kıdemli üyesi) de aynı savaşta ağır yaralandı, ikisi de Ember Court'a kaçtı.
+- **Cassian Ilvane ve Elian Rook artık gerçek müttefikler.** Sereth Corr ilişkisi "borç ödeşmesi"ne düştü — kalıcı bir soğukluk.
+- **Kesh Amara + Ember Court keşfedildi** — Kaal hanesinin borç ağı (3 şehir) + kendi düzlemine açılan bir kapı artık parti elinde/bilgisinde.
+- **Level 17'ye geçildi (ikisi de).**
+- Goal Tracker: **Whisper Court THREATENED** (3/3 ajan ifşa, ama Iskra kendisi Ember Court'ta reform halinde — kalıcı kapanmadı).
+- XP: Noncombat Medium (doppelganger/Iskra ifşası) 3.200/kişi + Hard (üç hane yemeği) 4.800/kişi + Deadly combat (Kesh Amara: Iskra+Sathriel+imp) 11.600/kişi + dungeon (Ember Court Oda 1-2) 13.600/kişi = **33.200/kişi.** İkisi de **231.962 XP, Level 17.**
+
+### DM Calibration
+Oturum boyunca birden fazla canlı düzeltme yapıldı: (1) NPC'lerin sahnede söylenmemiş bilgiyi bilmesi (Berengar'ın Whisper Court'u varsayması, D.V.'nin eldiven/ayna detaylarını bilmesi) — tekrar tekrar düzeltildi. (2) PC'ye ait zarların (Toll the Dead hasarı dahil) DM tarafından atılması — sert bir tekrar-düzeltme, kalıcı not eklendi. (3) Combat'ın "sorma, sadece oynat" talimatı yanlışlıkla tasviri de atlatmıştı — düzeltildi, narrasyon-önce-mekanik-sonra kuralı yeniden vurgulandı. (4) Cloak of Displacement'ın dezavantajı bir saldırıda atlandı, düzeltildi. (5) Ember Court dungeon tasarımı ilk seferinde eksik/dengesiz kuruldu (CR1-2 canavarlar bu seviyede anlamsız, hikaye amacı unutulmuştu) — oyuncu geri bildirimiyle yeniden tasarlandı, `reference/ember-court.md`'ye kaydedildi.
+
+**Oturum sonu resmi kalibrasyon sorusu/cevabı (`/dm:dnd end`):** "CS'ler RP'de ve combat'ta okunmadan ilerlendi, DM bu yüzden birçok hata yaptı. DM insight'ı hâlâ NPC'ler üzerinden veriliyor. DM hikayede tutarsızlıklar yaptı." — Bu, session 33'ün ("CS kontrol edilmeden oyun oynatıldı") ve session 34'ün ("karakterler DM insight'ı ile konuştu") aynı iki kalıcı zayıflığının **üçüncü kez** tekrarı — artık tek seferlik bir hata değil, yapısal bir alışkanlık olarak ele alınmalı. `state.md → DM Style Notes`'a en üste, kalıcı bir madde olarak işlendi: her PC turundan/NPC repliğinden önce fiili bir duraklama gerekiyor, hatırlamaya güvenilmiyor.
+
+### Session Recap
+**Öne çıkanlar:** "V." = Iskra Vantrel ifşa edildi VE ağır yaralandı (kalıcı öldürülemedi), Kaal hanesi (rakshasa klanı) keşfedildi, üç hane ittifakı (gergin ama gerçek) kuruldu, Kesh Amara + Ember Court (yeni, 24 odalık dungeon) bulundu, Level 17'ye ulaşıldı.
+
+**Açık iplikler (bir sonraki oturuma taşınan):**
+- **Ember Court'ta 22 oda daha var** — asıl hedef Oda 24'teki Kor Beşiği (Iskra/Sathriel'in reform süreci, saatler içinde tamamlanabilir).
+- **Kaal hanesi hâlâ var** — Iskra'nın son sözü ("Kaal asla gerçekten ölmez") DM-only bir uyarı.
+- **Üç hanenin şahsi sırları** (dosyalar) kullanılmadı — Cassian'ınki ondan saklanıyor.
+- **Maro Veskin'in Kaal'a sekiz yıllık bilinçli sözleşmesi** + kâtibi Ostwin Kade'nin ölümü — henüz kullanılmamış bir kaldıraç.
+- **Son Crown parçası (9/9)** — Ser Oskar Thrune, Bonewrights' Hall — hâlâ gidilmedi.
+- **Aşkalkanı/House Corvane/Karsgate ipliği** — henüz çözülmedi.
+

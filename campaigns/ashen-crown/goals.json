@@ -54,7 +54,7 @@
     "kind": "faction",
     "goal": "Uc hanenin de zayif noktalarini toplayip kaosu surdurmek, hicbirinin kesin kazanmasina izin vermemek",
     "metric_type": "numeric",
-    "status": "threatened",
+    "status": "permanent_loss",
     "responses": {
       "threatened": "Bir ajan daha ifsa olma riski belirirse (orn. Elian Rook kanit bulursa): Iskra ajanlarini ceker/gizler, riskli bir temizlik operasyonu baslatir.",
       "blocked": "Bir hanenin (Corr/Sablewood) kontrolunu tamamen kaybederse: o haneye karsi daha agresif bir yontem (santaj, suikast) dener.",
