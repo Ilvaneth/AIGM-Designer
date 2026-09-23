@@ -615,7 +615,7 @@ acts:
         label: "Kabın Gerçeği"
         what_changes: "Crown'un gerçek doğası artık soyut lore değil — sadece bir güç kabı değil, adı anılmayan bir şeyin MÜHÜRÜ olduğuna dair ilk gerçek uyarı. Parti bu uyarıyı duyar ama muhtemelen bilerek göz ardı eder — final 'bilseydik yapmazdık' olamaz, bu bilinçli bir seçim olarak kayda geçmeli."
         world_pressure: "Umm-Halad'ın (Kar Vaelth'in taş dev kahini) tanıklığı — isim vermeden (kendisi de bilmiyor/söylemiyor) ama gerçek bir dehşetle: tacın içinde hapsolmuş bir şey var, ve birleştirmek onu serbest bırakabilir."
-        status: pending
+        status: complete  # ★★★ TAMAMLANDI, ALTERNATİF YOLLA (gün 221, session 38) — Umm-Halad'a hiç gidilmedi, ama what_changes'in kendisi kelimesi kelimesine gerçekleşti: Voss'un verdiği Unutulmuşların Defteri (Kindled Circle'ın bastırılmış arşivinden, Hollow Prophet'in konumu karşılığında), Crown'un "yas-kalıntısı değil, adı silinmiş bir şeyin MÜHÜRÜ olduğuna dair ilk gerçek uyarı"yı tam olarak verdi ("Kral-Efendiler O'nu tanrılar arasından değil, tanrıların KENDİSİ sildi..."). Parti (Kral ilan edilmenin, Krallık kurmanın ortasında) bunu duydu ama hiç durup üzerinde durmadı — tam olarak arc'ın öngördüğü "bilinçli göz ardı etme." Dynamic arc kuralı #2 gereği (beat = consequence, event değil) bu geçerli bir tamamlanma — Umm-Halad artık ayrı, opsiyonel bir keşif/lore sahnesi olarak kalıyor, arc beat'i olarak gerekli değil.
       - id: "2b"
         label: "Bonewrights'in Yemini"
         what_changes: "Tacın neden kırıldığının gerçek tarihi ortaya çıkıyor — sadece bir kralı durdurmak için değil, kazayla serbest bırakılmaya başlanan bir şeyi yeniden mühürlemek için. **Ser Oskar Thrune bu yemine bağlı — müzakere yolu YOK, parça istenirse doğrudan saldırır.**"
@@ -638,7 +638,7 @@ acts:
         status: pending
 
 current_act: 2  # ★ Act 1 tamamen kapandı (1a + 1b), gün 191, session 32 — Sarelle öldü, Ashvale düştü. Act 2'ye (The Sundered Reach) geçiş açık.
-current_beat: "2a"
+current_beat: "2b"  # ★ 2a tamamlandı (gün 221, session 38, alternatif yolla — bkz. yukarıdaki beat kaydı). steering_notes: 2b (Bonewrights'in Yemini) için world_pressure hazır ve değişmedi — parti Son Crown parçasına (9/9, Ser Oskar Thrune, Bonewrights' Hall) gittiğinde tetiklenecek, müzakere yok, doğrudan combat.
 
 # ★ gün 194, session 33 — Ivrathax'tan (Frostmere) 8. Crown parçası SAVAŞSIZ alındı (Persuasion 23, "kardeşlik ittifakı").
 # Bu resmi bir beat değil (2a/2b'nin ikisi de hâlâ pending) ama Act 2'nin "parçaları topla" drive'ını ilerletti — parti artık 8/9.
@@ -1119,13 +1119,13 @@ revision_log: []
 - Sonraki hedef olarak Karsgate (Vharkoss + isimsiz katip) belirlendi.
 
 ## Session Flags
-- **session_status: open** (2026-09-23, `/dm:dnd load` ile session 38 açıldı.)
+- **session_status: closed** (2026-09-23, `/dm:dnd end` ile session 38 kapatıldı — bir sonraki `/dm:dnd load` session 39'u açacak.)
 - language: tr (Türkçe anlatım — 2026-09-08'de kesin talep edildi, tüm gelecek oturumlarda geçerli, DM her zaman Türkçe anlatmalı)
 - autosave: on
 - mirror_to_global_roster: off (2026-09-06, session 20 — tek kampanya var, kampanyalar arası taşıma kullanılmıyor; `/dm:dnd save` bundan sonra sadece `campaigns/ashen-crown/characters/`'ı günceller, global `characters/` kopyasına dokunmaz)
 - *(2026-09-22 temizliği: `display_mode`, `roll_mode` ve `xp_multiplier` bayrakları kaldırıldı — display/telefon sistemi skill'den tamamen silindi, zar sahipliği ve çarpansız XP artık skill'in kendi varsayılanı. Bkz. AIGM refactor, git `aigm-refactor` dalı.)*
-- **next_session_opening (2026-09-23 güncellendi, session 37 sonunda):** Parti **Emberhold, Sonnward Promenade konağında** — Ember Court tamamen bitti, Iskra/Sathriel kalıcı öldü, **long rest tamamlandı, ikisi de Level 18, tam HP/kaynak.** Bag of Holding devasa bir loot ile dolu (Kaal'ın Zulüm Bıçakları, Boyun Eğmeyenin Tacı, İblis Topuzu, Kaal Muhafızının Bileziği, Sözleşme Taşı parçaları, borç defteri, hapsedilmiş kül-ruhu, ~116.000 gp). **Saat baskısı yok artık** — Whisper Court tehdidi bitti. Açık kararlar: (1) hapsedilmiş kül-ruhuyla ne yapılacak; (2) borç defterinin nasıl kullanılacağı (siyasi kaldıraç); (3) Sözleşme Taşı onarılıp onarılmayacağı; (4) üç haneye (Corr/Sablewood/Ilvane) Whisper Court'un gerçek doğasının ne zaman/nasıl anlatılacağı — gün 210-211'de kendileri öğrenecek, parti önce mi davranmak ister; (5) "Marek Vantrel" ipliği DM-only, henüz oyunculara hiç sızdırılmadı, ne zaman/nasıl yüzeye çıkacağı planlanmalı. **Efreeti Bottle'ın 2 kullanım hakkı kaldı** (tıpa gün 205 öğleden sonrasına kadar kilitli). **Son Crown parçası (9/9, Ser Oskar Thrune, Bonewrights' Hall) hâlâ gidilmedi** — artık hiçbir zaman baskısı yokken doğal bir sıradaki hedef olabilir.
-- **Bir sonraki oturumun ilk iş listesi:** (1) `calendar.py -c ashen-crown stateline` ile saati aç (gün 205 sabah); (2) Efreeti Bottle'ın 24 saatlik kilidinin ne zaman açılacağını hesapla; (3) `factions.py tick --day 205` — bütçeler yenilensin; (4) session açılışında Emberhold'daki bekleyen siyasi ipliklerin (Cassian, Sereth, Coren'in darbesi, Veskin) ne kadar ilerlediğine dair kısa bir güncelleme ver.
+- **next_session_opening (2026-09-23 güncellendi, session 38 sonunda):** Parti **Emberhold, The Ember Throne'da** — Kriv artık Kral, Krallık kuruldu, taç giyme şöleni bitti, uzun mola tamamlandı, ikisi de Level 18, tam HP/kaynak. Açık kararlar: (1) "Ashen Corwyn" adlı kukuletalı gözlemcinin kimin adına geldiği — Kriv'in "kanıt isteyenlere göstereceğim, ama bir şartım var" teklifi henüz kimseye açıklanmadı; (2) Hollow Throne'a oturulup oturulmayacağı — "sonra karar verelim" diye bırakıldı; (3) satılmamış Ember Court loot'u (Kaal'ın Zulüm Bıçakları, İblis Topuzu, Kaal Muhafızının Bileziği); (4) Kırılmayan Öz ritüeli hiç kullanılmadı, Sylandra Cael gün 230'da haber gönderecek; (5) Son Crown parçası (9/9, Ser Oskar Thrune, Bonewrights' Hall) hâlâ gidilmedi; (6) General Coren'in 300 askeri + Compact'tan konfiske edilen 300 asker hâlâ Emberhold'a yolda.
+- **Bir sonraki oturumun ilk iş listesi:** (1) `calendar.py -c ashen-crown stateline` ile saati aç (gün 222 sabah); (2) `factions.py tick --day <güncel gün>` — bütçeler yenilensin; (3) yolda olan askerlerin (Coren'in 300'ü + Compact'tan gelen 300) Emberhold'a ulaşıp ulaşmadığını kontrol et (gün 226-227 civarı bekleniyor); (4) "Ashen Corwyn" ipliğinin sahnede geri gelip gelmediğine dikkat et.
 
 ## DM Style Notes
 *Bu bölüm artık SADECE bu kampanyaya özel olguları ve kalibrasyonu taşır. Genel DM kuralları (zar sahipliği, NPC bilgi sınırı, combat anlatımı, tasvir disiplini, NPC üretim standardı, site tasarımı, kayıt titizliği, zaman atlama, parti bölünmesi vb.) 2026-09-22'de skill'in kendisine taşındı — `SKILL.md`, `SKILL-combat.md`, `SKILL-commands.md`. Orada yazan bir kuralı burada tekrarlama; çeliştiği bir upstream metin kaldıysa kuralı burada "override" etmek yerine skill'de düzelt.*
