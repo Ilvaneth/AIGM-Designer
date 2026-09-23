@@ -9,7 +9,7 @@
 | **Level** | 18 (session 37, long rest ile işlendi — HP +7, 5. seviye slot 2→3, Spell Mastery: Mage Armor+Invisibility slotsuz, 2 yeni büyü: Control Weather (8th) + Foresight (9th)) |
 | **Background** | Charlatan |
 | **Alignment** | Neutral Evil |
-| **Experience Points** | 284642 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8).** **+8.400, session 37, Oda 23 (2× Bone Devil Kıdemli CR12).** **Oda 24 final boss (Rakshasa Rajah + Pit Fiend) XP'si oyuncu talebiyle atlandı — final loot yeterli ödül sayıldı, +23.500 XP eklenmedi.** **★ LEVEL UP (Level 18, eşik 265.000) — session 37 sonunda long rest ile işlendi.**) |
+| **Experience Points** | 290942 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8).** **+8.400, session 37, Oda 23 (2× Bone Devil Kıdemli CR12).** **Oda 24 final boss (Rakshasa Rajah + Pit Fiend) XP'si oyuncu talebiyle atlandı — final loot yeterli ödül sayıldı, +23.500 XP eklenmedi.** **★ LEVEL UP (Level 18, eşik 265.000) — session 37 sonunda long rest ile işlendi.** **+6.300, gün 205, session 38 (Hard noncombat) — üç hane + Veskin'le gizli müzakere, Kriv Kral ilan edildi, iki yıllık taht boşluğu bitti. 284.642+6.300 = 290.942.** Level 19 eşiği 305.000 — 14.058 kaldı.) |
 
 ---
 
@@ -31,8 +31,8 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 |---------|-------|----------|
 | Strength | 10 | +0 |
 | Dexterity | 18 | +4 |
-| Constitution | 14 | +2 |
-| Intelligence | 18 | +4 |
+| Constitution | 16 (Manual of Bodily Health, gün 211 — doğal skoru 14) | +3 |
+| Intelligence | 20 (Tome of Clear Thought, gün 209 — doğal skoru 18) | +5 |
 | Wisdom | 16 | +3 |
 | Charisma | 14 | +2 |
 
@@ -47,8 +47,8 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 | Stat | Value |
 |------|-------|
 | **Armor Class** | 21 (13 + DEX 4 Mage Armor, +2 Bracers of Defense, +2 Staff of Power while holding — gün 205, session 38, Winged Boots'un yerine attune edildi) |
-| **HP Maximum** | 116 (level 17, +5 — raw d6 roll 3 (oyuncu zarı) + CON mod 2, gün 203, session 35) |
-| **Current HP** | 123/123 (session 37, Emberhold konağı — long rest ile tam iyileşti, level 18'in +7 HP'si dahil) |
+| **HP Maximum** | 141 (level 18: 123 + Manual of Bodily Health'in retroaktif bonusu — CON mod +2→+3, ×18 seviye = +18, gün 211, session 38) |
+| **Current HP** | 141/141 (gün 211 — tam dinlenmiş, Manual of Bodily Health'in +18 HP'si dahil) |
 | **Temporary HP** | 0 |
 | **Speed** | 30 ft |
 | **Initiative Modifier** | +4 |
@@ -87,8 +87,8 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 |------|----------|-------------|
 | Strength | +2 | [ ] |
 | Dexterity | +6 | [ ] |
-| Constitution | +4 | [ ] |
-| Intelligence | +12 | [x] |
+| Constitution | +5 | [ ] |
+| Intelligence | +13 | [x] |
 | Wisdom | +11 | [x] |
 | Charisma | +4 | [ ] |
 
@@ -102,25 +102,25 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 |-------|---------|----------|-------------|------------|
 | Acrobatics | DEX | +4 | [ ] | [ ] |
 | Animal Handling | WIS | +3 | [ ] | [ ] |
-| Arcana | INT | +10 | [x] | [ ] |
+| Arcana | INT | +11 | [x] | [ ] |
 | Athletics | STR | +0 | [ ] | [ ] |
 | Deception | CHA | +8 | [x] | [ ] |
-| History | INT | +4 | [ ] | [ ] |
+| History | INT | +5 | [ ] | [ ] |
 | Insight | WIS | +3 | [ ] | [ ] |
 | Intimidation | CHA | +2 | [ ] | [ ] |
-| Investigation | INT | +10 | [x] | [ ] |
+| Investigation | INT | +11 | [x] | [ ] |
 | Medicine | WIS | +3 | [ ] | [ ] |
-| Nature | INT | +4 | [ ] | [ ] |
+| Nature | INT | +5 | [ ] | [ ] |
 | Perception | WIS | +9 | [x] | [ ] |
 | Performance | CHA | +2 | [ ] | [ ] |
 | Persuasion | CHA | +2 | [ ] | [ ] |
-| Religion | INT | +4 | [ ] | [ ] |
+| Religion | INT | +5 | [ ] | [ ] |
 | Sleight of Hand | DEX | +10 | [x] | [ ] |
 | Stealth | DEX | +4 | [ ] | [ ] |
 | Survival | WIS | +3 | [ ] | [ ] |
 
 **Passive Perception:** 24 (19 + 5 Observant — prof +6 sonrası, gün 203/session 35)
-**Passive Investigation:** 25 (20 + 5 Observant — prof +6 sonrası, gün 203/session 35)
+**Passive Investigation:** 26 (21 + 5 Observant — gün 209, Tome of Clear Thought'un INT+1 mod artışı dahil)
 
 *Proficiencies: Arcana, Investigation (class); Deception, Sleight of Hand (Charlatan background); Perception (Elf — Keen Senses).*
 
@@ -156,10 +156,10 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 |------|-------------|--------|------|-------|
 | ~~+1 Quarterstaff~~ | +5 | 1d6+1 (1d8+1 two-handed) | Bludgeoning | **Yedekte — Staff of Power'a yer açmak için birincil odak olarak bırakıldı (gün 205, session 38).** |
 | ★ Staff of Power (arcane focus, weapon) | +8 | 1d6+2 (1d8+2 two-handed) | Bludgeoning | STR-based (mod +0) + Staff'ın kendi +2'si. Melee'de nadiren kullanılır ama artık birincil odak/silahı. 20 şarj (2d8+4/gün yenilenir) — Power Strike (1 şarj: +1d6 force), ya da Cone of Cold/Fireball(5.sv)/Globe of Invulnerability/Hold Monster/Levitate/Lightning Bolt(5.sv)/Magic Missile/Ray of Enfeeblement/Wall of Force castleme. |
-| Fire Bolt (cantrip) | +12 | 4d10 | Fire | Spell attack, ranged 120 ft. **Cantrip damage scales at 5th/11th/17th — 4 dice since level 17 (gün 203, session 35, 3→4).** Atak bonusu +10→+12 (gün 205, Staff of Power'ın +2'si dahil) |
-| Chill Touch (cantrip) | +12 | 4d8 | Necrotic | Spell attack; target can't regain HP until start of your next turn; disadvantage on attacks vs. you if target is undead. **4 dice since level 17**, atak +12 |
-| Shocking Grasp (cantrip) | +12 | 4d8 | Lightning | Spell attack, melee touch; advantage if target wears metal armor; target can't take reactions until its next turn. **4 dice since level 17**, atak +12 |
-| Toll the Dead (cantrip) | — (WIS save) | 4d8 (4d12 if target missing HP) | Necrotic | Spell save DC 18 (gün 203/level 17'de 17→18). **4 dice since level 17 (3→4)** — DC Staff of Power'dan etkilenmiyor (Staff sadece attack roll/AC/save bonusu veriyor, DC değil) |
+| Fire Bolt (cantrip) | +13 | 4d10 | Fire | Spell attack, ranged 120 ft. **Cantrip damage scales at 5th/11th/17th — 4 dice since level 17 (gün 203, session 35, 3→4).** Atak bonusu +13 (gün 209, Tome of Clear Thought INT+5 dahil, +Staff of Power'ın +2'si) |
+| Chill Touch (cantrip) | +13 | 4d8 | Necrotic | Spell attack; target can't regain HP until start of your next turn; disadvantage on attacks vs. you if target is undead. **4 dice since level 17**, atak +13 |
+| Shocking Grasp (cantrip) | +13 | 4d8 | Lightning | Spell attack, melee touch; advantage if target wears metal armor; target can't take reactions until its next turn. **4 dice since level 17**, atak +13 |
+| Toll the Dead (cantrip) | — (WIS save) | 4d8 (4d12 if target missing HP) | Necrotic | Spell save DC 19 (gün 209, Tome of Clear Thought: INT mod +4→+5). **4 dice since level 17 (3→4)** — DC Staff of Power'dan etkilenmiyor (Staff sadece attack roll/AC/save bonusu veriyor, DC değil) |
 
 ---
 
@@ -168,8 +168,8 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 | Field | Value |
 |-------|-------|
 | **Spellcasting Ability** | INT |
-| **Spell Save DC** | 18 (gün 203/level 17'te 17→18, proficiency +5→+6) — Staff of Power'dan etkilenmiyor |
-| **Spell Attack Bonus** | +12 (gün 205, session 38: +10 → +12, Staff of Power'ı taşırken +2) |
+| **Spell Save DC** | 19 (gün 209, Tome of Clear Thought: INT mod +4→+5) — Staff of Power'dan etkilenmiyor |
+| **Spell Attack Bonus** | +13 (gün 209: 11 taban [prof+6, INT mod+5] + 2 Staff of Power taşırken) |
 
 ### Spell Slots
 
@@ -181,7 +181,7 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 | 4th | 3 | 3 |
 | 5th | 3 | 3 |
 | 6th | 1 | 1 |
-| 7th | 1 | 1 |
+| 7th | 1 | 0 |
 | 8th | 1 | 1 |
 | 9th | 1 | 1 |
 
@@ -351,8 +351,8 @@ Spellbook contains 10 first-level + 9 second-level + 5 third-level + 5 fourth-le
 - **★ Lord Ossian Brack'in günlüğü + Denna Sarth'ın krokisi (gün 182, session 30, Kingsward — House Ashveil malikanesi).** Otuz iki yıl önce yok edilen bir hanenin hane reisinin günlüğü, gizli bir panelde bulundu (Investigation 28) — ölümünden bir gece önce, güvendiği bir müsteşarın (Denna Sarth) aslında bir doppelganger'la değiştirildiğinden şüphelendiğini yazmış. Kaba bir kroki de var: sivri çene, sola eğik kaş, kulak arkasında doğum lekesi — gerçek Denna'nın mı yoksa taklidin mi olduğu belirsiz, ama gelecekte bir karşılaştırma referansı. **Whisper Court'un doppelganger yönteminin en az 32 yıldır sürdüğünün ilk somut kanıtı** — Wrenna/Arnholt tek seferlik değil, kuşaklar süren bir yöntemin parçası.
 - ~~Winged Boots~~ — Hall of Wards, Karsgate, gün 181 (4.000 gp'den 3.400 gp'ye pazarlıkla). **DEATTUNE EDİLDİ (gün 205, session 38, Staff of Power'a yer açmak için).** Çantada duruyor, gerektiğinde yeniden takılabilir.
 - **★ Staff of Power** — The Grand Spire, gün 205, session 38 (15.000 gp'den 12.000 gp'ye pazarlıkla, Kindled Circle üyelik indirimi + Persuasion 29). Very Rare, sorcerer/warlock/wizard attunement. Melee silah olarak +2 atak/hasar; taşırken +2 AC/tüm saves/spell attack bonus. 20 şarj (2d8+4/gün yenilenir) — Power Strike (1 şarj, vuruşa +1d6 force) ya da cone of cold/fireball(5.sv)/globe of invulnerability/hold monster/levitate/lightning bolt(5.sv)/magic missile/ray of enfeeblement/wall of force castleme. Retributive Strike (kırılırsa 30ft patlama) — asla bilerek kırılmayacak. +1 Quarterstaff'ın yerine birincil odak/silahı oldu.
-- **★ Manual of Bodily Health** (Very Rare) — The Reagent Hall, gün 205, session 38 (paket fiyatı Tome of Clear Thought ile birlikte, aşağıya bkz.). 6 gün içinde 48 saatlik çalışma/pratik ile CON'u ve maksimumunu kalıcı +2 artırıyor. **Henüz çalışılmadı — mekanik etki bekliyor.**
-- **★ Tome of Clear Thought** (Very Rare) — The Reagent Hall, gün 205, session 38. **Manual of Bodily Health ile birlikte, toplam 19.000 gp'ye pazarlıkla (24.000'den, Persuasion 29).** 6 gün içinde 48 saatlik çalışma/pratik ile INT'yi ve maksimumunu kalıcı +2 artırıyor. **Henüz çalışılmadı — mekanik etki bekliyor.**
+- ~~Manual of Bodily Health~~ (Very Rare) — The Reagent Hall, gün 205, session 38. **TAMAMLANDI, gün 209-211 (2 gün, kesintisiz — Ascension Stage 2 sayesinde uykuya/trance'e ihtiyacı olmadan)** — CON 14→16 (kalıcı, maksimum dahil), CON mod +2→+3. HP Maximum'a retroaktif +18 (18 seviye × +1), yeni max 141. CON save +4→+5. Kitap büyüsünü kaybetti, bir asır sonra geri gelecek.
+- ~~Tome of Clear Thought~~ (Very Rare) — The Reagent Hall, gün 205, session 38. **TAMAMLANDI, gün 209 sabahı — 48/48 saat, 5 gün içinde (6 gün sınırının içinde).** INT 18→20 (kalıcı, maksimum dahil) — Spell Save DC 18→19, Spell Attack Bonus taban 10→11 (+2 Staff of Power ile 13), Arcana/Investigation +10→+11, History/Nature/Religion +4→+5, Passive Investigation 25→26. Kitap artık büyüsünü kaybetti (bir asır sonra geri gelecek), sıradan bir kitap olarak kaldı. Manual of Bodily Health'e (CON) henüz hiç başlanmadı — sırada, isteğe bağlı.
 - **Ejderha heykelciği (mücevher işlemeli)** — Halvern & Sons, Curios, gün 181 (500 gp'den 425 gp'ye pazarlıkla). Draconic Transformation'ın malzeme bileşeni — büyü tarafından tüketilmiyor (metin "which the spell consumes" demiyor), tek seferlik alım, kalıcı olarak yeniden kullanılabilir.
 - **★ House Ilvane mühürlü mektubu (gün 179, The Rookery)** — "E.K."ye yazılmış, House Ilvane'in kendi armasıyla (kırık bir taç üzerine saplanmış geyik) mühürlenmiş, "V." imzalı: *"E.K. — bir sonraki ödeme her zamanki gibi. 'Boş Koltuk' meselesini gözden kaçırma, bunu bizzat takip ediyorum. — V."* **Gün 180'de Sereth'e gösterildi** (kaynak açıklanmadı) — Lady Iskra Vantrel'e giden en somut fiziksel kanıt, artık Sereth de biliyor.
 - **Gümüş saç tokası, göz motifli (gün 179, The Rookery)** — mühürlü kutuda mektup ve altınla birlikte bulundu, işlevi/anlamı belirsiz, garip bir şekilde kişisel duruyor. Saklanıyor, henüz kimliği/kaynağı çözülmedi.

@@ -299,19 +299,20 @@
    "id": "ironclad-compact",
    "name": "Ironclad Compact (Coren Ashvale)",
    "status": "active",
-   "objective": "Stay the indispensable third party to every war without being owned by any side",
-   "power": 4,
+   "objective": "Rebuild as the Crown's licensed trade arm — half its army conscripted, sworn, no longer neutral",
+   "power": 2,
    "intel": 2,
    "move_points": {
-    "per_week": 4,
-    "available": 4,
+    "per_week": 2,
+    "available": 2,
     "refreshed_day": 207
    },
    "assets": [
-    "Mercenary army",
-    "trade fleet",
+    "Trade fleet",
     "Gallowmere smuggling economy",
-    "Sethra Shestendeliath (Kriv's sister) inside the Compact"
+    "Sethra Shestendeliath (inside, now moot)",
+    "King's Supplier contract (Vessa Kettring)",
+    "half its mercenaries lost to the Crown"
    ],
    "stances": {
     "party": 2,
@@ -320,25 +321,15 @@
     "house-sablewood": 2
    },
    "operation": {
-    "name": "The Table problem",
+    "name": "Bir Krallığın Tebaası",
     "steps": [
      {
-      "text": "Coren tests which Table members would back a coup",
-      "due_day": 212,
-      "done": false
-     },
-     {
-      "text": "Sethra brokers the Shestendeliath guarantee that makes the coup survivable",
-      "due_day": 218,
-      "done": false
-     },
-     {
-      "text": "Break from the Table with ~900 soldiers once the war chest is full",
-      "due_day": null,
+      "text": "10% Kingdom tribute'un ilk ödemesi",
+      "due_day": 213,
       "done": false
      }
     ],
-    "abandon_if": "Ilse Drummel moves against him first, or loyalty among his own soldiers cracks",
+    "abandon_if": "Kriv Kral olarak düşerse ya da Table'a karşı tek taraflı hareket ederse",
     "metric": {
      "label": "gp raised for the break",
      "current": 6000.0,

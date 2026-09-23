@@ -38,7 +38,7 @@
     "kind": "npc",
     "goal": "Uc aday hane arasindaki dengeyi sonsuza kadar surdurmek, tahtin asla dolmamasini saglamak",
     "metric_type": "boolean",
-    "status": "threatened",
+    "status": "permanent_loss",
     "responses": {
       "threatened": "Bir hane (ozellikle Sereth Corr) gercek bir avantaj kazanirsa: digerlerini o haneye karsi sessizce kiskirtir, burokratik engeller cikarir.",
       "blocked": "Freya Grimwell'in kendi sigortasi (Veskin'in usulsuzlukleri) ortaya cikarsa: once inkar eder, sonra sessizce Grimwell'i tatmin etmeye/susturmaya calisir.",
@@ -77,9 +77,9 @@
       "blocked": "Kriv'in destegi geri cekilirse ya da House Ilvane'in Iskra baglantisi kanitlanamazsa: stratejisi sekteye ugrar, daha savunmaci bir tavra doner.",
       "permanent_loss": "Rakip bir hane resmen tahta otururse: on yillik plani biter, Dorren'in intikami da yarim kalir — acik isyan ya da tam geri cekilme."
     },
-    "last_updated_session": 31,
+    "last_updated_session": 38,
     "condition": "Sereth Corr resmen Bos Koltuk'a otururse (ya da rakip bir haneye kaybederse)",
-    "achieved": false
+    "achieved": true
   },
   {
     "id": "tain_takeover",

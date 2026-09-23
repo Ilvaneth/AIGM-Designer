@@ -4,7 +4,7 @@
 
 *Cantrip'ler ve rituteller her zaman kullanilabilir, bu listeye dahil degil.*
 
-## Su An Hazir (22 / 22)
+## Su An Hazir (23 / 23)
 
 - Chain Lightning (6th)
 - Draconic Transformation (7th)
@@ -18,15 +18,16 @@
 - Ice Storm (4th)
 - Remove Curse (3rd)
 - Counterspell (3rd)
-- Cloudkill (5th)
-- Circle of Death (6th)
-- Mental Prison (6th)
-- Sickening Radiance (4th)
 - Vampiric Touch (3rd)
 - True Polymorph (Sylandra Cael'in versiyonu) (9th)
 - Wish (9th)
-- Protection from Evil and Good (1st)
-- Control Weather (8th)
 - Invisibility (2nd)
+- Sending (3rd)
+- Detect Thoughts (2nd)
+- Dominate Person (5th)
+- Control Weather (8th)
+- Fireball (3rd)
+- Teleportation Circle (5th)
+- Power Word Kill (9th)
 
-*Son guncelleme: 2026-09-23 13:24*
+*Son guncelleme: 2026-09-23 17:11*

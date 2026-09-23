@@ -10,7 +10,7 @@
 - **Motivation:** Kamuya açık olarak "istikrar" istiyor, gerçekte **çözümün asla gelmemesini** istiyor — çünkü taç giyen biri onu tekrar sıradan bir katip yapar, ve daha kötüsü: iki yıllık defter oyunlarını (hazineden usulsüz kesintiler, sahte "acil durum" harcamaları) ortaya çıkarır.
 - **Secret:** İmparator'un ölümü hakkında bir şeylerin "tam doğru" olmadığından şüpheleniyor — belki Concordat'ın parmağı olduğunu bile seziyor — ama araştırmadı, bilerek. Gerçeği bilmemek, ona sorumluluk yüklemiyor; sormamak, onun hayatta kalma stratejisinin bir parçası.
 - **Zayıf noktası:** Gerçek bir korkak — şiddetten, doğrudan yüzleşmeden kaçınır, kendini asla riske atmaz. Köşeye sıkışırsa savaşmaz, pazarlık eder ya da kaçar. Elindeki tek gerçek silah kağıt işi ve zaman kazanma.
-- **Attitude toward party:** unmet — muhtemelen partiyi önce "kontrol edilebilir bir kaos unsuru" olarak okuyacak, sonra (eğer gerçekten çözüme yaklaşırlarsa) sessiz bir engel haline gelecek.
+- **Attitude toward party:** **neutral (tanıştılar, gün 182, Hollow Throne dinlemesi — Ilvane'in itirazı bastırıldı, Kriv'in koltuğu resmen tanındı, Veskin yenilgiyi zarifce kabul etti).** Partiyi "kontrol edilebilir bir kaos unsuru" olarak okuyor, sonra (eğer gerçekten çözüme yaklaşırlarsa) sessiz bir engel haline gelecek.
 - **Faction:** Bağımsız (resmi olarak tarafsız Regent-Chancellor)
 - **Current goal:** Üç aday hanenin arasındaki dengeyi sonsuza kadar sürdürmek, kimseye gerçek bir avantaj vermemek.
 
@@ -264,7 +264,7 @@
 - **Motivation:** Circle'ın kurumsal bağımsızlığını korumak — üç taht adayı hanenin de, Concordat'ın da, Compact'ın da büyücülüğü kendi siyasetlerine alet etmesini engellemek.
 - **Secret:** İlvaneth'in Necromancy okulunun aslında Circle'ın kendi arşivlerinde, imparatorluktan daha eski, bastırılmış bir gelenekle bağlantılı olduğunu biliyor — bunu kimseye söylemedi, ama İlvaneth'in araştırması bunu ortaya çıkarabilir.
 - **Zayıf noktası:** Tarafsızlığa o kadar bağlı ki, gerçekten yardıma ihtiyacı olan birine (İlvaneth gibi) bile mesafeli kalabilir — "kural herkese eşit uygulanır" ilkesi bazen gerçek bir katılığa dönüşüyor.
-- **Attitude toward party:** **unmet ama zaten haberdar** — İlvaneth "tanınmayan biri" olarak gelmiyor, zaten resmi bir üye (Karsgate'te kabul edildi) ve dosyası (askere alım kampı olayı, eşleşen büyü imzası, "self-defense" savunması) merkez arşive çoktan ulaştı. Voss onu bir tehdit olarak değil, "izlenmesi gereken, gerçek bir vaka" olarak biliyor.
+- **Attitude toward party:** **tanıştılar, resmi/mesafeli (gün 181, session 29 — düzeltme, session 38: önceki "unmet" etiketi bu görüşmeyle çelişiyordu).** İlvaneth Grand Spire'da bizzat görüşmüştü — "tanınmayan biri" olarak gelmemişti, zaten resmi bir üye (Karsgate'te kabul edildi) ve dosyası (askere alım kampı olayı, eşleşen büyü imzası, "self-defense" savunması) merkez arşive çoktan ulaşmıştı. Voss onu bir tehdit olarak değil, "izlenmesi gereken, gerçek bir vaka" olarak biliyor. Odile Rask'ın resmi inceleme talebi rafa kalktı ama kapanmadı.
 - **Faction:** The Kindled Circle (kurucu/lider)
 - **Current goal:** Circle'ın üç güce de bağımsız kalmasını sürdürmek, İlvaneth'in "vaka"sını kişisel olarak izlemek.
 - **Schedule:** The Kindled Spire'da, nadiren dışarı çıkar.
