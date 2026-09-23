@@ -377,7 +377,10 @@
         "sarelle-second",
         "unmet"
       ],
-      "summary": "Sarelle'in yeni ikinci adamı, Tain'in yerine (3 ay önce)"
+      "summary": "Sarelle'in yeni ikinci adamı, Tain'in yerine (3 ay önce)",
+      "aliases": [
+        "Solenne Kavash"
+      ]
     },
     {
       "id": "npc_corvin",
@@ -687,18 +690,6 @@
         "chapter2"
       ],
       "summary": "En guvenilir taht adayi, agabeyini kaybetti, gercekten yetkin ve acimasiz"
-    },
-    {
-      "id": "npc_iskra_vantrel",
-      "type": "npc",
-      "name": "Iskra Vantrel",
-      "tags": [
-        "whisper-court",
-        "rakshasa",
-        "house-ilvane",
-        "chapter2"
-      ],
-      "summary": "Whisper Court'un rakshasasi, D.V. ile eski bir tanidik olabilir"
     },
     {
       "id": "faction_whisper_court",
@@ -1223,17 +1214,6 @@
       "summary": "Harrowgate gumruk katibi, Drenmoor Ticaret Evi'ne calisiyordu, buyusel korumali, infaz edildi"
     },
     {
-      "id": "npc_solenne_kavash",
-      "type": "npc",
-      "name": "Solenne Kavash",
-      "tags": [
-        "concordat",
-        "tiefling",
-        "sarelles-second"
-      ],
-      "summary": "Sarelle'in ikinci adami, Bas Arsivci, hastaligindan supheleniyor"
-    },
-    {
       "id": "npc_toma_brek",
       "type": "npc",
       "name": "Toma Brek",
@@ -1436,7 +1416,7 @@
     {
       "id": "npc_iskra",
       "type": "npc",
-      "name": "Lady Iskra Vantrel",
+      "name": "Iskra Vantrel",
       "tags": [
         "whisper-court",
         "house-ilvane",
@@ -1444,7 +1424,11 @@
         "dm-only",
         "suspect"
       ],
-      "summary": "House Ilvane'in danismani - Wrenna ve Arnholt'un gercek efendisi, House Ilvane muhurlu mektubun imzacisi 'V.', Dorren Corr'un olumune isaret eden kirik daire muhruyle bagi supheli"
+      "summary": "House Ilvane'in danismani - Wrenna ve Arnholt'un gercek efendisi, House Ilvane muhurlu mektubun imzacisi 'V.', Dorren Corr'un olumune isaret eden kirik daire muhruyle bagi supheli",
+      "aliases": [
+        "Iskra Vantrel",
+        "Lady Iskra Vantrel"
+      ]
     },
     {
       "id": "place_old_barracks",
@@ -2142,15 +2126,6 @@
       "closed_anchor": "gecici edge, yanlislikla Gallowmere eklendi"
     },
     {
-      "id": "e55",
-      "from": "npc_sethra",
-      "to": "place_gallowmere",
-      "type": "present_in",
-      "since_session": 22,
-      "until_session": 22,
-      "note": "Compact'tan istifa, kardesiyle bulusma - artik Hold'a gidiyor"
-    },
-    {
       "id": "e56",
       "from": "npc_sethra",
       "to": "npc_vharkoss",
@@ -2557,7 +2532,7 @@
     },
     {
       "id": "e101",
-      "from": "npc_iskra_vantrel",
+      "from": "npc_iskra",
       "to": "faction_whisper_court",
       "type": "member_of",
       "since_session": 26,
@@ -2565,7 +2540,7 @@
     },
     {
       "id": "e102",
-      "from": "npc_iskra_vantrel",
+      "from": "npc_iskra",
       "to": "npc_dorian_varn",
       "type": "possibly_knows",
       "since_session": 26,
@@ -2656,7 +2631,7 @@
     },
     {
       "id": "e113",
-      "from": "npc_iskra_vantrel",
+      "from": "npc_iskra",
       "to": "npc_cassian",
       "type": "secretly_manipulates",
       "since_session": 26,
@@ -2705,7 +2680,7 @@
     {
       "id": "e119",
       "from": "npc_elian",
-      "to": "npc_iskra_vantrel",
+      "to": "npc_iskra",
       "type": "suspects",
       "since_session": 26,
       "until_session": null
@@ -3046,7 +3021,7 @@
     },
     {
       "id": "e159",
-      "from": "npc_solenne_kavash",
+      "from": "npc_kavash",
       "to": "npc_sarelle",
       "type": "suspects",
       "since_session": 26,
@@ -3854,7 +3829,7 @@
     {
       "id": "e248",
       "from": "party",
-      "to": "npc_iskra_vantrel",
+      "to": "npc_iskra",
       "type": "killed",
       "since_session": 37,
       "until_session": null,

@@ -218,6 +218,26 @@ def cmd_add_node(args) -> int:
         print(f"error: node id '{node_id}' already exists. use --id to override.",
               file=sys.stderr)
         return 1
+
+    # A second node for someone who already has one is how a death edge ends up
+    # on one id while the other still reads as alive. Match on name and on any
+    # recorded alias, and refuse unless the caller says it really is a new one.
+    wanted = args.name.strip().lower()
+    for n in data["nodes"]:
+        known = [n.get("name", "")] + list(n.get("aliases", []))
+        if any(k.strip().lower() == wanted for k in known if k):
+            if not args.allow_duplicate_name:
+                print(f"error: '{args.name}' is already node {n['id']} "
+                      f"({n.get('type','?')}). Two nodes for one character split its "
+                      f"edges, so a death recorded on one leaves the other reading as "
+                      f"alive.\n"
+                      f"  Same character → use {n['id']}, or add the other form as an "
+                      f"alias on it.\n"
+                      f"  Genuinely a different character → pass --allow-duplicate-name "
+                      f"(and give them distinguishable names, since the table has to "
+                      f"tell them apart too).", file=sys.stderr)
+                return 1
+
     node = {
         "id": node_id,
         "type": args.type,
@@ -1006,6 +1026,9 @@ def main() -> int:
     sp.add_argument("--id", help="explicit id (default: <type>_<name-slug>)")
     sp.add_argument("--tags", help="comma-separated")
     sp.add_argument("--summary", help="one-line summary")
+    sp.add_argument("--allow-duplicate-name", action="store_true",
+                    dest="allow_duplicate_name",
+                    help="This really is a different character with the same name")
     sp.set_defaults(func=cmd_add_node)
 
     sp = sub.add_parser("add-edge")

@@ -211,6 +211,7 @@ def cmd_add(campaign: str, args) -> None:
     data["factions"].append({
         "id": args.id,
         "name": args.name,
+        "created_day": int(args.day) if args.day else None,
         "status": args.status,
         "objective": args.objective,
         "power": power,
@@ -543,6 +544,16 @@ def cmd_check(campaign: str, day: int) -> None:
         last = _last_move_day(f)
         if last is not None and day - last >= IDLE_DAYS:
             problems.append(f"{f['name']}: no move in {day - last} days")
+        elif last is None:
+            # Never acted at all. A future-dated step is not activity: a faction
+            # can sit on a plan for weeks and raise nothing, which is how two
+            # great houses sat out two entire sessions without the board saying
+            # a word. Only spare a faction that was created moments ago.
+            created = f.get("created_day")
+            if created is None or day - created >= IDLE_DAYS:
+                age = f" in the {day - created} days since it was put on the board" if created else ""
+                problems.append(f"{f['name']}: no move on record{age} — "
+                                f"the world has never seen them do anything")
     if problems:
         print("  " + "=" * 64)
         print(f"  !!! FACTION BOARD NEEDS A MOVE ({len(problems)}) — day {day}")
@@ -575,6 +586,9 @@ def main() -> None:
     add.add_argument("--intel", default="1", help="0-3; how fast they learn things")
     add.add_argument("--status", default="active", choices=["active", "dormant"])
     add.add_argument("--assets", default="", help="Semicolon-separated")
+    add.add_argument("--day", default="", metavar="N",
+                     help="In-world day this faction joined the board (grace period "
+                          "before 'never moved' is flagged)")
 
     st = sub.add_parser("set", help="Edit a faction record")
     st.add_argument("id")

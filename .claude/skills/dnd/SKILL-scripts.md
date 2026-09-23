@@ -391,6 +391,12 @@ votes secured, troops sworn, fragments held. `op <id> --metric "gp raised:6000/4
 `metric <id> --add 1500` moves it, and `sweep` prints how far short the plan still is — a faction
 whose plan needs 40,000 gp and holds 6,000 is not about to act, and the board should say so.
 
+`check` flags three things: a faction with no operation, a step past its due day, and a faction
+that has **never moved** once it has been on the board longer than a fortnight. A future-dated step is
+not activity — a faction can sit on a plan for weeks and raise nothing, which is exactly how two great
+houses sat out two whole sessions in silence. Pass `--day N` when adding a faction so the grace period
+is measured from when it actually joined the board.
+
 **Move points** scale with `power` and refresh weekly. Spending them is what makes a move cost
 something; when the party destroys a faction's asset, lower its `power` and the budget falls with it.
 A faction that is out of points this week cannot also be acting everywhere — that is the constraint
@@ -451,6 +457,10 @@ CAMP=my-campaign
 # Propose edges (stdout), no writes:
 # Who is off the board — read before writing any opening scene:
 python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py gone --campaign $CAMP --type npc
+# add-node refuses a name that already exists (including aliases), because two
+# nodes for one character split its edges and a death on one leaves the other
+# reading as alive. --allow-duplicate-name if they really are different people.
+
 # Deaths written in prose but never recorded as edges (exit 2 = found some):
 python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py gone --campaign $CAMP --audit
 

@@ -48,7 +48,8 @@
     "alliance": "Kriv answers in the open, with title and banner"
    },
    "knows": [],
-   "history": []
+   "history": [],
+   "created_day": 204
   },
   {
    "id": "house-corr",
@@ -90,7 +91,8 @@
     "loss": "Calls in an old debt in public, so the loss reads as a choice"
    },
    "knows": [],
-   "history": []
+   "history": [],
+   "created_day": 204
   },
   {
    "id": "house-sablewood",
@@ -133,7 +135,8 @@
     "loss": "Sells what it can no longer hold to whoever will owe for it"
    },
    "knows": [],
-   "history": []
+   "history": [],
+   "created_day": 204
   },
   {
    "id": "house-ilvane",
@@ -181,7 +184,8 @@
      "text": "Elian Rook denetimi tamamlandi - yeni bir Whisper Court kalintisi bulunmadi, ama iki supheli isten cikarildi",
      "cost": 1
     }
-   ]
+   ],
+   "created_day": 204
   },
   {
    "id": "whisper-court",
@@ -236,7 +240,8 @@
      "text": "Iskra Vantrel ve Sathriel'in kalici yok edilmesiyle 'Survive the Ember Court' operasyonu terk edildi - the Court kendi icinde parcalaniyor, kalan uyeler sessizce yeni bir el arayisina giriyor, House Ilvane icindeki bosluk fark edilmeye baslaniyor",
      "cost": 4
     }
-   ]
+   ],
+   "created_day": 204
   },
   {
    "id": "ashlord-concordat",
@@ -285,7 +290,8 @@
      "text": "Emberhold subesi Tain'in raporunu kabul etti, tam guvensiz ama karsi cikmadi",
      "cost": 1
     }
-   ]
+   ],
+   "created_day": 204
   },
   {
    "id": "ironclad-compact",
@@ -341,7 +347,8 @@
      "text": "10% Kingdom tribute'un ilk odemesi yapildi, Krallik Hazinesi'ne aktarildi",
      "cost": 1
     }
-   ]
+   ],
+   "created_day": 204
   },
   {
    "id": "kindled-circle",
@@ -386,7 +393,8 @@
      "text": "Chancellery petisyonu kabul etti - Circle artik Concordat'in korumasiz ritual arsivine kismi erisim kazandi",
      "cost": 1
     }
-   ]
+   ],
+   "created_day": 204
   },
   {
    "id": "karsgate-undertow",
@@ -431,7 +439,8 @@
      "text": "Doss'un tahsildari Harrowgate'ten ilk odemeyi sorunsuz aldi",
      "cost": 1
     }
-   ]
+   ],
+   "created_day": 204
   },
   {
    "id": "unfinished-circle",
@@ -475,7 +484,8 @@
      "text": "Sylandra'nin testi belirsiz sonuclandi - denek yasadi ama gucun tam gonulluluguyle ilgili yeni bir soru dogdu",
      "cost": 1
     }
-   ]
+   ],
+   "created_day": 204
   },
   {
    "id": "cinder-choir",
@@ -498,7 +508,8 @@
    "operation": {},
    "reactions": {},
    "knows": [],
-   "history": []
+   "history": [],
+   "created_day": 204
   },
   {
    "id": "house-varn",
@@ -550,57 +561,59 @@
     "death": "Notes which tool broke and reaches for the next one; he has never mourned an instrument"
    },
    "knows": [],
-   "history": []
+   "history": [],
+   "created_day": 204
   },
   {
    "id": "chancellery",
    "name": "The Chancellery (Chancellor Maro Veskin)",
    "status": "active",
-   "objective": "Veskin'in itirafi sonrasi sadik hizmetle hayatta kalmak, Kral'in gozetiminde yeniden guven kazanmak",
-   "power": 3,
+   "objective": "Stay necessary to the Crown he was caught stealing from — turn supervision into trust before someone else becomes the King's instrument",
+   "power": 2,
    "intel": 2,
    "move_points": {
-    "per_week": 3,
-    "available": 3,
+    "per_week": 2,
+    "available": 1,
     "refreshed_day": 221
    },
    "assets": [
-    "Procedural control of the succession",
+    "Procedural control of the succession-era records",
     "the hearing calendar",
-    "the seal and its clerks"
+    "clerks and the seal — all now exercised at the King's pleasure"
    ],
    "stances": {
-    "party": -1,
-    "house-shestendeliath": -1,
+    "party": 1,
+    "house-shestendeliath": 1,
     "house-corr": 0,
     "house-ilvane": 0,
     "house-sablewood": 0,
     "whisper-court": -1
    },
    "operation": {
-    "name": "Keep the gap open",
+    "name": "Indispensable, not merely watched",
     "steps": [
      {
-      "text": "Replace Ostwin Kade with a clerk he can trust — and find out how Kade died",
-      "due_day": 208,
+      "text": "Deliver the Kingdom's first audited tax cycle before being asked for it",
+      "due_day": 232,
       "done": false
      },
      {
-      "text": "Quietly restore Ilvane's standing so no single bloc dominates",
-      "due_day": 212,
+      "text": "Name which house is under-reporting to the new Crown — be the instrument, not the suspect",
+      "due_day": 240,
       "done": false
      },
      {
-      "text": "Set the next succession hearing for a date that suits the weakest claim",
-      "due_day": 219,
+      "text": "Ask, at a moment of his choosing, for the supervision to be lifted",
+      "due_day": 250,
       "done": false
      }
     ],
-    "abandon_if": "One house secures an advantage the Chancellery can no longer reverse"
+    "abandon_if": "The King replaces the Chancellery outright, or a second irregularity surfaces"
    },
    "reactions": {
-    "alliance": "Answers any bloc by elevating its weakest rival; the seat's power is the gap between the houses",
-    "loss": "Slows the calendar — a hearing postponed is a decision unmade"
+    "alliance": "Attaches himself to whoever the Crown favours, and makes the paperwork of that favour run through his office",
+    "loss": "Slows the calendar — a hearing postponed is a decision unmade",
+    "exposure": "Confesses more than is asked, early, and prices the confession as loyalty"
    },
    "knows": [],
    "history": [
@@ -608,8 +621,14 @@
      "day": 211,
      "text": "Veskin, Kade'nin olumunu arastirirken Iskra Vantrel'in de gunlerdir gorulmedigini fark ediyor - iki kayip arasinda bir bagi sezgiyle hissediyor, henuz kanit yok",
      "cost": 1
+    },
+    {
+     "day": 208,
+     "text": "Iki yillik usulsuzlugu itiraf etti: 47.000 gp Krallik Hazinesi'ne, gozetim altinda gorevde tutuldu",
+     "cost": 1
     }
-   ]
+   ],
+   "created_day": 204
   }
  ]
 }
