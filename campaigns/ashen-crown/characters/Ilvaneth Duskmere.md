@@ -46,7 +46,7 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 
 | Stat | Value |
 |------|-------|
-| **Armor Class** | 19 (13 + DEX 4 Mage Armor, +2 Bracers of Defense) — **gün 162, session 26'da güncellendi: Ring of Protection çıkarıldı, Bracers of Defense attune edildi** |
+| **Armor Class** | 21 (13 + DEX 4 Mage Armor, +2 Bracers of Defense, +2 Staff of Power while holding — gün 205, session 38, Winged Boots'un yerine attune edildi) |
 | **HP Maximum** | 116 (level 17, +5 — raw d6 roll 3 (oyuncu zarı) + CON mod 2, gün 203, session 35) |
 | **Current HP** | 123/123 (session 37, Emberhold konağı — long rest ile tam iyileşti, level 18'in +7 HP'si dahil) |
 | **Temporary HP** | 0 |
@@ -63,7 +63,7 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 
 **Before the attack roll**
 - **Cloak of Displacement** (attuned): attackers have **disadvantage** against her — *suppressed the moment she takes damage*, returns at the **start of her next turn**. Also suppressed while incapacitated/restrained/unable to move. Resolve a multiattack one attack at a time: the first hit that deals damage turns this off for the rest of the round.
-- **AC 19** (13 + DEX 4 Mage Armor + 2 Bracers of Defense — already included, never add the bracers again).
+- **AC 21** (13 + DEX 4 Mage Armor + 2 Bracers of Defense + 2 Staff of Power while holding — already included, never add these again).
 
 **Before the damage total**
 - **Immune:** necrotic, poison, disease, exhaustion (Ascension Stage 4). Poison damage AND the poisoned condition simply do not land.
@@ -85,14 +85,14 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 
 | Save | Modifier | Proficient? |
 |------|----------|-------------|
-| Strength | +0 | [ ] |
-| Dexterity | +4 | [ ] |
-| Constitution | +2 | [ ] |
-| Intelligence | +10 | [x] |
-| Wisdom | +9 | [x] |
-| Charisma | +2 | [ ] |
+| Strength | +2 | [ ] |
+| Dexterity | +6 | [ ] |
+| Constitution | +4 | [ ] |
+| Intelligence | +12 | [x] |
+| Wisdom | +11 | [x] |
+| Charisma | +4 | [ ] |
 
-*Ring of Protection'ın +1'i gün 162'de (session 26) kaldırıldı — Bracers of Defense'e attunement slotu açmak için değiştirildi. Tüm saves 1 puan düştü.*
+*Ring of Protection'ın +1'i gün 162'de (session 26) kaldırıldı — Bracers of Defense'e attunement slotu açmak için değiştirildi. **Gün 205, session 38: Staff of Power attune edildi (Winged Boots'un yerine) — tüm saves +2 arttı, taşırken geçerli.***
 
 ---
 
@@ -141,22 +141,25 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 ## Passive Item Effects — Quick Reference
 *Mechanically-relevant passive properties, buried in the full Notable Items list below — check this before ruling any Stealth/save/detection-adjacent moment, don't rely on remembering the item's full entry.*
 - **Boots of Elvenkind** — **ÇIKARILDI (gün 181)**, Winged Boots'a yer açmak için. Sırt çantasında taşınıyor, giyilmiyor — Stealth avantajı/sessiz adım şu an aktif DEĞİL.
-- **Winged Boots** (attuned, gün 181 — Ring of Mind Shielding'in yerine): 60 ft uçuş hızı, günde 4 saat (aralıklı kullanılabilir).
+- ~~Winged Boots~~ — **DEATTUNE EDİLDİ (gün 205, session 38, Staff of Power'a yer açmak için).** 60 ft uçuş hızı artık YOK. Çantada duruyor, gerektiğinde yeniden takılabilir.
+- **★ Staff of Power** (attuned, gün 205, session 38 — The Grand Spire, 15.000→12.000 gp pazarlıkla — Winged Boots'un yerine): melee silah olarak +2 atak/hasar (+1 Quarterstaff'ın yerine birincil odak); **taşırken +2 AC, +2 tüm saves, +2 spell attack bonus** (zaten yukarıdaki AC/Saves/Spellcasting'e işlendi). 20 şarj, Power Strike + Cone of Cold/Fireball/Globe of Invulnerability/Hold Monster/Levitate/Lightning Bolt/Magic Missile/Ray of Enfeeblement/Wall of Force castleyebiliyor.
 - **Ring of Mind Shielding** — **DEATTUNE EDİLDİ (gün 181, Winged Boots'a slot açmak için).** Düşünce okumaya/yalan tespitine/hizalanma-tür sezmeye karşı bağışıklık VE ölünce ruhun yüzüğe girme güvencesi şu an YOK. Yeniden attune etmek 1 saatlik kısa mola gerektirir.
-- **Bracers of Defense** (attuned, gün 162): +2 AC while wearing no armor/shield — already baked into her printed AC (19) above, don't add it again. Replaced Ring of Protection.
+- **Bracers of Defense** (attuned, gün 162): +2 AC while wearing no armor/shield — already baked into her printed AC (21) above, don't add it again. Replaced Ring of Protection.
 - **Cloak of Displacement** (attuned, session 22 devamı — The Unquiet Barrow'dan): saldıranlar dezavantajlı atar, ta ki hasar alana kadar — o an yanılsama bozulur, bir sonraki tur başına kadar geri gelir.
-- **Bracers of Defense** — özel sipariş, The Ashgate Conservatory (Yveth Corrane), gün 134'te sipariş edildi (2.600 gp, Deception 25 ile pazarlıkla 3.500 gp'den indirildi), **gün 162'de teslim alındı ve hemen attune edildi** (Ring of Protection'ın yerine geçti). Zırh ya da kalkan takmıyorken +2 AC (Mage Armor ile çakışmıyor — büyü etkisi fiziksel zırh sayılmıyor). **3 of 3 attunement slots used (gün 181'den itibaren: Cloak of Displacement, Bracers of Defense, Winged Boots).**
-- **+1 Quarterstaff** (arcane focus, no attunement): +1 to attack/damage if used as a weapon.
+- **Bracers of Defense** — özel sipariş, The Ashgate Conservatory (Yveth Corrane), gün 134'te sipariş edildi (2.600 gp, Deception 25 ile pazarlıkla 3.500 gp'den indirildi), **gün 162'de teslim alındı ve hemen attune edildi** (Ring of Protection'ın yerine geçti). Zırh ya da kalkan takmıyorken +2 AC (Mage Armor ile çakışmıyor — büyü etkisi fiziksel zırh sayılmıyor). **3 of 3 attunement slots used (gün 205'ten itibaren: Cloak of Displacement, Bracers of Defense, Staff of Power).**
+- ~~+1 Quarterstaff~~ (arcane focus, no attunement) — Staff of Power'ın yerine yedekte, çantada.
+- **★ Manual of Bodily Health + Tome of Clear Thought** (satın alındı, gün 205, session 38, The Reagent Hall) — **henüz çalışılmadı.** İkisi de CON/INT'yi kalıcı +2 artıracak, ama her biri 6 gün içinde 48 saatlik gerçek bir çalışma/pratik gerektiriyor — mekanik etki, o downtime oynanana kadar sheet'e işlenmedi.
 
 ## Attacks
 
 | Name | Attack Bonus | Damage | Type | Notes |
 |------|-------------|--------|------|-------|
-| +1 Quarterstaff | +5 | 1d6+1 (1d8+1 two-handed) | Bludgeoning | STR-based; Marek Stillwright's commission (see Notable Items), replaced her old mundane staff day 60 |
-| Fire Bolt (cantrip) | +10 | 4d10 | Fire | Spell attack, ranged 120 ft. **Cantrip damage scales at 5th/11th/17th — 4 dice since level 17 (gün 203, session 35, 3→4).** Atak bonusu gün 203/level 17'de +9→+10 (proficiency +5→+6) |
-| Chill Touch (cantrip) | +10 | 4d8 | Necrotic | Spell attack; target can't regain HP until start of your next turn; disadvantage on attacks vs. you if target is undead. **4 dice since level 17**, atak +10 |
-| Shocking Grasp (cantrip) | +10 | 4d8 | Lightning | Spell attack, melee touch; advantage if target wears metal armor; target can't take reactions until its next turn. **4 dice since level 17**, atak +10 |
-| Toll the Dead (cantrip) | — (WIS save) | 4d8 (4d12 if target missing HP) | Necrotic | Spell save DC 18 (gün 203/level 17'de 17→18). **4 dice since level 17 (3→4)** |
+| ~~+1 Quarterstaff~~ | +5 | 1d6+1 (1d8+1 two-handed) | Bludgeoning | **Yedekte — Staff of Power'a yer açmak için birincil odak olarak bırakıldı (gün 205, session 38).** |
+| ★ Staff of Power (arcane focus, weapon) | +8 | 1d6+2 (1d8+2 two-handed) | Bludgeoning | STR-based (mod +0) + Staff'ın kendi +2'si. Melee'de nadiren kullanılır ama artık birincil odak/silahı. 20 şarj (2d8+4/gün yenilenir) — Power Strike (1 şarj: +1d6 force), ya da Cone of Cold/Fireball(5.sv)/Globe of Invulnerability/Hold Monster/Levitate/Lightning Bolt(5.sv)/Magic Missile/Ray of Enfeeblement/Wall of Force castleme. |
+| Fire Bolt (cantrip) | +12 | 4d10 | Fire | Spell attack, ranged 120 ft. **Cantrip damage scales at 5th/11th/17th — 4 dice since level 17 (gün 203, session 35, 3→4).** Atak bonusu +10→+12 (gün 205, Staff of Power'ın +2'si dahil) |
+| Chill Touch (cantrip) | +12 | 4d8 | Necrotic | Spell attack; target can't regain HP until start of your next turn; disadvantage on attacks vs. you if target is undead. **4 dice since level 17**, atak +12 |
+| Shocking Grasp (cantrip) | +12 | 4d8 | Lightning | Spell attack, melee touch; advantage if target wears metal armor; target can't take reactions until its next turn. **4 dice since level 17**, atak +12 |
+| Toll the Dead (cantrip) | — (WIS save) | 4d8 (4d12 if target missing HP) | Necrotic | Spell save DC 18 (gün 203/level 17'de 17→18). **4 dice since level 17 (3→4)** — DC Staff of Power'dan etkilenmiyor (Staff sadece attack roll/AC/save bonusu veriyor, DC değil) |
 
 ---
 
@@ -165,8 +168,8 @@ Gülümsemesi gerçek görünüyor — ta ki gözlerine kadar bakana dek.
 | Field | Value |
 |-------|-------|
 | **Spellcasting Ability** | INT |
-| **Spell Save DC** | 18 (gün 203/level 17'te 17→18, proficiency +5→+6) |
-| **Spell Attack Bonus** | +10 (gün 203/level 17'te 9→10) |
+| **Spell Save DC** | 18 (gün 203/level 17'te 17→18, proficiency +5→+6) — Staff of Power'dan etkilenmiyor |
+| **Spell Attack Bonus** | +12 (gün 205, session 38: +10 → +12, Staff of Power'ı taşırken +2) |
 
 ### Spell Slots
 
@@ -328,7 +331,7 @@ Spellbook contains 10 first-level + 9 second-level + 5 third-level + 5 fourth-le
 | Coin | Amount |
 |------|--------|
 | Platinum (pp) | 0 |
-| Gold (gp) | 9905 (**session 35, gün 202:** -15 gp, Kingsward Dış Mahalle — Kesh Amara'nın karşısındaki boş şehir evi, 1 aylık kira, gözlem noktası. **session 34, gün 194-196:** +1.720 gp — Sunken Ledger + Vell baskını ham nakit toplamının yarısı, Kriv'le 50/50 (toplam 3.440 gp: 140 muhafızlardan + 2.400 Drey'in gizli bölmesinden + 900 Vell'in gizli servetinden). 4.200+1.720 = **5.920**. Gems/mücevher/kolye henüz nakde çevrilmedi, bkz. Notable Items. **★ Netleştirme (gün 196): dungeon/combat loot'u her zaman PC'lere yazılır — sadece pasif/aylık gelir tablosu Hold Hazinesi'ne akar.**) |
+| Gold (gp) | 36905 (**gün 205, session 38:** +58.000 gp (Ember Court'un ~116.000 gp'lik ham hazinesi Kriv'le 50/50 bölündü) - 19.000 gp (The Reagent Hall — Manual of Bodily Health + Tome of Clear Thought, paket) - 12.000 gp (The Grand Spire — Staff of Power) = 9.905+58.000-31.000 = **36.905**. **session 35, gün 202:** -15 gp, Kingsward Dış Mahalle — Kesh Amara'nın karşısındaki boş şehir evi, 1 aylık kira, gözlem noktası. **session 34, gün 194-196:** +1.720 gp — Sunken Ledger + Vell baskını ham nakit toplamının yarısı, Kriv'le 50/50 (toplam 3.440 gp: 140 muhafızlardan + 2.400 Drey'in gizli bölmesinden + 900 Vell'in gizli servetinden). 4.200+1.720 = **5.920**. Gems/mücevher/kolye henüz nakde çevrilmedi, bkz. Notable Items. **★ Netleştirme (gün 196): dungeon/combat loot'u her zaman PC'lere yazılır — sadece pasif/aylık gelir tablosu Hold Hazinesi'ne akar.**) |
 | Electrum (ep) | 0 |
 | Silver (sp) | 0 |
 | Copper (cp) | 0 |
@@ -346,7 +349,10 @@ Spellbook contains 10 first-level + 9 second-level + 5 third-level + 5 fourth-le
 - **Clone/Simulacrum malzemesi (gün 187, session 32, Emberhold'dan satın alındı, Teleport ile Hold'a taşındı, Hold'un alt sarnıcına yerleştirildi):** 1.000 gp'lik bir elmas (Clone), 2.000 gp'lik mühürlenebilir taş bir lahit (Clone, bir Medium yaratığı alacak büyüklükte), 1.500 gp'lik bir ritüel leğeni (Simulacrum — ayrıca kar/buz ve büyüsü yapılacak kişinin biyolojik bir örneği gerekiyor, henüz temin edilmedi). Hiçbiri henüz kullanılmadı. İkinci bir taş lahit gün 192'de (19 Ashfall) Emberhold'da teslim alınacak, henüz burada değil.
 - **Scrying odağı (gümüş ayna)** — Kindled Spire, Karsgate, gün 185 (loncalı fiyat 900 gp'den, Deception 24 ile 750 gp'ye pazarlıkla). RAW 1.000 gp değerinde, tüketilmiyor — Scrying büyüsünün bileşeni, yeniden kullanılabilir.
 - **★ Lord Ossian Brack'in günlüğü + Denna Sarth'ın krokisi (gün 182, session 30, Kingsward — House Ashveil malikanesi).** Otuz iki yıl önce yok edilen bir hanenin hane reisinin günlüğü, gizli bir panelde bulundu (Investigation 28) — ölümünden bir gece önce, güvendiği bir müsteşarın (Denna Sarth) aslında bir doppelganger'la değiştirildiğinden şüphelendiğini yazmış. Kaba bir kroki de var: sivri çene, sola eğik kaş, kulak arkasında doğum lekesi — gerçek Denna'nın mı yoksa taklidin mi olduğu belirsiz, ama gelecekte bir karşılaştırma referansı. **Whisper Court'un doppelganger yönteminin en az 32 yıldır sürdüğünün ilk somut kanıtı** — Wrenna/Arnholt tek seferlik değil, kuşaklar süren bir yöntemin parçası.
-- **Winged Boots** — Hall of Wards, Karsgate, gün 181 (4.000 gp'den 3.400 gp'ye pazarlıkla). Attunement gerektiriyor — **henüz attune edilmedi** (3 slot dolu: Ring of Mind Shielding, Cloak of Displacement, Bracers of Defense). Takılıyken 60 ft uçuş hızı, günde 4 saat (aralıklı kullanılabilir).
+- ~~Winged Boots~~ — Hall of Wards, Karsgate, gün 181 (4.000 gp'den 3.400 gp'ye pazarlıkla). **DEATTUNE EDİLDİ (gün 205, session 38, Staff of Power'a yer açmak için).** Çantada duruyor, gerektiğinde yeniden takılabilir.
+- **★ Staff of Power** — The Grand Spire, gün 205, session 38 (15.000 gp'den 12.000 gp'ye pazarlıkla, Kindled Circle üyelik indirimi + Persuasion 29). Very Rare, sorcerer/warlock/wizard attunement. Melee silah olarak +2 atak/hasar; taşırken +2 AC/tüm saves/spell attack bonus. 20 şarj (2d8+4/gün yenilenir) — Power Strike (1 şarj, vuruşa +1d6 force) ya da cone of cold/fireball(5.sv)/globe of invulnerability/hold monster/levitate/lightning bolt(5.sv)/magic missile/ray of enfeeblement/wall of force castleme. Retributive Strike (kırılırsa 30ft patlama) — asla bilerek kırılmayacak. +1 Quarterstaff'ın yerine birincil odak/silahı oldu.
+- **★ Manual of Bodily Health** (Very Rare) — The Reagent Hall, gün 205, session 38 (paket fiyatı Tome of Clear Thought ile birlikte, aşağıya bkz.). 6 gün içinde 48 saatlik çalışma/pratik ile CON'u ve maksimumunu kalıcı +2 artırıyor. **Henüz çalışılmadı — mekanik etki bekliyor.**
+- **★ Tome of Clear Thought** (Very Rare) — The Reagent Hall, gün 205, session 38. **Manual of Bodily Health ile birlikte, toplam 19.000 gp'ye pazarlıkla (24.000'den, Persuasion 29).** 6 gün içinde 48 saatlik çalışma/pratik ile INT'yi ve maksimumunu kalıcı +2 artırıyor. **Henüz çalışılmadı — mekanik etki bekliyor.**
 - **Ejderha heykelciği (mücevher işlemeli)** — Halvern & Sons, Curios, gün 181 (500 gp'den 425 gp'ye pazarlıkla). Draconic Transformation'ın malzeme bileşeni — büyü tarafından tüketilmiyor (metin "which the spell consumes" demiyor), tek seferlik alım, kalıcı olarak yeniden kullanılabilir.
 - **★ House Ilvane mühürlü mektubu (gün 179, The Rookery)** — "E.K."ye yazılmış, House Ilvane'in kendi armasıyla (kırık bir taç üzerine saplanmış geyik) mühürlenmiş, "V." imzalı: *"E.K. — bir sonraki ödeme her zamanki gibi. 'Boş Koltuk' meselesini gözden kaçırma, bunu bizzat takip ediyorum. — V."* **Gün 180'de Sereth'e gösterildi** (kaynak açıklanmadı) — Lady Iskra Vantrel'e giden en somut fiziksel kanıt, artık Sereth de biliyor.
 - **Gümüş saç tokası, göz motifli (gün 179, The Rookery)** — mühürlü kutuda mektup ve altınla birlikte bulundu, işlevi/anlamı belirsiz, garip bir şekilde kişisel duruyor. Saklanıyor, henüz kimliği/kaynağı çözülmedi.

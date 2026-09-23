@@ -144,8 +144,9 @@
 ---
 
 ### Doppelganger — House Corr ("Wrenna")
+- **★ ÖLÜ (gün 179/180, session 28) — düzeltme, 2026-09-23, session 38.** Açığa çıkarıldığı gün kendi isteğiyle Sereth'e itiraf etti; Sereth affetmedi, sözünü tutup orada infaz etti. Aşağıdaki profil tarihsel referans olarak kalıyor.
 - **Görünüş:** Genç, sessiz bir **Halfling** nedime, her zaman bir adım geride durur — gerçek formu bir doppelganger, Sereth Corr'un en yakın çevresine iki yıl önce, gerçek bir savaş mültecisi kılığında sızdı.
-- **Role:** Whisper Court'un House Corr'a gömülü ajanı | **CR/Level:** Doppelganger | **Location:** Emberhold, House Corr konağı
+- **Role:** Whisper Court'un House Corr'a gömülü ajanıydı | **CR/Level:** Doppelganger | **Location:** Emberhold, House Corr konağı (artık N/A — ölü)
 - **Alignment:** Neutral Evil
 - **Demeanor:** Ürkek, minnettar görünen bir tavır — Sereth'in onu "kurtardığı" hikayesini oynuyor, bu da Sereth'in tam güvenini kazanmasını sağladı.
 - **Motivation:** Sereth Corr'un her hareketini, her kararını Whisper Court'a raporluyor — Sereth'in kuzenini zehirlettiğini bilen tek dış kişi o.
@@ -316,7 +317,7 @@
 ---
 
 ### Notes (Whisper Court, genel)
-- Üçü birlikte, üç hanenin de gerçek zayıflıklarını bilen tek grup — parti bunları keşfederse gerçek bir kaldıraç kazanır, ama Whisper Court'un kendi çıkarına dokunursa gerçek bir tehlike haline gelirler. Wrenna'nın çatlağı, partinin Whisper Court'u içeriden kırabileceği tek gerçek nokta — bilinçli bir tasarım kararı.
+- Üçü birlikte, üç hanenin de gerçek zayıflıklarını bilen tek grup — parti bunları keşfederse gerçek bir kaldıraç kazanır, ama Whisper Court'un kendi çıkarına dokunursa gerçek bir tehlike haline gelirler. ~~Wrenna'nın çatlağı, partinin Whisper Court'u içeriden kırabileceği tek gerçek nokta~~ — **moot (Wrenna gün 179/180'de infaz edildi, session 28; Iskra Vantrel + Sathriel gün 204'te kalıcı öldü, session 37 — Whisper Court artık liderliksiz, bu tasarım notunun ihtiyacı kalmadı.**
 
 ---
 

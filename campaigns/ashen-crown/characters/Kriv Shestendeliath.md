@@ -26,7 +26,7 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 
 | Ability | Score | Modifier |
 |---------|-------|----------|
-| Strength | 25 (Belt of Fire Giant Strength, gün 173 — doğal skoru 20) | +7 |
+| Strength | 29 (Belt of Storm Giant Strength, gün 205 — doğal skoru 20, Belt of Fire Giant Strength'in yerine) | +9 |
 | Dexterity | 14 | +2 |
 | Constitution | 16 | +3 |
 | Intelligence | 11 | +0 |
@@ -63,9 +63,10 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 - **AC 22** (Warden's Oathplate, Dwarven Plate 18 +2, +2 Ascension Stage 3 scales — already included).
 
 **Before the damage total**
-- **Immune:** fire (Ascension Stage 2 — upgraded from resistance, gün 169).
-- **Resistant:** nonmagical bludgeoning / piercing / slashing (Warden's Core); cold (Frostheart).
-- **★ VULNERABLE: lightning — double damage** (Warden's Core, gün 196). Apply it every time; it is the one thing that hurts him more than it should.
+- **Immune:** fire (Ascension Stage 2 — upgraded from resistance, gün 169); frightened condition (Boyun Eğmeyenin Tacı, gün 205).
+- **Resistant:** cold (Frostheart).
+- **Advantage on saves vs. being charmed or dominated** (Boyun Eğmeyenin Tacı, gün 205).
+- ~~Resistant: nonmagical bludgeoning/piercing/slashing~~ / ~~VULNERABLE: lightning~~ — **Warden's Core deattune edildi, gün 205** (Boyun Eğmeyenin Tacı'ya yer açmak için). Ne direnç ne zaaf artık aktif.
 
 **Saves**
 - **Legendary Resistance (1/day, Stage 4):** on a failed save he may choose success instead, before the result is announced. Offer it the first time a save would otherwise fail.
@@ -86,7 +87,7 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 
 | Save | Modifier | Proficient? |
 |------|----------|-------------|
-| Strength | +13 | [x] |
+| Strength | +15 | [x] |
 | Dexterity | +2 | [ ] |
 | Constitution | +9 | [x] |
 | Intelligence | +0 | [ ] |
@@ -102,7 +103,7 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 | Acrobatics | DEX | +2 | [ ] | [ ] |
 | Animal Handling | WIS | +1 | [ ] | [ ] |
 | Arcana | INT | +0 | [ ] | [ ] |
-| Athletics | STR | +13 | [x] | [ ] |
+| Athletics | STR | +15 | [x] | [ ] |
 | Deception | CHA | +4 | [ ] | [ ] |
 | History | INT | +6 | [x] | [ ] |
 | Insight | WIS | +1 | [ ] | [ ] |
@@ -137,7 +138,8 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 - **★★★ Legendary Resistance (1/day, Stage 4, gün 203)** — on a failed save, may choose success instead before the result is announced. Easy to forget since it's new — name it out loud the first time a save would otherwise fail.
 - **★★★ Kanatlar görünürken Intimidation/Persuasion'da avantaj (session 36 yüklemesi, oyuncu mantığıyla onaylandı)** — bir CHA skoru artışı değil, durumsal bir avantaj: 4 metreyi aşan gerçek ejderha kanatları açık/görünür olduğunda (kapalı/saklıyken geçerli değil), Intimidation her zaman, Persuasion ise saf ihtişam/güç gösterisiyle ikna etmeye çalıştığı sahnelerde avantajlı.
 - **★ Frostheart (1/day, reaction, no action cost)** — 30 ft cone, 6d8 cold, DC 15 DEX save half. Since it costs no action, easy to forget as an option when he's already used his action/bonus action — offer it explicitly when multiple enemies cluster.
-- **★ Warden's Core — lightning VULNERABILITY (double damage)**, gün 196'dan itibaren (Warden's Mantle'ın yerine geri takıldı, radiant zaafı yerine artık lightning zaafı var). Check every single time lightning damage is about to land on him.
+- **★ Boyun Eğmeyenin Tacı — immune to frightened, advantage on saves vs. charmed/dominated** (attuned, gün 205 — Warden's Core'un yerine). Lightning zaafı artık YOK (Warden's Core ile birlikte gitti) — check bunu unutma, eski refleksle lightning'e otomatik 2x hasar uygulama.
+- **★ Intimidation'da avantaj** (Boyun Eğmeyenin Tacı, pasif) — check her Intimidation check'te.
 - **GWM -5/+10** is a choice made *before* the attack roll, not after seeing if it hits.
 - **The Barrow-King's Blade deals +1d8 radiant vs. undead specifically** — check the target's creature type before resolving damage, every time. Doesn't apply to non-undead (aberrations, monstrosities, beasts, etc.), even other frightening things.
 
@@ -146,9 +148,10 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 - **Boots of Striding and Springing** (worn, no attunement): walking speed **doubled to 60 ft** (unless already reduced to 0); long/high jump distance **tripled**.
 - ~~Amulet of Proof against Detection and Location~~ — **DEATTUNE EDİLDİ (gün 193, session 33, Warden's Mantle'a yer açmak için)**. Divination'a karşı gizlilik artık YOK — Concordat'ın çökmüş olması bu riski büyük ölçüde azalttı, bilinçli bir takas.
 - **Belt of Fire Giant Strength** (attuned, gün 173): STR set to 25 (already reflected in Ability Scores above).
-- **★ Warden's Core** (attuned, gün 196, session 34 — Warden's Mantle'ın yerine geri takıldı) — nonmagical bludgeoning/piercing/slashing direnci veriyor, AMA **lightning zaafı** getiriyor (lightning hasar 2 katına çıkar). Fire direnci zaten Ascension Stage 2'nin tam bağışıklığıyla örtüştüğü için hissedilmiyor.
+- ~~Warden's Core~~ — **DEATTUNE EDİLDİ (gün 205, session 38, Boyun Eğmeyenin Tacı'ya yer açmak için).** Nonmagical B/P/S direnci VE lightning zaafı artık YOK — çanta/envanterde duruyor, gerektiğinde yeniden takılabilir.
+- **★ Boyun Eğmeyenin Tacı** (Crown of the Unbowed, attuned, gün 205, session 38 — The Ember Court, Oda 24, Rakshasa Rajah'ın kendi tacı) — Very Rare, attunement gerektirir. Frightened condition'a tam bağışıklık; charmed/dominate edilmeye karşı saves'te avantaj; Intimidation check'lerinde avantaj. **3 of 3 attunement slots dolu (Belt of Storm Giant Strength, Frostheart, Boyun Eğmeyenin Tacı).**
 - **★ Frostheart** (attuned, gün 193, session 33 — İlvaneth'ten devraldı, Vashti Coldharrow'un eski amuleti) — sürekli **cold direnci**. Günde 1 kez, aksiyon gerektirmeden (reaction), 30 ft koni **6d8 cold hasar** yayabilir (hedefler DEX save DC 15, yarısı başarıda).
-- ~~Warden's Mantle~~ — **DEATTUNE EDİLDİ (gün 196, session 34, Warden's Core'a yer açmak için)**. Cold/fire/lightning direnci VE radiant zaafı artık YOK — çanta/envanterde duruyor, gerektiğinde yeniden takılabilir. **3 of 3 attunement slots dolu (Belt of Fire Giant Strength, Frostheart, Warden's Core).**
+- ~~Warden's Mantle~~ — **DEATTUNE EDİLDİ (gün 196, session 34, Warden's Core'a yer açmak için)**. Cold/fire/lightning direnci VE radiant zaafı artık YOK — çanta/envanterde duruyor, gerektiğinde yeniden takılabilir.
 - **Corr Yatırım Bıçağı (+1 Dagger)** — **DEATTUNE EDİLDİ (gün 186, session 31, Amulet of Health'e slot açmak için).** Persuasion/Intimidation avantajı şu an YOK. Yeniden attune edilene kadar sadece mundane bir hançer.
 - **★ Wardensteel** (attuned, gün 182, slot-dışı/kalıcı — bkz. state.md DM Notes) — kilidi Hollow Throne'da açıldı, artık ana silahı. +2 atak/hasar, +2d6 fire her vuruşta, Draconic Wrath (1/gün), Warden's Aegis (10ft müttefiklere fire resistance). Tam detay Attacks tablosunda.
 - **The Shestendeliath Signet**: non-magical, identity proof only, no mechanical effect.
@@ -158,12 +161,12 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 
 | Name | Attack Bonus | Damage | Type | Notes |
 |------|-------------|--------|------|-------|
-| ★ Wardensteel (attuned, gün 182) | +15 | 1d12+9 slashing +2d6 fire | Slashing+Fire | **Greatsword (Heavy, two-handed), özel/büyülü şekli d12 hasar zarı taşıyor (2026-09-15, oyuncu isteğiyle sabitlendi)** — GWM -5/+10 geçerli, Great Weapon Fighting (1-2 yeniden yuvarla) geçerli. Draconic Wrath (1/day, B.A.): Breath Weapon'ı aynı round'da kullanırsa bir sonraki vuruşuna ek +2d6 fire. Warden's Aegis (passive): 10ft içindeki müttefikler fire resistance kazanır. **Atak bonusu gün 203/level 17'de +14→+15 (prof +5→+6).** |
+| ★ Wardensteel (attuned, gün 182) | +17 | 1d12+11 slashing +2d6 fire | Slashing+Fire | **Greatsword (Heavy, two-handed), özel/büyülü şekli d12 hasar zarı taşıyor (2026-09-15, oyuncu isteğiyle sabitlendi)** — GWM -5/+10 geçerli, Great Weapon Fighting (1-2 yeniden yuvarla) geçerli. Draconic Wrath (1/day, B.A.): Breath Weapon'ı aynı round'da kullanırsa bir sonraki vuruşuna ek +2d6 fire. Warden's Aegis (passive): 10ft içindeki müttefikler fire resistance kazanır. **Atak bonusu/hasar gün 205'te +2 arttı (Belt of Storm Giant Strength, STR mod +7→+9).** |
 | Corr Yatırım Bıçağı ⚠ | +7 (STR only, no magic bonus) | 1d4+7 | Piercing | **DEATTUNE EDİLDİ (gün 186)** — Amulet of Health'e slot açmak için. Persuasion/Intimidation avantajı şu an YOK, sadece mundane bir hançer. |
-| Handaxe/Mızrak (thrown) | +13 | 1d6+7 | Slashing/Piercing | Thrown 20/60 ft. **Atak bonusu gün 203/level 17'de +12→+13.** |
-| Breath Weapon (Fire) | DC 17 (DEX save) | 9d6 | Fire | **40-ft cone, recharge 5-6 in combat** (also full at short/long rest) — upgraded to Stage 4 (Wings), session 36 yüklemesi, gün 203. Natural dragonborn scaling reached 5d6 at level 16; +1d6 Stage 1, +2d6 Stage 2, +3d6 Stage 3, **+4d6 Stage 4** (level 17, 5+ fragments — party holds 8/9). DC gün 178/level 13'te 15→16 (prof +4→+5), **gün 203/level 17'de 16→17 (prof +5→+6).** |
-| Frightful Presence | DC 17 (WIS save) | — (frightened 1 min) | — | **New, Stage 3 (gün 192).** Bonus action, 1/rest: every creature of his choice within 30 ft that can see him must succeed a WIS save or be frightened for 1 minute (repeat save at end of each of its turns). **DC gün 203/level 17'de 16→17 (prof +5→+6).** |
-| Claws (unarmed) | +11 | 1d6+5 | Slashing | Ascension Stage 2 (gün 169) — counts as magical. **Atak bonusu gün 203/level 17'de +10→+11.** |
+| Handaxe/Mızrak (thrown) | +15 | 1d6+9 | Slashing/Piercing | Thrown 20/60 ft. **Atak bonusu/hasar gün 205'te +2 arttı (Belt of Storm Giant Strength).** |
+| Breath Weapon (Fire) | DC 17 (DEX save) | 9d6 | Fire | **40-ft cone, recharge 5-6 in combat** (also full at short/long rest) — upgraded to Stage 4 (Wings), session 36 yüklemesi, gün 203. Natural dragonborn scaling reached 5d6 at level 16; +1d6 Stage 1, +2d6 Stage 2, +3d6 Stage 3, **+4d6 Stage 4** (level 17, 5+ fragments — party holds 8/9). DC gün 178/level 13'te 15→16 (prof +4→+5), **gün 203/level 17'de 16→17 (prof +5→+6).** CON-based, Belt/STR değişikliğinden etkilenmiyor. |
+| Frightful Presence | DC 17 (WIS save) | — (frightened 1 min) | — | **New, Stage 3 (gün 192).** Bonus action, 1/rest: every creature of his choice within 30 ft that can see him must succeed a WIS save or be frightened for 1 minute (repeat save at end of each of its turns). **DC gün 203/level 17'de 16→17 (prof +5→+6).** WIS-based, Belt/STR değişikliğinden etkilenmiyor. |
+| Claws (unarmed) | +13 | 1d6+7 | Slashing | Ascension Stage 2 (gün 169) — counts as magical. **Atak bonusu/hasar gün 205'te +2 arttı (Belt of Storm Giant Strength).** |
 
 ---
 
@@ -173,16 +176,16 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 
 | Scenario | Target | Total (avg) | Formula |
 |----------|--------|-------------|---------|
-| Full Attack, vs undead | Single | 60.0 | 3×(1d12+9+1d8) |
-| Full Attack, vs non-undead | Single | 46.5 | 3×(1d12+9) |
-| Action Surge + full maneuvers, vs undead | Single | 153.0 | 6×(1d12+9+1d8[undead]+1d10[maneuver]) |
-| Action Surge + full maneuvers, vs non-undead | Single | 126.0 | 6×(1d12+9+1d10[maneuver]) |
-| Full Attack, GWM (-5/+10) all hits, vs undead | Single | 90.0 | 3×(1d12+9+1d8+10) |
-| Full Attack, GWM (-5/+10) all hits, vs non-undead | Single | 76.5 | 3×(1d12+9+10) |
-| Action Surge + full maneuvers + GWM, vs undead | Single | 213.0 | 6×(1d12+9+1d8[undead]+1d10[maneuver]+10) |
-| Action Surge + full maneuvers + GWM, vs non-undead | Single | 186.0 | 6×(1d12+9+1d10[maneuver]+10) |
+| Full Attack, vs undead | Single | 66.0 | 3×(1d12+11+1d8) |
+| Full Attack, vs non-undead | Single | 52.5 | 3×(1d12+11) |
+| Action Surge + full maneuvers, vs undead | Single | 171.0 | 6×(1d12+11+1d8[undead]+1d12[maneuver]) |
+| Action Surge + full maneuvers, vs non-undead | Single | 144.0 | 6×(1d12+11+1d12[maneuver]) |
+| Full Attack, GWM (-5/+10) all hits, vs undead | Single | 96.0 | 3×(1d12+11+1d8+10) |
+| Full Attack, GWM (-5/+10) all hits, vs non-undead | Single | 82.5 | 3×(1d12+11+10) |
+| Action Surge + full maneuvers + GWM, vs undead | Single | 231.0 | 6×(1d12+11+1d8[undead]+1d12[maneuver]+10) |
+| Action Surge + full maneuvers + GWM, vs non-undead | Single | 204.0 | 6×(1d12+11+1d12[maneuver]+10) |
 
-*Updated gün 173 (Belt of Fire Giant Strength: STR 20→25, damage mod +7→+9). Extra Attack (2) since level 11 (3 attacks). Maneuver die 1d10 (Improved Combat Superiority, level 10).*
+*Updated gün 205 (session 38, iki düzeltme birden): (1) Belt of Storm Giant Strength — STR 25→29, damage mod +9→+11. (2) Maneuver die düzeltmesi — level 18'in Superiority Dice'ı d12 (Combat Stats tablosunda zaten doğruydu), ama bu tablo hâlâ eski 1d10'u taşıyordu, session 37 level-up'ından beri hiç güncellenmemişti; şimdi 1d12'ye düzeltildi. Extra Attack (2) since level 11 (3 attacks).*
 
 ---
 
@@ -239,9 +242,9 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 - **Action Surge(2/2 uses, level 17 — upgraded from 1 use):** On his turn, take one additional action. Resets on a short or long rest. Gained level 2.
 - **Indomitable (3/3 uses, level 17 — upgraded from 2 uses at level 13):** When he fails a saving throw, he can reroll it and must use the new roll. Resets on a long rest.
 - **Martial Archetype — Battle Master** (gained level 3; not in the free SRD, applied from standard published rules — flagged in `system-register.md`):
-  - **Combat Superiority — Superiority Dice(6/6 uses):** d10s (**Improved Combat Superiority, level 10** — upgraded from d8). **+1 die at level 7 (5→6 total), +1 die at level 15 (gün 192, session 33 — 6 total).** Spend one to fuel a maneuver; regain all on a short or long rest. Maneuver save DC 21 (8 + prof 6 + STR mod 7 — updated gün 203/level 17, proficiency +5→+6).
+  - **Combat Superiority — Superiority Dice(6/6 uses):** d10s (**Improved Combat Superiority, level 10** — upgraded from d8). **+1 die at level 7 (5→6 total), +1 die at level 15 (gün 192, session 33 — 6 total).** Spend one to fuel a maneuver; regain all on a short or long rest. Maneuver save DC 23 (8 + prof 6 + STR mod 9 — updated gün 205/session 38, STR mod 7→9 via Belt of Storm Giant Strength). Trip Attack ve Disarming Attack'ın hedef save DC'si de bu değere göre güncellenir (aşağıda "DC 21" yazan yerler artık DC 23).
   - **★ Relentless (level 15, gün 192, session 33):** if he has no superiority dice remaining when he rolls initiative, he regains 1.
-  - **Maneuvers known (9, level 15)**: **Goading Attack** (hit: target has disadvantage on attacks against anyone but Kriv until end of his next turn, WIS save negates; die → damage roll), **Precision Attack** (add the die to an attack roll, before or after the roll — never a damage die), **Distracting Strike** (hit: next ally's attack roll against that target has advantage; die spent, no roll), **Bait and Switch** (level 7 — he and a willing creature within 5 ft swap places; add the die as a bonus to his or the ally's AC until the start of his next turn, no attack roll involved), **Lunging Attack** (level 7 — when making a melee weapon attack, gain 5 ft of extra reach for that attack; if it hits, add the die to the damage), **Trip Attack** (level 10 — on a hit, add the die to the damage roll; if the target is Large or smaller, it must make a STR save (DC 21, matches Maneuver Save DC) or be knocked prone), **Riposte** (level 10 — reaction: when a creature misses him with a melee attack, he can make one melee weapon attack against it; if it hits, add the die to the damage roll), **Disarming Attack** (new, level 15 — on a hit, add the die to the damage roll; target must make a STR save (DC 21, matches Maneuver Save DC) or drop one item of Kriv's choice that it's holding), **Ambush** (new, level 15 — when he makes a Dexterity (Stealth) check or an initiative roll, he can expend one superiority die and add it to the roll).
+  - **Maneuvers known (9, level 15)**: **Goading Attack** (hit: target has disadvantage on attacks against anyone but Kriv until end of his next turn, WIS save negates; die → damage roll), **Precision Attack** (add the die to an attack roll, before or after the roll — never a damage die), **Distracting Strike** (hit: next ally's attack roll against that target has advantage; die spent, no roll), **Bait and Switch** (level 7 — he and a willing creature within 5 ft swap places; add the die as a bonus to his or the ally's AC until the start of his next turn, no attack roll involved), **Lunging Attack** (level 7 — when making a melee weapon attack, gain 5 ft of extra reach for that attack; if it hits, add the die to the damage), **Trip Attack** (level 10 — on a hit, add the die to the damage roll; if the target is Large or smaller, it must make a STR save (DC 23, matches Maneuver Save DC) or be knocked prone), **Riposte** (level 10 — reaction: when a creature misses him with a melee attack, he can make one melee weapon attack against it; if it hits, add the die to the damage roll), **Disarming Attack** (new, level 15 — on a hit, add the die to the damage roll; target must make a STR save (DC 23, matches Maneuver Save DC) or drop one item of Kriv's choice that it's holding), **Ambush** (new, level 15 — when he makes a Dexterity (Stealth) check or an initiative roll, he can expend one superiority die and add it to the roll).
   - **Student of War:** proficiency with smith's tools.
   - **Know Your Enemy** (gained level 7; not in the free SRD, applied from standard published rules): if he spends at least 1 minute observing or interacting with a creature outside combat, the DM tells him whether that creature is his equal, superior, or inferior in two of the following, his choice: Strength score, Dexterity score, Constitution score, Armor Class, current HP, total class levels, Fighter class levels.
 
@@ -330,7 +333,8 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 | **Kırık Sözleşme Taşı'nın eksik parçaları** | The Ember Court, Oda 5 (Sözleşme Kasası), session 36 | Cam bir kutuda saklanıyordu — teorik olarak mevcut bir Kaal sözleşmesini bozabilecek parçalar, tam işlevi henüz test edilmedi. |
 ~~Eski Kışla silah deposu~~ — **teslim edildi, gün 180, session 28, Shestendeliath Hold cephaneliği.** 5 asker yardımıyla boşaltıldı, artık Hold garnizonunun envanterinde.
 
-- **Belt of Fire Giant Strength** — Scaleforge, Emberhold (gün 173, Persuasion 23, 5.000 gp'den 4.000 gp'ye pazarlıkla). Takıldığında STR skorunu **25**'e çıkarır (doğal 20'nin üstünde, gerçek bir artış). **Attuned, gün 173.** **2 of 3 attunement slots used (Amulet of Proof against Detection and Location, Belt of Fire Giant Strength) — 1 slot boş (gün 187, session 32, Amulet of Health satıldıktan sonra).**
+~~Belt of Fire Giant Strength~~ — Scaleforge, Emberhold (gün 173, Persuasion 23, 5.000 gp'den 4.000 gp'ye pazarlıkla). **DEATTUNE EDİLDİ (gün 205, session 38, Scaleforge'da Belt of Storm Giant Strength'e takas edildi).** Çantada/envanterde duruyor, artık STR etkisi yok.
+- **★ Belt of Storm Giant Strength** (attuned, gün 205, session 38 — Scaleforge, özel sipariş, 30.000→24.000 gp pazarlıkla, 2 günde teslim) — Legendary, attunement gerektirir. Takıldığında STR skorunu **29**'a çıkarır (Belt of Fire Giant Strength'in 25'inin üstünde gerçek bir yükseltme). **3 of 3 attunement slots used (Belt of Storm Giant Strength, Frostheart, Boyun Eğmeyenin Tacı).**
 
 **Discarded, day 81, session 17** (no further use, disposed of): the Choir's screening records, Choir correspondence pointing north, Marek Stillwright's commission ledger, Fenn's Cinder Choir medallion, the fourth kiln's key.
 
@@ -371,7 +375,7 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 | Coin | Amount |
 |------|--------|
 | Platinum (pp) | 0 |
-| Gold (gp) | 10500 (**session 34, gün 194-196:** -6.000 gp Coren'e (Ironclad Table darbesi başlangıç fonu, kişisel keseden) + 1.720 gp (Sunken Ledger + Vell baskını ham nakit toplamının yarısı — loot her zaman PC'lere yazılır, İlvaneth'le 50/50, toplam 3.440 gp: 140 muhafızlardan + 2.400 Drey'in gizli bölmesinden + 900 Vell'in gizli servetinden) = 14.780-6.000+1.720 = **10.500**. **★ Netleştirme (gün 196): sadece pasif/aylık gelir tablosundaki kalemler (lordluk payları, darphane, vb.) Hold Hazinesi'ne akar — dungeon/combat loot'u her zaman PC'lere yazılır, önceki hatalı düzeltme geri alındı.**) |
+| Gold (gp) | 44500 (**session 34, gün 194-196:** -6.000 gp Coren'e (Ironclad Table darbesi başlangıç fonu, kişisel keseden) + 1.720 gp (Sunken Ledger + Vell baskını ham nakit toplamının yarısı — loot her zaman PC'lere yazılır, İlvaneth'le 50/50, toplam 3.440 gp: 140 muhafızlardan + 2.400 Drey'in gizli bölmesinden + 900 Vell'in gizli servetinden) = 14.780-6.000+1.720 = 10.500. **★ Netleştirme (gün 196): sadece pasif/aylık gelir tablosundaki kalemler (lordluk payları, darphane, vb.) Hold Hazinesi'ne akar — dungeon/combat loot'u her zaman PC'lere yazılır, önceki hatalı düzeltme geri alındı.** **+58.000 gp, gün 205, session 38 — Ember Court'un (Oda 24 + Oda 18) ~116.000 gp'lik ham hazinesi İlvaneth'le 50/50 bölündü.** -24.000 gp, gün 205, session 38, Scaleforge — Belt of Storm Giant Strength (Persuasion 29 ile 30.000'den pazarlıkla). **10.500+58.000-24.000 = 44.500.**) |
 | Electrum (ep) | 0 |
 | Silver (sp) | 0 |
 | Copper (cp) | 0 |
