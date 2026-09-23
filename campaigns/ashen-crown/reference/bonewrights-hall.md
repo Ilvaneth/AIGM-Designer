@@ -21,26 +21,26 @@ A necropolis-workshop cut into a bone-white ridge, where four centuries ago the 
 4. **The Waiting Bench.** First sign of the residents: two stone cups, one warm. A note in Thessaly's hand: *"I am in the Study. Oskar is at his post. Do not go to his post first."*
 
 **The Making (5-12) — the workshop wing, resource drain**
-5. **Bone Press.** A mechanical press animates when someone lifts a tool: 3× **Bone Sentinel** (gargoyle stat block, CR 2 reskinned, HP 52 → 90 tanky).
-6. **Seal-Casting Hall.** Row of medallion moulds (Ash-Warden houses, four shown as broken, five as intact). A puzzle: recast Shestendeliath's medallion from its mould to open room 7. Kriv's own signet works as the key.
-7. **Gallery of Failed Oaths.** 6× **Specter** (spirits of oaths never completed). Support wave. HP 22 each but they drain: Life Drain DC 10 CON, HP max.
-8. **The Wrong Vault.** Decoy vault, Mimic (CR 8 custom, HP 150) posing as the fragment chest.
+5. **Bone Press.** A mechanical press animates when someone lifts a tool: 2× **Senior Ossuary Golem** (stone golem, HP 220, AC 18, Slow recharges 5-6 instead of at will; CR 11, 7,200 XP each). Support creatures: drop nothing.
+6. **Seal-Casting Hall.** Row of medallion moulds (Ash-Warden houses, four shown as broken, five as intact). Recast Shestendeliath's medallion from its mould to open room 7 (Kriv's signet is the key). A wrong medallion wakes 2× **Seal Warden** (stone golem, HP 178, AC 17, CR 10, 5,900 XP each).
+7. **Gallery of Failed Oaths.** 4× **Wraith** (CR 5, HP 67, Life Drain DC 14 reduces HP max) plus 1× **Banshee** (CR 4, Wail once per day, DC 13 CON or drop to 0 HP for a non-immune creature — Kriv is not immune). Not support: real threats, they drop nothing.
+8. **The Wrong Vault.** Decoy vault, **Elite Mimic** (HP 220, AC 16, CR 9, 5,000 XP, adhesive, grapples on hit, Slam 4d8+5) posing as the fragment chest; 400 gp of decoy silver.
 9. **Sanctuary (safe rest).** Thessaly's guest rooms. Long rest is safe (the residents ignore guests who have not attacked anything). A real recovery point.
-10. **Cold Forge.** A dormant crucible. 2× **Flame-Sworn Guardian**: fire-immune, support creatures (HP 110, AC 18, Multiattack 2d8+8). They ignore fire damage — Kriv's Wardensteel fire dice and breath are wasted here.
+10. **Cold Forge.** A dormant crucible. 3× **Flame-Sworn Guardian** (custom CR 9: HP 145, AC 19, Multiattack 2× 3d10+8 slashing, fire-immune, 5,000 XP each). They ignore fire damage — Kriv's Wardensteel fire dice and breath are wasted here. Support: drop nothing.
 11. **Rune Library.** Records of the Ash-Warden charge. Investigation 18 reveals which houses were chosen and the pattern behind it (Thessaly's account confirms).
-12. **The Sleeping Pit.** An open pit, 60 ft down, filled with 30 mummies. Any noise wakes them. 8× **Mummy** (CR 3, support, drop nothing) rise over three rounds — a real pressure room.
+12. **The Sleeping Pit.** An open pit, 60 ft down, filled with dozens of mummies. Any noise wakes them. 1× **Mummy Lord** (SRD stat block, CR 15, 13,000 XP) rises on round 2 and 6× **Mummy** (CR 3, 700 XP each) on rounds 1-3. Real pressure room. The Mummy Lord is a support anchor: drops nothing (its heart is intact, it re-forms in 24 hours).
 
 **The Oaths (13-17) — oath-trial wing**
 13. **First Oath: The Weight.** A door held shut by a counterweight chain. A collapsing-ceiling trap unless the counterweight is understood (Investigation 22 / Athletics 25). Failure: 8d10 bludgeoning (DM rolls), then the chain snaps and the door opens anyway.
-14. **Second Oath: The Scales.** A stone scale puzzle: place items of equal worth on both pans (Arcana/Appraisal). Wrong weight triggers 4× Flame-Sworn Guardian (fire-immune, support).
+14. **Second Oath: The Scales.** A stone scale puzzle: place items of equal worth on both pans (Arcana/Appraisal). Wrong weight triggers 4× Flame-Sworn Guardian (CR 9, same as room 10).
 15. **Third Oath: The Dead Ward.** A long hall of ancestor-statues. Non-combat: any Ash-Warden statue that Kriv touches remembers House Shestendeliath by name (a short emotional beat, no gate, no check).
 16. **Hall of Broken Seals.** 5 empty pedestals for the five fragments already held. The party may place their fragments here: it reveals that the fragments respond to each other (lore, not a mechanic).
-17. **The Antechamber.** Last rest point before the boss. **Second Wave trigger:** the Sworn Guard sleep in the walls; they wake at Oskar's half-HP.
+17. **The Antechamber.** Last rest point before the boss, but not undisturbed: 2× **Wraith** (CR 5) patrol the walls (resource drain, not support). **Second Wave trigger:** the Sworn Guard sleep in the walls; they wake at Oskar's half-HP.
 
 **Study & Forge (18-20)**
 18. **Thessaly's Study.** The lich talks. Full truth: the Crown was a **seal** (Bonewrights knew it held something older than any king), not merely a container. She was 19 when she joined; she is uncertain the breaking was right. She is curious about Ilvaneth (a colleague). She will state what breaking cost: half the Bonewrights died in the act. She does not stop the party.
 19. **The Cinder Archive.** Oskar's oath-scrolls: the actual text of the Shestendeliath charge, in his hand. Kriv can read his family's original vow (quiet emotional beat, sets up the boss question).
-20. **Lower Forge.** The forge that broke the Crown. A hazard room: lava vents, difficult terrain. Ilvaneth can find a reliquary of Bonewright work here (cosmetic loot: 4,000 gp of ash-metal).
+20. **Lower Forge.** The forge that broke the Crown. Hazard room: lava vents, difficult terrain, 2× **Anvil-Guardian** (fire giant stat block reskinned, HP 162, AC 18, CR 9, 5,000 XP each, fire-immune). Ilvaneth can find a reliquary of Bonewright work (4,000 gp of ash-metal).
 
 **The Final Oath (21-22)**
 21. **The Oath Hall (boss, beat 2b).** See below.
@@ -61,9 +61,9 @@ Base: Mummy Lord (SRD, CR 15) with the following changes, per `SKILL-encounter-d
 
 **Opening (not negotiation).** Oskar recognises Wardensteel and addresses Kriv by his house's name before Kriv speaks. He asks: *"Your family swore to keep them apart. Why do you carry them toward each other?"* — in front of Ilvaneth. Any honest answer is accepted. It does not stop the fight: the oath requires that no one leaves the Hall with the fragment except over him.
 
-## XP (raw ÷ 2 per PC)
+## Difficulty retune (2026-09-23, session 39, at table request — 'make it as hard as the Ember Court')
 
-Golems (2× CR10) 10,000; Sentinels 3× CR2 450; Specters 6× CR1 2,300 ... The room list is design-level; XP is calculated by `xp.py` at award time. Boss: mummy lord CR 15 = 13,000 + Sworn Guard 6× CR5 = 10,800.
+Raw XP by room (a party that clears every fight, forced-gate route): r2 golems 11,800; r5 14,400; r6 (if triggered) 11,800; r7 8,300; r8 5,000; r10 15,000; r12 18,600; r14 (if triggered) 20,000; r17 3,600; r20 10,000; r21 boss 13,000 + second wave 10,800. Total ≈ 140,000-160,000 raw when the optional fights trigger, ≈ 105,000 when they do not. Ember Court was ≈ 200,000, so the Hall is ~55-75% of it with an equally heavy boss and more honest attrition (rooms 7, 10, 12, 17, 20 are the resource drains before room 21). `xp.py` awards on the actual result, ÷ 2 per PC.
 
 ## Consequences the design is built to carry
 
