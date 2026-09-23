@@ -112,6 +112,8 @@ SCENE_COSTS = {
     "shopping":      45,
     "crosstown":     30,   # moving across a city or settlement
     "meal":          60,
+    "summit":       240,   # a negotiation that decides something big
+    "feast":        240,   # a banquet, a coronation, a public ceremony
     "ritual":        60,
     "craft":        240,
     "watch":        240,   # one watch of a night
@@ -186,6 +188,15 @@ def _format_date(cal: dict) -> str:
     if cal.get("day_counter") is not None:
         line += f"  [Day {cal['day_counter']}]"
     return line
+
+
+def _abs_day(cal: dict) -> int:
+    """Absolute day index, so two dates can be subtracted."""
+    months = _month_list(cal)
+    num_months = len(months) if months else 12
+    month_len = _month_length(cal)
+    return ((cal.get("year", 1) * num_months + (cal.get("month", 1) - 1)) * month_len
+            + cal.get("day", 1))
 
 
 def _advance_material(cal: dict, minutes: int) -> int:
@@ -511,6 +522,8 @@ def cmd_set(campaign: str, args) -> None:
         cal = {"months": [], "day_names": [], "month_length": 30, "events": [], "plane": None}
 
     months = cal.get("months", [])
+    had_date = cal.get("day") is not None
+    before = _abs_day(cal) if had_date else None
     try:
         parts = args.date.split()
         if len(parts) >= 3:
@@ -537,11 +550,25 @@ def cmd_set(campaign: str, args) -> None:
         except ValueError:
             print("  ! --clock wants HH:MM")
             sys.exit(1)
+    # The campaign day counter has to move with the date. Setting a date
+    # forward without it silently desynchronises the two, which is exactly how
+    # a declared "ten days from now" ends up dated wrong and then skipped twice.
+    shift = 0
     if args.day_counter:
         cal["day_counter"] = int(args.day_counter)
+    elif had_date and cal.get("day_counter") is not None:
+        shift = _abs_day(cal) - before
+        cal["day_counter"] += shift
 
     _save(campaign, cal)
     print(f"  Date set: {_format_date(cal)}")
+    if shift:
+        print(f"  day counter moved {shift:+d} with the date")
+    if shift > 0:
+        print(f"  NOTE: `set` jumps the clock without running anything else. For time the")
+        print(f"        party actually lives through, use `advance {shift} days` instead —")
+        print(f"        and run `factions.py tick` for the days just skipped, or the world")
+        print(f"        stands still across the jump.")
 
 
 def cmd_time(campaign: str, time_str: str) -> None:

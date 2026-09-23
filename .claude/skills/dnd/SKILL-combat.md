@@ -15,6 +15,9 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> turn "<PC name>"
 
 # an NPC/monster turn: prints the DEFENSES of the PCs it can act against
 python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> turn "<NPC name>" --targets "<PC>,<PC>"
+
+# --round N on either form restates the narration weight for that round; from round 3 on it
+# says so explicitly, because a fight written full-weight in round one thins out by round four.
 ```
 This is a hard gate, not a reminder to remember: it is the *only* sanctioned way a turn begins. Do **not** roll a die, call for a player's roll, or narrate a single action of that turn before it has run.
 

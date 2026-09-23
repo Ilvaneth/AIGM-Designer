@@ -3904,6 +3904,24 @@
       "since_session": 38,
       "until_session": null,
       "note": "First Among Houses statusuyle, %10 tribute, taht bosluğu bitti"
+    },
+    {
+      "id": "e254",
+      "from": "npc_sereth_corr",
+      "to": "npc_wrenna",
+      "type": "killed",
+      "since_session": 28,
+      "until_session": null,
+      "note": "Doppelganger olarak ifsa edildi, House Corr tarafindan infaz edildi (gun 179/180)"
+    },
+    {
+      "id": "e255",
+      "from": "faction_whisper_court",
+      "to": "npc_ostrin_vell",
+      "type": "killed",
+      "since_session": 34,
+      "until_session": null,
+      "note": "Agin kendi temizligi - parti varmadan dakikalar once (gun 195)"
     }
   ]
 }

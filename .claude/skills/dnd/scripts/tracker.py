@@ -524,7 +524,8 @@ def _resolve_sheet(chars_dir: str, entity_name: str) -> "str | None":
     return None
 
 
-def cmd_turn(campaign: str, entity_name: str, targets: "list[str] | None" = None) -> None:
+def cmd_turn(campaign: str, entity_name: str, targets: "list[str] | None" = None,
+             round_no: int = 0) -> None:
     """The mandatory call at the start of EVERY combatant's turn, PC or NPC.
 
     For a PC it prints that character's own `## Combat Triggers` and
@@ -541,8 +542,21 @@ def cmd_turn(campaign: str, entity_name: str, targets: "list[str] | None" = None
     Nothing in this turn may be rolled or narrated before this has run.
     """
     print(f"\n{'#'*68}")
-    print(f"  ▶ TURN START — {entity_name}")
+    header = f"  ▶ TURN START — {entity_name}"
+    if round_no:
+        header += f"   (round {round_no})"
+    print(header)
     print(f"{'#'*68}")
+
+    # Narration weight, restated every turn. A fight's opening rounds get
+    # written at full weight and then thin out as it goes on — the rule held in
+    # round one and was gone by round four, because nothing repeated it after
+    # the first beat.
+    if round_no and round_no >= 3:
+        print(f"  NARRATION: round {round_no} carries the same weight as round 1. If the last")
+        print("             beat you wrote was a single line, this one is not.")
+    else:
+        print("  NARRATION: sensory beat first, mechanics in their own block after.")
 
     # Step 1: effect tick (existing behavior, silent if nothing to report)
     cmd_effect(campaign, "tick", entity_name)
@@ -670,6 +684,8 @@ def main() -> None:
     # turn — mandatory start-of-turn call for PCs (effect tick + triggers, merged)
     trn = sub.add_parser("turn", help="Run at the start of EVERY combatant's turn — PC triggers, or (NPC turn) the targeted PCs' defenses")
     trn.add_argument("entity", help="Whoever is acting: a character name, or an NPC/monster name")
+    trn.add_argument("--round", type=int, default=0, metavar="N",
+                     help="Which round this is — drives the narration-weight reminder")
     trn.add_argument("--targets", default="",
                      help="Comma-separated PC names this turn can act against "
                           "(NPC turn: defaults to every PC in the campaign)")
@@ -698,7 +714,7 @@ def main() -> None:
         cmd_triggers(args.campaign, args.entity, getattr(args, "all", False))
     elif args.cmd == "turn":
         targets = [t.strip() for t in args.targets.split(",") if t.strip()]
-        cmd_turn(args.campaign, args.entity, targets)
+        cmd_turn(args.campaign, args.entity, targets, getattr(args, "round", 0))
     elif args.cmd == "defense":
         cmd_defense(args.campaign, args.entity, getattr(args, "all", False))
     else:

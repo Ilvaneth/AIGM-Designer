@@ -52,6 +52,7 @@ import argparse
 import datetime
 import json
 import pathlib
+import re
 import shutil
 import sys
 from typing import Optional
@@ -369,6 +370,122 @@ def cmd_set_disposition(args) -> int:
     sess = f" since:{args.since}" if args.since is not None else ""
     prior = f" (closed {closed} prior)" if closed else ""
     print(f"set {edge_type} {edge['id']}  party --[{edge_type}:{level}]--> {to_id}{sess}{prior}")
+    return 0
+
+
+# Edge types that mean "this one is off the board". Read at every load: an
+# opening scene that treats a dead NPC as alive is the single most expensive
+# continuity error there is, and the fact was always recorded -- just never
+# printed where the scene was being written.
+GONE_EDGES = {
+    "killed": "killed",
+    "captured_then_executed": "executed",
+    "destroyed": "destroyed",
+    "died": "died",
+}
+
+
+# Death written in prose but never recorded as an edge is how a campaign file
+# comes to contradict itself -- and how an opening scene greets a corpse. The
+# audit looks for a death word close after an NPC's name, then discards the two
+# ways that phrasing lies: a possessive (the death belongs to their clerk, their
+# team, their assassin) and another NPC's name standing between the two.
+_DEATH_WORDS = re.compile(
+    r"(öldürüldü|ÖLDÜ|öldü|infaz edildi|idam edildi|katledildi|ölüsü|killed|executed|slain)")
+_POSSESSIVE = re.compile(r"^['’](in|ın|un|ün|nin|nın|nun|nün|s)(?![a-zçğıöşü])", re.I)
+_AUDIT_WINDOW = 45
+_AUDIT_FILES = ("state.md", "session-log.md", "session-log-archive.md")
+
+
+def cmd_gone_audit(args) -> int:
+    """Names the campaign text treats as dead that the graph does not."""
+    data = _load(args.campaign)
+    npc_names = {n.get("name", ""): n["id"] for n in data["nodes"]
+                 if n.get("type") == "npc" and n.get("name")}
+    _ids_gone = {e.get("to") for e in data["edges"] if e.get("type") in GONE_EDGES}
+    # Duplicate nodes for one person are common (two ids, one NPC), so a
+    # death recorded against either id counts for the name.
+    _names = {n["id"]: n.get("name", "") for n in data["nodes"]}
+    gone_names = {_names.get(i, "") for i in _ids_gone}
+
+    base = pathlib.Path(str(find_campaign(args.campaign)))
+    text = ""
+    for fname in _AUDIT_FILES:
+        path = base / fname
+        if path.is_file():
+            text += path.read_text(encoding="utf-8") + "\n"
+    if not text:
+        print("# no campaign text to audit")
+        return 0
+
+    others = sorted(npc_names, key=len, reverse=True)
+    suspects = {}
+    for name, nid in npc_names.items():
+        if name in gone_names:
+            continue
+        for m in re.finditer(re.escape(name), text):
+            window = text[m.end():m.end() + _AUDIT_WINDOW]
+            hit = _DEATH_WORDS.search(window)
+            if not hit:
+                continue
+            if _POSSESSIVE.match(window):
+                continue                      # "X'in kâtibi — ÖLDÜ": not X
+            between = window[:hit.start()]
+            if any(o != name and o in between for o in others):
+                continue                      # someone else died in this clause
+            snippet = (name + window[:hit.end()]).replace("\n", " ")
+            suspects.setdefault(name, []).append(snippet.strip())
+
+    if not suspects:
+        print("# audit clean — nothing in the campaign text reads as an unrecorded death")
+        return 0
+
+    print(f"# UNRECORDED DEATHS? {len(suspects)} name(s) the text treats as dead but the")
+    print("# graph does not. Confirm each, then record it:")
+    print("#   campaign_graph.py add-edge --campaign <name> --from <killer-id> \\")
+    print("#       --to <node-id> --type killed --since <session> --note \"...\"")
+    for name, hits in sorted(suspects.items(), key=lambda kv: -len(kv[1])):
+        print(f"\n  {name}  [{npc_names[name]}]  — {len(hits)} mention(s)")
+        for h in hits[:2]:
+            print(f"      …{h[:100]}")
+    return 2
+
+
+def cmd_gone(args) -> int:
+    """Who and what is off the board, newest first."""
+    data = _load(args.campaign)
+    names = {n["id"]: n.get("name", n["id"]) for n in data["nodes"]}
+    types = {n["id"]: n.get("type", "") for n in data["nodes"]}
+
+    rows = []
+    for e in data["edges"]:
+        label = GONE_EDGES.get(e.get("type"))
+        if not label:
+            continue
+        target = e.get("to")
+        if args.type and types.get(target) != args.type:
+            continue
+        rows.append((e.get("since_session") or 0, names.get(target, target),
+                     types.get(target, "?"), label,
+                     names.get(e.get("from"), e.get("from")), e.get("note", "")))
+
+    rows.sort(key=lambda r: -r[0])
+    if args.since is not None:
+        rows = [r for r in rows if r[0] >= args.since]
+
+    if not rows:
+        print("# nothing recorded as gone")
+        return 0
+
+    print(f"# OFF THE BOARD — {len(rows)} recorded. Check this before writing any")
+    print("# scene that assumes someone is still alive, in post, or intact.")
+    seen = set()
+    for session, name, ntype, label, by, note in rows:
+        if name in seen:
+            continue
+        seen.add(name)
+        tail = f" — {note}" if note and args.verbose else ""
+        print(f"  s{session:<3} {label:<10} {ntype:<8} {name}{tail}")
     return 0
 
 
@@ -933,6 +1050,17 @@ def main() -> int:
                     help="session number this stance became true")
     sp.add_argument("--note", help="one-line reason for the stance")
     sp.set_defaults(func=cmd_set_disposition)
+
+    sp = sub.add_parser("gone",
+                        help="Who/what is off the board (killed, executed, destroyed)")
+    add_camp(sp)
+    sp.add_argument("--type", default="", help="Filter by node type, e.g. npc")
+    sp.add_argument("--since", type=int, default=None, metavar="N",
+                    help="Only entries from session N onward")
+    sp.add_argument("--verbose", action="store_true", help="Include the note")
+    sp.add_argument("--audit", action="store_true",
+                    help="Instead: find deaths written in prose but missing from the graph")
+    sp.set_defaults(func=lambda a: cmd_gone_audit(a) if a.audit else cmd_gone(a))
 
     sp = sub.add_parser("list")
     add_camp(sp)

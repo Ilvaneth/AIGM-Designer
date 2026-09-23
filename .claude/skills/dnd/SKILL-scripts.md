@@ -216,6 +216,8 @@ the script (`scene --list`), so the DM picks a type rather than inventing a dura
 python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene conversation    # +30m
 python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene meeting         # +1h30m
 python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene research        # +3h
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene summit          # +4h, a negotiation that decides something
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP scene feast           # +4h, a banquet or ceremony
 python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP advance 20 minutes    # anything else
 ```
 
@@ -329,6 +331,26 @@ Likelihoods: `sure-thing`, `likely`, `50/50`, `unlikely`, `no-way`. Verdict suff
 
 ---
 
+## Private Channels — `scripts/channels.py`
+
+Who was party to a private exchange, and what passed through it. The check that catches an NPC citing
+a troop count they could only have read over someone else's Sending Stone.
+
+```bash
+channels.py -c $CAMP list [--verbose]
+channels.py -c $CAMP add --id stone-sethra --type sending-stone     --name "Sending Stone — Kriv/Sethra" --participants "Kriv Shestendeliath,Sethra Shestendeliath"
+channels.py -c $CAMP fact stone-sethra --day 206 --text "Order to raise 200 soldiers"     --keywords "200 asker,200 soldiers"
+
+# Before an NPC says something that may not be theirs to know (exit 2 = it isn't):
+channels.py -c $CAMP check "Hold'da 200 asker toplanıyor" --speaker "Vessa Kettring"
+channels.py -c $CAMP who "200 asker"
+```
+
+Channel types: `sending-stone`, `private-meeting`, `letter`, `spell`, `other`. Record the fact the
+moment the exchange happens — the leak always comes later, once you have forgotten it was private.
+
+---
+
 ## Faction Board — `scripts/factions.py`
 
 The chessboard between factions: objectives, running operations with in-world due days, a weekly
@@ -427,6 +449,11 @@ Zero-LLM relationship extractor. Pattern-matches session-log sentences against t
 CAMP=my-campaign
 
 # Propose edges (stdout), no writes:
+# Who is off the board — read before writing any opening scene:
+python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py gone --campaign $CAMP --type npc
+# Deaths written in prose but never recorded as edges (exit 2 = found some):
+python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py gone --campaign $CAMP --audit
+
 python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py extract --campaign $CAMP --deterministic
 
 # One-shot auto-apply high-confidence proposals into graph.json (idempotent):

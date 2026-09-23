@@ -65,6 +65,13 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
    `set` the calendar to it, paste `stateline` into state.md's date line). Exit 1 means the campaign has
    no calendar yet — offer `calendar.py init` from the world.md calendar block.
 
+0.75. **Who is gone, and what is private.** Run
+   `python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py gone --campaign <campaign-name> --type npc`
+   and keep the roster in view while writing the opening — an opening beat that treats a dead NPC as
+   alive is the single most expensive continuity error there is. Then
+   `python3 ${CLAUDE_SKILL_DIR}/scripts/channels.py -c <campaign-name> list` for the private channels
+   whose contents no outsider may cite.
+
 0.8. **Faction board check.** Run `python3 ${CLAUDE_SKILL_DIR}/scripts/factions.py -c <campaign-name> check --day <current in-world day>`.
    Exit 0 means every active faction has a live operation. Exit 2 lists factions with no plan, overdue
    steps, or no move in two weeks — resolve those before the session opens, because they are the moves
@@ -346,6 +353,16 @@ For each candidate, draft an `add-edge` or `close-edge` call. Then **present the
 Always supply `--since <current-session-N>` from state.md. Never write proposed edges silently.
 
 If `graph.json` doesn't exist yet for this campaign, skip the sweep entirely (no proposal block) — graph isn't seeded.
+
+**Unrecorded deaths:** run
+`python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_graph.py gone --campaign <name> --audit`. Exit 2 lists
+names the campaign text treats as dead that the graph has no record of — record each with `add-edge`
+(`--type killed --since <session>`) before saving. A death that lives only in prose is how two
+sections of the same file come to disagree about whether someone is alive.
+
+**Private channels:** anything that passed through a Sending Stone, a closed room or a sealed letter
+this session gets recorded: `channels.py -c <name> fact <channel> --day N --text "..."`. Record it
+while you still remember it was private.
 
 **Clock check:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c <name> check`. Exit 2 means
 `state.md`'s date line and `calendar.json` disagree — reconcile before saving (advance or `set` the
