@@ -3877,6 +3877,33 @@
       "since_session": 37,
       "until_session": null,
       "note": "Iskra ve Sathriel kalici oldu, otuz yillik operasyon liderliksiz kaldi, gercek dogasi (rakshasa+doppelganger) yakinda acik olacak"
+    },
+    {
+      "id": "e251",
+      "from": "party",
+      "to": "faction_kindled_circle",
+      "type": "allied_with",
+      "since_session": 38,
+      "until_session": null,
+      "note": "Esit statude ittifak, vergi yok - Hollow Prophet bilgisi karsiliginda Crown'un gercek dogasina dair kanit"
+    },
+    {
+      "id": "e252",
+      "from": "party",
+      "to": "faction_compact",
+      "type": "rules_over",
+      "since_session": 38,
+      "until_session": null,
+      "note": "Compact askerinin yarisi konfiske edildi, %10 Kral Payi vergisi, King's General Coren araciligiyla"
+    },
+    {
+      "id": "e253",
+      "from": "party",
+      "to": "faction_house_corr",
+      "type": "rules_over",
+      "since_session": 38,
+      "until_session": null,
+      "note": "First Among Houses statusuyle, %10 tribute, taht bosluğu bitti"
     }
   ]
 }

@@ -1052,3 +1052,45 @@ Oturum boyunca birden fazla canlı düzeltme yapıldı: (1) NPC'lerin sahnede s�
 - **Son Crown parçası (9/9)** — Ser Oskar Thrune, Bonewrights' Hall — hâlâ gidilmedi.
 - **Aşkalkanı/House Corvane/Karsgate ipliği** — henüz çözülmedi.
 
+
+---
+
+## Session 36 — 2026-09-22 — Ember Court dungeon crawl (Oda 3-11), Ascension Stage 4, gün 203
+**Location:** The Ember Court (Kaal hanesinin sınır düzlemi) — Oda 3-11  **In-world date:** Gün 203 (zaman düzlemde esnek)  **Duration:** —
+
+### Recap
+**Yükleme düzeltmesi.** Önceki save Ember Court'un 24 odasını hiç oynanmamış atlayıp "Iskra/Sathriel kalıcı öldü, eve dönüldü, uzun mola bitti" diye kaydetmişti. Oyuncu bunu ilk mesajında yakaladı — gerçek durum (sadece Oda 1-2 oynanmış, geri kalanı henüz oynanmamış) düzeltildi, Iskra/Sathriel'in "kalıcı öldü" kaydı "ağır yaralı, Oda 24'te reform halinde" olarak geri alındı (graph.json ve goals.json dahil).
+
+**Ascension Stage 4.** Level 17 + 8/9 fragman eşiği session 35 sonunda zaten sağlanmıştı ama hiç işlenmemişti — oyuncunun sorusuyla yakalanıp hemen uygulandı. Kriv: gerçek kanatlar (Warden's Oathplate'i yararak çıktı, 60ft uçuş), 9d6 nefes/40ft koni, Truesight 60ft, Legendary Resistance 1/gün, + kanatlar açıkken Intimidation/Persuasion'da durumsal avantaj (oyuncu mantığıyla canlı onaylandı). İlvaneth: necrotic/poison/disease/exhaustion tam bağışıklık, sıradan yollarla kalıcı öldürülemiyor (24 saatte reform), undead'i isteğe bağlı komuta — bedel artık özellikle yetimhane anılarını hedefliyor.
+
+**Oda 3-11 sırayla temizlendi.** Ledger Salonu (9× Lemure, Kriv GWM zinciriyle 4'ünü, İlvaneth Fire Bolt'la 1'ini, kalan 4'ü ikinci GWM turuyla bitirdi). Baş Yazmanın Odası (özel güçlendirilmiş Spinagon, CR¼→8). Sözleşme Kasası (Bone Devil + gerçek loot: master Kaal borç kayıtları + kırık Sözleşme Taşı parçaları, Bag of Holding'e kondu — Toll the Dead ile öldürüldü). Kor Köprüsü Karakolu (4× Barghest, İlvaneth'in Sickening Radiance'ı + Kriv'in GWM'i tek turda hepsini bitirdi, parti hiç hasar almadı). Borçlular Galerisi'nde bağlı bir ruhla (Kriv Persuasion 26) savaşsız bilgi alışverişi — ileride Besleme Salonu/Yargı Çukuru/Kor Tahtı tehditleri + Sözleşme Taşı'nın tamamının muhtemelen Tahtı tutanda olduğu öğrenildi. Besleme Salonu (2× Erinyes CR12 — Kriv'in Action Surge'lü Disarming/Goading Attack zinciri + İlvaneth'in Vampiric Touch'ı ikisini de düşürdü, İlvaneth 20 piercing hasar aldı ama zehir Stage 4 bağışıklığıyla etkisizdi). Ceza Hücreleri (kıdemli Bone Devil, CR9→12 — İlvaneth'in Protection from Evil and Good'u Kriv'e fiend direnci verdi, fire immunity ilk kez doğru uygulandı). Gözetmenin Odası (kıdemli Rakshasa Yönetici — Suggestion'ı Kriv'in WIS save'iyle savuşturuldu, tek turda öldürüldü). Yargı Çukuru (Rakshasa Şampiyonu — stok stat, oyuncu "champion" adına yakışmadığını belirtti, gelecekte gerçek güçlendirme istendi).
+
+**Rakshasa'ların Limited Magic Immunity'si ilk kez karşılaşıldı** — İlvaneth'in 6. seviye ve altı büyüleri (Fire Bolt, Toll the Dead, Vampiric Touch, Sickening Radiance dahil) rakshasa'lara karşı işe yaramıyor, sadece 7.+ seviye büyüler ya da fiziksel saldırılar geçerli. İlvaneth bunu tanıyıp Kriv'i uyardı, kendi rolünü büyüden fiziksel desteğe (Protection from Evil and Good gibi hedefi rakshasa olmayan büyüler) kaydırdı.
+
+**Oda 12'nin eşiğinde durduruldu** (3× Rakshasa askeri bekliyor) — oyuncu `/dm:dnd save` çağırdı.
+
+### Key Events
+- **Kayıt hatası düzeltildi:** Iskra Vantrel ve Sathriel kalıcı ölmedi, Ember Court Oda 24'te reform halindeler — Whisper Court goal tracker PERMANENT_LOSS'tan THREATENED'a geri alındı.
+- **Ascension Stage 4 işlendi (her ikisi de)** — bkz. yukarı.
+- **Ember Court Oda 1-11 tamamen temizlendi**, parti Oda 12'nin eşiğinde.
+- **Master Kaal borç kayıtları + kırık Sözleşme Taşı parçaları ele geçirildi** (Oda 5).
+- **Yapısal DM süreç düzeltmeleri (SKILL-combat.md'ye genel kural olarak işlendi):** (1) bir PC'nin pasif özelliği (Cloak of Displacement) sadece basılmakla kalmayıp fiilen her NPC saldırısında uygulanmalı; (2) canavar direnç/bağışıklıkları her hasar hesabında kontrol edilmeli, `lookup.py`'nin veri eksikliği "direnç yok" anlamına gelmiyor (devil fire/poison immunity örneği, hem Oda 8 hem Oda 9'da yaşandı, Oda 9'dan itibaren düzeltildi); (3) PC save'leri hep oyuncudan gelir, DM bir kez ihlal edip düzeltti.
+- XP: Oda 3 (Lemure) 45 + Oda 4 (Spinagon) 1.950 + Oda 5 (Bone Devil) 2.500 + Oda 6 (Barghest×4) 2.200 + Oda 8 (Erinyes×2) 8.400 + Oda 9 (Bone Devil kıdemli) 4.200 + Oda 10 (Rakshasa yönetici) 5.000 + Oda 11 (Rakshasa şampiyon) 5.000 = **+29.295/kişi.** İkisi de **261.257 XP, Level 17** (Level 18 eşiğine 3.743 kaldı).
+
+### DM Calibration
+**Oyuncunun cevabı (2026-09-22, `/dm:dnd end`):** *"Bu oturumda Opus yardımı ile majör değişiklik ve geliştirmeler yapıldı."* — oturumun ağırlık merkezi masadaki oyun kadar skill'in kendisiydi: AIGM refactor dalında faction forward-model'i (`factions.py`), dakika hassasiyetli takvim + düzlem oranları (`calendar.py`), encounter-design doktrininin skill'e taşınması, zar sahipliğini dışarıdan zorlayan hook, ve display/telefon sisteminin tamamen sökülmesi. Genel DM kuralları `DM Style Notes`'tan skill'in kendisine taşındı — kampanya dosyaları artık olguları, skill kuralları taşıyor.
+
+Oturum içi düzeltmeler de yoğundu: kayıt/devamlılık hatası (dungeon atlama), gözden kaçan bir mekanik kazanım (Ascension Stage 4), ve tekrar eden combat-hatası kalıpları (pasif efekt uygulama, canavar direnci) hepsi canlı yakalanıp kalıcı olarak (hem bu kampanyaya hem skill'in genel SKILL-combat.md'sine) işlendi.
+
+**Kapanışta düzeltilen kayıt (oyuncu kararı):** gün sayacı kanonik — **gün 203 = 37 Ashfall = Cinderday.** Kesh Amara toplantısının eski "Restday" etiketi yanlıştı; örüntü Cinderday geceleri olarak düzeltildi (state.md, session-log.md, npcs.md). Sarelle'in Ashvale'deki Restday zayıflığı ayrı ve doğru bir olgu, değiştirilmedi.
+
+### Session Recap
+**Öne çıkanlar:** Bir önceki oturumun kayıt hatası düzeltildi (Iskra/Sathriel yaşıyor, dungeon gerçekten oynandı); her iki karakter de Ascension Stage 4'e ulaştı (Kriv gerçek kanatlar kazandı); Ember Court'un 11 odası temizlendi, Oda 12'nin eşiğinde durdu; birden fazla yapısal DM süreç hatası (pasif efekt uygulama, canavar direnci, PC zar sahipliği) yakalanıp skill seviyesinde kalıcı olarak düzeltildi.
+
+**Açık iplikler (bir sonraki oturuma taşınan):**
+- **Ember Court'ta 13 oda daha var** (Oda 12-24) — asıl hedef hâlâ Oda 24'teki Kor Beşiği, saat işliyor.
+- **Oda 12'de 3× Rakshasa askeri bekliyor** — henüz girilmedi.
+- **Rakshasa'ların Limited Magic Immunity'si** — İlvaneth'in taktik repertuarını Oda 24'e kadar etkileyecek, 7.+ seviye büyülere (Teleport, Power Word Pain/Stun, Meteor Swarm, Wish) yönelmesi gerekebilir.
+- **Kor Beşiği'nin reform saati** — ne kadar süre kaldığı hâlâ belirsiz, "birkaç saat" diye tasarlandı.
+- **Son Crown parçası (9/9)** — Ser Oskar Thrune, Bonewrights' Hall — hâlâ gidilmedi, Ember Court'un dışında.
+

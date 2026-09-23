@@ -4,47 +4,6 @@
 
 ---
 
-## Session 36 — 2026-09-22 — Ember Court dungeon crawl (Oda 3-11), Ascension Stage 4, gün 203
-**Location:** The Ember Court (Kaal hanesinin sınır düzlemi) — Oda 3-11  **In-world date:** Gün 203 (zaman düzlemde esnek)  **Duration:** —
-
-### Recap
-**Yükleme düzeltmesi.** Önceki save Ember Court'un 24 odasını hiç oynanmamış atlayıp "Iskra/Sathriel kalıcı öldü, eve dönüldü, uzun mola bitti" diye kaydetmişti. Oyuncu bunu ilk mesajında yakaladı — gerçek durum (sadece Oda 1-2 oynanmış, geri kalanı henüz oynanmamış) düzeltildi, Iskra/Sathriel'in "kalıcı öldü" kaydı "ağır yaralı, Oda 24'te reform halinde" olarak geri alındı (graph.json ve goals.json dahil).
-
-**Ascension Stage 4.** Level 17 + 8/9 fragman eşiği session 35 sonunda zaten sağlanmıştı ama hiç işlenmemişti — oyuncunun sorusuyla yakalanıp hemen uygulandı. Kriv: gerçek kanatlar (Warden's Oathplate'i yararak çıktı, 60ft uçuş), 9d6 nefes/40ft koni, Truesight 60ft, Legendary Resistance 1/gün, + kanatlar açıkken Intimidation/Persuasion'da durumsal avantaj (oyuncu mantığıyla canlı onaylandı). İlvaneth: necrotic/poison/disease/exhaustion tam bağışıklık, sıradan yollarla kalıcı öldürülemiyor (24 saatte reform), undead'i isteğe bağlı komuta — bedel artık özellikle yetimhane anılarını hedefliyor.
-
-**Oda 3-11 sırayla temizlendi.** Ledger Salonu (9× Lemure, Kriv GWM zinciriyle 4'ünü, İlvaneth Fire Bolt'la 1'ini, kalan 4'ü ikinci GWM turuyla bitirdi). Baş Yazmanın Odası (özel güçlendirilmiş Spinagon, CR¼→8). Sözleşme Kasası (Bone Devil + gerçek loot: master Kaal borç kayıtları + kırık Sözleşme Taşı parçaları, Bag of Holding'e kondu — Toll the Dead ile öldürüldü). Kor Köprüsü Karakolu (4× Barghest, İlvaneth'in Sickening Radiance'ı + Kriv'in GWM'i tek turda hepsini bitirdi, parti hiç hasar almadı). Borçlular Galerisi'nde bağlı bir ruhla (Kriv Persuasion 26) savaşsız bilgi alışverişi — ileride Besleme Salonu/Yargı Çukuru/Kor Tahtı tehditleri + Sözleşme Taşı'nın tamamının muhtemelen Tahtı tutanda olduğu öğrenildi. Besleme Salonu (2× Erinyes CR12 — Kriv'in Action Surge'lü Disarming/Goading Attack zinciri + İlvaneth'in Vampiric Touch'ı ikisini de düşürdü, İlvaneth 20 piercing hasar aldı ama zehir Stage 4 bağışıklığıyla etkisizdi). Ceza Hücreleri (kıdemli Bone Devil, CR9→12 — İlvaneth'in Protection from Evil and Good'u Kriv'e fiend direnci verdi, fire immunity ilk kez doğru uygulandı). Gözetmenin Odası (kıdemli Rakshasa Yönetici — Suggestion'ı Kriv'in WIS save'iyle savuşturuldu, tek turda öldürüldü). Yargı Çukuru (Rakshasa Şampiyonu — stok stat, oyuncu "champion" adına yakışmadığını belirtti, gelecekte gerçek güçlendirme istendi).
-
-**Rakshasa'ların Limited Magic Immunity'si ilk kez karşılaşıldı** — İlvaneth'in 6. seviye ve altı büyüleri (Fire Bolt, Toll the Dead, Vampiric Touch, Sickening Radiance dahil) rakshasa'lara karşı işe yaramıyor, sadece 7.+ seviye büyüler ya da fiziksel saldırılar geçerli. İlvaneth bunu tanıyıp Kriv'i uyardı, kendi rolünü büyüden fiziksel desteğe (Protection from Evil and Good gibi hedefi rakshasa olmayan büyüler) kaydırdı.
-
-**Oda 12'nin eşiğinde durduruldu** (3× Rakshasa askeri bekliyor) — oyuncu `/dm:dnd save` çağırdı.
-
-### Key Events
-- **Kayıt hatası düzeltildi:** Iskra Vantrel ve Sathriel kalıcı ölmedi, Ember Court Oda 24'te reform halindeler — Whisper Court goal tracker PERMANENT_LOSS'tan THREATENED'a geri alındı.
-- **Ascension Stage 4 işlendi (her ikisi de)** — bkz. yukarı.
-- **Ember Court Oda 1-11 tamamen temizlendi**, parti Oda 12'nin eşiğinde.
-- **Master Kaal borç kayıtları + kırık Sözleşme Taşı parçaları ele geçirildi** (Oda 5).
-- **Yapısal DM süreç düzeltmeleri (SKILL-combat.md'ye genel kural olarak işlendi):** (1) bir PC'nin pasif özelliği (Cloak of Displacement) sadece basılmakla kalmayıp fiilen her NPC saldırısında uygulanmalı; (2) canavar direnç/bağışıklıkları her hasar hesabında kontrol edilmeli, `lookup.py`'nin veri eksikliği "direnç yok" anlamına gelmiyor (devil fire/poison immunity örneği, hem Oda 8 hem Oda 9'da yaşandı, Oda 9'dan itibaren düzeltildi); (3) PC save'leri hep oyuncudan gelir, DM bir kez ihlal edip düzeltti.
-- XP: Oda 3 (Lemure) 45 + Oda 4 (Spinagon) 1.950 + Oda 5 (Bone Devil) 2.500 + Oda 6 (Barghest×4) 2.200 + Oda 8 (Erinyes×2) 8.400 + Oda 9 (Bone Devil kıdemli) 4.200 + Oda 10 (Rakshasa yönetici) 5.000 + Oda 11 (Rakshasa şampiyon) 5.000 = **+29.295/kişi.** İkisi de **261.257 XP, Level 17** (Level 18 eşiğine 3.743 kaldı).
-
-### DM Calibration
-**Oyuncunun cevabı (2026-09-22, `/dm:dnd end`):** *"Bu oturumda Opus yardımı ile majör değişiklik ve geliştirmeler yapıldı."* — oturumun ağırlık merkezi masadaki oyun kadar skill'in kendisiydi: AIGM refactor dalında faction forward-model'i (`factions.py`), dakika hassasiyetli takvim + düzlem oranları (`calendar.py`), encounter-design doktrininin skill'e taşınması, zar sahipliğini dışarıdan zorlayan hook, ve display/telefon sisteminin tamamen sökülmesi. Genel DM kuralları `DM Style Notes`'tan skill'in kendisine taşındı — kampanya dosyaları artık olguları, skill kuralları taşıyor.
-
-Oturum içi düzeltmeler de yoğundu: kayıt/devamlılık hatası (dungeon atlama), gözden kaçan bir mekanik kazanım (Ascension Stage 4), ve tekrar eden combat-hatası kalıpları (pasif efekt uygulama, canavar direnci) hepsi canlı yakalanıp kalıcı olarak (hem bu kampanyaya hem skill'in genel SKILL-combat.md'sine) işlendi.
-
-**Kapanışta düzeltilen kayıt (oyuncu kararı):** gün sayacı kanonik — **gün 203 = 37 Ashfall = Cinderday.** Kesh Amara toplantısının eski "Restday" etiketi yanlıştı; örüntü Cinderday geceleri olarak düzeltildi (state.md, session-log.md, npcs.md). Sarelle'in Ashvale'deki Restday zayıflığı ayrı ve doğru bir olgu, değiştirilmedi.
-
-### Session Recap
-**Öne çıkanlar:** Bir önceki oturumun kayıt hatası düzeltildi (Iskra/Sathriel yaşıyor, dungeon gerçekten oynandı); her iki karakter de Ascension Stage 4'e ulaştı (Kriv gerçek kanatlar kazandı); Ember Court'un 11 odası temizlendi, Oda 12'nin eşiğinde durdu; birden fazla yapısal DM süreç hatası (pasif efekt uygulama, canavar direnci, PC zar sahipliği) yakalanıp skill seviyesinde kalıcı olarak düzeltildi.
-
-**Açık iplikler (bir sonraki oturuma taşınan):**
-- **Ember Court'ta 13 oda daha var** (Oda 12-24) — asıl hedef hâlâ Oda 24'teki Kor Beşiği, saat işliyor.
-- **Oda 12'de 3× Rakshasa askeri bekliyor** — henüz girilmedi.
-- **Rakshasa'ların Limited Magic Immunity'si** — İlvaneth'in taktik repertuarını Oda 24'e kadar etkileyecek, 7.+ seviye büyülere (Teleport, Power Word Pain/Stun, Meteor Swarm, Wish) yönelmesi gerekebilir.
-- **Kor Beşiği'nin reform saati** — ne kadar süre kaldığı hâlâ belirsiz, "birkaç saat" diye tasarlandı.
-- **Son Crown parçası (9/9)** — Ser Oskar Thrune, Bonewrights' Hall — hâlâ gidilmedi, Ember Court'un dışında.
-
----
-
 ## Session 37 — 2026-09-23 — Ember Court tamamlandı (Oda 12-24), İskra/Sathriel kalıcı öldü, Level 18, gün 204-205
 **Location:** The Ember Court (Oda 12-24) → Emberhold (Sonnward Promenade konağı)  **In-world date:** Gün 204-205  **Duration:** —
 
@@ -82,3 +41,50 @@ Oturum boyunca birkaç canlı düzeltme yapıldı: (1) inisiyatif hesabında bir
 - **Hapsedilmiş kül-ruhu** — İlvaneth yanında taşıyor, kaderi henüz kararlaştırılmadı.
 - **Kendini güncelleyen borç defteri** — Kaal'a borçlu ölümlü ailelerin kaydı, gerçek bir siyasi kaldıraç, henüz kullanılmadı.
 - **Üç hanenin (Corr/Sablewood/Ilvane) Whisper Court'un gerçek doğasını (rakshasa+doppelganger) öğrenmesi** — gün 210-211'de gerçekleşecek, parti henüz bilgilendirmedi.
+
+---
+
+## Session 38 — 2026-09-23 — Kriv Kral ilan edildi, Krallık kuruldu, gün 205-222
+**Location:** Emberhold (Sonnward Promenade → Ember Quarter → Hollow Throne/The Ember Throne) → Karsgate (Kindled Spire, Ironclad Hall, The Grand Spire) → Shestendeliath Hold → Emberhold  **In-world date:** Gün 205-222  **Duration:** —
+
+### Recap
+**Açılış düzeltmesi.** Yükleme sırasında Wrenna'nın kaderi konusunda gerçek bir çelişki bulundu ve düzeltildi — session 28'de itiraf edip infaz edilmişti, ama Live State Flags yanlışlıkla "çift ajan olarak tutuldu" diye kaydetmişti. Kayıt session-log-archive.md'nin orijinal kaydına göre düzeltildi.
+
+**Ember Court'un yağmasıyla alışveriş (gün 205).** Kriv, Rajah'ın tacını (Boyun Eğmeyenin Tacı — frightened bağışıklığı, charm/dominate'e avantaj) attune etti. Karsgate'te Kral Payı'yla Belt of Storm Giant Strength (STR 29, Persuasion nat29 ile 30k'dan 24k'ya), Ilvaneth Staff of Power (Winged Boots'un yerine) + Tome of Clear Thought + Manual of Bodily Health (Persuasion 29 ile paket 19k'ya) satın aldı.
+
+**Üç hane + Veskin ile gizli itiraf, Kriv Kral ilan edildi (gün 205 akşamı, Ilvaneth'in Mordenkainen's Mansion'ı içinde).** Kaal'ın borç defteri yüksek sesle okundu — Cassian (bilinçsiz taraf, hanesi bilmeden borçlanmış), Veskin (bilinçli taraf, "istikrar payı" karşılığı sessizlik), Sereth (Rendric Corr'un zehirlenmesi bilgisi karşılığı sessizlik), Berengar (40 yıllık bir "yatırım" karşılığı bilgi akışı) — dördü de Kaal'a borçluymuş, artık borç silindi ama hepsi Kriv'e borçlu. Kriv kendini Kral ilan etti, "sancak" metaforuyla (haneler kendi kalır, sadece üstlerinde bir taç var) ikna etti. Sereth'in şartı: House Corr resmen First Among Houses, Dorren'in adı Konsey kayıtlarına geçecek.
+
+**Halka açık taç giyme (gün 206 sabahı, Ember Quarter).** Kriv'in konuşması + havada uçuşu, kalabalık "Ember'in Kralı" diye haykırdı. Aynı gün: Hollow Throne'un keşfi (Crown-touched, fısıltılar, parti fragmanları tanıdı ama tahta oturmadı — "sonra karar verelim"), Karsgate'e Teleport, **Coren Ashvale King's General ilan edildi** (300 sadık asker Emberhold'a yola çıktı, 10k gp sefer masrafı), **Ironclad Table diz çöktürüldü** (Drummel/Holloway/Kettring — askerin yarısı Krallığa, %10 vergi, Vessa Kral tedarikçisi oldu), **Kindled Circle müttefik oldu** (Odalys → Voss, "tebaa değil müttefik" ısrarıyla eşit bir anlaşma) — **Voss'a Hollow Prophet'in kimliği/konumu verildi, karşılığında Circle'ın kendi arşivinden Ashen Crown'un gerçek doğasına dair kısmi bir gerçek alındı ("Unutulmuşların Defteri" — bir mühür, içinde tanrılar tarafından silinmiş bir şey var).**
+
+**Krallığın altyapısı (gün 206-211).** Sethra'ya Hold bölgesinin komutası + 200 asker toplama emri verildi. Veskin, iki yıllık usulsüzlüğünü itiraf etti (+47.000 gp Krallık Hazinesi'ne — 12k kesesinden, 35k unutulmuş kasadan). Ekonomi tek bir modele oturtuldu: **Kral Payı, haritanın toplam ekonomisinin %10'u (~18.000 gp/ay).** Saray (The Ember Throne olarak yeniden adlandırıldı) ejderha temasıyla tadilattan geçirildi (25k→17.5k gp, Persuasion nat20). Kriv'in ilk kraliyet hükmü: bir arsa anlaşmazlığı, taksitli satın alma ile çözüldü.
+
+**Taç giyme şöleni (gün 221, 10 gün sonra ilan edildiği gibi).** Krallığın her yerinden konuk geldi — Sereth (Dorren'in kılıcı), Berengar (Sablewood zırhı), Cassian (Ilvane Aynası — illüzyon/polymorph görüyor), Coren (ordu selamı), Odalys (Circle'ın ittifak belgesi). Bard Lior Ashgale iki şarkı söyledi (Kriv'in tahta çıkışı + Ilvaneth'in bilgeliği). Kukuletalı bir gözlemci ("Ashen Corwyn") Iskra Vantrel'in gerçekten öldüğünü doğrulamaya geldi, kaynağını açıklamadan ayrıldı — **açık bir iplik, muhtemelen "Marek Vantrel" ile bağlantılı.** Ilvaneth, Voss'un kitabındaki yarım kalmış "Kırılmayan Öz" ritüelini tamamladı (Arcana 26) — ölümden gerçek benlikle dönüşü sağlayan, benzersiz bir Necromancy ritüeli. Ilvane Aynası, sarayın giriş kapısına zorunlu güvenlik kontrolü olarak yerleştirildi (attunement gerektirmiyor, istisnasız — reddeden tutuklanır, direnen öldürülebilir).
+
+### Key Events
+- **Kriv, Emberhold'un Kralı ilan edildi — iki yıllık taht boşluğu resmen bitti.** Üç hane + Ironclad Compact + Kindled Circle, hepsi Krallığa bağlandı.
+- **Whisper Court'un gerçek doğası (Kaal, rakshasa) üç haneye + Veskin'e açıklandı** — tüm dördü "borçlu" olduklarını öğrendi, borç Kriv'e devroldu.
+- **Ironclad Compact vassal oldu** — askerinin yarısı Krallığa katıldı, General Coren Ashvale + 300 asker Emberhold'a yola çıktı.
+- **Kindled Circle müttefik oldu** (eşit statüde) — Hollow Prophet'in kimliği karşılığında Ashen Crown'un gerçek doğasına (bir mühür) dair kısmi kanıt alındı.
+- **Regent-Chancellor Veskin'in 2 yıllık usulsüzlüğü itiraf edildi** — 47.000 gp Krallık Hazinesi'ne, kendisi gözetim altında görevde tutuldu.
+- **Ekonomi modeli kuruldu: Kral Payı, %10, ~18.000 gp/ay.**
+- **Ilvaneth: Tome of Clear Thought (INT 18→20) + Manual of Bodily Health (CON 14→16, +18 HP) tamamlandı; Kırılmayan Öz ritüeli tamamlandı.**
+- **Kriv: Belt of Storm Giant Strength (STR 29), Boyun Eğmeyenin Tacı attune edildi.**
+- **Yeni açık iplik: "Ashen Corwyn" adlı kukuletalı bir gözlemci, Iskra'nın ölümünü doğrulamaya geldi — muhtemelen Marek Vantrel'e bağlı.**
+- XP: +6.300/kişi (Hard noncombat — üç hane + Veskin müzakeresi, Kriv Kral ilan edildi). İkisi de **290.942 XP, Level 18** (Level 19'a 14.058 kaldı).
+
+### DM Calibration
+İki gerçek hata canlı yakalandı ve düzeltildi: (1) Wrenna'nın kaderi konusunda state.md'nin kendi içinde çelişki vardı (Live State Flags vs Continuity Archive) — oyuncu yakaladı, kök neden (bir düzeltmenin sadece bir dosyaya yazılıp diğerine yayılmaması) not edildi. (2) İlan edilen "10 gün sonra şölen" tarihini takvimde doğru işlemeden ikinci bir 10 günlük atlama yapılmaya başlandı — bu, büyük bir set-piece sahneyi (Krallığın halka açık kabulü) hiç oynamadan atlamak anlamına gelecekti. Kendim yakalayıp calendar.py'nin day_counter bug'ını (bilinen bir sorun, `set` komutunda) elle düzelterek geri aldım. Ders: bir "X gün sonra Y olacak" taahhüdü verildiğinde, o X günlük atlamanın sonunda mutlaka Y'nin kendisi oynanmalı, otomatik olarak bir sonraki atlamaya karışmamalı.
+
+Ayrıca, büyük müzakereler (Coren'in General ilanı, Ironclad Table pazarlığı) ilk başta sadece oraya gidiş süresiyle saatlendirilip müzakerenin kendisine zaman ayrılmamıştı — oyuncu fark etti, "büyük konular uzun sürer" diyerek düzeltme istedi, +4 saat eklendi. Genel ders: bir sahnenin süresi, o sahnenin gerçek içeriğine göre hesaplanmalı, sadece oraya varış zamanına göre değil.
+
+### Session Recap
+**Öne çıkanlar:** Kriv, Emberhold'un Kralı oldu — iki yıllık taht boşluğu bitti, üç hane + Ironclad Compact + Kindled Circle Krallığa bağlandı, Veskin'in yolsuzluğu ortaya çıktı, ekonomi tek bir modele oturtuldu, saray yeniden inşa edildi, ve on gün sonra Krallığın her yerinden gelen bir taç giyme şöleniyle kapandı. Ilvaneth iki kalıcı stat artışı (INT, CON) ve benzersiz bir Necromancy ritüeli kazandı. Kampanyanın en büyük siyasi dönüm noktalarından biri.
+
+**Açık iplikler (bir sonraki oturuma taşınan):**
+- **"Ashen Corwyn" / kukuletalı gözlemci** — Iskra'nın ölümünü kimin adına doğrulamaya geldiği bilinmiyor, muhtemelen "Marek Vantrel" bağlantılı.
+- **Son Crown parçası (9/9)** — Ser Oskar Thrune, Bonewrights' Hall — hâlâ gidilmedi.
+- **Sözleşme Taşı'nın son parçaları + hapsedilmiş kül-ruhu** — hâlâ kullanılmadı.
+- **Hollow Throne'un kendisi** — parti fragmanları tanıdı ama tahta hiç oturmadı, "sonra karar verelim" diye bırakıldı.
+- **Kırılmayan Öz ritüeli** — henüz hiç kullanılmadı, Sylandra Cael bunu duyup merak etti, haber gönderecek (gün 230).
+- **Ilvane Aynası'nın güvenlik kontrolü** — parti dahil herkes için geçerli, gelecek bir sahnede test edilebilir.
+- **Satılmamış Ember Court loot** — Kaal'ın Zulüm Bıçakları, İblis Topuzu, Kaal Muhafızının Bileziği.

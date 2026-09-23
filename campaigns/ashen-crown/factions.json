@@ -1,7 +1,7 @@
 {
  "_meta": {
   "week_length": 7,
-  "ticked_day": 205
+  "ticked_day": 221
  },
  "factions": [
   {
@@ -54,13 +54,13 @@
    "id": "house-corr",
    "name": "House Corr (Lady Sereth Corr)",
    "status": "active",
-   "objective": "Keep the Corr seat first among the three houses without paying for open war",
+   "objective": "Krallik icinde First Among Houses statusunu gercek, kalici bir avantaja cevirmek",
    "power": 3,
    "intel": 2,
    "move_points": {
     "per_week": 3,
     "available": 3,
-    "refreshed_day": 207
+    "refreshed_day": 221
    },
    "assets": [
     "Chancellery influence",
@@ -75,20 +75,15 @@
     "whisper-court": -1
    },
    "operation": {
-    "name": "First among three",
+    "name": "First Among Houses",
     "steps": [
      {
-      "text": "Sereth quietly buys the Chancellery succession clerk",
-      "due_day": 209,
-      "done": false
-     },
-     {
-      "text": "Force a vote while Ilvane is still weak",
-      "due_day": 216,
+      "text": "Sereth pekistirir - Krallik icinde kendi ekonomik/askeri agirligini buyutur",
+      "due_day": 235,
       "done": false
      }
     ],
-    "abandon_if": ""
+    "abandon_if": "Kriv'in guveni tamamen kaybedilirse"
    },
    "reactions": {
     "alliance": "Makes itself indispensable to the winning side before the losing side can beg",
@@ -101,13 +96,13 @@
    "id": "house-sablewood",
    "name": "House Sablewood (Lord Berengar)",
    "status": "active",
-   "objective": "Profit from the succession whoever wins; owe nothing that cannot be sold",
+   "objective": "Kral Payi altinda yeni kar kapilari acmak, Compact'in bosalttigi alani doldurmak",
    "power": 3,
    "intel": 1,
    "move_points": {
     "per_week": 3,
     "available": 3,
-    "refreshed_day": 207
+    "refreshed_day": 221
    },
    "assets": [
     "Mercenary contracts via the Compact",
@@ -123,15 +118,15 @@
     "whisper-court": -1
    },
    "operation": {
-    "name": "Sell the war",
+    "name": "Kar her seyden once",
     "steps": [
      {
-      "text": "Berengar brokers Compact mercenaries to Corr and Ilvane both",
-      "due_day": 211,
+      "text": "Berengar Kral Payi altinda yeni ticaret firsatlari arar - Compact'in bosalan payini doldurmaya calisir",
+      "due_day": 235,
       "done": false
      }
     ],
-    "abandon_if": ""
+    "abandon_if": "Kriv acikca Sablewood'a karsi doner"
    },
    "reactions": {
     "alliance": "Prices it — offers the new bloc a service it cannot refuse at a rate that binds it",
@@ -149,8 +144,8 @@
    "intel": 2,
    "move_points": {
     "per_week": 2,
-    "available": 2,
-    "refreshed_day": 207
+    "available": 1,
+    "refreshed_day": 221
    },
    "assets": [
     "Spymaster Elian Rook",
@@ -165,39 +160,40 @@
     "house-sablewood": -1
    },
    "operation": {
-    "name": "Purge and rebuild",
+    "name": "Hanenin yeniden insasi",
     "steps": [
      {
-      "text": "Elian Rook audits every servant hired in the last year",
-      "due_day": 208,
-      "done": false
-     },
-     {
-      "text": "Cassian names Iskra a traitor before the Chancellery",
-      "due_day": 213,
+      "text": "Kingsward holdings'in gerceki gelirini Krallik'a acikca raporlar, guven kazanmaya calisir",
+      "due_day": 245,
       "done": false
      }
     ],
-    "abandon_if": "The audit points at Rook himself"
+    "abandon_if": ""
    },
    "reactions": {
     "alliance": "Seeks the same patron rather than a rival one; Cassian no longer trusts his own counsel",
     "exposure": "Purges first, explains afterwards"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 222,
+     "text": "Elian Rook denetimi tamamlandi - yeni bir Whisper Court kalintisi bulunmadi, ama iki supheli isten cikarildi",
+     "cost": 1
+    }
+   ]
   },
   {
    "id": "whisper-court",
    "name": "The Whisper Court (Iskra Vantrel)",
-   "status": "active",
-   "objective": "Own the succession from behind every throne at once; never be seen doing it",
+   "status": "dormant",
+   "objective": "Liderliksiz, dagilmis - Iskra Vantrel ve Sathriel kalici oldu (gun 204). Kalan mundane ajanlar (varsa) komutasiz.",
    "power": 4,
    "intel": 3,
    "move_points": {
     "per_week": 4,
-    "available": 0,
-    "refreshed_day": 207
+    "available": 4,
+    "refreshed_day": 221
    },
    "assets": [
     "Rakshasa longevity",
@@ -251,8 +247,8 @@
    "intel": 1,
    "move_points": {
     "per_week": 2,
-    "available": 2,
-    "refreshed_day": 207
+    "available": 1,
+    "refreshed_day": 221
    },
    "assets": [
     "Archive and ritualists",
@@ -267,25 +263,15 @@
     "kindled-circle": -1
    },
    "operation": {
-    "name": "Verify Karsgate",
+    "name": "Tain'in konsolidasyonu",
     "steps": [
      {
-      "text": "Emberhold chapter weighs Tain's internal-reform report",
-      "due_day": 207,
-      "done": false
-     },
-     {
-      "text": "A ritualist is sent to Karsgate to see Kavash in person",
-      "due_day": 214,
-      "done": false
-     },
-     {
-      "text": "If the seal cannot be vouched for, the deputyship is declared void",
-      "due_day": 220,
+      "text": "Tain, Emberhold subesindeki son supheci ritualistleri ya ikna eder ya temizler",
+      "due_day": 250,
       "done": false
      }
     ],
-    "abandon_if": "Someone the chapter trusts vouches for Tain face to face"
+    "abandon_if": ""
    },
    "reactions": {
     "alliance": "Declares the new bloc ritually illegitimate and starts the paperwork that makes it true",
@@ -293,7 +279,13 @@
     "exposure": "Declares the appointment void, seals the archive, and sends its own people instead of asking again"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 222,
+     "text": "Emberhold subesi Tain'in raporunu kabul etti, tam guvensiz ama karsi cikmadi",
+     "cost": 1
+    }
+   ]
   },
   {
    "id": "ironclad-compact",
@@ -304,8 +296,8 @@
    "intel": 2,
    "move_points": {
     "per_week": 2,
-    "available": 2,
-    "refreshed_day": 207
+    "available": 1,
+    "refreshed_day": 221
    },
    "assets": [
     "Trade fleet",
@@ -321,19 +313,19 @@
     "house-sablewood": 2
    },
    "operation": {
-    "name": "Bir Krallığın Tebaası",
+    "name": "Yeni Krallik altinda yeniden yapilanma",
     "steps": [
      {
-      "text": "10% Kingdom tribute'un ilk ödemesi",
-      "due_day": 213,
+      "text": "Coren, Table'in kalan 300 askerini Kraliyet ordusuyla nasil entegre edecegini planlar",
+      "due_day": 240,
       "done": false
      }
     ],
-    "abandon_if": "Kriv Kral olarak düşerse ya da Table'a karşı tek taraflı hareket ederse",
+    "abandon_if": "Table gizlice isyan ederse",
     "metric": {
      "label": "gp raised for the break",
-     "current": 6000.0,
-     "target": 40000.0
+     "current": 0.0,
+     "target": 0.0
     }
    },
    "reactions": {
@@ -343,7 +335,13 @@
     "loss": "If the Table purges him or the plan is fully exposed, he goes independent early and undermanned — the worst version of the same war"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 221,
+     "text": "10% Kingdom tribute'un ilk odemesi yapildi, Krallik Hazinesi'ne aktarildi",
+     "cost": 1
+    }
+   ]
   },
   {
    "id": "kindled-circle",
@@ -354,8 +352,8 @@
    "intel": 2,
    "move_points": {
     "per_week": 2,
-    "available": 2,
-    "refreshed_day": 207
+    "available": 1,
+    "refreshed_day": 221
    },
    "assets": [
     "Guild register of magical signatures",
@@ -368,26 +366,27 @@
     "unfinished-circle": -1
    },
    "operation": {
-    "name": "Claim the ash archive",
+    "name": "Arsiv entegrasyonu",
     "steps": [
      {
-      "text": "Petition the Chancellery for custody of the Concordat's unguarded ritual holdings",
-      "due_day": 213,
-      "done": false
-     },
-     {
-      "text": "Send two adepts to inventory what Ashvale left behind",
-      "due_day": 219,
+      "text": "Devralinan ritual arsivini kataloglar, tehlikeli parcalari ayirir",
+      "due_day": 248,
       "done": false
      }
     ],
-    "abandon_if": "The Concordat produces a leader the Chancellery will recognise"
+    "abandon_if": ""
    },
    "reactions": {
     "alliance": "Licenses the winner and taxes the practice; legitimacy is the Circle's product"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 222,
+     "text": "Chancellery petisyonu kabul etti - Circle artik Concordat'in korumasiz ritual arsivine kismi erisim kazandi",
+     "cost": 1
+    }
+   ]
   },
   {
    "id": "karsgate-undertow",
@@ -398,8 +397,8 @@
    "intel": 3,
    "move_points": {
     "per_week": 2,
-    "available": 2,
-    "refreshed_day": 207
+    "available": 1,
+    "refreshed_day": 221
    },
    "assets": [
     "Ninefinger network",
@@ -412,11 +411,11 @@
     "whisper-court": -1
    },
    "operation": {
-    "name": "Collect what was promised",
+    "name": "Duzenli tahsilat",
     "steps": [
      {
-      "text": "Doss sends a collector to Harrowgate for the first payment",
-      "due_day": 217,
+      "text": "Sella Dray, Kriv'in yeni Kral Payi'nin kendi rotalarini nasil etkiledigini degerlendirir",
+      "due_day": 238,
       "done": false
      }
     ],
@@ -426,7 +425,13 @@
     "alliance": "Raises the tariff under the city on the side that just gained"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 222,
+     "text": "Doss'un tahsildari Harrowgate'ten ilk odemeyi sorunsuz aldi",
+     "cost": 1
+    }
+   ]
   },
   {
    "id": "unfinished-circle",
@@ -437,8 +442,8 @@
    "intel": 1,
    "move_points": {
     "per_week": 2,
-    "available": 2,
-    "refreshed_day": 207
+    "available": 1,
+    "refreshed_day": 221
    },
    "assets": [
     "Kule-i Mensuh",
@@ -450,11 +455,11 @@
     "kindled-circle": -1
    },
    "operation": {
-    "name": "Finish the phylactery",
+    "name": "Ilvaneth'e danisma",
     "steps": [
      {
-      "text": "Sylandra tests the volunteered-power principle on a subject",
-      "due_day": 220,
+      "text": "Sylandra, Ilvaneth'ten Kirilmayan Oz ritueli hakkinda bilgi istemek icin haber gonderir",
+      "due_day": 230,
       "done": false
      }
     ],
@@ -464,7 +469,13 @@
     "other": "Cares only for the research; trades knowledge to whoever removes an obstacle"
    },
    "knows": [],
-   "history": []
+   "history": [
+    {
+     "day": 222,
+     "text": "Sylandra'nin testi belirsiz sonuclandi - denek yasadi ama gucun tam gonulluluguyle ilgili yeni bir soru dogdu",
+     "cost": 1
+    }
+   ]
   },
   {
    "id": "cinder-choir",
@@ -499,7 +510,7 @@
    "move_points": {
     "per_week": 3,
     "available": 3,
-    "refreshed_day": 204
+    "refreshed_day": 221
    },
    "assets": [
     "A century-old mask and the Varn name",
@@ -545,13 +556,13 @@
    "id": "chancellery",
    "name": "The Chancellery (Chancellor Maro Veskin)",
    "status": "active",
-   "objective": "Keep the three houses balanced so that authority runs through the seat — no house may win outright",
+   "objective": "Veskin'in itirafi sonrasi sadik hizmetle hayatta kalmak, Kral'in gozetiminde yeniden guven kazanmak",
    "power": 3,
    "intel": 2,
    "move_points": {
     "per_week": 3,
-    "available": 2,
-    "refreshed_day": 204
+    "available": 3,
+    "refreshed_day": 221
    },
    "assets": [
     "Procedural control of the succession",
