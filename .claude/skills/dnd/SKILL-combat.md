@@ -91,6 +91,10 @@ Two cases still need your own judgement:
 - **A custom or reskinned creature** (a "Senior Bone Devil", a homebrew boss) inherits its family's baseline. Look up the base creature and apply its defenses unless the encounter's own notes deliberately change them.
 - **`-- DEFENSES: none listed in the dataset --`** means the record carries no defensive line. For a creature whose family has a well-known baseline (devils immune to fire and poison, elementals to their own element, many undead to necrotic), apply that baseline rather than reading the silence as "no resistances", and treat it as a data gap worth reporting.
 
+**Never assume a monster's natural weapons are magical — check the stat block for an explicit trait.** "Attacks are magical" only applies when the stat block says so outright (an Erinyes' "Hellish Weapons," a Pit Fiend's "Magic Weapons"). A Rakshasa's claws, a Bone Devil's sting, a Spinagon's tail — none of these are magical unless stated, so a PC's resistance to nonmagical bludgeoning/piercing/slashing (a Warden's Core, a barbarian's Rage) applies in full against them. This is the mirror-image mistake of the fire-immunity one above: extending a special case (devils-are-usually-dangerous) into a blanket assumption instead of reading the specific trait. When two or more similar-looking fiends appear across a session, re-check each one's own stat block rather than carrying the last one's "magical" ruling forward.
+
+**A PC's own passive resistance/immunity is exactly as easy to skip as a monster's, and just as costly when it's silently missed.** The `tracker.py turn <NPC> --targets` gate prints it every enemy turn for this reason — read the printed Defenses block before finalizing the damage total, not just before the attack roll. A missed resistance under-costs the encounter's real difficulty in the same direction a missed monster resistance over-costs it.
+
 ### At 0 HP
 1. Falls unconscious and prone.
 2. Death saving throws begin on that creature's own turn: d20, no modifiers. 10+ succeeds, 9-or-under fails. Natural 20 regains 1 HP and wakes the creature up. Natural 1 counts as two failures.
@@ -99,6 +103,15 @@ Two cases still need your own judgement:
 
 ### Massive damage
 If the damage remaining *after* a hit drops a creature to 0 HP is itself ≥ that creature's max HP, it dies outright instead of starting death saves.
+
+## Concentration
+
+**The instant a concentrating PC takes damage, stop and ask for the check — before resolving the next attack in a multiattack, before moving to the next combatant.** This is not optional bookkeeping to catch up on later; a missed check mid-fight is invisible until someone notices the spell should have ended, at which point the last several turns have to be reconstructed. Trigger: any damage at all, from any source, to a creature concentrating on a spell — including damage from an ally's own AoE, a trap, or a saving throw the creature failed.
+
+- **DC = 10, or half the damage taken, whichever is higher** (round down). State the DC out loud when you ask.
+- **This is the PC's own roll** — ask for their raw d20, don't roll it. Apply their CON save bonus and any advantage source (War Caster, Resilient (Constitution)) the same way any other PC roll is resolved.
+- **A multiattack resolves one hit at a time for this reason too**: if the first of three attacks against a concentrating PC lands, ask for the concentration check right then — don't wait until all three attacks are rolled and total the damage after the fact. The save might succeed or fail before the remaining attacks even matter to the spell.
+- Track what's currently being concentrated on (via `tracker.py concentrate`) the moment it's cast, so the question "does this creature even have a concentration spell active right now" never depends on memory.
 
 ## Common Conditions
 
@@ -163,6 +176,8 @@ This reads every PC's own `## Burst Reference` table (see `templates/character-s
 **Open every combat, and every new room of one, with a real description before asking for an action.** The room, what the enemies look like, where everyone stands and how far apart — all of it comes *before* "what do you do", not after the player asks for it. A fight that opens on a bare initiative order gives the player nothing to make a decision with.
 
 **Speed never costs description.** "Don't ask, just run it" means skip the confirmations between turns — it does not mean collapsing turns into bare mechanics. Several NPC turns played back to back still get one real sensory sentence each, with the mechanics in their own block afterwards. The pace lives in not stopping to ask; it never lives in dropping the fiction.
+
+**This holds for the whole fight, not just the opening rounds — a long combat is exactly where narration quietly erodes.** A multi-round boss fight that opens with full sensory weight and by round four is down to "Rajah'a vuruyorsun, 30 hasar" has drifted, one small compression at a time, into the failure mode this section exists to prevent — even though every individual message looked reasonable in isolation. When a fight runs long, treat *every* attack — not just the first one against a new enemy — as owed the same one-or-two-sentence beat the opening got: what it looks like landing (or missing), not just what it rolled. If a turn is genuinely trivial (a mook's last gasp, a foregone miss), a single combined line is fine per the rule below — but that's a deliberate call about *that* attack, not a pace creeping downward over the course of the fight.
 
 **Scale the narration to what the fight actually is.** A campaign-defining fight — a chapter's final boss, a named antagonist built up over months, a creature the party has been hunting — is written at full weight from its first round, not after the player asks for more. Deciding how many paragraphs a moment deserves is a judgement you make when the fight starts; the default two-block shape is a floor, not a ceiling.
 

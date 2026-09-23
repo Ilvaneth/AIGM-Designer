@@ -1088,7 +1088,7 @@ revision_log: []
 - Sonraki hedef olarak Karsgate (Vharkoss + isimsiz katip) belirlendi.
 
 ## Session Flags
-- **session_status: open** (2026-09-22, session 37 `/dm:dnd load` ile açıldı.)
+- **session_status: closed** (2026-09-23, `/dm:dnd end` ile session 37 kapatıldı — bir sonraki `/dm:dnd load` session 38'i açacak.)
 - language: tr (Türkçe anlatım — 2026-09-08'de kesin talep edildi, tüm gelecek oturumlarda geçerli, DM her zaman Türkçe anlatmalı)
 - autosave: on
 - mirror_to_global_roster: off (2026-09-06, session 20 — tek kampanya var, kampanyalar arası taşıma kullanılmıyor; `/dm:dnd save` bundan sonra sadece `campaigns/ashen-crown/characters/`'ı günceller, global `characters/` kopyasına dokunmaz)
