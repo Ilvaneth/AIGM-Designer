@@ -384,6 +384,10 @@ If nothing in this session touched a tracked NPC/faction's goal, this step is a 
    b. Ask: *"Quick calibration — what worked this session, and what would you adjust next time?"* Write answers to `### DM Calibration`. If skipped, leave blank.
    c. Update `## World State` in state.md: check whether events advanced the threat arc stage, shifted faction states, or changed the in-world date. Update all three.
    d. If the calibration response reveals a new pattern (or confirms/contradicts an existing one), update `## DM Style Notes` in state.md. Add new bullets; refine existing ones if the pattern has sharpened. Do not log every session — only update when something genuinely new or changed is observed.
+
+   d2. **Sort the calibration into table-specific and skill-level, and do not fix the skill-level ones here.** A finding that would hold for any campaign — a rule that never fired, a tool that behaved wrongly, a check that printed at the wrong moment — is not a `## DM Style Notes` bullet and is not something to edit into the skill from this tab. Append it to `campaigns/<name>/dev-queue.md` instead: when it happened, what the tool or rule actually did, what it should have done, written so that a tab with no memory of this session can act on it. Then tell the player the queue has N open items and that the fixes happen in a fresh tab.
+
+   Why the separation: development inside a play session fills the play tab's context with refactoring, and the change gets written with the campaign in view rather than the tool — which is how a general rule ends up filed as a campaign note. A `skill_edit_guard` hook enforces it while a session is open; after `/dm:dnd end` the lock lifts, but the fix still belongs in a tab whose whole context is the skill.
    e. **Arc check** (dynamic arcs only — skip for sandbox/structured): If `## Campaign Arc` has `type: dynamic`, do all of:
 
       i. Ask: *"Did any arc beats land this session? [beat id(s) like '1b 2a', or 'none']"*

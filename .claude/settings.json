@@ -9,6 +9,15 @@
             "command": "py \"C:/Users/armag/Desktop/Ashen-Crown_New_DM/.claude/skills/dnd/scripts/hooks/dice_guard.py\""
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"C:/Users/armag/Desktop/Ashen-Crown_New_DM/.claude/skills/dnd/scripts/hooks/skill_edit_guard.py\""
+          }
+        ]
       }
     ]
   }
