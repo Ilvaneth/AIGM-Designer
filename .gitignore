@@ -3,3 +3,6 @@
 __pycache__/
 *.pyc
 *.backup-*
+
+# Nested clone of this same repo — not project content
+/AIGM/
