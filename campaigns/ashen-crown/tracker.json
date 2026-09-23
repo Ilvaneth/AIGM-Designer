@@ -273,5 +273,104 @@
       "failures": 0,
       "stable": false
     }
+  },
+  "rakshasa asker 2": {
+    "name": "Rakshasa Asker 2",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "rakshasa asker 3": {
+    "name": "Rakshasa Asker 3",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "rakshasa asker 1": {
+    "name": "Rakshasa Asker 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "bearded devil 1": {
+    "name": "Bearded Devil 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "hell hound alfa": {
+    "name": "Hell Hound Alfa",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "nightmare 2": {
+    "name": "Nightmare 2",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "nightmare 1": {
+    "name": "Nightmare 1",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "spinagon ozel": {
+    "name": "Spinagon Ozel",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
+  },
+  "lemure grubu": {
+    "name": "Lemure Grubu",
+    "conditions": [],
+    "concentration": null,
+    "effects": [],
+    "death_saves": {
+      "successes": 0,
+      "failures": 0,
+      "stable": false
+    }
   }
 }

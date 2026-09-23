@@ -9,7 +9,7 @@
 | **Level** | 17 |
 | **Background** | Charlatan |
 | **Alignment** | Neutral Evil |
-| **Experience Points** | 261257 (**Level 17'ye geçildi, gün 203, session 35, Ember Court içinde — oyuncu talebiyle Long Rest beklenmeden işlendi.** Dungeon XP: 2× Rakshasa Muhafız (CR13) + 4× Barbed Devil (CR5) = Raw 27.200 ÷2 = 13.600/kişi. **+45, session 36, Oda 3 (9× Lemure CR0) — Raw 90 ÷2 = 45/kişi.** **+1.950, session 36, Oda 4 (Baş Yazman, özel güçlendirilmiş Spinagon CR8) — Raw 3.900 ÷2 = 1.950/kişi.** **+2.500, session 36, Oda 5 (Bone Devil, Sözleşme Kasası) — Raw 5.000 ÷2 = 2.500/kişi.** **+2.200, session 36, Oda 6 (4× Barghest, Kor Köprüsü Karakolu) — Raw 4.400 ÷2 = 2.200/kişi.** **+8.400, session 36, Oda 8 (2× Erinyes, Besleme Salonu) — Raw 16.800 ÷2 = 8.400/kişi.** **+4.200, session 36, Oda 9 (Kıdemli Bone Devil, Ceza Hücreleri) — Raw 8.400 ÷2 = 4.200/kişi.** **+5.000, session 36, Oda 10 (Kıdemli Rakshasa Yönetici, Gözetmenin Odası) — Raw 10.000 ÷2 = 5.000/kişi.** **+5.000, session 36, Oda 11 (Rakshasa Şampiyonu, Yargı Çukuru) — Raw 10.000 ÷2 = 5.000/kişi.** Level 18 eşiği 265.000 — 3.743 XP kaldı.) |
+| **Experience Points** | 276242 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8) — Raw 3.970÷2.** **★ LEVEL UP PENDING (Level 18, eşik 265.000) — bir sonraki Long Rest'te işlenecek, henüz uygulanmadı.**) |
 
 ---
 

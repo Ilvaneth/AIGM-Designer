@@ -9,7 +9,7 @@
 | **Level** | 17 |
 | **Background** | Noble |
 | **Alignment** | Neutral Evil |
-| **Experience Points** | 261257 (**Level 17'ye geçildi, gün 203, session 35, Ember Court içinde — oyuncu talebiyle Long Rest beklenmeden işlendi.** Dungeon XP: 2× Rakshasa Muhafız (CR13) + 4× Barbed Devil (CR5) = Raw 27.200 ÷2 = 13.600/kişi. **+45, session 36, Oda 3 (9× Lemure CR0) — Raw 90 ÷2 = 45/kişi.** **+1.950, session 36, Oda 4 (Baş Yazman, özel güçlendirilmiş Spinagon CR8) — Raw 3.900 ÷2 = 1.950/kişi.** **+2.500, session 36, Oda 5 (Bone Devil, Sözleşme Kasası) — Raw 5.000 ÷2 = 2.500/kişi.** **+2.200, session 36, Oda 6 (4× Barghest, Kor Köprüsü Karakolu) — Raw 4.400 ÷2 = 2.200/kişi.** **+8.400, session 36, Oda 8 (2× Erinyes, Besleme Salonu) — Raw 16.800 ÷2 = 8.400/kişi.** **+4.200, session 36, Oda 9 (Kıdemli Bone Devil, Ceza Hücreleri) — Raw 8.400 ÷2 = 4.200/kişi.** **+5.000, session 36, Oda 10 (Kıdemli Rakshasa Yönetici, Gözetmenin Odası) — Raw 10.000 ÷2 = 5.000/kişi.** **+5.000, session 36, Oda 11 (Rakshasa Şampiyonu, Yargı Çukuru) — Raw 10.000 ÷2 = 5.000/kişi.** Level 18 eşiği 265.000 — 3.743 XP kaldı.) |
+| **Experience Points** | 276242 (**Level 17'ye geçildi, gün 203, session 35.** Session 36 Oda 3-11 toplamı: +29.295/kişi. **+8.850, session 37, Oda 12 (3× Rakshasa Asker CR10).** **+700, session 37, Oda 13 (2× Bearded Devil CR3).** **+3.450, session 37, Oda 14 (2× Nightmare + 1× Hell Hound Alfa CR6).** **+1.985, session 37, Oda 20 (7× Lemure + 1× Spinagon özel CR8) — Raw 3.970÷2.** **★ LEVEL UP PENDING (Level 18, eşik 265.000) — bir sonraki Long Rest'te işlenecek, henüz uygulanmadı.**) |
 
 ---
 
@@ -45,11 +45,11 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 |------|-------|
 | **Armor Class** | 22 (Warden's Oathplate — Dwarven Plate, base 18 + 2, +2 Ascension Stage 3 scales — Stage 1'in +1'inin yerine geçti, gün 192) |
 | **HP Maximum** | 196 (level 17, +8 — d10 roll 5 (oyuncu zarı) + CON mod 3, gün 203, session 35) |
-| **Current HP** | 177/196 (Oda 9'daki Kıdemli Bone Devil ile fightta, Protection from Evil and Good direnciyle 24 hasar alındı, Second Wind ile 24 iyileşti — net) |
+| **Current HP** | 196/196 (session 37, Oda 12/13 hiç hasar almadan geçildi — Oda 13 sonrası Tiny Hut içinde kısa mola, 3 hit dice ile tavana kadar iyileşti) |
 | **Temporary HP** | 0 |
 | **Speed** | 30 ft walk (60 ft with Boots of Striding and Springing) / **60 ft fly** (new, Ascension Stage 4, gün 203) |
 | **Initiative Modifier** | +2 |
-| **Hit Dice** | 17d10 (remaining: 16, tam uzun mola değil — yeni zar henüz kullanılmadı) |
+| **Hit Dice** | 17d10 (remaining: 13 — session 37, Oda 13 sonrası kısa mola, 3 zar harcandı: 7+3, 6+3, 9+3 = +31 HP, 196'da tavana çarptı) |
 | **Death Saves** | Successes: 0 / Failures: 0 |
 | **Inspiration** | 1 |
 
@@ -129,8 +129,8 @@ Duruşu Noble eğitimini taşıyor — dik, ölçülü — ama Warden's Oathplat
 - **★ Extra Attack**: **3 attacks** per Attack action, always (upgraded from 2 at level 11 — this line was stale/wrong before gün 191, session 32, and cost a real miscalculation mid-fight; verify against the Class Features table below if ever in doubt again after a future level-up).
 - **Enemy leaves his reach without Disengaging → Opportunity Attack** (reaction, one melee attack). Check this the instant an enemy's retreat/reposition is narrated, before its move fully resolves.
 - **Enemy misses him with a melee attack → Riposte** (reaction, level 10 maneuver: one melee attack, add superiority die to damage on a hit). Competes with Opportunity Attack for the same reaction — **his reaction refreshes at the start of his own turn, not once per round** (corrected 2026-09-17, session 31, after a live misapplication cost him an available Riposte). Offer this the instant a melee attack against him misses, and check whether his own turn has passed since he last used it before assuming it's spent.
-- **Action Surge (1/rest)** and **Second Wind (1/rest)** are easy to forget mid-fight if unused — name them out loud when relevant (badly hurt → Second Wind; wants a huge turn → Action Surge), don't wait for the player to remember.
-- **★ Frightful Presence (1/rest, bonus action, Stage 3)** — offer this at the start of a fight where he wants to open hard: 30 ft, WIS save DC 16 or frightened 1 min. Easy to forget since it's new (gün 192) — name it out loud at the top of any combat.
+- **Action Surge (2/rest)** and **Second Wind (2/rest)** are easy to forget mid-fight if unused — name them out loud when relevant (badly hurt → Second Wind; wants a huge turn → Action Surge), don't wait for the player to remember.
+- **★ Frightful Presence (1/rest, bonus action, Stage 3)** — offer this at the start of a fight where he wants to open hard: 30 ft, WIS save DC 17 or frightened 1 min. Easy to forget since it's new (gün 192) — name it out loud at the top of any combat.
 - **★ Breath Weapon now recharges 5-6 in combat (Stage 3/4)**, not a flat 2/rest — roll a d6 at the start of each of his turns after it's been used; on a 5-6 it's available again. **9d6, 40 ft cone as of Stage 4 (gün 203).** Track this on the tracker, don't just assume "2 uses, done."
 - **★★★ Flight 60 ft (Stage 4, gün 203)** — true wings, always available, no action cost to sustain. Offer aerial positioning/repositioning options in combat now, don't default to ground movement out of habit.
 - **★★★ Legendary Resistance (1/day, Stage 4, gün 203)** — on a failed save, may choose success instead before the result is announced. Easy to forget since it's new — name it out loud the first time a save would otherwise fail.
