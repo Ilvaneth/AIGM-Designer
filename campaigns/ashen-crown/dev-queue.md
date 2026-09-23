@@ -16,6 +16,8 @@
 
 - **A faction that has never moved is not flagged.** `factions.py check` flags silence only when a faction has no operation at all; House Corr and House Sablewood sat out two whole sessions with future-dated steps and raised nothing. Consider flagging "no move on record after N days of existing", not just "no plan". *(found 2026-09-23)*
 
+- **A second copy of the campaign sits inside the project.** `AIGM/` is a clone of this repository made on 2026-09-23 as an off-site backup; its `campaigns/ashen-crown/state.md` is already older than the live one, so the tree contains two different "now". Untracked and ignored, so git is unaffected — but anything that searches the project for a location or NPC file can land in the stale copy. Move it out of the project folder (e.g. `Desktop/AIGM-yedek`) rather than deleting it, since it is a working backup. *(noted 2026-09-23)*
+
 - **No LICENSE or README.** Needed only if the GitHub repo ever goes public: OGL 1.0a notice for `data/srd-5.1-yaml/` and the JSON built from it, attribution for the upstream fork (`neuralinitiative/claude-dnd-skill`), and a README describing the AIGM vision. *(noted 2026-09-23, repo is private for now)*
 
 ## Done
