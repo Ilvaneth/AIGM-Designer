@@ -9,8 +9,11 @@ Usage:
     from paths import campaigns_dir, characters_dir, campaign_dir, find_campaign
 
 Environment:
-    DND_CAMPAIGN_ROOT   Root of campaign data tree. Default: ~/.claude/dnd
+    DND_CAMPAIGN_ROOT   Root of campaign data tree for a plugin or standalone
+                        install. Default: ~/.claude/dnd
                         Example: export DND_CAMPAIGN_ROOT=~/iCloud/dnd
+                        Ignored by a project-scoped copy of the skill: that
+                        project is then the data root. See project_root().
     CLAUDE_SKILL_DIR    Set by Claude Code for plugin/installed skills. Points at
                         the directory containing SKILL.md (the skill's own dir,
                         NOT the plugin root). When unset (ad-hoc subprocess, dev
@@ -41,8 +44,56 @@ except Exception:
 _DEFAULT_ROOT = pathlib.Path("~/.claude/dnd").expanduser()
 
 
+# ── Project scoping ───────────────────────────────────────────────────────
+# A copy of the skill that lives inside a project (<project>/.claude/skills/dnd)
+# belongs to that project: its campaigns/, its .runtime/, its name registry.
+# DND_CAMPAIGN_ROOT is a machine-wide value (setx on Windows, a shell rc line
+# elsewhere) meant for a plugin or standalone install, and it leaks into every
+# hook and script subprocess of every project on the machine. Ashen Crown's
+# value once made the Campaign Designer project's edit guard read Ashen Crown's
+# open session and block every skill edit in that other project. So inside a
+# project the environment is ignored; it decides the root only when the skill
+# is not inside a project at all.
+#
+# The walk starts from this file's physical location, not from CLAUDE_SKILL_DIR:
+# which project a copy belongs to is a fact about where the copy sits on disk.
+
+PROJECT_DATA_MARKERS = ("campaigns", ".runtime")
+_PHYSICAL_SKILL_ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def project_root() -> "pathlib.Path | None":
+    """The enclosing project: the nearest ancestor of the skill that holds `.claude/`.
+
+    None when no ancestor holds one (a plugin cache, a bare checkout).
+    """
+    for parent in _PHYSICAL_SKILL_ROOT.parents:
+        if (parent / ".claude").is_dir():
+            return parent
+    return None
+
+
+def scoped_project() -> "pathlib.Path | None":
+    """The project whose data this skill copy uses, or None to fall back to the environment.
+
+    A project scopes the skill when it carries campaign data of its own: a
+    `campaigns/` or a `.runtime/` folder beside its `.claude/`. A home directory
+    that merely holds `~/.claude/` does not qualify, so a standalone install at
+    ~/.claude/skills/dnd still resolves through DND_CAMPAIGN_ROOT.
+    """
+    project = project_root()
+    if project is None:
+        return None
+    if any((project / marker).is_dir() for marker in PROJECT_DATA_MARKERS):
+        return project
+    return None
+
+
 def _root() -> pathlib.Path:
-    """Return the configured data root, expanded and absolute."""
+    """Return the data root: the scoped project, else the environment, else the default."""
+    project = scoped_project()
+    if project is not None:
+        return project
     raw = os.environ.get("DND_CAMPAIGN_ROOT", "")
     if raw.strip():
         return pathlib.Path(raw.strip()).expanduser().resolve()
@@ -87,12 +138,18 @@ def scripts_dir() -> pathlib.Path:
 # live in the CODE root: a plugin's code dir is refreshed/replaced on
 # `/plugin update` (which would wipe device approvals + certs) and may be
 # read-only. Keep them beside the user's campaign data, which is stable across
-# installs and updates. Override with DND_RUNTIME_DIR; default <data-root>/.runtime.
+# installs and updates. Inside a project it is always <project>/.runtime (the
+# environment is ignored there, see project scoping above); otherwise override
+# with DND_RUNTIME_DIR, default <data-root>/.runtime.
 
 def runtime_dir() -> pathlib.Path:
     """Return the writable runtime-state directory, creating it if needed."""
-    raw = os.environ.get("DND_RUNTIME_DIR", "").strip()
-    d = pathlib.Path(raw).expanduser() if raw else (_root() / ".runtime")
+    project = scoped_project()
+    if project is not None:
+        d = project / ".runtime"
+    else:
+        raw = os.environ.get("DND_RUNTIME_DIR", "").strip()
+        d = pathlib.Path(raw).expanduser() if raw else (_root() / ".runtime")
     try:
         d.mkdir(parents=True, exist_ok=True)
     except OSError:
@@ -119,9 +176,11 @@ def find_campaign(name: str) -> pathlib.Path:
     """Locate a campaign directory, with legacy fallback and optional migration.
 
     Resolution order:
-    1. $DND_CAMPAIGN_ROOT/campaigns/<name>/  — configured root (or default)
+    1. <data root>/campaigns/<name>/         — the scoped project, else
+                                               $DND_CAMPAIGN_ROOT, else the default
     2. ~/.claude/dnd/campaigns/<name>/       — legacy default (only checked when
-       DND_CAMPAIGN_ROOT is set to a *different* path)
+       DND_CAMPAIGN_ROOT is set to a *different* path; never for a
+       project-scoped root, which pulls nothing in from outside the project)
 
     When a campaign is found at the legacy path and the configured root is custom,
     the campaign is copied to the configured root so subsequent sessions use the
@@ -133,7 +192,9 @@ def find_campaign(name: str) -> pathlib.Path:
     if configured.exists():
         return configured
 
-    # Only check legacy fallback if a custom root is configured
+    # Only check legacy fallback if a custom root came from the environment
+    if scoped_project() is not None:
+        return configured
     custom_root = os.environ.get("DND_CAMPAIGN_ROOT", "").strip()
     if not custom_root:
         return configured  # no custom root — nothing to fall back to
@@ -216,6 +277,12 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2 and sys.argv[1] == "runtime-dir":
         print(runtime_dir())
         sys.exit(0)
+    if len(sys.argv) >= 2 and sys.argv[1] == "data-root":
+        print(_root())
+        sys.exit(0)
+    if len(sys.argv) >= 2 and sys.argv[1] == "project-root":
+        print(scoped_project() or "none")
+        sys.exit(0)
     if len(sys.argv) >= 3 and sys.argv[1] == "campaign-dir":
         print(find_campaign(sys.argv[2]))
         sys.exit(0)
@@ -224,6 +291,8 @@ if __name__ == "__main__":
         "  python3 paths.py campaign-ruleset <campaign-name>\n"
         "  python3 paths.py srd-path [2014|2024]\n"
         "  python3 paths.py runtime-dir\n"
+        "  python3 paths.py data-root\n"
+        "  python3 paths.py project-root      (the scoped project, or 'none')\n"
         "  python3 paths.py campaign-dir <campaign-name>",
         file=sys.stderr,
     )

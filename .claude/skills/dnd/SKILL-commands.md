@@ -424,7 +424,9 @@ Dataset is bundled at `${CLAUDE_SKILL_DIR}/data/dnd5e_srd.json` (1453 records: s
 ## `/dm:dnd path [<new-path> | reset]`
 
 View or configure where campaign and character data is stored. Wraps the
-`DND_CAMPAIGN_ROOT` env var.
+`DND_CAMPAIGN_ROOT` env var, which only applies to a plugin or standalone
+install: a project-scoped copy of the skill always uses its own project as the
+data root and says so in the `path` output.
 
 - No args → `python3 ${CLAUDE_SKILL_DIR}/scripts/path_config.py` and show output.
 - New path → `python3 ${CLAUDE_SKILL_DIR}/scripts/path_config.py set <path>`. Confirm to user, then remind them the change only takes effect in new shells (or after they `source` their rc on macOS/Linux).

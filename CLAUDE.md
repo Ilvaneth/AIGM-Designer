@@ -7,15 +7,17 @@ This folder is the **development project** for the D&D 5e (2014) DM skill and it
 - **Ashen Crown is played elsewhere:** `C:\Users\armag\Desktop\Ashen-Crown_New_DM` is a separate project with its own tab and its own copy of the skill. Never read or edit that folder from here, and never copy changes into it by hand; the two skills are synced deliberately, at the user's request, once a slice is done.
 - **History:** this repository was split from the Ashen Crown project on 2026-09-24 (`git clone`, then `campaigns/` and `original-repo/` removed). Older commits still contain campaign files; `origin` was removed at the split — add a remote only when the user asks. The original repository is github.com/Ilvaneth/AIGM.
 
-## DND_CAMPAIGN_ROOT — always explicit
+## Data root — project-scoped, never the environment
 
-The skill's scripts and hooks resolve campaign data through `DND_CAMPAIGN_ROOT`. The user's machine-wide `setx` value points at the **Ashen Crown** folder; this project sets its own value in `.claude/settings.json` (`env`), but do not rely on inheritance. **Prefix every script call explicitly:**
+The skill's scripts and hooks resolve campaign data through `paths.py`. Since slice 0 (A0) a copy of the skill inside a project uses **that project** as its data root: `paths.project_root()` walks up from the skill to the folder holding `.claude/`, and if that folder carries `campaigns/` or `.runtime/` the environment is ignored. `DND_CAMPAIGN_ROOT` only decides the root for a plugin or standalone install. The user's machine-wide `setx` value points at the **Ashen Crown** folder and leaks into every tool shell and hook subprocess; before A0 that made this project's edit guard read Ashen Crown's open session. `campaigns/.gitkeep` is committed so the project marker survives a fresh clone (`.runtime/` is gitignored). Check with:
 
 ```bash
-DND_CAMPAIGN_ROOT="C:/Users/armag/Desktop/Campaign-Designer" py "C:/Users/armag/Desktop/Campaign-Designer/.claude/skills/dnd/scripts/<script>.py" ...
+py .claude/skills/dnd/scripts/paths.py project-root
 ```
 
-If a script ever reports `ashen-crown` as an active campaign, the variable leaked from the machine-wide value; re-run with the prefix. Test campaigns generated during development live under `campaigns/_test-*/` (gitignored, plan item 22.6). `.name_registry.json` at the root is kept on purpose: it holds every name Ashen Crown used, so new campaigns never reuse them (plan items 4.6, 8.7).
+If a script ever reports `ashen-crown` as an active campaign, the project marker is missing; restore `campaigns/` and re-run. Test campaigns generated during development live under `campaigns/_test-*/` (gitignored, plan item 22.6). `.name_registry.json` at the root is kept on purpose: it holds every name Ashen Crown used, so new campaigns never reuse them (plan items 4.6, 8.7).
+
+Tests: `py .claude/skills/dnd/scripts/run_tests.py` (stdlib `unittest`, discovers `.claude/skills/dnd/tests/`).
 
 ## Rules of this project
 

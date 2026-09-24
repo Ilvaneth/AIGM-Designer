@@ -198,8 +198,13 @@ ${CLAUDE_SKILL_DIR}/                 ← the skill dir (plugin: <plugin>/skills/
   templates/         ← blank character-sheet.md, state.md, world.md, npcs.md, session-log.md
 ```
 
-**Player data** lives under the DATA root — `~/.claude/dnd/` by default, or
-`$DND_CAMPAIGN_ROOT` if set. This is separate from the code above and is never
+**Player data** lives under the DATA root. A **project-scoped copy** of the skill
+(`<project>/.claude/skills/dnd`, where the project carries `campaigns/` or
+`.runtime/`) uses that project as its DATA root and ignores the environment;
+this is how two projects on one machine keep their campaigns, runtime markers
+and name registries apart. A plugin or standalone install uses `~/.claude/dnd/`
+by default, or `$DND_CAMPAIGN_ROOT` if set (`paths.py project-root` tells you
+which applies). The DATA root is separate from the code above and is never
 inside the plugin (so it survives updates/uninstalls):
 
 ```

@@ -19,7 +19,7 @@ import sys
 
 from utf8io import read_text, TextDecodeError
 
-from paths import _root, campaigns_dir, characters_dir
+from paths import _root, campaigns_dir, characters_dir, scoped_project
 
 SHELLRC_CANDIDATES = [
     pathlib.Path("~/.zshrc").expanduser(),
@@ -55,7 +55,13 @@ def show() -> None:
     chdir = characters_dir()
     n_campaigns = len([p for p in cdir.iterdir() if p.is_dir()]) if cdir.exists() else 0
     n_chars = len(list(chdir.glob("*.md"))) if chdir.exists() else 0
-    source = "from DND_CAMPAIGN_ROOT" if raw else "default — DND_CAMPAIGN_ROOT not set"
+    project = scoped_project()
+    if project is not None:
+        source = f"project-scoped: {project} — DND_CAMPAIGN_ROOT is ignored inside a project"
+    elif raw:
+        source = "from DND_CAMPAIGN_ROOT"
+    else:
+        source = "default — DND_CAMPAIGN_ROOT not set"
     print(f"Campaign root: {root}  ({source})")
     print(f"  campaigns/   → {cdir}  ({n_campaigns} campaigns)")
     print(f"  characters/  → {chdir}  ({n_chars} characters)")
@@ -101,6 +107,10 @@ def _set_unix(target: pathlib.Path) -> None:
 def set_path(new: str) -> None:
     target = pathlib.Path(new).expanduser().resolve()
     target.mkdir(parents=True, exist_ok=True)
+    project = scoped_project()
+    if project is not None:
+        print(f"Note: this skill copy is project-scoped ({project}); it keeps using that\n"
+              "project as its data root. The value below applies to plugin or standalone installs.")
     if _is_windows():
         _set_windows(target)
     else:
