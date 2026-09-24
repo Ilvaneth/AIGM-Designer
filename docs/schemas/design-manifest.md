@@ -92,7 +92,7 @@ Written only by `design_manifest.py init | reconcile | pending | mark | approve 
 }
 ```
 
-The fixture carries all ten phases in the real file; the two shown here are the shapes of a scriptless phase (P0) and a fan-out phase with a correction round (P6).
+The fixture carries all ten phases in the real file; the two shown here are the shapes of a scriptless phase (P0) and a fan-out phase with a correction round (P6). A live manifest also carries `phases[N].roster[]`, the entity ids the phase's skeleton reserved (`design_manifest.py mark --roster`); `pending` is that roster minus what disk proves merged, and `reconcile` turns a phase `partial` when a roster entity's fragment is still in staging.
 
 ## Closed lists
 
@@ -105,7 +105,7 @@ The fixture carries all ten phases in the real file; the two shown here are the 
 ## Rules the fixture demonstrates
 
 - `dice_log_secret` carries **labels and a count only**; results live in `design/dm-only/dice-log.json`, same record shape as `dice_log`.
-- `seeded[]` is the idempotency ledger `design_seed.py` consults before every store call; the key is `<store>:<id>` and never carries a value.
+- `seeded[]` is the idempotency ledger `design_seed.py` consults before every store call (`design_manifest.py seeded --add`); the key is `<store>:<id>` (`graph:node:<id>`, `graph:edge:<from>:<to>:<type>`, `factions:<from>:<to>` for a stance) and never carries a value.
 - `approval` records the sha256 of the card the user saw and of the public projection at that moment, plus the commit, so "what was approved" is reconstructible.
 - `ask_log` (24.6 #6): `{"at", "question_tr", "answer": "evet" | "hayır" | "spoiler vermeden cevaplanamaz", "agent"}`; the question is stored, never the agent's reasoning.
 - `totals.tokens_in` stays 0 when the harness reports output deltas only; `report.md` says the input figure is estimated (item 19.11).

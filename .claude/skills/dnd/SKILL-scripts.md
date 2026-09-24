@@ -547,6 +547,34 @@ py registry.py -c <campaign> check-stamps                # exit 1 if any stamped
 - `merge --phase PN [--revise LOG_ID]`, `project` and `export --public` belong to the designer's conductor, not to a play session. `merge` refuses a change to any stamped field without a revision id and writes nothing when any fragment is bad.
 - Never `cat` the canonical file or the `_snapshots` folder in a play tab; `show` without `--dm` reads the projection.
 
+## Site Progress — `scripts/site_progress.py` (designed campaigns)
+
+A designed site is a graph, not a list (plan item 9.5). `site-progress.json` records every room of a detailed site as unseen / seen / cleared / skipped; the DM marks rooms as the party moves, `save` prints the line, and "which room were we in" survives a compaction.
+
+```bash
+py site_progress.py -c <campaign> enter <site_id> <room> --day <N> --session <N>    # first entry must be through an entrance
+py site_progress.py -c <campaign> clear <site_id> <room> --day <N> --session <N>
+py site_progress.py -c <campaign> skip  <site_id> <room> --reason "<why the route bypassed it>" --day <N> --session <N>
+py site_progress.py -c <campaign> shortcut <site_id> --from <room> --to <room> --how "<what was earned>" --day <N>
+py site_progress.py -c <campaign> rest  <site_id> <room> --kind short|long --day <N>
+py site_progress.py -c <campaign> status                                             # "Batık İskele: 3/6 oda, 1 temizlendi — şu an oda 5"
+```
+
+- `open <site_id>` is run by `detail` when a site becomes detailed (it reads the room table's `Exits` column); a skeleton site has no record and cannot be entered — that is the "no improvising a designed site" rule made mechanical.
+- The first `enter` writes the overlay's `status: played` and `seen_in_play`; nothing else touches those for a site.
+- A skipped room without a reason is a validator finding; the reason is the party's route, not the DM's mood.
+
+## Design Check — `scripts/design_check.py` (designed campaigns)
+
+The structural validator (plan item 15.1). In play the DM runs only the fast form, at every `save`:
+
+```bash
+py design_check.py -c <campaign> --fast      # refs + stamps + secrecy; reports, never blocks the session
+py design_check.py -c <campaign> --only <site_id>   # after a `detail` run, that entity alone
+```
+
+Output is redacted in every mode: a finding names an id, a field, a file and a code, never a secret name or a line of prose. The full run (`--modules refs,stamps,secrecy,overlay,map,sites`) belongs to the designer's phases and to `end`.
+
 ## Solo Boss Nova-Ceiling — `scripts/burst_check.py`
 
 For a deliberately-unfinalized solo boss (see `SKILL-combat.md`) — sums every PC's own `## Burst Reference` table into a party-wide "worst case, one round, one target" figure, and checks it against a boss's HP.
@@ -578,6 +606,10 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/autosave_checkpoint.py --campaign <name> --s
 `autosave_checkpoint.py` runs as a Claude Code **Stop hook** (after each turn). It reads the active campaign from `<runtime-dir>/active-campaign.json` (written at `/dm:dnd load`) and the `autosave` flag from that campaign's `state.md`. It **no-ops** when no campaign is active (e.g. a non-D&D session), when `autosave: off`, or when already inside a hook-driven continuation. Every turn it snapshots `state.md` to the runtime dir; every N turns (default 10, `DND_AUTOSAVE_EVERY` to override) it emits a Stop-hook `block` decision that prompts the DM to flush continuity before yielding. The hook is **opt-in** — the in-model micro-save cadence works without it.
 
 **When to use:** offer `install_autosave_hook.py` to players running long imported modules who hit compaction mid-session. The flag toggle (`/dm:dnd autosave on|off`) is the in-session control.
+
+## Designer Hooks — `scripts/hooks/design_read_guard.py`, `dice_guard.py` during a designer run
+
+`design_read_guard.py` is a PreToolUse hook on Read | Grep | Bash. It is armed only while a designer command runs, through `<runtime-dir>/active-design.json` (campaign, mode `birth` | `detail` | `playtest`, the arming session). While armed, the main session (the blind conductor) is denied every path under `design/dm-only/` and `design/_staging/` and the registry verbs that print dm-only content; the designer's fresh-context agents read them. In `playtest` the DM reads freely and the player agent is confined to the player-facing allowlist. Unarmed, nothing is guarded: the DM's own reads of a finished file are free. While a birth or `detail` run is armed, `dice_guard.py` also refuses a `dice.py` roll from an agent: agents never roll, the conductor pre-rolls every labelled die with `design_dice.py`.
 
 ## Lazy Corpus — `scripts/corpus_check.py`
 

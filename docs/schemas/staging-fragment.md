@@ -88,6 +88,7 @@ Every fan-out agent writes its prose file **first** and its fragment **last**. T
 | `graph` | nodes and edges for `campaign_graph.py`; ids resolve against the registry; edge `since_session` is 0 at birth |
 | `seeds[]` | store calls for `design_seed.py`: `store` ∈ `factions` / `goals` / `graph` / `channels` / `calendar` / `site_progress` / `names`; `op` the script verb; `args` its arguments. The ledger key is `<store>:<id>` |
 | `counts` | numbers the phase card may print; never text |
+| `overlay` | optional, sites and settlements only: `{"status": "detailed"}` for a birth-detailed site or a `detail` run; merge writes it to the overlay with writer `registry.py merge`. Absent → `skeleton` on first merge |
 | `status` | `staged` when written; merge sets `merged` in the manifest, not here |
 
 ## Agent return schema (the Workflow `schema` option)
