@@ -24,7 +24,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
 SCRIPTS = SKILL / "scripts"
-HOOKS = ("dice_guard.py", "skill_edit_guard.py")
+HOOKS = ("dice_guard.py", "skill_edit_guard.py", "design_read_guard.py")
 
 
 def clean_env(**overrides) -> dict:

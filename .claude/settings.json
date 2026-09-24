@@ -21,6 +21,15 @@
             "command": "py \"C:/Users/armag/Desktop/Campaign-Designer/.claude/skills/dnd/scripts/hooks/skill_edit_guard.py\""
           }
         ]
+      },
+      {
+        "matcher": "Read|Grep|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"C:/Users/armag/Desktop/Campaign-Designer/.claude/skills/dnd/scripts/hooks/design_read_guard.py\""
+          }
+        ]
       }
     ]
   }

@@ -136,6 +136,35 @@ def check(command: str) -> "str | None":
     return None
 
 
+def agent_roll_during_design(payload: dict, command: str) -> "str | None":
+    """Agents never roll (plan item 19.9): while a designer command is armed
+    (<runtime-dir>/active-design.json, mode birth or detail), a dice.py call
+    from a subagent transcript (payload carries agent_id) is refused. The
+    conductor pre-rolls every labelled die with design_dice.py and the results
+    travel in the agents' inputs."""
+    if not payload.get("agent_id"):
+        return None
+    try:
+        from paths import runtime_dir
+        marker = runtime_dir() / "active-design.json"
+        if not marker.is_file():
+            return None
+        data = json.loads(marker.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    if data.get("mode") not in ("birth", "detail"):
+        return None
+    if data.get("session_id") and payload.get("session_id") and data["session_id"] != payload["session_id"]:
+        return None
+    exe = _executable_part(command)
+    for call in _DICE_CALL.finditer(exe):
+        if _DICE_NOTATION.search(call.group(1) or call.group(2) or ""):
+            return ("Agents never roll during a designer run. Every die of this phase was pre-rolled "
+                    "by the conductor (design_dice.py) and its result is in your inputs; use that value. "
+                    f"See {RULE_REF} and plan item 19.9.")
+    return None
+
+
 def main() -> None:
     try:
         payload = json.load(sys.stdin)
@@ -148,7 +177,7 @@ def main() -> None:
     if not command:
         sys.exit(0)
 
-    reason = check(command)
+    reason = agent_roll_during_design(payload, command) or check(command)
     if reason:
         print(f"BLOCKED by dice_guard: {reason}", file=sys.stderr)
         sys.exit(2)
