@@ -5,7 +5,7 @@ build_rules_index.py — build a searchable rules corpus from the bundled SRD te
 The dataset has always covered *things* (spells, monsters, items) but never the
 rules prose itself: grappling, cover, falling, suffocation, exhaustion, resting,
 travel pace, madness, curses. Those were answered from memory, which is exactly
-where a ruleset drifts.
+where the rules drift.
 
 This reads the SRD 5.1 YAML at `data/srd-5.1-yaml/` (OGL 1.0a, see 00-legal.yaml)
 and writes `data/dnd5e_rules.json`, which `lookup.py` exposes as the `rules`

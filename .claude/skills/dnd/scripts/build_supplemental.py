@@ -39,20 +39,8 @@ from paths import campaigns_dir as _campaigns_dir, find_campaign as _find_campai
 SKILLS_DIR       = str(_skill_root())
 CAMPAIGNS_DIR    = str(_campaigns_dir())
 
-# Defaults — overridden per-call once --ruleset is parsed.
 DATA_FILE        = os.path.join(SKILLS_DIR, "data", "dnd5e_srd.json")
 SUPPLEMENTAL_FILE = os.path.join(SKILLS_DIR, "data", "dnd5e_supplemental.json")
-
-
-def _set_ruleset_paths(ruleset: str) -> None:
-    """Repoint DATA_FILE / SUPPLEMENTAL_FILE module globals based on ruleset."""
-    global DATA_FILE, SUPPLEMENTAL_FILE
-    if ruleset == "2024":
-        DATA_FILE = os.path.join(SKILLS_DIR, "data", "dnd5e_srd_2024.json")
-        SUPPLEMENTAL_FILE = os.path.join(SKILLS_DIR, "data", "dnd5e_supplemental_2024.json")
-    else:
-        DATA_FILE = os.path.join(SKILLS_DIR, "data", "dnd5e_srd.json")
-        SUPPLEMENTAL_FILE = os.path.join(SKILLS_DIR, "data", "dnd5e_supplemental.json")
 
 WIKIDOT_BASE = "https://dnd5e.wikidot.com"
 FETCH_DELAY  = 0.8   # polite delay between requests
@@ -137,21 +125,14 @@ def _slug(name: str) -> str:
 
 # ─── Supplemental file I/O ────────────────────────────────────────────────────
 
-def _load_supplemental(ruleset: str = "2014") -> dict:
+def _load_supplemental() -> dict:
     if os.path.exists(SUPPLEMENTAL_FILE):
         with open(SUPPLEMENTAL_FILE, encoding="utf-8") as f:
             return json.load(f)
     meta = {
         "description": "Supplemental entries for non-SRD content",
-        "ruleset": ruleset,
         "sources": [],
     }
-    if ruleset == "2024":
-        meta["note"] = (
-            "supplemental sources currently 2014-only — wikidot.com has no 2024 "
-            "equivalent. Mechanics that match 2014 (e.g. monster manual content) "
-            "should be looked up via the 2014 supplemental file."
-        )
     return {"_meta": meta, "spells": [], "features": []}
 
 
@@ -311,22 +292,9 @@ def main() -> None:
         help="List all entries currently in supplemental file")
     parser.add_argument("--dry-run", action="store_true",
         help="Show what would be fetched without writing")
-    parser.add_argument("--ruleset", choices=("2014", "2024"), default="2014",
-        help="Which ruleset's supplemental file to read/write (default 2014). "
-             "2024 has no upstream wikidot equivalent — passing --ruleset 2024 "
-             "with no entries to add will write a documented stub.")
     args = parser.parse_args()
 
-    _set_ruleset_paths(args.ruleset)
-
-    if args.ruleset == "2024":
-        print(
-            "[warn] --ruleset 2024: dnd5e.wikidot.com has no 2024 SRD content yet. "
-            "If no entries are queued, a stub file is written for forward-compat.",
-            file=sys.stderr,
-        )
-
-    supp = _load_supplemental(args.ruleset)
+    supp = _load_supplemental()
 
     if args.list:
         print(f"Supplemental entries in {SUPPLEMENTAL_FILE}:")
@@ -381,13 +349,6 @@ def main() -> None:
             unique_fetch.append((name, cat))
 
     if not unique_fetch:
-        # 2024 stub: if the supplemental file doesn't exist yet, write a
-        # documented empty stub so downstream loaders don't trip on a missing
-        # path and the DM can see "yes, this was intentionally produced".
-        if args.ruleset == "2024" and not os.path.exists(SUPPLEMENTAL_FILE):
-            _save_supplemental(supp)
-            print("Wrote 2024 stub — no upstream fetches available.")
-            return
         print("Nothing to fetch — supplemental is up to date.")
         return
 

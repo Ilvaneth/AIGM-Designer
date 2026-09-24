@@ -13,8 +13,6 @@ Usage (CLI):
 Flags:
     --all                   show all fuzzy matches, not just the best
     --json                  dump full raw record as JSON
-    --campaign <name>       resolve ruleset from the campaign's state.md
-    --ruleset 2014|2024     direct ruleset override
 
 Programmatic import (used by app.py):
     from lookup import lookup, lookup_record
@@ -28,12 +26,12 @@ import os
 import re
 import sys
 
-# paths.py lives alongside this script — import for ruleset resolution
+# paths.py lives alongside this script — import for the data directory
 _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 try:
-    import paths as _paths  # campaign_ruleset, srd_path, DEFAULT_RULESET
+    import paths as _paths  # data_dir
 except Exception:
     _paths = None
 
@@ -44,17 +42,11 @@ if _paths is not None:
     _DATA_DIR = str(_paths.data_dir())
 else:
     _DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "data")
-DATA_FILE_2014    = os.path.join(_DATA_DIR, "dnd5e_srd.json")
-DATA_FILE_2024    = os.path.join(_DATA_DIR, "dnd5e_srd_2024.json")
-SUPPLEMENTAL_FILE_2014 = os.path.join(_DATA_DIR, "dnd5e_supplemental.json")
+DATA_FILE         = os.path.join(_DATA_DIR, "dnd5e_srd.json")
+SUPPLEMENTAL_FILE = os.path.join(_DATA_DIR, "dnd5e_supplemental.json")
 # Rules prose (grappling, cover, resting, travel, traps...), built from the
-# bundled SRD 5.1 text by build_rules_index.py. Ruleset-independent file.
+# bundled SRD 5.1 text by build_rules_index.py.
 RULES_FILE        = os.path.join(_DATA_DIR, "dnd5e_rules.json")
-SUPPLEMENTAL_FILE_2024 = os.path.join(_DATA_DIR, "dnd5e_supplemental_2024.json")
-
-# Backwards-compat alias used by older callers (e.g. app.py)
-DATA_FILE         = DATA_FILE_2014
-SUPPLEMENTAL_FILE = SUPPLEMENTAL_FILE_2014
 
 # Category aliases → canonical dataset key
 CATEGORY_MAP = {
@@ -82,36 +74,22 @@ ALL_CATEGORIES = ["spells", "equipment", "magic_items", "conditions", "monsters"
 
 # ─── Data loading / index ─────────────────────────────────────────────────────
 
-# Per-ruleset caches keyed by '2014' / '2024'
-_data_by_rs: dict = {}            # {ruleset: {category: [records]}}
-_index_by_rs: dict = {}           # {ruleset: {category: {norm_name: record}}}
-_meta_by_rs: dict = {}            # {ruleset: {_meta dict}}
-_active_ruleset: str = "2014"     # which dataset _data/_index point at
+_data: dict = {}     # {category: [records]}
+_index: dict = {}    # {category: {norm_name: record}}
+_meta: dict = {}
+_loaded = False
 
 
-def _srd_path_for(ruleset: str) -> str:
-    if ruleset == "2024":
-        return DATA_FILE_2024
-    return DATA_FILE_2014
-
-
-def _supp_path_for(ruleset: str) -> str:
-    if ruleset == "2024":
-        return SUPPLEMENTAL_FILE_2024
-    return SUPPLEMENTAL_FILE_2014
-
-
-def _load_ruleset(ruleset: str) -> None:
-    """Load (and cache) the dataset for the given ruleset."""
-    if ruleset in _data_by_rs:
+def _load() -> None:
+    """Load (and cache) the SRD dataset, the supplemental file and the rules prose."""
+    global _data, _index, _meta, _loaded
+    if _loaded:
         return
 
     data: dict = {}
     meta: dict = {}
-    srd_file = _srd_path_for(ruleset)
-
-    if os.path.exists(srd_file):
-        with open(srd_file, encoding="utf-8") as f:
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, encoding="utf-8") as f:
             raw = json.load(f)
         for k, v in raw.items():
             if k == "_meta":
@@ -120,9 +98,8 @@ def _load_ruleset(ruleset: str) -> None:
                 data[k] = list(v)  # copy so we can safely extend
 
     # Merge supplemental (non-SRD content) — adds without overwriting SRD entries
-    supp_file = _supp_path_for(ruleset)
-    if os.path.exists(supp_file):
-        with open(supp_file, encoding="utf-8") as f:
+    if os.path.exists(SUPPLEMENTAL_FILE):
+        with open(SUPPLEMENTAL_FILE, encoding="utf-8") as f:
             supp = json.load(f)
         for k, v in supp.items():
             if k == "_meta" or not isinstance(v, list):
@@ -132,8 +109,6 @@ def _load_ruleset(ruleset: str) -> None:
                 if _norm(r.get("name", "")) not in existing_names:
                     data.setdefault(k, []).append(r)
 
-    # Rules prose is SRD 5.1 and applies to both rulesets; 2024 changed some of
-    # it (exhaustion, surprise), so a 2024 campaign gets a caveat at print time.
     if os.path.exists(RULES_FILE):
         with open(RULES_FILE, encoding="utf-8") as f:
             data["rules"] = list(json.load(f).get("rules", []))
@@ -149,33 +124,7 @@ def _load_ruleset(ruleset: str) -> None:
                 idx[r["index"]] = r
         index[cat] = idx
 
-    _data_by_rs[ruleset] = data
-    _index_by_rs[ruleset] = index
-    _meta_by_rs[ruleset] = meta
-
-
-def _set_active(ruleset: str) -> None:
-    """Set the active ruleset for module-level lookup() / lookup_record() calls."""
-    global _active_ruleset
-    if ruleset not in ("2014", "2024"):
-        ruleset = "2014"
-    _load_ruleset(ruleset)
-    _active_ruleset = ruleset
-
-
-# ── Backwards-compat shim — older callers expect _load() and module globals ──
-_data: dict = {}
-_index: dict = {}
-_loaded = False
-
-
-def _load() -> None:
-    """Load the active ruleset (default 2014) and refresh module-level views."""
-    global _data, _index, _loaded
-    _load_ruleset(_active_ruleset)
-    _data = _data_by_rs.get(_active_ruleset, {})
-    _index = _index_by_rs.get(_active_ruleset, {})
-    _loaded = True
+    _data, _index, _meta, _loaded = data, index, meta, True
 
 
 def _norm(s: str) -> str:
@@ -205,14 +154,12 @@ def _find(query: str, records: list, top_n: int = 1):
     return [r for r, _ in scored[:top_n]]
 
 
-def _get_records(cat_key, ruleset: str = None):
+def _get_records(cat_key):
     """Return all records for a category key. None → equipment + magic_items."""
-    rs = ruleset or _active_ruleset
-    _load_ruleset(rs)
-    data = _data_by_rs.get(rs, {})
+    _load()
     if cat_key is None:
-        return data.get("equipment", []) + data.get("magic_items", [])
-    return data.get(cat_key, [])
+        return _data.get("equipment", []) + _data.get("magic_items", [])
+    return _data.get(cat_key, [])
 
 
 # ─── Formatters ───────────────────────────────────────────────────────────────
@@ -341,10 +288,6 @@ def _fmt_feature(r: dict) -> str:
 
 def _fmt_rule(r: dict) -> str:
     lines = [f"## {r.get('name','?')}", f"*{r.get('path','')}*  ·  SRD 5.1", ""]
-    if _active_ruleset == "2024":
-        lines += ["(This campaign runs the 2024 ruleset; the text below is SRD 5.1. "
-                  "Check the 2014/2024 differences table in SKILL.md before quoting it "
-                  "on exhaustion, surprise, or weapon mastery.)", ""]
     lines.append(r.get("description", ""))
     return "\n".join(lines)
 
@@ -393,95 +336,44 @@ def wikidot_url(name: str, category: str = None, record: dict = None) -> str:
 
 # ─── Public API ───────────────────────────────────────────────────────────────
 
-def _fallback_categories(ruleset: str) -> set:
-    """Return the set of categories that should fall back to 2014 when missing
-    in the requested ruleset's dataset (per `_meta.fallback_2014`)."""
-    meta = _meta_by_rs.get(ruleset, {}) or {}
-    fb = meta.get("fallback_2014") or []
-    if isinstance(fb, list):
-        return set(fb)
-    return set()
-
-
-def _find_in_ruleset(query: str, cat_key, ruleset: str, top_n: int = 1):
-    """Scan the dataset for `ruleset` for matches; if cat_key is given and the
-    primary search misses, also scan 2014 when that category is in the
-    ruleset's fallback list."""
-    records = _get_records(cat_key, ruleset=ruleset)
-    results = _find(query, records, top_n=top_n)
-    if results:
-        return results, ruleset, False
-
-    # Resolve fallback for category-specific lookups
-    if cat_key is not None and ruleset == "2024" and cat_key in _fallback_categories("2024"):
-        fb_records = _get_records(cat_key, ruleset="2014")
-        fb_results = _find(query, fb_records, top_n=top_n)
-        if fb_results:
-            return fb_results, "2014", True
-
-    return [], ruleset, False
-
-
-def lookup_record(query: str, category=None, ruleset=None):
-    """Return the best-matching record dict, or None.
-
-    `ruleset` overrides the module-level active ruleset if supplied.
-    The returned record is annotated with `_cat`, `_ruleset`, and `_fallback`.
-    """
-    rs = ruleset or _active_ruleset
-    _load_ruleset(rs)
-    if not _data_by_rs.get(rs):
+def lookup_record(query: str, category=None):
+    """Return the best-matching record dict, or None. The record is annotated with `_cat`."""
+    _load()
+    if not _data:
         return None
     cat_key = CATEGORY_MAP.get((category or "").lower()) if category else None
-    results, hit_rs, fb = _find_in_ruleset(query, cat_key, rs, top_n=1)
+    results = _find(query, _get_records(cat_key), top_n=1)
 
     resolved_cat = cat_key
     if not results and not category:
-        # Search every category in the active ruleset
+        # Search every category
         for ck in ALL_CATEGORIES:
-            results = _find(query, _data_by_rs.get(rs, {}).get(ck, []), top_n=1)
+            results = _find(query, _data.get(ck, []), top_n=1)
             if results:
                 resolved_cat = ck
-                hit_rs = rs
                 break
-        # Fallback for 2024 cross-category — scan fallback categories in 2014
-        if not results and rs == "2024":
-            for ck in ALL_CATEGORIES:
-                if ck not in _fallback_categories("2024"):
-                    continue
-                results = _find(query, _data_by_rs.get("2014", {}).get(ck, []), top_n=1)
-                if results:
-                    resolved_cat = ck
-                    hit_rs = "2014"
-                    fb = True
-                    break
 
     # item search — resolve sub-category and tag the record
     if results and cat_key is None and resolved_cat is None:
         rec = results[0]
         for ck in ["equipment", "magic_items"]:
-            if rec in _data_by_rs.get(hit_rs, {}).get(ck, []):
+            if rec in _data.get(ck, []):
                 resolved_cat = ck
                 break
 
     if results and resolved_cat:
         results[0]["_cat"] = resolved_cat
-        results[0]["_ruleset"] = hit_rs
-        results[0]["_fallback"] = fb
     return results[0] if results else None
 
 
-def lookup(query: str, category=None, ruleset=None):
+def lookup(query: str, category=None):
     """Return a formatted string description for the best match, or None."""
-    rec = lookup_record(query, category=category, ruleset=ruleset)
+    rec = lookup_record(query, category=category)
     if not rec:
         return None
     cat = rec.get("_cat") or "spells"
     fmt = FORMATTERS.get(cat, lambda r: json.dumps(r, indent=2))
-    text = fmt(rec)
-    if rec.get("_fallback"):
-        text += "\n\n_[2014 fallback]_"
-    return text
+    return fmt(rec)
 
 
 def _apply_level(text: str, level: int) -> str:
@@ -513,9 +405,9 @@ def _apply_level(text: str, level: int) -> str:
     return re.sub(scale_pat, _pick, text)
 
 
-def lookup_with_level(query: str, category=None, level=None, ruleset=None):
+def lookup_with_level(query: str, category=None, level=None):
     """lookup() variant that collapses scale progressions to the given character level."""
-    text = lookup(query, category=category, ruleset=ruleset)
+    text = lookup(query, category=category)
     if text and level:
         try:
             text = _apply_level(text, int(level))
@@ -541,7 +433,7 @@ def _suggest_categories(category) -> list:
     return [key]
 
 
-def suggest(query: str, category=None, ruleset=None, n: int = 3, cutoff: float = 0.6):
+def suggest(query: str, category=None, n: int = 3, cutoff: float = 0.6):
     """Return up to `n` near-miss name suggestions for a query that didn't match.
 
     Powers a "did you mean?" hint when an exact/substring lookup dead-ends on a
@@ -550,9 +442,8 @@ def suggest(query: str, category=None, ruleset=None, n: int = 3, cutoff: float =
     that catches a good word buried in a longer query. Returns a list of
     (name, category) tuples, best first, deduped by name.
     """
-    rs = ruleset or _active_ruleset
-    _load_ruleset(rs)
-    data = _data_by_rs.get(rs, {})
+    _load()
+    data = _data
     if not data:
         return []
 
@@ -600,74 +491,20 @@ def suggest(query: str, category=None, ruleset=None, n: int = 3, cutoff: float =
 
 # ─── CLI ──────────────────────────────────────────────────────────────────────
 
-def _parse_value_flag(flags_with_args, name):
-    """Extract --name VALUE or --name=VALUE from a list of argv tokens.
-    Returns (value or None, leftover list with the flag stripped)."""
-    out = []
-    val = None
-    skip = False
-    for i, tok in enumerate(flags_with_args):
-        if skip:
-            skip = False
-            continue
-        if tok == name:
-            if i + 1 < len(flags_with_args):
-                val = flags_with_args[i + 1]
-                skip = True
-        elif tok.startswith(name + "="):
-            val = tok.split("=", 1)[1]
-        else:
-            out.append(tok)
-    return val, out
-
-
 def main() -> None:
     raw = sys.argv[1:]
-
-    # Pull out value-bearing flags first so the positional parser doesn't see them
-    campaign_arg, raw = _parse_value_flag(raw, "--campaign")
-    ruleset_arg, raw  = _parse_value_flag(raw, "--ruleset")
-
-    # Remaining --bool flags
     flags = [a for a in raw if a.startswith("--")]
     args  = [a for a in raw if not a.startswith("--")]
     dump_json = "--json" in flags
     show_all  = "--all"  in flags
     top_n     = 10 if show_all else 1
 
-    # ── Resolve ruleset ───────────────────────────────────────────────────
-    ruleset = None
-    if ruleset_arg:
-        if ruleset_arg not in ("2014", "2024"):
-            print(f"--ruleset must be 2014 or 2024 (got {ruleset_arg!r})", file=sys.stderr)
-            sys.exit(2)
-        ruleset = ruleset_arg
-    elif campaign_arg:
-        if _paths is None:
-            print("paths.py unavailable — cannot resolve --campaign", file=sys.stderr)
-            sys.exit(2)
-        ruleset = _paths.campaign_ruleset(campaign_arg)
-    else:
-        # Default 2014, but emit a hint if 2024 is on disk
-        ruleset = "2014"
-        if os.path.exists(DATA_FILE_2024):
-            print(
-                "# lookup.py: defaulting to 2014 ruleset "
-                "(use --campaign or --ruleset to switch)",
-                file=sys.stderr,
-            )
-
-    srd_file = _srd_path_for(ruleset)
-    if not os.path.exists(srd_file):
-        print(f"Dataset not found: {srd_file}")
+    if not os.path.exists(DATA_FILE):
+        print(f"Dataset not found: {DATA_FILE}")
         _build = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build_srd.py")
-        if ruleset == "2024":
-            print(f'Run: python3 "{_build}" --ruleset 2024   (or: /dnd data sync --ruleset 2024)')
-        else:
-            print(f'Run: python3 "{_build}"   (or: /dnd data sync)')
+        print(f'Run: python3 "{_build}"   (or: /dnd data sync)')
         sys.exit(1)
-
-    _set_active(ruleset)
+    _load()
 
     if len(args) < 2:
         print(__doc__)
@@ -682,41 +519,26 @@ def main() -> None:
         query = " ".join(args)
         cat_key = None
 
-    # Search the active ruleset; fall back to 2014 for categories listed
-    # in the active ruleset's _meta.fallback_2014 when the category is given.
-    fallback_used = False
     if cat_specified:
-        results, hit_rs, fb = _find_in_ruleset(query, cat_key, ruleset, top_n=top_n)
-        fallback_used = fb
+        results = _find(query, _get_records(cat_key), top_n=top_n)
     else:
         records = []
         for ck in ALL_CATEGORIES:
-            records.extend(_data_by_rs.get(ruleset, {}).get(ck, []))
+            records.extend(_data.get(ck, []))
         results = _find(query, records, top_n=top_n)
-        hit_rs  = ruleset
-        # If nothing in 2024, try 2014 across fallback categories
-        if not results and ruleset == "2024":
-            fb_records = []
-            for ck in ALL_CATEGORIES:
-                if ck in _fallback_categories("2024"):
-                    fb_records.extend(_data_by_rs.get("2014", {}).get(ck, []))
-            results = _find(query, fb_records, top_n=top_n)
-            if results:
-                hit_rs = "2014"
-                fallback_used = True
 
     # For item searches, resolve which sub-category each result came from
-    def _resolve_cat(record, rs):
+    def _resolve_cat(record):
         if cat_key is not None:
             return cat_key
         for ck in ALL_CATEGORIES:
-            if record in _data_by_rs.get(rs, {}).get(ck, []):
+            if record in _data.get(ck, []):
                 return ck
         return "spells"
 
     if not results:
         print(f"No match for '{query}' in {category}.")
-        hints = suggest(query, category=category if cat_specified else None, ruleset=hit_rs)
+        hints = suggest(query, category=category if cat_specified else None)
         if hints:
             pretty = ", ".join(
                 f"{nm} ({ck.rstrip('s').replace('_', ' ')})" for nm, ck in hints
@@ -726,17 +548,11 @@ def main() -> None:
 
     for r in results:
         if dump_json:
-            out = dict(r)
-            out["_ruleset"] = hit_rs
-            out["_fallback"] = fallback_used
-            print(json.dumps(out, indent=2))
+            print(json.dumps(r, indent=2))
         else:
-            rcat = _resolve_cat(r, hit_rs)
+            rcat = _resolve_cat(r)
             fmt  = FORMATTERS.get(rcat, lambda x: json.dumps(x, indent=2))
-            text = fmt(r)
-            if fallback_used:
-                text += "  [2014 fallback]"
-            print(text)
+            print(fmt(r))
             print()
 
 

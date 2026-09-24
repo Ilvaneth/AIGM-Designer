@@ -7,11 +7,9 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
 ---
 
 ## `/dm:dnd new <campaign-name> [theme]`
-1. **Ruleset selection (added 2026-05-08).** Ask: *"D&D 5e ruleset for this campaign? **2014** (SRD 5.1, default — full mechanics, classic Player's Handbook structure) or **2024** (SRD 5.2, weapon mastery + origin feats + background ASIs + revised exhaustion)?"* Default to `2014` if no answer or ambiguous. Write the chosen value to `state.md` header line as `**Ruleset:** 2014` or `**Ruleset:** 2024`.
-
-   If 2024 was chosen: verify the dataset exists with `ls ${CLAUDE_SKILL_DIR}/data/dnd5e_srd_2024.json`. If missing, run `python3 ${CLAUDE_SKILL_DIR}/scripts/build_srd.py --ruleset 2024` (one-time, ~3 min). Until the dataset exists, lookup-based features will fall back to 2014.
+1. **Ruleset.** The skill runs D&D 5e 2014 (SRD 5.1) only; do not ask. The state.md header line carries `**Ruleset:** 2014` as a stamp (2024 support removed 2026-09-24, plan item 21.G).
 2. `mkdir -p ~/.claude/dnd/campaigns/<name>/characters`
-3. Copy and populate templates from `${CLAUDE_SKILL_DIR}/templates/` — state.md, world.md, npcs.md, session-log.md. The state.md header keeps the `**Ruleset:**` field set in step 2.
+3. Copy and populate templates from `${CLAUDE_SKILL_DIR}/templates/` — state.md, world.md, npcs.md, session-log.md. The state.md header keeps the `**Ruleset:** 2014` stamp from the template.
 4. Ask: **party size** and **starting level**
 5. **Tone/Genre Wizard** — present all four in one message:
    - Tone: `grimdark / dark fantasy / heroic / horror / political / swashbuckling / cosmic`
@@ -78,26 +76,9 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
    the world owes the party. Also run `factions.py tick --day N` if in-world days have passed since the
    last session: it refreshes weekly move-point budgets and surfaces what came due while nobody was watching.
 
-1. **Backwards-compat: ruleset migration check.** Before reading state.md, run:
+1. **Ruleset.** 2014 (SRD 5.1) only; nothing to read or migrate. If state.md is missing, do not proceed with /dm:dnd load — surface the error to the DM.
 
-   ```bash
-   python3 ${CLAUDE_SKILL_DIR}/scripts/migrate_ruleset.py <campaign-name> --check
-   ```
-
-   - Exit code `0` (`migrated`) → proceed to step 2.
-   - Exit code `1` (`needs-migration`) → this is a legacy campaign predating the ruleset field. Surface to DM exactly once: *"Campaign predates ruleset versioning. Stamp as **2014** (recommended for legacy campaigns) or **2024**? state.md will be backed up to `state.md.backup-pre-ruleset-<timestamp>` before any write. [2014/2024/skip]"*. On answer, run:
-
-     ```bash
-     python3 ${CLAUDE_SKILL_DIR}/scripts/migrate_ruleset.py <campaign-name> --ruleset 2014 --yes
-     # or --ruleset 2024
-     ```
-
-     Migrator is idempotent and creates a timestamped backup. On `skip`, do not migrate; `paths.campaign_ruleset()` will return `2014` as the safety default at read time, but the field stays unstamped (DM will be re-prompted next load).
-   - Exit code `2` (`missing`) → state.md not found; do not proceed with /dm:dnd load. Surface error to DM.
-
-   Future migrations (e.g. when 2026 ruleset arrives) follow the same pattern: a small migrator script under `scripts/migrate_<topic>.py` invoked here as a `--check` then `--yes` pair.
-
-2. **Read campaign ruleset** for this session: `python3 ${CLAUDE_SKILL_DIR}/scripts/paths.py campaign-ruleset <name>` (or import `campaign_ruleset` directly). Stash the result; pass `--ruleset <value>` to `lookup.py`, `build_supplemental.py`, and `combat.py` mastery calls so they route to the correct dataset.
+2. *(retired 2026-09-24 with 2024 support; the number is kept because steps 5 and 6 are referenced elsewhere)*
 
 3. Read SKILL-scripts.md (for script syntax this session)
 4. **Mark this campaign active** (for the autosave hook): write `{"name": "<campaign-name>"}` to `$(python3 ${CLAUDE_SKILL_DIR}/scripts/paths.py runtime-dir)/active-campaign.json`. This is what `autosave_checkpoint.py` reads to know which campaign to checkpoint; a stale marker is harmless. Then read state.md, world.md, npcs.md (index only), and all characters/*.md
@@ -454,13 +435,7 @@ Read `~/.claude/dnd/campaigns/*/state.md`, print summary table: campaign name | 
 
 ## `/dm:dnd character new [campaign-name]`
 
-**Read the campaign's ruleset first** — `python3 ${CLAUDE_SKILL_DIR}/scripts/paths.py` is not a CLI; instead inline-read with:
-
-```bash
-python3 -c "import sys; sys.path.insert(0,'${CLAUDE_SKILL_DIR}/scripts'); from paths import campaign_ruleset; print(campaign_ruleset('<campaign>'))"
-```
-
-The result drives branching at steps 1 (ASI source), 4 (origin feat), and 5 (subclass timing). The default `2014` applies for legacy campaigns predating the ruleset field.
+The ruleset is 2014 (SRD 5.1): ability score increases come from race, subclass timing is the class's own.
 
 **First, offer the two build paths — call `AskUserQuestion`:** *"How do you want to build [or: your character]?"*
 - `Step by step` → the guided flow below (steps 1–10). Use this when the player wants to make each choice deliberately, or already knows the exact build.
@@ -470,20 +445,19 @@ Default to `Step by step` if the question is dismissed. Either path lands in the
 
 0. **Describe-it path.** Ask one open question: *"In a sentence or two, describe your character — who they are, how they fight or solve problems, where they come from. I'll build a legal, level-appropriate 5e sheet from it and show you before anything's written."* Then:
 
-   a. **Derive the build from the prose, model-side.** Map the description to a legal 5e chassis for this campaign's ruleset: **class** (and, if the level warrants it, subclass per the ruleset's timing — see step 5), **species/race**, **background**, ability-score priorities (which two or three scores the concept leans on), skill/tool proficiencies the class+background grant, a fighting style or starting spells if the class has them, and a one-line **Character Pillar** (Bond / Flaw / Ideal / Goal — the same field step 2 fills). Read the description for what the player actually cares about — a "disgraced temple guard who talks their way out of fights" is a Paladin or Cleric with a Soldier/Acolyte background and CHA/CON priority, not a generic pick. Never invent a detail the prose contradicts; where the prose is silent, choose the most concept-fitting legal option and note it as a choice, not a fact.
+   a. **Derive the build from the prose, model-side.** Map the description to a legal 5e (2014) chassis: **class** (and, if the level warrants it, subclass at the class's own level — see step 5), **race**, **background**, ability-score priorities (which two or three scores the concept leans on), skill/tool proficiencies the class+background grant, a fighting style or starting spells if the class has them, and a one-line **Character Pillar** (Bond / Flaw / Ideal / Goal — the same field step 2 fills). Read the description for what the player actually cares about — a "disgraced temple guard who talks their way out of fights" is a Paladin or Cleric with a Soldier/Acolyte background and CHA/CON priority, not a generic pick. Never invent a detail the prose contradicts; where the prose is silent, choose the most concept-fitting legal option and note it as a choice, not a fact.
 
-   b. **Validate against 5e legality before showing anything.** The derived sheet must be legal for the campaign's ruleset and the agreed starting level: class/species/background all exist in 5e (SRD or a source the table allows — look up anything you're unsure of via `lookup.py`), ability scores come from a legal method (roll or point buy — step 3), ASI source matches the ruleset (race in 2014, background + one origin feat in 2024 — step 1), proficiencies are actually granted by the chosen class+background (no double-dipping, no out-of-list picks), and any spells/features are available at this level. If the concept implies something illegal (a level-1 character with a capstone feature, a subclass earlier than the ruleset grants it), pick the closest legal equivalent and say so.
+   b. **Validate against 5e legality before showing anything.** The derived sheet must be legal for 5e 2014 and the agreed starting level: class/race/background all exist in 5e (SRD or a source the table allows — look up anything you're unsure of via `lookup.py`), ability scores come from a legal method (roll or point buy — step 3), ability score increases come from the race (step 1), proficiencies are actually granted by the chosen class+background (no double-dipping, no out-of-list picks), and any spells/features are available at this level. If the concept implies something illegal (a level-1 character with a capstone feature, a subclass earlier than the class grants it), pick the closest legal equivalent and say so.
 
    c. **Present the derived sheet for one confirmation.** Show the full build — species/race, class (+ subclass if any), background, ability array with the concept's priorities assigned, proficiencies, starting kit, and the derived Pillar with its source sentence — and ask: *"This is what I read from your description. Change anything, or shall I roll it up?"* Let the player adjust any field in prose; re-validate after any change.
 
    d. **Converge into the shared flow.** On confirmation, run the name-uniqueness check (step 1's `name_registry.py check`), then continue at **step 3** (finalize ability scores — reuse the derived priorities), **step 4** (racial/background bonuses + `character.py calc`), and steps 6–10 (equipment, write, roster mirror, supplemental builder). Do not re-ask the step-by-step questions the description already answered; only fill genuine gaps.
 
-1. Ask: name, **species** (2024) or **race** (2014), class, background.
+1. Ask: name, **race**, class, background.
 
    **Name uniqueness check:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/name_registry.py check "<name>"`. Exit 1 (duplicate) → surface prior use; player confirms or changes. Record after step 9.
 
-   **2014 (race-as-ASI):** the species/race grants ability score increases (e.g. Wood Elf: +2 DEX, +1 WIS). Apply to abilities at step 4.
-   **2024 (background-as-ASI):** the **background** grants the +2/+1 ability score increase OR three +1s, AND a free **Origin Feat** (e.g. Magic Initiate, Lucky, Tough). Species grants traits but no ability scores. Players in 2024 must pick background BEFORE rolling abilities — the background's ASI pattern dictates which scores benefit.
+   The race grants the ability score increases (e.g. Wood Elf: +2 DEX, +1 WIS). Apply to abilities at step 4.
 2. Ask: *"In a sentence, what should the DM know about [Name]?"*
    - If answered: derive ONE pillar — **Bond**, **Flaw**, **Ideal**, or **Goal** (whichever fits best). Store both the raw sentence and derived pillar in `## Character Pillar`.
    - If skipped: leave `## Character Pillar` blank. Do not invent one. Do not re-prompt.
@@ -543,11 +517,7 @@ Read `characters/<name>.md`, display cleanly. If name omitted and one character 
    Insufficient XP → report deficit and stop. Only continue on explicit DM override.
 2. Read sheet. Run `character.py levelup`. Apply class features. Ask for HP roll or average. Update sheet + global roster. Narrate the growth.
 
-   **Ruleset-aware subclass timing (added 2026-05-08):** read campaign ruleset via `paths.campaign_ruleset(<campaign>)`.
-   - **2014:** Subclass selection happens at the class's specified level (Cleric/Sorcerer/Warlock at 1; Druid/Wizard at 2; most others at 3).
-   - **2024:** Subclass selection unifies at **level 3** for ALL classes. If the player is hitting level 3 in a 2024 campaign and hasn't picked a subclass yet, prompt for it. Class features that 2014 placed at level 1 (e.g. Cleric Domain) shift to level 3 in 2024.
-
-   **Weapon Mastery (2024 only):** Fighter/Barbarian/Paladin/Ranger gain Weapon Mastery at level 1 (Fighter knows 3 mastery properties; others know 2). Track which properties the character knows on the sheet under `## Class Features → Weapon Mastery: <list>`. Properties are picked from the eight in `data/dnd5e_srd_2024.json → weapon_mastery_properties`. The character can use mastery only with weapons that have the matching property (look up on `data/dnd5e_srd_2024.json → equipment[…].mastery`).
+   **Subclass timing (2014):** subclass selection happens at the class's specified level (Cleric/Sorcerer/Warlock at 1; Druid/Wizard at 2; most others at 3). `character.py levelup` prints the class's feature table, including the subclass step.
 
 ---
 

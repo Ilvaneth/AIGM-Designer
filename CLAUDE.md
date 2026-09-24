@@ -22,7 +22,7 @@ Tests: `py .claude/skills/dnd/scripts/run_tests.py` (stdlib `unittest`, discover
 
 ## Rules of this project
 
-- Ruleset 2014 (SRD 5.1) only; 2024 support is scheduled for removal (plan item 21.G).
+- Ruleset 2014 (SRD 5.1) only; 2024 support was removed on 2026-09-24 (plan item 21.G). The `**Ruleset:** 2014` state.md header line stays as a harmless stamp.
 - Development artifacts (code, tables, plan, commit messages) in English; conversation with the user in Turkish.
 - The user's stated rules are the spec: a conflicting upstream behaviour is deleted, never kept as a default.
 - `unittest` (stdlib), run by `scripts/run_tests.py` once it exists; keep the existing hook tests green.
