@@ -21,6 +21,8 @@ Replace the thin `/dm:dnd new` with a **Campaign Designer** that builds a full, 
 
 ---
 
+**Source reports:** the full agent outputs behind items 19 and 24 (designs, schema, cost measurements, all critic findings, the errata pass) are kept under `docs/reports/`. They are reference material, not decisions; the plan wins on any conflict.
+
 ## Master list (discussion order)
 
 | # | Item | Status |
