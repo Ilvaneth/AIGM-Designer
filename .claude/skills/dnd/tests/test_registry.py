@@ -21,6 +21,12 @@ class Registry(unittest.TestCase):
 
     def setUp(self):
         self.c = TestCampaign("registry")
+        # The fixture's fragments sit under merged/ (its birth completed); the merge
+        # tests want them back in staging as if an agent had just written them.
+        for phase, name in (("P5", "npc_yesra.json"), ("P6", "site_batik_iskele.json")):
+            src = self.c.path(f"design/_staging/{phase}/merged/{name}")
+            shutil.copy(src, self.c.path(f"design/_staging/{phase}/{name}"))
+            src.unlink()
 
     def tearDown(self):
         self.c.remove()

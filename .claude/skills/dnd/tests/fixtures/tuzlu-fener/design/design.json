@@ -20,9 +20,25 @@
     "danger": "gritty",
     "party_size": 2,
     "start_level": 1,
-    "level_band": [1, 5],
-    "content_mix": ["mystery", "exploration", "politics"],
-    "wishes": {"must": ["deniz ve tuz kokusu", "ölüler gerçekten ölsün"], "must_not": ["kader/kehanet", "seçilmiş kişi"]},
+    "level_band": [
+      1,
+      5
+    ],
+    "content_mix": [
+      "mystery",
+      "exploration",
+      "politics"
+    ],
+    "wishes": {
+      "must": [
+        "deniz ve tuz kokusu",
+        "ölüler gerçekten ölsün"
+      ],
+      "must_not": [
+        "kader/kehanet",
+        "seçilmiş kişi"
+      ]
+    },
     "lang": "tr",
     "concurrency": 8,
     "economy": false
@@ -32,128 +48,1379 @@
     "derivation": "random.Random(f'{master}:{phase}:{table}:{label}')"
   },
   "arc_skeleton": [
-    {"chapter": "chapter_1", "act": 1, "level_band": [1, 3], "beats": ["beat_1a", "beat_1b"]},
-    {"chapter": "chapter_2", "act": 1, "level_band": [3, 5], "beats": ["beat_1c"]}
+    {
+      "chapter": "chapter_1",
+      "act": 1,
+      "level_band": [
+        1,
+        3
+      ],
+      "beats": [
+        "beat_1a",
+        "beat_1b"
+      ]
+    },
+    {
+      "chapter": "chapter_2",
+      "act": 1,
+      "level_band": [
+        3,
+        5
+      ],
+      "beats": [
+        "beat_1c"
+      ]
+    }
   ],
   "dice_log": [
-    {"phase": "P0", "table": "dials.yaml#content_mix", "label": "content_mix.1", "notation": "d5", "raw": 5, "row_id": "mix_mystery", "excluded": [], "ts": "2026-09-24T18:01:10Z"},
-    {"phase": "P0", "table": "dials.yaml#content_mix", "label": "content_mix.2", "notation": "d4", "raw": 1, "row_id": "mix_exploration", "excluded": [], "ts": "2026-09-24T18:01:10Z"},
-    {"phase": "P0", "table": "dials.yaml#content_mix", "label": "content_mix.3", "notation": "d3", "raw": 2, "row_id": "mix_politics", "excluded": [], "ts": "2026-09-24T18:01:10Z"},
-    {"phase": "P1", "table": "tensions.yaml", "label": "tension.1", "notation": "d30", "raw": 22, "row_id": "tension_memory_salvation", "excluded": ["tension_legacy_freedom"], "ts": "2026-09-24T18:03:02Z"},
-    {"phase": "P1", "table": "trope-breaks.yaml", "label": "break.1", "notation": "d40", "raw": 11, "row_id": "break_no_afterlife_known", "excluded": [], "ts": "2026-09-24T18:03:02Z"},
-    {"phase": "P1", "table": "naming.yaml#family", "label": "language.1", "notation": "d9", "raw": 3, "row_id": "family_liquid_vowel", "excluded": [], "ts": "2026-09-24T18:03:40Z"},
-    {"phase": "P1", "table": "naming.yaml#family", "label": "language.2", "notation": "d9", "raw": 7, "row_id": "family_harsh_consonantal", "excluded": ["family_liquid_vowel"], "ts": "2026-09-24T18:03:40Z"},
-    {"phase": "P2", "table": "pantheon.yaml#type", "label": "pantheon_type", "notation": "d5", "raw": 4, "row_id": "pantheon_silent_gods", "excluded": [], "ts": "2026-09-24T18:20:44Z"},
-    {"phase": "P2", "table": "magic.yaml#wild", "label": "wild_magic", "notation": "d2", "raw": 2, "row_id": "wild_no", "excluded": [], "ts": "2026-09-24T18:20:50Z"},
-    {"phase": "P6", "table": "sites.yaml#room_band", "label": "site_dipsiz_kuyu.rooms", "notation": "d9+11", "raw": 1, "row_id": null, "excluded": [], "ts": "2026-09-24T19:12:00Z"}
+    {
+      "phase": "P0",
+      "table": "dials.yaml#content_mix",
+      "label": "content_mix.1",
+      "notation": "d5",
+      "raw": 5,
+      "row_id": "mix_mystery",
+      "excluded": [],
+      "ts": "2026-09-24T18:01:10Z"
+    },
+    {
+      "phase": "P0",
+      "table": "dials.yaml#content_mix",
+      "label": "content_mix.2",
+      "notation": "d4",
+      "raw": 1,
+      "row_id": "mix_exploration",
+      "excluded": [],
+      "ts": "2026-09-24T18:01:10Z"
+    },
+    {
+      "phase": "P0",
+      "table": "dials.yaml#content_mix",
+      "label": "content_mix.3",
+      "notation": "d3",
+      "raw": 2,
+      "row_id": "mix_politics",
+      "excluded": [],
+      "ts": "2026-09-24T18:01:10Z"
+    },
+    {
+      "phase": "P1",
+      "table": "tensions.yaml",
+      "label": "tension.1",
+      "notation": "d30",
+      "raw": 22,
+      "row_id": "tension_memory_salvation",
+      "excluded": [
+        "tension_legacy_freedom"
+      ],
+      "ts": "2026-09-24T18:03:02Z"
+    },
+    {
+      "phase": "P1",
+      "table": "trope-breaks.yaml",
+      "label": "break.1",
+      "notation": "d40",
+      "raw": 11,
+      "row_id": "break_no_afterlife_known",
+      "excluded": [],
+      "ts": "2026-09-24T18:03:02Z"
+    },
+    {
+      "phase": "P1",
+      "table": "naming.yaml#family",
+      "label": "language.1",
+      "notation": "d9",
+      "raw": 3,
+      "row_id": "family_liquid_vowel",
+      "excluded": [],
+      "ts": "2026-09-24T18:03:40Z"
+    },
+    {
+      "phase": "P1",
+      "table": "naming.yaml#family",
+      "label": "language.2",
+      "notation": "d9",
+      "raw": 7,
+      "row_id": "family_harsh_consonantal",
+      "excluded": [
+        "family_liquid_vowel"
+      ],
+      "ts": "2026-09-24T18:03:40Z"
+    },
+    {
+      "phase": "P2",
+      "table": "pantheon.yaml#type",
+      "label": "pantheon_type",
+      "notation": "d5",
+      "raw": 4,
+      "row_id": "pantheon_silent_gods",
+      "excluded": [],
+      "ts": "2026-09-24T18:20:44Z"
+    },
+    {
+      "phase": "P2",
+      "table": "magic.yaml#wild",
+      "label": "wild_magic",
+      "notation": "d2",
+      "raw": 2,
+      "row_id": "wild_no",
+      "excluded": [],
+      "ts": "2026-09-24T18:20:50Z"
+    },
+    {
+      "phase": "P6",
+      "table": "sites.yaml#room_band",
+      "label": "site_dipsiz_kuyu.rooms",
+      "notation": "d9+11",
+      "raw": 1,
+      "row_id": null,
+      "excluded": [],
+      "ts": "2026-09-24T19:12:00Z"
+    }
   ],
   "dice_log_secret": {
     "file": "dm-only/dice-log.json",
     "count": 3,
-    "labels": ["P1.secret_archetype", "P1.secret_twist", "P4.bbeg_visibility"]
+    "labels": [
+      "P1.secret_archetype",
+      "P1.secret_twist",
+      "P4.bbeg_visibility"
+    ]
   },
   "phases": {
-    "P0": {"status": "approved", "attempt": 1, "workflow_run_id": null, "started": "2026-09-24T18:00:30Z", "finished": "2026-09-24T18:02:00Z", "wall_s": 90, "skeleton": {"status": "merged", "agent": null}, "critique": {"phase_loops": 0, "verdicts": [], "entity_loops_total": 0}, "validator": {"at": "2026-09-24T18:02:00Z", "errors": 0, "warnings": 0}, "approval": {"rounds": [], "approved_at": "2026-09-24T18:02:30Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 0, "cache_read": 0, "by_model": {}}, "stale_reason": null},
-    "P1": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p1", "started": "2026-09-24T18:03:00Z", "finished": "2026-09-24T18:09:00Z", "wall_s": 360, "skeleton": {"status": "merged", "agent": "P1.premise.a1"}, "critique": {"phase_loops": 1, "verdicts": ["pass"], "entity_loops_total": 1}, "validator": {"at": "2026-09-24T18:09:00Z", "errors": 0, "warnings": 0}, "approval": {"rounds": [], "approved_at": "2026-09-24T18:12:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 6200, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 6200}}}, "stale_reason": null},
-    "P2": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p2", "started": "2026-09-24T18:20:00Z", "finished": "2026-09-24T18:27:00Z", "wall_s": 420, "skeleton": {"status": "merged", "agent": "P2.cosmos.a1"}, "critique": {"phase_loops": 1, "verdicts": ["pass"], "entity_loops_total": 1}, "validator": {"at": "2026-09-24T18:27:00Z", "errors": 0, "warnings": 0}, "approval": {"rounds": [], "approved_at": "2026-09-24T18:30:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 7100, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 7100}}}, "stale_reason": null},
-    "P3": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p3", "started": "2026-09-24T18:35:00Z", "finished": "2026-09-24T18:44:00Z", "wall_s": 540, "skeleton": {"status": "merged", "agent": "P3.skeleton.a1"}, "critique": {"phase_loops": 1, "verdicts": ["pass"], "entity_loops_total": 2}, "validator": {"at": "2026-09-24T18:44:00Z", "errors": 0, "warnings": 0}, "approval": {"rounds": [], "approved_at": "2026-09-24T18:46:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 9800, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 9800}}}, "stale_reason": null},
-    "P4": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p4", "started": "2026-09-24T18:48:00Z", "finished": "2026-09-24T18:58:00Z", "wall_s": 600, "skeleton": {"status": "merged", "agent": "P4.skeleton.a1"}, "critique": {"phase_loops": 1, "verdicts": ["fix", "pass"], "entity_loops_total": 3}, "validator": {"at": "2026-09-24T18:58:00Z", "errors": 0, "warnings": 0}, "approval": {"rounds": [], "approved_at": "2026-09-24T19:00:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 12400, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 12400}}}, "stale_reason": null},
-    "P5": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p5", "started": "2026-09-24T19:00:30Z", "finished": "2026-09-24T19:09:00Z", "wall_s": 510, "skeleton": {"status": "merged", "agent": "P5.skeleton.a1"}, "critique": {"phase_loops": 1, "verdicts": ["pass"], "entity_loops_total": 4}, "validator": {"at": "2026-09-24T19:09:00Z", "errors": 0, "warnings": 0}, "approval": {"rounds": [], "approved_at": "2026-09-24T19:10:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 15100, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 15100}}}, "stale_reason": null},
-    "P6": {"status": "approved", "attempt": 2, "workflow_run_id": "wf_p6", "started": "2026-09-24T19:10:00Z", "finished": "2026-09-24T19:31:00Z", "wall_s": 1260, "skeleton": {"status": "merged", "agent": "P6.skeleton.a1"}, "critique": {"phase_loops": 1, "verdicts": ["fix", "pass"], "entity_loops_total": 2}, "validator": {"at": "2026-09-24T19:31:00Z", "errors": 0, "warnings": 1}, "approval": {"rounds": [{"correction": "Batık İskele'nin ikinci girişi denizden olsun", "scope": "entity", "affected_files": 2, "applied": true, "at": "2026-09-24T19:35:00Z"}], "approved_at": "2026-09-24T19:40:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": ["odaları ıslak ve dar tut"], "tokens": {"in": 0, "out": 18300, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 18300}}}, "stale_reason": null},
-    "P7": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p7", "started": "2026-09-24T19:41:00Z", "finished": "2026-09-24T19:49:00Z", "wall_s": 480, "skeleton": {"status": "merged", "agent": "P7.skeleton.a1"}, "critique": {"phase_loops": 1, "verdicts": ["pass"], "entity_loops_total": 2}, "validator": {"at": "2026-09-24T19:49:00Z", "errors": 0, "warnings": 0}, "approval": {"rounds": [], "approved_at": "2026-09-24T19:50:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 9900, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 9900}}}, "stale_reason": null},
-    "P8": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p8", "started": "2026-09-24T19:50:30Z", "finished": "2026-09-24T19:57:00Z", "wall_s": 390, "skeleton": {"status": "merged", "agent": "P8.primer.a1"}, "critique": {"phase_loops": 0, "verdicts": [], "entity_loops_total": 0}, "validator": {"at": "2026-09-24T19:57:00Z", "errors": 0, "warnings": 1}, "approval": {"rounds": [], "approved_at": "2026-09-24T19:58:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 8400, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 8400}}}, "stale_reason": null},
-    "P9": {"status": "approved", "attempt": 1, "workflow_run_id": "wf_p9", "started": "2026-09-24T19:58:30Z", "finished": "2026-09-24T20:00:00Z", "wall_s": 90, "skeleton": {"status": "merged", "agent": "P9.skeleton.a1"}, "critique": {"phase_loops": 1, "verdicts": ["pass"], "entity_loops_total": 2}, "validator": {"at": "2026-09-24T20:00:00Z", "errors": 0, "warnings": 1}, "approval": {"rounds": [], "approved_at": "2026-09-24T20:00:30Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"}, "directions": [], "tokens": {"in": 0, "out": 11200, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 11200}}}, "stale_reason": null}
+    "P0": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": null,
+      "started": "2026-09-24T18:00:30Z",
+      "finished": "2026-09-24T18:02:00Z",
+      "wall_s": 90,
+      "skeleton": {
+        "status": "merged",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": "2026-09-24T18:02:00Z",
+        "errors": 0,
+        "warnings": 0
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T18:02:30Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P1": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p1",
+      "started": "2026-09-24T18:03:00Z",
+      "finished": "2026-09-24T18:09:00Z",
+      "wall_s": 360,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P1.premise.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "pass"
+        ],
+        "entity_loops_total": 1
+      },
+      "validator": {
+        "at": "2026-09-24T18:09:00Z",
+        "errors": 0,
+        "warnings": 0
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T18:12:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 6200,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 6200
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P2": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p2",
+      "started": "2026-09-24T18:20:00Z",
+      "finished": "2026-09-24T18:27:00Z",
+      "wall_s": 420,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P2.cosmos.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "pass"
+        ],
+        "entity_loops_total": 1
+      },
+      "validator": {
+        "at": "2026-09-24T18:27:00Z",
+        "errors": 0,
+        "warnings": 0
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T18:30:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 7100,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 7100
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P3": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p3",
+      "started": "2026-09-24T18:35:00Z",
+      "finished": "2026-09-24T18:44:00Z",
+      "wall_s": 540,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P3.skeleton.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "pass"
+        ],
+        "entity_loops_total": 2
+      },
+      "validator": {
+        "at": "2026-09-24T18:44:00Z",
+        "errors": 0,
+        "warnings": 0
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T18:46:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 9800,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 9800
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P4": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p4",
+      "started": "2026-09-24T18:48:00Z",
+      "finished": "2026-09-24T18:58:00Z",
+      "wall_s": 600,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P4.skeleton.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "fix",
+          "pass"
+        ],
+        "entity_loops_total": 3
+      },
+      "validator": {
+        "at": "2026-09-24T18:58:00Z",
+        "errors": 0,
+        "warnings": 0
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T19:00:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 12400,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 12400
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P5": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p5",
+      "started": "2026-09-24T19:00:30Z",
+      "finished": "2026-09-24T19:09:00Z",
+      "wall_s": 510,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P5.skeleton.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "pass"
+        ],
+        "entity_loops_total": 4
+      },
+      "validator": {
+        "at": "2026-09-24T19:09:00Z",
+        "errors": 0,
+        "warnings": 0
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T19:10:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 15100,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 15100
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P6": {
+      "status": "approved",
+      "attempt": 2,
+      "workflow_run_id": "wf_p6",
+      "started": "2026-09-24T19:10:00Z",
+      "finished": "2026-09-24T19:31:00Z",
+      "wall_s": 1260,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P6.skeleton.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "fix",
+          "pass"
+        ],
+        "entity_loops_total": 2
+      },
+      "validator": {
+        "at": "2026-09-24T19:31:00Z",
+        "errors": 0,
+        "warnings": 1
+      },
+      "approval": {
+        "rounds": [
+          {
+            "correction": "Batık İskele'nin ikinci girişi denizden olsun",
+            "scope": "entity",
+            "affected_files": 2,
+            "applied": true,
+            "at": "2026-09-24T19:35:00Z"
+          }
+        ],
+        "approved_at": "2026-09-24T19:40:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [
+        "odaları ıslak ve dar tut"
+      ],
+      "tokens": {
+        "in": 0,
+        "out": 18300,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 18300
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P7": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p7",
+      "started": "2026-09-24T19:41:00Z",
+      "finished": "2026-09-24T19:49:00Z",
+      "wall_s": 480,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P7.skeleton.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "pass"
+        ],
+        "entity_loops_total": 2
+      },
+      "validator": {
+        "at": "2026-09-24T19:49:00Z",
+        "errors": 0,
+        "warnings": 0
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T19:50:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 9900,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 9900
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P8": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p8",
+      "started": "2026-09-24T19:50:30Z",
+      "finished": "2026-09-24T19:57:00Z",
+      "wall_s": 390,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P8.primer.a1"
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": "2026-09-24T19:57:00Z",
+        "errors": 0,
+        "warnings": 1
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T19:58:00Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 8400,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 8400
+          }
+        }
+      },
+      "stale_reason": null
+    },
+    "P9": {
+      "status": "approved",
+      "attempt": 1,
+      "workflow_run_id": "wf_p9",
+      "started": "2026-09-24T19:58:30Z",
+      "finished": "2026-09-24T20:00:00Z",
+      "wall_s": 90,
+      "skeleton": {
+        "status": "merged",
+        "agent": "P9.skeleton.a1"
+      },
+      "critique": {
+        "phase_loops": 1,
+        "verdicts": [
+          "pass"
+        ],
+        "entity_loops_total": 2
+      },
+      "validator": {
+        "at": "2026-09-24T20:00:00Z",
+        "errors": 0,
+        "warnings": 1
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": "2026-09-24T20:00:30Z",
+        "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "0000000"
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 11200,
+        "cache_read": 0,
+        "by_model": {
+          "claude-fable-5-1": {
+            "in": 0,
+            "out": 11200
+          }
+        }
+      },
+      "stale_reason": null
+    }
   },
   "entities": {
-    "premise_tuzlu_fener": {"phase": "P1", "status": "validated", "file": "design/premise.md", "stage_file": "design/_staging/P1/premise_tuzlu_fener.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P1.premise.a1"},
-    "signature_tuz_hafizasi": {"phase": "P1", "status": "validated", "file": "design/premise.md", "stage_file": "design/_staging/P1/premise_tuzlu_fener.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P1.premise.a1"},
-    "signature_tuzbagli": {"phase": "P1", "status": "validated", "file": "design/premise.md", "stage_file": "design/_staging/P1/premise_tuzlu_fener.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P1.premise.a1"},
-    "signature_divan": {"phase": "P1", "status": "validated", "file": "design/premise.md", "stage_file": "design/_staging/P1/premise_tuzlu_fener.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P1.premise.a1"},
-    "break_no_afterlife": {"phase": "P1", "status": "validated", "file": "design/premise.md", "stage_file": "design/_staging/P1/premise_tuzlu_fener.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P1.premise.a1"},
-    "god_velune": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P2.cosmos.a1"},
-    "god_ormis": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P2.cosmos.a1"},
-    "god_isken": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P2.cosmos.a1"},
-    "plane_dipsiz": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "era_tufan": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "era_fenerler": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "era_sessizlik": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "event_buyuk_tufan": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "event_divan_kurulusu": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "event_fener_sondu": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "event_kayip_gemi": {"phase": "P2", "status": "validated", "file": "design/cosmology.md", "stage_file": "design/_staging/P2/cosmos.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P2.cosmos.a1"},
-    "polity_sazlik": {"phase": "P3", "status": "validated", "file": "design/regions/region_tuz_ovasi.md", "stage_file": "design/_staging/P3/region_tuz_ovasi.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.skeleton.a1"},
-    "region_tuz_ovasi": {"phase": "P3", "status": "validated", "file": "design/regions/region_tuz_ovasi.md", "stage_file": "design/_staging/P3/region_tuz_ovasi.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P3.region_tuz_ovasi.a1"},
-    "settlement_fenerli": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "settlement_kamisli": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_kamisli.md", "stage_file": "design/_staging/P3/settlement_kamisli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.villages.a1"},
-    "district_iskele": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "district_yukari": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "place_yorgun_marti": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "place_divan_evi": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "place_bey_konagi": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "place_tuz_pazari": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "place_velune_tapinagi": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "place_tuz_evi": {"phase": "P3", "status": "validated", "file": "design/settlements/settlement_fenerli.md", "stage_file": "design/_staging/P3/settlement_fenerli.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P3.settlement_fenerli.a1"},
-    "faction_beylik": {"phase": "P4", "status": "validated", "file": "design/factions/faction_beylik.md", "stage_file": "design/_staging/P4/faction_beylik.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P4.faction_beylik.a1"},
-    "faction_divan": {"phase": "P4", "status": "validated", "file": "design/factions/faction_divan.md", "stage_file": "design/_staging/P4/faction_divan.json", "attempt": 1, "critique_loops": 2, "last_error": null, "agent": "P4.faction_divan.a1"},
-    "faction_kacakcilar": {"phase": "P4", "status": "validated", "file": "design/factions/faction_kacakcilar.md", "stage_file": "design/_staging/P4/faction_kacakcilar.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P4.faction_kacakcilar.a1"},
-    "npc_s01": {"phase": "P4", "status": "validated", "file": "design/dm-only/npcs/npc_s01.md", "stage_file": "design/_staging/P4/npc_s01.json", "attempt": 1, "critique_loops": 2, "last_error": null, "agent": "P4.npc_s01.a1"},
-    "npc_sarven": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_sarven.md", "stage_file": "design/_staging/P5/npc_sarven.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P5.npc_sarven.a1"},
-    "npc_olmar": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_olmar.md", "stage_file": "design/_staging/P5/minors_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P5.minors_1.a1"},
-    "npc_ilme": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_ilme.md", "stage_file": "design/_staging/P5/npc_ilme.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P5.npc_ilme.a1"},
-    "npc_tolvan": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_tolvan.md", "stage_file": "design/_staging/P5/npc_tolvan.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P5.npc_tolvan.a1"},
-    "npc_yesra": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_yesra.md", "stage_file": "design/_staging/P5/npc_yesra.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P5.npc_yesra.a1"},
-    "npc_draskun": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_draskun.md", "stage_file": "design/_staging/P5/npc_draskun.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P5.npc_draskun.a1"},
-    "npc_kortan": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_kortan.md", "stage_file": "design/_staging/P5/minors_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P5.minors_1.a1"},
-    "npc_ameli": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_ameli.md", "stage_file": "design/_staging/P5/minors_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P5.minors_1.a1"},
-    "site_batik_iskele": {"phase": "P6", "status": "validated", "file": "design/sites/site_batik_iskele.md", "stage_file": "design/_staging/P6/site_batik_iskele.json", "attempt": 2, "critique_loops": 1, "last_error": null, "agent": "P6.site_batik_iskele.a2"},
-    "site_gelgit_magarasi": {"phase": "P6", "status": "validated", "file": "design/sites/site_gelgit_magarasi.md", "stage_file": "design/_staging/P6/skeleton.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P6.skeleton.a1"},
-    "site_kor_fener": {"phase": "P6", "status": "validated", "file": "design/sites/site_kor_fener.md", "stage_file": "design/_staging/P6/skeleton.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P6.skeleton.a1"},
-    "site_dipsiz_kuyu": {"phase": "P6", "status": "validated", "file": "design/sites/site_dipsiz_kuyu.md", "stage_file": "design/_staging/P6/skeleton.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P6.skeleton.a1"},
-    "item_tuz_defteri": {"phase": "P6", "status": "validated", "file": "design/sites/site_batik_iskele.md", "stage_file": "design/_staging/P6/site_batik_iskele.json", "attempt": 2, "critique_loops": 0, "last_error": null, "agent": "P6.site_batik_iskele.a2"},
-    "item_kandil_muhru": {"phase": "P6", "status": "validated", "file": "design/sites/site_kor_fener.md", "stage_file": "design/_staging/P6/skeleton.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P6.skeleton.a1"},
-    "creature_tuzbagli": {"phase": "P6", "status": "validated", "file": "design/sites/site_dipsiz_kuyu.md", "stage_file": "design/_staging/P6/skeleton.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P6.skeleton.a1"},
-    "arc_1": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P7.skeleton.a1"},
-    "chapter_1": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_1.md", "stage_file": "design/_staging/P7/chapter_1.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P7.chapter_1.a1"},
-    "chapter_2": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_2.md", "stage_file": "design/_staging/P7/chapter_2.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.chapter_2.a1"},
-    "node_c1_marti": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_1.md", "stage_file": "design/_staging/P7/chapter_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.chapter_1.a1"},
-    "node_c1_iskele": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_1.md", "stage_file": "design/_staging/P7/chapter_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.chapter_1.a1"},
-    "node_c1_divan": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_1.md", "stage_file": "design/_staging/P7/chapter_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.chapter_1.a1"},
-    "node_c2_gelgit": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_2.md", "stage_file": "design/_staging/P7/chapter_2.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.chapter_2.a1"},
-    "node_c2_fener": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_2.md", "stage_file": "design/_staging/P7/chapter_2.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.chapter_2.a1"},
-    "node_c2_kamisli": {"phase": "P7", "status": "validated", "file": "design/chapters/chapter_2.md", "stage_file": "design/_staging/P7/chapter_2.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.chapter_2.a1"},
-    "beat_1a": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.skeleton.a1"},
-    "beat_1b": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.skeleton.a1"},
-    "beat_1c": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.skeleton.a1"},
-    "seed_martinin_borcu": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/seeds_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.seeds_1.a1"},
-    "seed_kamisli_sessizligi": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/seeds_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.seeds_1.a1"},
-    "socket_borc": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.skeleton.a1"},
-    "socket_kayip_gemi": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.skeleton.a1"},
-    "socket_divan_egitimi": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.skeleton.a1"},
-    "socket_tuz_okuma": {"phase": "P7", "status": "validated", "file": "design/arc.md", "stage_file": "design/_staging/P7/arc_1.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P7.skeleton.a1"},
-    "thread_selen": {"phase": "P9", "status": "validated", "file": "design/threads/thread_selen.md", "stage_file": "design/_staging/P9/thread_selen.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P9.thread_selen.a1"},
-    "thread_vorin": {"phase": "P9", "status": "validated", "file": "design/threads/thread_vorin.md", "stage_file": "design/_staging/P9/thread_vorin.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P9.thread_vorin.a1"},
-    "pc_selen": {"phase": "P9", "status": "validated", "file": "characters/Selen.md", "stage_file": "design/_staging/P9/skeleton.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P9.skeleton.a1"},
-    "pc_vorin": {"phase": "P9", "status": "validated", "file": "characters/Vorin Tegrik.md", "stage_file": "design/_staging/P9/skeleton.json", "attempt": 1, "critique_loops": 0, "last_error": null, "agent": "P9.skeleton.a1"}
+    "premise_tuzlu_fener": {
+      "phase": "P1",
+      "status": "validated",
+      "file": "design/premise.md",
+      "stage_file": "design/_staging/P1/premise_tuzlu_fener.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P1.premise.a1"
+    },
+    "signature_tuz_hafizasi": {
+      "phase": "P1",
+      "status": "validated",
+      "file": "design/premise.md",
+      "stage_file": "design/_staging/P1/premise_tuzlu_fener.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P1.premise.a1"
+    },
+    "signature_tuzbagli": {
+      "phase": "P1",
+      "status": "validated",
+      "file": "design/premise.md",
+      "stage_file": "design/_staging/P1/premise_tuzlu_fener.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P1.premise.a1"
+    },
+    "signature_divan": {
+      "phase": "P1",
+      "status": "validated",
+      "file": "design/premise.md",
+      "stage_file": "design/_staging/P1/premise_tuzlu_fener.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P1.premise.a1"
+    },
+    "break_no_afterlife": {
+      "phase": "P1",
+      "status": "validated",
+      "file": "design/premise.md",
+      "stage_file": "design/_staging/P1/premise_tuzlu_fener.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P1.premise.a1"
+    },
+    "god_velune": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "god_ormis": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "god_isken": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "plane_dipsiz": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "era_tufan": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "era_fenerler": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "era_sessizlik": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "event_buyuk_tufan": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "event_divan_kurulusu": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "event_fener_sondu": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "event_kayip_gemi": {
+      "phase": "P2",
+      "status": "validated",
+      "file": "design/cosmology.md",
+      "stage_file": "design/_staging/P2/cosmos.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P2.cosmos.a1"
+    },
+    "polity_sazlik": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/regions/region_tuz_ovasi.md",
+      "stage_file": "design/_staging/P3/region_tuz_ovasi.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.skeleton.a1"
+    },
+    "region_tuz_ovasi": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/regions/region_tuz_ovasi.md",
+      "stage_file": "design/_staging/P3/region_tuz_ovasi.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P3.region_tuz_ovasi.a1"
+    },
+    "settlement_fenerli": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "settlement_kamisli": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_kamisli.md",
+      "stage_file": "design/_staging/P3/settlement_kamisli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.villages.a1"
+    },
+    "district_iskele": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "district_yukari": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "place_yorgun_marti": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "place_divan_evi": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "place_bey_konagi": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "place_tuz_pazari": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "place_velune_tapinagi": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "place_tuz_evi": {
+      "phase": "P3",
+      "status": "validated",
+      "file": "design/settlements/settlement_fenerli.md",
+      "stage_file": "design/_staging/P3/settlement_fenerli.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P3.settlement_fenerli.a1"
+    },
+    "faction_beylik": {
+      "phase": "P4",
+      "status": "validated",
+      "file": "design/factions/faction_beylik.md",
+      "stage_file": "design/_staging/P4/faction_beylik.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P4.faction_beylik.a1"
+    },
+    "faction_divan": {
+      "phase": "P4",
+      "status": "validated",
+      "file": "design/factions/faction_divan.md",
+      "stage_file": "design/_staging/P4/faction_divan.json",
+      "attempt": 1,
+      "critique_loops": 2,
+      "last_error": null,
+      "agent": "P4.faction_divan.a1"
+    },
+    "faction_kacakcilar": {
+      "phase": "P4",
+      "status": "validated",
+      "file": "design/factions/faction_kacakcilar.md",
+      "stage_file": "design/_staging/P4/faction_kacakcilar.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P4.faction_kacakcilar.a1"
+    },
+    "npc_s01": {
+      "phase": "P4",
+      "status": "validated",
+      "file": "design/dm-only/npcs/npc_s01.md",
+      "stage_file": "design/_staging/P4/npc_s01.json",
+      "attempt": 1,
+      "critique_loops": 2,
+      "last_error": null,
+      "agent": "P4.npc_s01.a1"
+    },
+    "npc_sarven": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_sarven.md",
+      "stage_file": "design/_staging/P5/npc_sarven.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P5.npc_sarven.a1"
+    },
+    "npc_olmar": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_olmar.md",
+      "stage_file": "design/_staging/P5/minors_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P5.minors_1.a1"
+    },
+    "npc_ilme": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_ilme.md",
+      "stage_file": "design/_staging/P5/npc_ilme.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P5.npc_ilme.a1"
+    },
+    "npc_tolvan": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_tolvan.md",
+      "stage_file": "design/_staging/P5/npc_tolvan.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P5.npc_tolvan.a1"
+    },
+    "npc_yesra": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_yesra.md",
+      "stage_file": "design/_staging/P5/merged/npc_yesra.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P5.npc_yesra.a1"
+    },
+    "npc_draskun": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_draskun.md",
+      "stage_file": "design/_staging/P5/npc_draskun.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P5.npc_draskun.a1"
+    },
+    "npc_kortan": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_kortan.md",
+      "stage_file": "design/_staging/P5/minors_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P5.minors_1.a1"
+    },
+    "npc_ameli": {
+      "phase": "P5",
+      "status": "validated",
+      "file": "design/npcs/npc_ameli.md",
+      "stage_file": "design/_staging/P5/minors_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P5.minors_1.a1"
+    },
+    "site_batik_iskele": {
+      "phase": "P6",
+      "status": "validated",
+      "file": "design/sites/site_batik_iskele.md",
+      "stage_file": "design/_staging/P6/merged/site_batik_iskele.json",
+      "attempt": 2,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P6.site_batik_iskele.a2"
+    },
+    "site_gelgit_magarasi": {
+      "phase": "P6",
+      "status": "validated",
+      "file": "design/sites/site_gelgit_magarasi.md",
+      "stage_file": "design/_staging/P6/skeleton.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P6.skeleton.a1"
+    },
+    "site_kor_fener": {
+      "phase": "P6",
+      "status": "validated",
+      "file": "design/sites/site_kor_fener.md",
+      "stage_file": "design/_staging/P6/skeleton.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P6.skeleton.a1"
+    },
+    "site_dipsiz_kuyu": {
+      "phase": "P6",
+      "status": "validated",
+      "file": "design/sites/site_dipsiz_kuyu.md",
+      "stage_file": "design/_staging/P6/skeleton.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P6.skeleton.a1"
+    },
+    "item_tuz_defteri": {
+      "phase": "P6",
+      "status": "validated",
+      "file": "design/sites/site_batik_iskele.md",
+      "stage_file": "design/_staging/P6/merged/site_batik_iskele.json",
+      "attempt": 2,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P6.site_batik_iskele.a2"
+    },
+    "item_kandil_muhru": {
+      "phase": "P6",
+      "status": "validated",
+      "file": "design/sites/site_kor_fener.md",
+      "stage_file": "design/_staging/P6/skeleton.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P6.skeleton.a1"
+    },
+    "creature_tuzbagli": {
+      "phase": "P6",
+      "status": "validated",
+      "file": "design/sites/site_dipsiz_kuyu.md",
+      "stage_file": "design/_staging/P6/skeleton.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P6.skeleton.a1"
+    },
+    "arc_1": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "chapter_1": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_1.md",
+      "stage_file": "design/_staging/P7/chapter_1.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P7.chapter_1.a1"
+    },
+    "chapter_2": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_2.md",
+      "stage_file": "design/_staging/P7/chapter_2.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.chapter_2.a1"
+    },
+    "node_c1_marti": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_1.md",
+      "stage_file": "design/_staging/P7/chapter_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.chapter_1.a1"
+    },
+    "node_c1_iskele": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_1.md",
+      "stage_file": "design/_staging/P7/chapter_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.chapter_1.a1"
+    },
+    "node_c1_divan": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_1.md",
+      "stage_file": "design/_staging/P7/chapter_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.chapter_1.a1"
+    },
+    "node_c2_gelgit": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_2.md",
+      "stage_file": "design/_staging/P7/chapter_2.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.chapter_2.a1"
+    },
+    "node_c2_fener": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_2.md",
+      "stage_file": "design/_staging/P7/chapter_2.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.chapter_2.a1"
+    },
+    "node_c2_kamisli": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/chapters/chapter_2.md",
+      "stage_file": "design/_staging/P7/chapter_2.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.chapter_2.a1"
+    },
+    "beat_1a": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "beat_1b": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "beat_1c": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "seed_martinin_borcu": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/seeds_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.seeds_1.a1"
+    },
+    "seed_kamisli_sessizligi": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/seeds_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.seeds_1.a1"
+    },
+    "socket_borc": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "socket_kayip_gemi": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "socket_divan_egitimi": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "socket_tuz_okuma": {
+      "phase": "P7",
+      "status": "validated",
+      "file": "design/arc.md",
+      "stage_file": "design/_staging/P7/arc_1.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P7.skeleton.a1"
+    },
+    "thread_selen": {
+      "phase": "P9",
+      "status": "validated",
+      "file": "design/threads/thread_selen.md",
+      "stage_file": "design/_staging/P9/thread_selen.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P9.thread_selen.a1"
+    },
+    "thread_vorin": {
+      "phase": "P9",
+      "status": "validated",
+      "file": "design/threads/thread_vorin.md",
+      "stage_file": "design/_staging/P9/thread_vorin.json",
+      "attempt": 1,
+      "critique_loops": 1,
+      "last_error": null,
+      "agent": "P9.thread_vorin.a1"
+    },
+    "pc_selen": {
+      "phase": "P9",
+      "status": "validated",
+      "file": "characters/Selen.md",
+      "stage_file": "design/_staging/P9/skeleton.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P9.skeleton.a1"
+    },
+    "pc_vorin": {
+      "phase": "P9",
+      "status": "validated",
+      "file": "characters/Vorin Tegrik.md",
+      "stage_file": "design/_staging/P9/skeleton.json",
+      "attempt": 1,
+      "critique_loops": 0,
+      "last_error": null,
+      "agent": "P9.skeleton.a1"
+    }
   },
   "seeded": [
     "calendar:init",
-    "factions:faction_beylik", "factions:faction_divan", "factions:faction_kacakcilar",
-    "goals:npc_s01", "goals:npc_draskun", "goals:pc_selen", "goals:pc_vorin",
-    "graph:node:faction_beylik", "graph:node:faction_divan", "graph:node:faction_kacakcilar",
-    "graph:node:npc_sarven", "graph:node:npc_olmar", "graph:node:npc_ilme", "graph:node:npc_s01", "graph:node:npc_tolvan", "graph:node:npc_yesra", "graph:node:npc_draskun", "graph:node:npc_kortan", "graph:node:npc_ameli",
-    "graph:node:settlement_fenerli", "graph:node:settlement_kamisli", "graph:node:place_yorgun_marti", "graph:node:place_divan_evi",
-    "graph:node:site_batik_iskele", "graph:node:site_gelgit_magarasi", "graph:node:site_kor_fener", "graph:node:site_dipsiz_kuyu",
-    "graph:node:thread_selen", "graph:node:thread_vorin", "graph:node:pc_selen", "graph:node:pc_vorin",
-    "graph:edge:e1", "graph:edge:e2", "graph:edge:e3", "graph:edge:e4", "graph:edge:e5", "graph:edge:e6", "graph:edge:e7", "graph:edge:e8", "graph:edge:e9", "graph:edge:e10", "graph:edge:e11", "graph:edge:e12", "graph:edge:e13", "graph:edge:e14", "graph:edge:e15", "graph:edge:e16", "graph:edge:e17", "graph:edge:e18", "graph:edge:e19", "graph:edge:e20", "graph:edge:e21", "graph:edge:e22", "graph:edge:e23", "graph:edge:e24", "graph:edge:e25", "graph:edge:e26", "graph:edge:e27",
-    "channels:ch_divan_ic", "channels:ch_bey_meclis", "channels:ch_kardeslik_dugum",
+    "factions:faction_beylik",
+    "factions:faction_divan",
+    "factions:faction_kacakcilar",
+    "goals:npc_s01",
+    "goals:npc_draskun",
+    "goals:pc_selen",
+    "goals:pc_vorin",
+    "graph:node:faction_beylik",
+    "graph:node:faction_divan",
+    "graph:node:faction_kacakcilar",
+    "graph:node:npc_sarven",
+    "graph:node:npc_olmar",
+    "graph:node:npc_ilme",
+    "graph:node:npc_s01",
+    "graph:node:npc_tolvan",
+    "graph:node:npc_yesra",
+    "graph:node:npc_draskun",
+    "graph:node:npc_kortan",
+    "graph:node:npc_ameli",
+    "graph:node:settlement_fenerli",
+    "graph:node:settlement_kamisli",
+    "graph:node:place_yorgun_marti",
+    "graph:node:place_divan_evi",
+    "graph:node:site_batik_iskele",
+    "graph:node:site_gelgit_magarasi",
+    "graph:node:site_kor_fener",
+    "graph:node:site_dipsiz_kuyu",
+    "graph:node:thread_selen",
+    "graph:node:thread_vorin",
+    "graph:node:pc_selen",
+    "graph:node:pc_vorin",
+    "graph:edge:e1",
+    "graph:edge:e2",
+    "graph:edge:e3",
+    "graph:edge:e4",
+    "graph:edge:e5",
+    "graph:edge:e6",
+    "graph:edge:e7",
+    "graph:edge:e8",
+    "graph:edge:e9",
+    "graph:edge:e10",
+    "graph:edge:e11",
+    "graph:edge:e12",
+    "graph:edge:e13",
+    "graph:edge:e14",
+    "graph:edge:e15",
+    "graph:edge:e16",
+    "graph:edge:e17",
+    "graph:edge:e18",
+    "graph:edge:e19",
+    "graph:edge:e20",
+    "graph:edge:e21",
+    "graph:edge:e22",
+    "graph:edge:e23",
+    "graph:edge:e24",
+    "graph:edge:e25",
+    "graph:edge:e26",
+    "graph:edge:e27",
+    "channels:ch_divan_ic",
+    "channels:ch_bey_meclis",
+    "channels:ch_kardeslik_dugum",
     "site_progress:site_batik_iskele",
-    "names:Sarven", "names:Olmar", "names:İlme Kandilci", "names:Tolvan", "names:Yesra Tuzokur", "names:Draskun", "names:Kortan", "names:Ameli", "names:Selen", "names:Vorin Tegrik"
+    "names:Sarven",
+    "names:Olmar",
+    "names:İlme Kandilci",
+    "names:Tolvan",
+    "names:Yesra Tuzokur",
+    "names:Draskun",
+    "names:Kortan",
+    "names:Ameli",
+    "names:Selen",
+    "names:Vorin Tegrik"
   ],
   "detail_log": [],
   "revision_log": [
-    {"at": "2026-09-24T19:35:00Z", "scope": "entity", "phase": "P6", "reason": "Batık İskele'nin ikinci girişi denizden olsun", "affected": 2, "commit": "0000000"}
+    {
+      "at": "2026-09-24T19:35:00Z",
+      "scope": "entity",
+      "phase": "P6",
+      "reason": "Batık İskele'nin ikinci girişi denizden olsun",
+      "affected": 2,
+      "commit": "0000000"
+    }
   ],
   "ask_log": [],
-  "totals": {"tokens_in": 0, "tokens_out": 98400, "cache_read": 0, "wall_s": 5400, "agents": 31},
-  "validator_last": {"at": "2026-09-24T20:00:00Z", "errors": 0, "warnings": 1}
+  "totals": {
+    "tokens_in": 0,
+    "tokens_out": 98400,
+    "cache_read": 0,
+    "wall_s": 5400,
+    "agents": 31
+  },
+  "validator_last": {
+    "at": "2026-09-24T20:00:00Z",
+    "errors": 0,
+    "warnings": 1
+  }
 }
