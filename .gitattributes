@@ -1,0 +1,5 @@
+# The DM-only half of a designed campaign never appears in a diff, so a
+# `git diff` or `git show` in the play tab cannot leak a secret to the
+# owner-player (plan risk 24.1 #11). The files are still versioned; use
+# `git diff --text` deliberately when a dm-only diff is really wanted.
+**/design/dm-only/** -diff

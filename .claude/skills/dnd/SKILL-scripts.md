@@ -530,6 +530,23 @@ long/short rest, travel pace, hiding and unseen attackers, traps, madness. Rebui
 
 ---
 
+## Entity Registry — `scripts/registry.py` (designed campaigns)
+
+The registry is the catalogue of everything a designed campaign contains (plan item 3; `docs/schemas/entities.md`). Two files: the **canonical** registry at `design/dm-only/entities.json`, which the play tab never opens, and its **public projection** at `design/entities.json`, regenerated on every write by two mechanical rules (drop every `secret` entity, drop every `dm_only` object). Stamped fields are frozen at birth; their birth values sit in `design/dm-only/_snapshots/stamps.json`. Play-time truth (status, seen_in_play, alive, location, ruler, control) lives in `design/overlay.json`, never in the registry.
+
+```bash
+py registry.py -c <campaign> show <id>                   # one entity, public projection
+py registry.py -c <campaign> list [--type npc] [--secrecy discoverable]
+py registry.py -c <campaign> play-set <id> <field> <value> --day <N> --reason "<why>" [--news news_0012]
+py registry.py -c <campaign> add --type place --name "<name>" --summary "<one line>"   # a place improvised in play
+py registry.py -c <campaign> check-stamps                # exit 1 if any stamped field drifted from birth
+```
+
+- `play-set` is the DM's only pen on a designed entity: `alive` (alive / threatened / wounded / fled / captured / dead), `location`, `ruler`, `control` (a faction id, `party`, or `null`), `status` (sites and settlements), `seen_in_play`. A stamped field is refused: the bible is not rewritten in play.
+- `add` registers a place, NPC or site that appeared in play (`--origin play`) so the index and the validator can see it; a site added this way starts as `played-improvised` and is backfilled by `detail` at `end`.
+- `merge --phase PN [--revise LOG_ID]`, `project` and `export --public` belong to the designer's conductor, not to a play session. `merge` refuses a change to any stamped field without a revision id and writes nothing when any fragment is bad.
+- Never `cat` the canonical file or the `_snapshots` folder in a play tab; `show` without `--dm` reads the projection.
+
 ## Solo Boss Nova-Ceiling — `scripts/burst_check.py`
 
 For a deliberately-unfinalized solo boss (see `SKILL-combat.md`) — sums every PC's own `## Burst Reference` table into a party-wide "worst case, one round, one target" figure, and checks it against a boss's HP.
