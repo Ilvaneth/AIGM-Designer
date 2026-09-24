@@ -1,4 +1,7 @@
 {
+  "env": {
+    "DND_CAMPAIGN_ROOT": "C:/Users/armag/Desktop/Campaign-Designer"
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -6,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py \"C:/Users/armag/Desktop/Ashen-Crown_New_DM/.claude/skills/dnd/scripts/hooks/dice_guard.py\""
+            "command": "py \"C:/Users/armag/Desktop/Campaign-Designer/.claude/skills/dnd/scripts/hooks/dice_guard.py\""
           }
         ]
       },
@@ -15,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py \"C:/Users/armag/Desktop/Ashen-Crown_New_DM/.claude/skills/dnd/scripts/hooks/skill_edit_guard.py\""
+            "command": "py \"C:/Users/armag/Desktop/Campaign-Designer/.claude/skills/dnd/scripts/hooks/skill_edit_guard.py\""
           }
         ]
       }

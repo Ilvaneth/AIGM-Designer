@@ -6,3 +6,6 @@ __pycache__/
 
 # Nested clone of this same repo — not project content
 /AIGM/
+
+# Generated test campaigns (plan item 22.6)
+campaigns/_test-*/
