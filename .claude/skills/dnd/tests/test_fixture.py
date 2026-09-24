@@ -260,7 +260,7 @@ class Stores(unittest.TestCase):
                 self.assertTrue(other == "party" or other in self.ents, other)
             self.assertEqual(set(f["reactions"]), {"alliance", "loss", "gain", "exposure", "death", "betrayal"})
             self.assertGreaterEqual(len(f["operation"]["steps"]), 2)
-        for g in load(FIX / "goals.json"):
+        for g in load(FIX / "goals.json")["goals"]:
             self.assertIn(g["id"], self.ents, g["id"])
             self.assertEqual(set(g["responses"]), {"threatened", "blocked", "permanent_loss"})
         graph = load(FIX / "graph.json")

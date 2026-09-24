@@ -46,6 +46,8 @@ for _stream in (sys.stdout, sys.stderr):
             pass
 
 from paths import find_campaign as _find_campaign
+from design_io import stamp_meta as _stamp_meta, write_json_atomic as _write_json_atomic
+from pathlib import Path as _Path
 
 CHANNEL_TYPES = ["sending-stone", "private-meeting", "letter", "spell", "other"]
 
@@ -63,8 +65,8 @@ def _load(campaign: str) -> dict:
 
 
 def _save(campaign: str, data: dict) -> None:
-    with open(_path(campaign), "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=1, ensure_ascii=False)
+    _stamp_meta(data, campaign, "channels.py")
+    _write_json_atomic(_Path(_path(campaign)), data, indent=1)
 
 
 def _find(data: dict, cid: str):

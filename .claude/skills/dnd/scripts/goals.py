@@ -11,7 +11,7 @@ Each record in goals.json:
   {
     "id": "sarelle",                 # slug, matches npcs-full.md entry
     "name": "Sarelle Duskbourne",
-    "kind": "npc" | "faction",
+    "kind": "npc" | "faction" | "pc",   # pc: a player character's mission (plan item 12)
     "goal": "one-sentence goal",
     "metric_type": "numeric" | "boolean",
     "metric_label": "Crown parçası",  # numeric only
@@ -67,13 +67,16 @@ def _load(campaign: str) -> list[dict]:
     p = _goals_path(campaign)
     if not p.exists():
         return []
-    return json.loads(p.read_text(encoding="utf-8"))
+    data = json.loads(p.read_text(encoding="utf-8"))
+    # Legacy form is a bare list; the store form carries _meta (plan item 19.3).
+    return data if isinstance(data, list) else list(data.get("goals", []))
 
 
 def _save(campaign: str, records: list[dict]) -> None:
-    p = _goals_path(campaign)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(records, indent=2, ensure_ascii=False), encoding="utf-8")
+    from design_io import stamp_meta, write_json_atomic
+    data = {"_meta": {}, "goals": records}
+    stamp_meta(data, campaign, "goals.py")
+    write_json_atomic(_goals_path(campaign), data)
 
 
 def _find(records: list[dict], rid: str) -> dict | None:
@@ -247,7 +250,7 @@ def main():
 
     p = sub.add_parser("list")
     p.add_argument("--campaign", required=True)
-    p.add_argument("--kind", choices=["npc", "faction"])
+    p.add_argument("--kind", choices=["npc", "faction", "pc"])
     p.set_defaults(func=cmd_list)
 
     p = sub.add_parser("show")
@@ -259,7 +262,7 @@ def main():
     p.add_argument("--campaign", required=True)
     p.add_argument("--id", required=True)
     p.add_argument("--name", required=True)
-    p.add_argument("--kind", required=True, choices=["npc", "faction"])
+    p.add_argument("--kind", required=True, choices=["npc", "faction", "pc"])
     p.add_argument("--goal", required=True)
     p.add_argument("--metric-type", required=True, choices=["numeric", "boolean"])
     p.add_argument("--target", type=int)
@@ -293,7 +296,7 @@ def main():
 
     p = sub.add_parser("check")
     p.add_argument("--campaign", required=True)
-    p.add_argument("--kind", choices=["npc", "faction"])
+    p.add_argument("--kind", choices=["npc", "faction", "pc"])
     p.set_defaults(func=cmd_check)
 
     args = ap.parse_args()

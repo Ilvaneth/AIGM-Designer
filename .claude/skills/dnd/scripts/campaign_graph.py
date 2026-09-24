@@ -100,10 +100,9 @@ def _load(campaign: str) -> dict:
 
 
 def _save(campaign: str, data: dict) -> None:
-    p = _graph_path(campaign)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    from design_io import stamp_meta, write_json_atomic
+    stamp_meta(data, campaign, "campaign_graph.py")
+    write_json_atomic(_graph_path(campaign), data)
 
 
 # -------- disposition / standing vocabulary --------

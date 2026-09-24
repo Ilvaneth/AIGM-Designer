@@ -464,6 +464,16 @@ def append_roll(campaign: str, record: dict, secret: bool = False) -> None:
     save(campaign, data, "design_manifest.py roll")
 
 
+def mark_seeded(campaign: str, keys: list[str]) -> int:
+    """Append idempotency-ledger keys (`<store>:<id>`); returns how many were new."""
+    data = load(campaign)
+    new = [k for k in keys if k and k not in data["seeded"]]
+    data["seeded"].extend(new)
+    if new:
+        save(campaign, data, "design_manifest.py seeded")
+    return len(new)
+
+
 def ask(campaign: str, a) -> int:
     if a.answer not in ANSWERS:
         print(f"design_manifest: answer must be one of {ANSWERS}", file=sys.stderr)
@@ -632,6 +642,10 @@ def main(argv=None) -> int:
     sm = sub.add_parser("set-mode")
     sm.add_argument("mode")
 
+    sd = sub.add_parser("seeded", help="the idempotency ledger design_seed.py consults")
+    sd.add_argument("--add", help="comma-separated keys")
+    sd.add_argument("--list", action="store_true")
+
     s = sub.add_parser("status")
     s.add_argument("--json", action="store_true")
 
@@ -666,6 +680,14 @@ def main(argv=None) -> int:
         return revision(c, a)
     if a.cmd == "set-mode":
         return set_mode(c, a.mode)
+    if a.cmd == "seeded":
+        if a.add:
+            n = mark_seeded(c, [k.strip() for k in a.add.split(",")])
+            print(f"design_manifest: {n} new key(s) in the seeded ledger")
+        else:
+            for k in load(c)["seeded"]:
+                print(f"  {k}")
+        return 0
     if a.cmd == "status":
         return status(c, a.json)
     return 2
