@@ -114,8 +114,11 @@ def parse_notation(notation: str):
     return num_dice, die_size, modifier, keep_mode, keep_count, adv, dis
 
 
-def roll_dice(num_dice, die_size):
-    return [random.randint(1, die_size) for _ in range(num_dice)]
+def roll_dice(num_dice, die_size, rng=None):
+    """Roll `num_dice` d`die_size`. `rng` is any object with randint(); the designer
+    passes a seeded random.Random so a birth is reproducible (plan item 19.9)."""
+    r = rng or random
+    return [r.randint(1, die_size) for _ in range(num_dice)]
 
 
 def format_modifier(mod):
@@ -124,12 +127,12 @@ def format_modifier(mod):
     return f" + {mod}" if mod > 0 else f" - {abs(mod)}"
 
 
-def run(notation: str, silent: bool = False, label: str = "") -> int:
+def run(notation: str, silent: bool = False, label: str = "", rng=None) -> int:
     num_dice, die_size, modifier, keep_mode, keep_count, adv, dis = parse_notation(notation)
 
     if adv or dis:
-        roll_a = roll_dice(num_dice, die_size)
-        roll_b = roll_dice(num_dice, die_size)
+        roll_a = roll_dice(num_dice, die_size, rng)
+        roll_b = roll_dice(num_dice, die_size, rng)
         total_a = sum(roll_a) + modifier
         total_b = sum(roll_b) + modifier
         chosen = max(total_a, total_b) if adv else min(total_a, total_b)
@@ -141,7 +144,7 @@ def run(notation: str, silent: bool = False, label: str = "") -> int:
             print(f"Takes roll {taken} → Total: {chosen}")
         return chosen
 
-    rolls = roll_dice(num_dice, die_size)
+    rolls = roll_dice(num_dice, die_size, rng)
 
     if keep_mode and keep_count:
         sorted_rolls = sorted(rolls, reverse=(keep_mode == 'kh'))
