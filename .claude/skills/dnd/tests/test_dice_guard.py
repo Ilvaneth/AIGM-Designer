@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
 """
 test_dice_guard.py — cases for the dice-ownership PreToolUse hook.
-
-Run:  python3 test_dice_guard.py
 
 The cases live in this file rather than on a command line on purpose: the hook
 inspects raw Bash command text, so passing them as arguments would trip the
@@ -12,14 +9,19 @@ Each case is (command, should_block, label). "should_block" is what the hook
 must do with that command; the live failures from sessions 22-36 are in here as
 regression cases, so a future refactor that quietly loosens the guard fails
 loudly instead.
+
+Self-contained: the hook runs from a throwaway project whose active campaign
+carries the two PCs the regression cases name. Before this the four PC cases
+only passed on a machine where Ashen Crown was the active campaign.
 """
 
-import json
-import subprocess
-import sys
+import shutil
+import tempfile
+import unittest
 from pathlib import Path
 
-GUARD = Path(__file__).resolve().parent / "dice_guard.py"
+from _layouts import add_campaign, bash_payload, clean_env, make_project, run_hook, skill_of
+
 S = "py .claude/skills/dnd/scripts/dice.py"
 
 CASES = [
@@ -64,27 +66,47 @@ CASES = [
 ]
 
 
-def main() -> int:
-    failures = 0
-    for command, should_block, label in CASES:
-        result = subprocess.run(
-            [sys.executable, str(GUARD)],
-            input=json.dumps({"tool_name": "Bash", "tool_input": {"command": command}}),
-            capture_output=True, text=True,
-        )
-        blocked = result.returncode == 2
-        ok = blocked == should_block
-        failures += not ok
-        verdict = "ok  " if ok else "FAIL"
-        expected = "block" if should_block else "pass "
-        print(f"  [{verdict}] expected {expected} — {label}")
-        if not ok and result.stderr:
-            print(f"         {result.stderr.strip()[:160]}")
+class DiceGuard(unittest.TestCase):
 
-    total = len(CASES)
-    print(f"\n  {total - failures}/{total} passed")
-    return 1 if failures else 0
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = Path(tempfile.mkdtemp(prefix="dnd-dice-guard-"))
+        cls.project = make_project(cls.tmp, "table", campaign="live", session="open",
+                                   pcs=["Kriv Shestendeliath", "Ilvaneth Duskmere"])
+        # A second campaign in the same project, not the active one.
+        add_campaign(cls.project, "shelved", session="closed", pcs=["Orsik Blackfell"])
+        cls.skill = skill_of(cls.project)
+        cls.env = clean_env()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def guard(self, command: str, skill: Path = None) -> int:
+        proc = run_hook(skill or self.skill, "dice_guard.py", bash_payload(command), self.env)
+        self.assertIn(proc.returncode, (0, 2), proc.stderr)
+        return proc.returncode
+
+    def test_cases(self):
+        for command, should_block, label in CASES:
+            with self.subTest(label):
+                self.assertEqual(self.guard(command) == 2, should_block, label)
+
+    def test_only_the_active_campaigns_pcs_count(self):
+        """A PC of a campaign that is not loaded is not a player's die."""
+        self.assertEqual(self.guard(f'{S} d20 --owner Orsik --label "initiative"'), 0)
+
+    def test_without_an_active_campaign_no_owner_is_a_pc(self):
+        """No marker, no PC list: the same command passes in a project with nothing loaded."""
+        empty = make_project(self.tmp, "empty")
+        self.assertEqual(self.guard(f'{S} d20+4 --owner Kriv --label "initiative"',
+                                    skill=skill_of(empty)), 0)
+
+    def test_other_tools_pass(self):
+        proc = run_hook(self.skill, "dice_guard.py",
+                        {"tool_name": "Read", "tool_input": {"file_path": "x.md"}}, self.env)
+        self.assertEqual(proc.returncode, 0)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    unittest.main()
