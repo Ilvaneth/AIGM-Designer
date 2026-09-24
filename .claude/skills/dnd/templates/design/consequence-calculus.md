@@ -1,6 +1,6 @@
 ---
-entity: faction_<state faction slug>
-type: faction
+entity: none
+type: calculus
 secrecy: discoverable
 phase: P4
 stamped: []

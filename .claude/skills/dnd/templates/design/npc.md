@@ -4,9 +4,11 @@ type: npc
 secrecy: public
 phase: P5
 tier: supporting
-stamped: [faction, secret_tr]
+stamped: [faction]
 mirror: design/dm-only/npcs/npc_<slug>.md
 ---
+<!-- the mirror's front matter lists the secret stamps too: stamped: [faction, secret_tr] -->
+
 
 # <Name> — <role>
 

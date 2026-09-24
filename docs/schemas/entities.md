@@ -40,9 +40,9 @@ Two files, one shape:
 | `secrecy` | enum | `public` / `discoverable` / `secret` |
 | `created_phase` | string | `P0` … `P9`, or `play` for entities registered during play (`registry.py add --origin play`) |
 | `origin` | enum | `birth` / `detail` / `play` |
-| `stamped` | object | the frozen fields; validated against the snapshot |
+| `stamped` | object | the frozen **public and discoverable** fields; validated against the snapshot |
 | `refs` | string[] | ids this entity's prose links to (maintained by merge from the wiki-link scan) |
-| `dm_only` | object or absent | every secret field of a non-secret entity; stripped from the projection |
+| `dm_only` | object or absent | every secret field of a non-secret entity; stripped from the projection. Its `stamped_fields[]` names the secret fields that are frozen too (an NPC's `secret_tr`, the premise's archetype), so no secret text ever sits in `stamped`; the snapshot at `_snapshots/stamps.json` is `stamped` ∪ those fields |
 
 Play-mutable state is **not** here: `status`, `seen_in_play`, an NPC's current `location`, a settlement's current `ruler`, control, alive/dead/fled, price modifiers and the threat stage live in [overlay.json](overlay.md). The registry keeps the birth value under the type-specific field (`ruler_at_birth`, `location_at_birth`, `control_at_birth`).
 
@@ -69,7 +69,12 @@ Play-mutable state is **not** here: `status`, `seen_in_play`, an NPC's current `
 | `seed` | `hook_tr`, `complication_tr`, `resolution_tr`, `reward_tr`, `tied_to[]` (≥1 npc/faction), `site` or null |
 | `thread` | `pc`, `question_tr`, `antagonist` (npc), `layers` (3 × `{act, secrecy, placed_in}`), `sites[]`, `crossings[]`, `mission` (goals.json id); `dm_only.truth_tr` |
 | `socket` | `kind`, `node`, `npc`, `question_tr` (the primer's spoiler-free form), `bound_to` (pc id or null) |
-| `pc` | `player`, `sheet` (file), `origin` (settlement id), `class`, `level`, `thread` |
+| `pc` | `player`, `sheet` (file), `origin_settlement` (settlement id), `class`, `level`, `thread` |
+| `premise` | **`question_tr`**, `tensions[]`, `world_default_tr`, **`signatures[]`**, **`trope_breaks[]`**, `pitch_tr`; `dm_only`: `secret_archetype`, `secret_twist`, `secret_tr`, `villain_answer_tr`, `clues[]` (`{n, act, layer, placed_in, how_tr}`), `dm_pitch_tr` |
+| `signature` | **`kind`** (magic / creature / institution), `rule_tr` (as a native knows it), `refs[]` counted by the `signatures` module (≥3); `dm_only.true_rule_tr` |
+| `break` | **`row`** (`trope-breaks.yaml` id), `refs[]` counted (≥5) |
+| `arc` | `acts`, **`beats[]`**, `chapters[]`, `doom_day`, **`endings`** (`{win_tr, loss_tr, pyrrhic_tr}`); `arc new` creates `arc_2` and archives `arc_1` |
+| `beat` | `act`, `chapter`, **`change_kind`** (control / knowledge / status / relationship / loss / access / threat), `state_before_tr`, `state_after_tr`, **`world_pressure`** (`<operation id>.<step id>` in `factions.json`), `delivery_paths[]` (2-3 ids or news ids), `fallbacks` (`{cost_tr, secondary_tr, deferred_tr}`); play status lives in `state.md`'s arc pointer, never here |
 
 Secrecy on a **field** is expressed by placing it in `dm_only`; secrecy on an **entity** by `secrecy: secret`. A `discoverable` entity is in the projection: the projection is what the *DM* may see, and the owner's reading line is drawn by the CLAUDE.md rule (24.6 #1), not by this file.
 
@@ -104,13 +109,14 @@ Secrecy on a **field** is expressed by placing it in `dm_only`; secrecy on an **
     {"to": "npc_ilme", "kind": "fears", "reason_tr": "İlme onun okumalarını sayıyor"},
     {"to": "npc_tolvan", "kind": "knows", "reason_tr": "Yorgun Martı'da her akşam aynı masa"}
   ],
-  "stamped": {"faction": "faction_divan", "secret_tr": "Her okuma bir anısını götürdü; boşlukları Divan'ın 'tüketilenler' defterinde sayılı."},
+  "stamped": {"faction": "faction_divan"},
   "refs": ["faction_divan", "npc_ilme", "npc_tolvan", "place_tuz_evi", "site_batik_iskele"],
   "dm_only": {
     "secret_tr": "Her okuma bir anısını götürdü; boşlukları Divan'ın 'tüketilenler' defterinde sayılı.",
     "surfacing_tr": "Aynı hikâyeyi iki akşam üst üste farklı anlatır; Insight DC 12 boşluğu görür; defter (site_batik_iskele) adını listeler.",
     "weakness_tr": "Bir anıyı geri almak için her şeyi verir.",
-    "clue": {"secret_clue": 1}
+    "clue": {"secret_clue": 1},
+    "stamped_fields": ["secret_tr"]
   }
 }
 ```
@@ -142,13 +148,14 @@ The same entity in the projection is identical minus the `dm_only` object. A sec
   "voice_seed": "hiç soru sormaz; her cümlesi bir tespit",
   "axes": {"trust": "aldatıcı", "ambition": "sınırsız, sessiz", "loyalty": "yalnızca defterine", "courage": "başkalarının eliyle"},
   "relations": [{"to": "npc_ilme", "kind": "controls", "reason_tr": "İlme onun yüzü; kendisi sesi"}],
-  "stamped": {"faction": "faction_divan", "secret_tr": "Tuz Hafızası'nın ölüleri ikinci kez öldürdüğünü bilir ve defteri bunun için tutar."},
+  "stamped": {"faction": "faction_divan"},
   "refs": ["faction_divan", "npc_ilme", "item_tuz_defteri", "site_kor_fener"],
   "dm_only": {
     "secret_tr": "Tuz Hafızası'nın ölüleri ikinci kez öldürdüğünü bilir ve defteri bunun için tutar.",
     "surfacing_tr": "Üçüncü ipucu (site_kor_fener) defterin el yazısını İlme'nin değil, onun eline bağlar.",
     "weakness_tr": "Kendi adının unutulmasından korkar; adını söyleyen biri karşısında durur.",
-    "visibility_pattern": "behind_visible_front"
+    "visibility_pattern": "behind_visible_front",
+    "stamped_fields": ["secret_tr"]
   }
 }
 ```

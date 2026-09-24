@@ -1,9 +1,10 @@
 ---
-entity: thread_premise
-type: thread
+entity: premise_<campaign slug>
+type: premise
 secrecy: public
 phase: P1
 stamped: [question_tr, signatures, trope_breaks]
+covers: [signature_<magic>, signature_<culture>, signature_<institution>, break_<row>]
 mirror: design/dm-only/premise-secret.md
 ---
 

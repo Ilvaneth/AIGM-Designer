@@ -27,7 +27,7 @@ Written by P1 from `naming.yaml`'s sound families (rolled, then mutated); read b
       "tr_suffix_friendly": true,
       "modes": {"person": "phonetic", "god": "phonetic", "place": "compound", "institution": "compound"},
       "roots": {"fener": "ışık/uyarı", "tuz": "hafıza/koruma", "saz": "sınır/gizlenme", "gelgit": "borç/dönüş", "kandil": "yas/anma"},
-      "samples": ["Velune", "Ormis", "Sarven", "İlme", "Yesra", "Tolvan", "Nerun"]
+      "samples": ["Velune", "Ormis", "Sarven", "İlme", "Yesra", "Tolvan", "Olmar"]
     },
     "kayaca": {
       "label_tr": "Kayaca — yayla ve kaya halkının dili",
@@ -54,7 +54,7 @@ Written by P1 from `naming.yaml`'s sound families (rolled, then mutated); read b
 }
 ```
 
-`banned[]` holds the worn-vocabulary soft-ban and every stem `name_registry` already carries; `samples[]` are the names this campaign actually produced from the language, appended at phase approval.
+`banned[]` holds the worn-vocabulary soft-ban and every stem `name_registry` already carries; `samples[]` are the names this campaign actually produced from the language, appended at phase approval. A **secret entity's name is never appended**: `naming.json` sits outside `dm-only/`, and the sample list is one of the secondary leak channels risk 24.1 #11 lists.
 
 ## `common-knowledge.json` — what a native already knows
 

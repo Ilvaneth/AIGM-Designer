@@ -1,0 +1,266 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "tuzlu-fener",
+    "fixture": true,
+    "written_by": "registry.py merge --phase P9 (stamp snapshot)",
+    "written_at": "2026-09-24T20:00:00Z"
+  },
+  "stamps": {
+    "premise_tuzlu_fener": {
+      "question_tr": "Unutmak bir kurtuluş mudur, yoksa ikinci bir ölüm mü?",
+      "signatures": [
+        "signature_tuz_hafizasi",
+        "signature_tuzbagli",
+        "signature_divan"
+      ],
+      "trope_breaks": [
+        "break_no_afterlife"
+      ],
+      "secret_archetype": "secret_magic_is_actually",
+      "secret_twist": "twist_institution_knows",
+      "secret_tr": "Tuz Hafızası anıyı okumaz, tüketir: her okuma ölünün son saatini yok eder ve okuyucudan da eş ağırlıkta bir anı alır. Divan bunu yüz yirmi yıldır bilir; 'tüketilenler defteri' bunun için tutulur, çünkü tüketilen anılar Kör Fener'in kandilinde birikir."
+    },
+    "signature_tuz_hafizasi": {
+      "kind": "magic"
+    },
+    "signature_tuzbagli": {
+      "kind": "creature"
+    },
+    "signature_divan": {
+      "kind": "institution"
+    },
+    "break_no_afterlife": {
+      "row": "break_no_afterlife_known"
+    },
+    "god_velune": {
+      "rank": "greater",
+      "domains": [
+        "Tempest",
+        "Nature"
+      ]
+    },
+    "god_ormis": {
+      "rank": "greater",
+      "domains": [
+        "Knowledge",
+        "Light"
+      ]
+    },
+    "god_isken": {
+      "rank": "lesser",
+      "domains": [
+        "Death"
+      ]
+    },
+    "plane_dipsiz": {
+      "baseline": "Elemental Plane of Water",
+      "touched": false
+    },
+    "era_tufan": {
+      "order": 1
+    },
+    "era_fenerler": {
+      "order": 2
+    },
+    "era_sessizlik": {
+      "order": 3
+    },
+    "event_buyuk_tufan": {
+      "year": -1200
+    },
+    "event_divan_kurulusu": {
+      "year": 292
+    },
+    "event_fener_sondu": {
+      "year": 372
+    },
+    "event_kayip_gemi": {
+      "year": 409
+    },
+    "polity_sazlik": {
+      "ruler_at_birth": "npc_sarven"
+    },
+    "region_tuz_ovasi": {
+      "danger_tier": 2,
+      "polity": "polity_sazlik"
+    },
+    "settlement_fenerli": {
+      "scale": "town",
+      "polity": "polity_sazlik",
+      "ruler_at_birth": "npc_sarven"
+    },
+    "settlement_kamisli": {
+      "scale": "village",
+      "polity": "polity_sazlik",
+      "ruler_at_birth": "npc_sarven"
+    },
+    "district_iskele": {},
+    "district_yukari": {},
+    "place_yorgun_marti": {},
+    "place_divan_evi": {},
+    "place_bey_konagi": {},
+    "place_tuz_pazari": {},
+    "place_velune_tapinagi": {},
+    "place_tuz_evi": {},
+    "faction_beylik": {
+      "archetype": "state",
+      "objective": "Tuz vergisini ve Fenerli limanını elde tutmak"
+    },
+    "faction_divan": {
+      "archetype": "guild",
+      "objective": "Her ölünün son anısını okuyup yasını tutmak"
+    },
+    "faction_kacakcilar": {
+      "archetype": "criminal",
+      "objective": "Kandil enkazının sandıklarını ve tuzunu Fenerli'den çıkarmak"
+    },
+    "npc_sarven": {
+      "faction": "faction_beylik",
+      "secret_tr": "Kandil'in manifestosunu Kardeşlik'e sattı; gemide kendi borcunun ödemesi vardı."
+    },
+    "npc_olmar": {
+      "faction": "faction_beylik"
+    },
+    "npc_ilme": {
+      "faction": "faction_divan",
+      "secret_tr": "Okumanın anıyı götürdüğünü bilir ve bunu merhamet sayar; defterin Fener için tutulduğunu bilmez."
+    },
+    "npc_s01": {
+      "faction": "faction_divan",
+      "secret_tr": "Tuz Hafızası'nın ölüleri ikinci kez öldürdüğünü bilir ve defteri bunun için tutar."
+    },
+    "npc_tolvan": {
+      "faction": null,
+      "secret_tr": "Kandil batarken Bey'in adamlarının dalgakıranda fener salladığını gördü; kimseye söylemedi."
+    },
+    "npc_yesra": {
+      "faction": "faction_divan",
+      "secret_tr": "Her okuma bir anısını götürdü; boşlukları Divan'ın 'tüketilenler' defterinde sayılı."
+    },
+    "npc_draskun": {
+      "faction": "faction_kacakcilar",
+      "secret_tr": "Nerun'un teğmenidir; tuz Divan'a gider."
+    },
+    "npc_kortan": {
+      "faction": "faction_kacakcilar"
+    },
+    "npc_ameli": {
+      "faction": null
+    },
+    "site_batik_iskele": {
+      "danger_tier": 1,
+      "room_count": 6,
+      "act": 1,
+      "thread": "beat_1a",
+      "key_npcs": [
+        "npc_kortan"
+      ]
+    },
+    "site_gelgit_magarasi": {
+      "danger_tier": 2,
+      "room_count": 11,
+      "act": 1,
+      "thread": "faction_kacakcilar",
+      "key_npcs": [
+        "npc_draskun"
+      ]
+    },
+    "site_kor_fener": {
+      "danger_tier": 2,
+      "room_count": 14,
+      "act": 1,
+      "thread": "beat_1c",
+      "key_npcs": [
+        "npc_s01"
+      ]
+    },
+    "site_dipsiz_kuyu": {
+      "danger_tier": 4,
+      "room_count": 12,
+      "act": 1,
+      "thread": "seed_kamisli_sessizligi",
+      "key_npcs": []
+    },
+    "item_tuz_defteri": {
+      "kind": "plot"
+    },
+    "item_kandil_muhru": {
+      "kind": "signature"
+    },
+    "creature_tuzbagli": {
+      "srd_base": "ghoul",
+      "cr": 1
+    },
+    "arc_1": {
+      "beats": [
+        "beat_1a",
+        "beat_1b",
+        "beat_1c"
+      ],
+      "endings": [
+        "win",
+        "loss",
+        "pyrrhic"
+      ]
+    },
+    "chapter_1": {
+      "act": 1,
+      "level_band": [
+        1,
+        3
+      ]
+    },
+    "chapter_2": {
+      "act": 1,
+      "level_band": [
+        3,
+        5
+      ]
+    },
+    "node_c1_marti": {},
+    "node_c1_iskele": {},
+    "node_c1_divan": {},
+    "node_c2_gelgit": {},
+    "node_c2_fener": {},
+    "node_c2_kamisli": {},
+    "beat_1a": {
+      "change_kind": "knowledge",
+      "world_pressure": "op_kardeslik_1.step_1"
+    },
+    "beat_1b": {
+      "change_kind": "loss",
+      "world_pressure": "op_divan_1.step_3"
+    },
+    "beat_1c": {
+      "change_kind": "control",
+      "world_pressure": "op_divan_1.step_4"
+    },
+    "seed_martinin_borcu": {},
+    "seed_kamisli_sessizligi": {},
+    "socket_borc": {},
+    "socket_kayip_gemi": {},
+    "socket_divan_egitimi": {},
+    "socket_tuz_okuma": {},
+    "thread_selen": {
+      "pc": "pc_selen",
+      "antagonist": "npc_draskun",
+      "layers": [
+        "site_batik_iskele",
+        "item_tuz_defteri",
+        "site_kor_fener"
+      ]
+    },
+    "thread_vorin": {
+      "pc": "pc_vorin",
+      "antagonist": "npc_s01",
+      "layers": [
+        "npc_sarven",
+        "site_gelgit_magarasi",
+        "site_kor_fener"
+      ]
+    },
+    "pc_selen": {},
+    "pc_vorin": {}
+  }
+}

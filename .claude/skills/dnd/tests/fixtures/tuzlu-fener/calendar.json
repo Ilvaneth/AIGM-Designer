@@ -1,0 +1,29 @@
+{
+  "day": 12,
+  "month": 4,
+  "year": 412,
+  "months": ["Buzay", "Sisay", "Tuzay", "Kandilay", "Sazay", "Gelgitay", "Dalgay", "Kurumay", "Yasay", "Ormisay", "Velunay", "İskenay"],
+  "month_length": 30,
+  "day_names": ["Tuzgünü", "Sazgünü", "Dalgagünü", "Kandilgünü", "Sisgünü", "Sessizgün"],
+  "time": "morning",
+  "day_counter": 0,
+  "moons": [{"name": "Kandil", "cycle": 30, "phase_day0": "yeni"}],
+  "festivals": [
+    {"name": "Kandil Gecesi", "month": 4, "day": 30, "god": "god_ormis", "note": "Her evde bir kandil yanar; Divan bedava okuma yapar."},
+    {"name": "Tuz Dökümü", "month": 3, "day": 1, "god": "god_velune", "note": "Sabah tuzu denize dökülür; Tufan anılır."},
+    {"name": "Sessiz Gün", "month": 12, "day": 15, "god": "god_isken", "note": "Kimse konuşmaz; ölülerin adları söylenmez, yalnızca yazılır."}
+  ],
+  "seasons": {
+    "Buzay": "soğuk, gri gökyüzü, tuz kokusu keskin", "Sisay": "sis sabahları, ıslak halat kokusu", "Tuzay": "rüzgâr döner, düzlük parlar",
+    "Kandilay": "ılık akşamlar, kandil isi kokusu", "Sazay": "sazlık yeşerir, sivrisinek", "Gelgitay": "büyük gelgitler, çürük yosun",
+    "Dalgay": "fırtınalar, tuz serpintisi", "Kurumay": "sıcak, düzlük çatlar, ölü balık", "Yasay": "yas ayı, kandil isi ve gül suyu",
+    "Ormisay": "berrak geceler, deniz fosforu", "Velunay": "ilk fırtına, ıslak taş", "İskenay": "sessiz kar, kapalı kapılar"
+  },
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "tuzlu-fener",
+    "fixture": true,
+    "written_by": "calendar.py init",
+    "written_at": "2026-09-24T18:25:00Z"
+  }
+}

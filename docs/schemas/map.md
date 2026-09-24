@@ -39,7 +39,8 @@ Written by the P3 skeleton through `registry.py merge` (nodes and edges are merg
     {"id": "r_kamisli_kuyu", "from": "settlement_kamisli", "to": "site_dipsiz_kuyu", "days": 1.5, "terrain": "tuz düzlüğü", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Kamışlı'dan kimse bu yola çıkmaz."},
     {"id": "r_fenerli_gelgit", "from": "settlement_fenerli", "to": "site_gelgit_magarasi", "days": 1, "terrain": "kayalık kıyı", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Yalnızca cezirde geçilir."},
     {"id": "r_fenerli_fener", "from": "settlement_fenerli", "to": "site_kor_fener", "days": 1.5, "terrain": "burun", "road": "track", "region": "region_tuz_ovasi", "note_tr": null},
-    {"id": "r_gelgit_fener", "from": "site_gelgit_magarasi", "to": "site_kor_fener", "days": 1, "terrain": "kayalık kıyı", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Kıyı boyunca, cezirde."}
+    {"id": "r_gelgit_fener", "from": "site_gelgit_magarasi", "to": "site_kor_fener", "days": 1, "terrain": "kayalık kıyı", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Kıyı boyunca, cezirde."},
+    {"id": "r_iskele_dalgakiran", "from": "site_batik_iskele", "to": "landmark_kirik_dalgakiran", "days": 0.25, "terrain": "kıyı", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Kırık ucuna yürüyerek; gece fener burada yanar."}
   ],
   "insets": []
 }

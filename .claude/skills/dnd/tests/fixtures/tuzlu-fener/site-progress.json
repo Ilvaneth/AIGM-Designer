@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "tuzlu-fener",
+    "fixture": true,
+    "written_by": "site_progress.py open",
+    "written_at": "2026-09-24T20:00:00Z"
+  },
+  "sites": {
+    "site_batik_iskele": {
+      "opened_day": null,
+      "opened_session": null,
+      "entered_via": null,
+      "entrances": ["1", "4"],
+      "payoff_room": "6",
+      "min_depth": 3,
+      "room_count": 6,
+      "current_room": null,
+      "rooms": {
+        "1": {"state": "unseen", "day": null, "session": null, "reason": null},
+        "2": {"state": "unseen", "day": null, "session": null, "reason": null},
+        "3": {"state": "unseen", "day": null, "session": null, "reason": null},
+        "4": {"state": "unseen", "day": null, "session": null, "reason": null},
+        "5": {"state": "unseen", "day": null, "session": null, "reason": null},
+        "6": {"state": "unseen", "day": null, "session": null, "reason": null}
+      },
+      "shortcuts_earned": [],
+      "rests": [],
+      "notes": []
+    }
+  }
+}

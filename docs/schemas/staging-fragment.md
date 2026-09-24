@@ -84,7 +84,7 @@ Every fan-out agent writes its prose file **first** and its fragment **last**. T
 | `mode` | `birth` / `detail` / `integrate` / `revise`; in-play `detail` writes under `_staging/detail/` |
 | `prose`, `dm_only_prose` | file, byte size, sha256; `dm_only_prose` null when the entity has no secret section |
 | `notes` | the free-text file, or null |
-| `registry` | the full entity row as [entities.md](entities.md) defines it, including `dm_only`; merge upserts it by id and refuses a stamped-field change without `--revise` |
+| `registry` | the full entity row as [entities.md](entities.md) defines it, including `dm_only` (with its `stamped_fields[]`); merge upserts it by id and refuses a change to any stamped field, public or secret, without `--revise` |
 | `graph` | nodes and edges for `campaign_graph.py`; ids resolve against the registry; edge `since_session` is 0 at birth |
 | `seeds[]` | store calls for `design_seed.py`: `store` ∈ `factions` / `goals` / `graph` / `channels` / `calendar` / `site_progress` / `names`; `op` the script verb; `args` its arguments. The ledger key is `<store>:<id>` |
 | `counts` | numbers the phase card may print; never text |

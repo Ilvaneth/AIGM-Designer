@@ -1,9 +1,10 @@
 ---
-entity: era_<current era slug>
-type: era
+entity: none
+type: cosmology
 secrecy: public
 phase: P2
-stamped: [pantheon_type, months, start_date]
+stamped: []
+covers: [god_<slug>, plane_<slug>, era_<slug>, event_<slug>]
 mirror: design/dm-only/cosmology.md
 ---
 

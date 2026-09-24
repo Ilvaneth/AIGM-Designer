@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "tuzlu-fener",
+    "fixture": true,
+    "written_by": "registry.py merge --phase P6",
+    "written_at": "2026-09-24T20:00:00Z",
+    "simulated_to_day": 0,
+    "threat_stage": 1,
+    "doom_day": 96,
+    "doom_moved": []
+  },
+  "entries": {
+    "site_batik_iskele": {
+      "status": {"value": "detailed", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": "P6 birth-detailed site"}
+    },
+    "site_gelgit_magarasi": {
+      "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
+    },
+    "site_kor_fener": {
+      "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
+    },
+    "site_dipsiz_kuyu": {
+      "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
+    },
+    "settlement_fenerli": {
+      "status": {"value": "detailed", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": "P3 anchors fixed; small points unfilled"}
+    },
+    "settlement_kamisli": {
+      "status": {"value": "detailed", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": "village: one sentence, one problem, one NPC"}
+    }
+  },
+  "pending_scenes": [],
+  "price_modifiers": {}
+}

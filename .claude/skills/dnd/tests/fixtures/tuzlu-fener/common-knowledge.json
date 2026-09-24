@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "tuzlu-fener",
+    "fixture": true,
+    "written_by": "design_seed.py --phase P8",
+    "written_at": "2026-09-24T19:56:00Z"
+  },
+  "facts": [
+    {"id": "ck_001", "keywords": ["divan", "okuma", "tuz", "ölü", "anı"], "text_tr": "Yas Tutanlar Divanı ölülerin son anısını tuzdan okur; okuma için aile izni ve bir kandil gerekir.", "origin": "all", "refs": ["faction_divan"]},
+    {"id": "ck_002", "keywords": ["öte", "ölüm", "ruh", "cennet"], "text_tr": "Ölümden sonra hiçbir şey yoktur; bunu herkes bilir, tapınaklar da inkâr etmez.", "origin": "all", "refs": ["god_isken"]},
+    {"id": "ck_003", "keywords": ["fener", "kör", "burun"], "text_tr": "Kör Fener kırk yıldır yanmıyor; oraya giden balıkçı dönmedi.", "origin": ["polity_sazlik"], "refs": ["site_kor_fener", "event_fener_sondu"]},
+    {"id": "ck_004", "keywords": ["bey", "sarven", "fenerli", "yönetim"], "text_tr": "Fenerli'yi Bey Sarven yönetir; Beylik vergisini tuzdan alır.", "origin": ["polity_sazlik"], "refs": ["npc_sarven", "polity_sazlik"]},
+    {"id": "ck_005", "keywords": ["kamışlı", "tuz düzlüğü", "kuyu"], "text_tr": "Kamışlı'nın doğusundaki tuz düzlüğüne kimse girmez; orada bir kuyu olduğu söylenir.", "origin": ["settlement_kamisli", "settlement_fenerli"], "refs": ["site_dipsiz_kuyu"]},
+    {"id": "ck_006", "keywords": ["kandil", "gemi", "battı", "dalgakıran"], "text_tr": "Üç yıl önce Kandil gemisi Kırık Dalgakıran'da battı; yükü ve dört yolcusu kayıp.", "origin": ["polity_sazlik"], "refs": ["event_kayip_gemi", "site_batik_iskele"]},
+    {"id": "ck_007", "keywords": ["tuzbağlı", "düzlük", "kabuk", "ışık"], "text_tr": "Okunmadan gömülen boğulmuşlar bazen kalkar; kandil görünce durur, karanlıkta yürür.", "origin": "all", "refs": ["creature_tuzbagli", "signature_tuzbagli"]},
+    {"id": "ck_008", "keywords": ["kardeşlik", "düğüm", "kaçakçı", "cezir"], "text_tr": "Gelgit Kardeşliği düğümüyle tanınır; cezirde çalışır, sorulmayan soruya cevap vermez.", "origin": ["settlement_fenerli"], "refs": ["faction_kacakcilar"]}
+  ]
+}

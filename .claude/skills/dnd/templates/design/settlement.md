@@ -5,6 +5,7 @@ secrecy: public
 phase: P3
 status: skeleton
 stamped: [scale, polity, ruler_at_birth]
+covers: [district_<slug>, place_<slug>]
 mirror: design/dm-only/settlements/settlement_<slug>.md
 ---
 

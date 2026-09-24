@@ -1,0 +1,35 @@
+{
+ "_meta": {
+  "schema_version": 1,
+  "campaign": "tuzlu-fener",
+  "fixture": true,
+  "written_by": "design_seed.py --phase P8",
+  "written_at": "2026-09-24T19:56:30Z"
+ },
+ "channels": [
+  {
+   "id": "ch_divan_ic",
+   "name": "Divan iç yazışması",
+   "type": "private",
+   "participants": ["npc_ilme", "npc_s01", "npc_yesra"],
+   "note": "Okuma kayıtları ve mühür dağıtımı; Yesra yalnızca kendi okumalarını görür.",
+   "facts": []
+  },
+  {
+   "id": "ch_bey_meclis",
+   "name": "Tuz meclisi",
+   "type": "council",
+   "participants": ["npc_sarven", "npc_olmar"],
+   "note": "Vergi, liman, sandık ilanı; Bey'in borcu burada konuşulmaz.",
+   "facts": []
+  },
+  {
+   "id": "ch_kardeslik_dugum",
+   "name": "Kardeşlik düğümleri",
+   "type": "private",
+   "participants": ["npc_draskun", "npc_kortan"],
+   "note": "Halat düğümüyle mesaj; Kortan tuzun varış yerini bilmez.",
+   "facts": []
+  }
+ ]
+}

@@ -1,9 +1,10 @@
 ---
-entity: chapter_arc
-type: chapter
+entity: arc_1
+type: arc
 secrecy: public
 phase: P7
 stamped: [beats, endings]
+covers: [beat_<id>, seed_<id>, socket_<id>]
 mirror: design/dm-only/arc.md
 ---
 

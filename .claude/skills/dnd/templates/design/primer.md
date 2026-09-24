@@ -1,6 +1,6 @@
 ---
-entity: polity_<home polity slug>
-type: polity
+entity: none
+type: primer
 secrecy: public
 phase: P8
 stamped: []

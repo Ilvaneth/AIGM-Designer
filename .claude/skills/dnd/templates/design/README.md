@@ -35,6 +35,8 @@ mirror: design/dm-only/npcs/npc_yesra.md    # the public file names its mirror; 
 ---
 ```
 
+A file that holds several entities (cosmology, arc, a settlement with its districts and anchor places) names its own entity in `entity:` and lists the rest under `covers: [god_x, era_y, …]`; a document that is no entity (the primer, the report, the consequence calculus, the generated index and travel table) says `entity: none`. Every registry entity's `file` must be a file that claims it one way or the other.
+
 **Three headings, one split.** Prose is organised under `## Public`, `## Discoverable` and `## Secret` (item 11.1). The public file carries the first two; the `## Secret` section is written to the **dm-only mirror** at the same path under `design/dm-only/` (item 11.2). No `## Secret` heading and no secret-tier sentence may exist outside `dm-only/`; the `secrecy` validator checks headings, front matter and sentence overlap. A `secret` entity (opaque slug) has no public file at all.
 
 **Ids inline.** Every reference to another entity is a wiki-link, `[[npc_ilme]]`, never a bare name. The DM translates id → name when narrating; the validator resolves every link; a rename touches the registry and regenerates the files the link scan lists (item 3).

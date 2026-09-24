@@ -1,0 +1,123 @@
+{
+ "_meta": {
+  "week_length": 7,
+  "schema_version": 1,
+  "campaign": "tuzlu-fener",
+  "fixture": true,
+  "written_by": "design_seed.py --phase P4",
+  "written_at": "2026-09-24T18:55:00Z",
+  "ticked_day": 0
+ },
+ "factions": [
+  {
+   "id": "faction_beylik",
+   "name": "Sazlık Beyliği",
+   "created_day": 0,
+   "status": "active",
+   "objective": "Tuz vergisini ve Fenerli limanını elde tutmak",
+   "power": 3,
+   "intel": 1,
+   "move_points": {"per_week": 3, "available": 3, "refreshed_day": 0},
+   "assets": ["place_bey_konagi", "settlement_fenerli", "place_velune_tapinagi"],
+   "stances": {"faction_divan": 1, "faction_kacakcilar": -2, "party": 0},
+   "operation": {
+    "id": "op_beylik_1",
+    "name": "Kandil'in sandıkları",
+    "steps": [
+     {"id": "step_1", "kind": "timed", "text": "Sandıklar için ödül ilanı: her sandığa beş altın", "due_day": 5, "defender": null, "done": false},
+     {"id": "step_2", "kind": "contested", "text": "Liman muhafızı Batık İskele'yi basar", "due_day": 30, "defender": "faction_kacakcilar", "done": false},
+     {"id": "step_3", "kind": "timed", "text": "Bulunan tuz vergiye sayılır, meclis yatışır", "due_day": 50, "defender": null, "done": false}
+    ],
+    "abandon_if": "control(site_batik_iskele) == party or alive(npc_sarven) == dead",
+    "metric": {"label": "sandık", "current": 0, "target": 6}
+   },
+   "doctrine": {"aggression": 1, "target_preference": "rival", "move_weights": {"alliance": {"negotiate": 3}, "loss": {"hold": 2, "spy": 1}, "gain": {"consolidate": 3}, "exposure": {"bribe": 2}, "death": {"consolidate": 3}, "betrayal": {"seize": 1, "negotiate": 2}}},
+   "reactions": {
+    "alliance": "Divan'la rakip bir ittifak görürse meclisi toplar, ittifak teklif eder",
+    "loss": "Kaybettiği şeyi geri ister, alamazsa vergi keser",
+    "gain": "Kazancı vergiye sayar ve meclise sunar",
+    "exposure": "Borcu açığa çıkarsa Olmar'ı öne sürer, kendisi geri çekilir",
+    "death": "Olmar bey olur; doktrin savunmaya kayar",
+    "betrayal": "İhanet edeni limandan sürer, Divan'a şikâyet eder"
+   },
+   "heir": "npc_olmar",
+   "controller": "world",
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "faction_divan",
+   "name": "Yas Tutanlar Divanı",
+   "created_day": 0,
+   "status": "active",
+   "objective": "Her ölünün son anısını okuyup yasını tutmak",
+   "power": 2,
+   "intel": 3,
+   "move_points": {"per_week": 2, "available": 2, "refreshed_day": 0},
+   "assets": ["place_divan_evi", "place_tuz_evi", "npc_yesra"],
+   "stances": {"faction_beylik": 1, "faction_kacakcilar": 0, "party": 0},
+   "operation": {
+    "id": "op_divan_1",
+    "name": "Yas Yılı",
+    "steps": [
+     {"id": "step_1", "kind": "timed", "text": "Üç izinsiz okuma (portent)", "due_day": 0, "defender": null, "done": true},
+     {"id": "step_2", "kind": "timed", "text": "Kamışlı'da bir okuma: Ameli'nin annesi", "due_day": 20, "defender": null, "done": false},
+     {"id": "step_3", "kind": "party-only", "text": "Yesra'nın son okuması", "due_day": 45, "defender": null, "done": false},
+     {"id": "step_4", "kind": "contested", "text": "Kandil Kör Fener'e taşınır", "due_day": 75, "defender": "faction_beylik", "done": false},
+     {"id": "doom", "kind": "timed", "text": "Fener yanar; tüketilen anılar kâtibin adını her kafaya yazar", "due_day": 96, "defender": null, "done": false}
+    ],
+    "abandon_if": "alive(npc_s01) == dead or control(site_kor_fener) == party",
+    "metric": {"label": "okuma", "current": 3, "target": 12}
+   },
+   "doctrine": {"aggression": 2, "target_preference": "objective-holder", "move_weights": {"alliance": {"spy": 2, "persuade": 1}, "loss": {"persuade": 2, "bribe": 1}, "gain": {"consolidate": 2}, "exposure": {"persuade": 2, "assassinate": 1}, "death": {"consolidate": 3}, "betrayal": {"assassinate": 2}}},
+   "reactions": {
+    "alliance": "Yeni ittifakın ölülerini ilk o okumak ister; kandil gönderir",
+    "loss": "Aileleri yas için toplar, kaybı Beylik'in ihmaline bağlar",
+    "gain": "Yeni okumaları deftere işler, mühür dağıtır",
+    "exposure": "Yesra'yı öne sürer; o hatırlamaz, Divan da öyle der",
+    "death": "İlme ölürse Yesra sözcü olur; kâtip aynı kalır",
+    "betrayal": "İhanet edenin son anısı erken okunur"
+   },
+   "heir": "npc_yesra",
+   "controller": "world",
+   "knows": [],
+   "history": []
+  },
+  {
+   "id": "faction_kacakcilar",
+   "name": "Gelgit Kardeşliği",
+   "created_day": 0,
+   "status": "active",
+   "objective": "Kandil enkazının sandıklarını ve tuzunu Fenerli'den çıkarmak",
+   "power": 2,
+   "intel": 2,
+   "move_points": {"per_week": 2, "available": 2, "refreshed_day": 0},
+   "assets": ["site_gelgit_magarasi", "site_batik_iskele", "place_yorgun_marti"],
+   "stances": {"faction_beylik": -2, "faction_divan": 0, "party": 0},
+   "operation": {
+    "id": "op_kardeslik_1",
+    "name": "Sandık Yolu",
+    "steps": [
+     {"id": "step_1", "kind": "timed", "text": "Sandıklar Batık İskele'den Gelgit Mağarası'na taşınır", "due_day": 10, "defender": null, "done": false},
+     {"id": "step_2", "kind": "contested", "text": "Liman muhafızına rüşvet; Tolvan'ın kayıkları alınır", "due_day": 25, "defender": "faction_beylik", "done": false},
+     {"id": "step_3", "kind": "timed", "text": "Tuz Divan Evi'ne teslim edilir", "due_day": 40, "defender": null, "done": false}
+    ],
+    "abandon_if": "control(site_gelgit_magarasi) != faction_kacakcilar or alive(npc_draskun) == dead",
+    "metric": {"label": "tuz çuvalı", "current": 4, "target": 10}
+   },
+   "doctrine": {"aggression": 2, "target_preference": "weakest", "move_weights": {"alliance": {"spy": 2}, "loss": {"seize": 2, "sabotage": 1}, "gain": {"consolidate": 2}, "exposure": {"sabotage": 2}, "death": {"hold": 3}, "betrayal": {"assassinate": 2}}},
+   "reactions": {
+    "alliance": "Rakip ittifakın kayıklarını keser",
+    "loss": "Kaybı bir gece içinde geri almaya çalışır",
+    "gain": "Yeni kazancı mağaraya taşır ve saklar",
+    "exposure": "Tuzun nereye gittiği sorulursa Kortan'ı öne sürer",
+    "death": "Kortan reis olur; Divan bağlantısı kopar",
+    "betrayal": "İhanet edeni cezirde mağarada bırakır"
+   },
+   "heir": "npc_kortan",
+   "controller": "world",
+   "knows": [],
+   "history": []
+  }
+ ]
+}
