@@ -194,11 +194,14 @@ def seed(campaign: str, phase: str | None, stores: tuple, fragment: str | None, 
         return 0
 
     calls: list[tuple[str, list[str]]] = []
+    node_calls: list[tuple[str, list[str]]] = []
+    edge_calls: list[tuple[str, list[str]]] = []
     unsupported: list[str] = []
     for frag_path in fragments:
         frag = read_json(frag_path) or {}
         if "graph" in stores and frag.get("graph"):
-            calls += graph_calls(campaign, frag["graph"], secret_ids)
+            for key, argv in graph_calls(campaign, frag["graph"], secret_ids):
+                (node_calls if key.startswith("graph:node:") else edge_calls).append((key, argv))
         for entry in frag.get("seeds") or []:
             store, op, args = entry.get("store"), entry.get("op"), entry.get("args") or {}
             if store not in stores:
@@ -208,6 +211,22 @@ def seed(campaign: str, phase: str | None, stores: tuple, fragment: str | None, 
                 unsupported.append(f"{frag.get('id')}: {store}.{op}")
                 continue
             calls.append((key_for(store, op, args), argv))
+
+    # birth 2: edges ran in fragment order and named nodes a later fragment (or an earlier phase's registry row)
+    # would create; every node call goes first, and an endpoint with no node call is synthesised from the registry
+    if edge_calls:
+        known_nodes = {k[len("graph:node:"):] for k, _ in node_calls} | {k[len("graph:node:"):] for k in ledger if k.startswith("graph:node:")}
+        for key, argv in edge_calls:
+            for endpoint in (argv[argv.index("--from") + 1], argv[argv.index("--to") + 1]):
+                if endpoint in known_nodes or endpoint not in canonical:
+                    continue
+                ent = canonical[endpoint]
+                name = endpoint if endpoint in secret_ids else str(ent.get("name") or endpoint)
+                node_calls.append((f"graph:node:{endpoint}", ["campaign_graph.py", "add-node", "--campaign", campaign,
+                                                             "--type", str(ent.get("type", "npc")), "--name", name,
+                                                             "--id", endpoint, "--allow-duplicate-name"]))
+                known_nodes.add(endpoint)
+    calls = node_calls + edge_calls + calls
 
     done, skipped, failed = 0, 0, 0
     for key, argv in calls:

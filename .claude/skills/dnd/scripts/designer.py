@@ -58,8 +58,8 @@ import design_dice as dd  # noqa: E402
 import design_manifest as dm  # noqa: E402
 import design_prompts as dp  # noqa: E402
 import design_tables as dt  # noqa: E402
-from design_io import (campaign_dir, design_dir, dm_only_dir, now_iso, read_json, sha256_file,  # noqa: E402
-                       stamp_meta, write_json_atomic)
+from design_io import (campaign_dir, design_dir, dm_only_dir, is_fragment, now_iso, read_json,  # noqa: E402
+                       sha256_file, stamp_meta, write_json_atomic)
 from paths import runtime_dir  # noqa: E402
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -635,6 +635,12 @@ def phase_begin(campaign: str, phase: str, as_json: bool, session_id: str | None
     dm.reconcile(campaign, quiet=True)
     data = dm.load(campaign)
     ph = data["phases"][phase]
+    staged = [e for e in ph.get("roster") or [] if data["entities"].get(e, {}).get("status") == "staged"]
+    if staged:
+        # birth 2: a stopped Workflow leaves finished fragments in staging; they are merged, not rewritten
+        print(f"designer: {phase} has {len(staged)} staged fragment(s) not merged yet ({', '.join(staged)}); "
+              f"run `phase {phase} merge` first", file=sys.stderr)
+        return 1
     if ph["status"] in ("pending", "prerolled", "stale", "failed", "partial"):
         ph["status"] = "running"
         ph["started"] = ph.get("started") or now_iso()
@@ -707,6 +713,11 @@ def prompt_bundle(campaign: str, phase: str, name: str, entity_id: str | None, a
     return bundle
 
 
+def heavy_entity(row: dict) -> bool:
+    """A registry row that earns two critics at high effort: majors, the BBEG and the lieutenants."""
+    return row.get("tier") == "major" or str(row.get("role") or "") in ("bbeg", "lieutenant") or bool(row.get("goal_tracked"))
+
+
 def pending_with_prompts(campaign: str, phase: str) -> dict:
     data = dm.load(campaign)
     canonical = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
@@ -721,12 +732,20 @@ def pending_with_prompts(campaign: str, phase: str) -> dict:
         budget = dm.read_budget(campaign, canonical, eid) if eid in canonical else []
         files = list(dict.fromkeys(budget + list(reads.get(eid) or [])))
         recorded = int(row.get("attempt") or 0)
-        render_attempt = recorded + 1 if row.get("status") in ("failed", "staged") and recorded else max(attempt, recorded or attempt)
+        render_attempt = recorded + 1 if row.get("status") == "failed" and recorded else max(attempt, recorded or attempt)
+        files = [dm.rel(campaign, Path(f)) if os.path.isabs(f) else f for f in files]
+        files = list(dict.fromkeys(files))
         entry = {"id": eid, "status": row.get("status", "pending"), "attempt": recorded, "render_attempt": render_attempt,
                  "last_error": row.get("last_error"), "files": files}
         name = dp.prompt_for(phase, eid)
         if name:
             entry.update(prompt_bundle(campaign, phase, name, eid, render_attempt))
+            if heavy_entity(canonical.get(eid, {})) and entry.get("critic_cmd"):
+                # plan item 19.3: two critics at high effort on the BBEG, the lieutenants and every major (birth 2:
+                # the P5 roster carried none; the prompt's front matter is the floor, the registry row raises it)
+                entry["critics"] = 2
+                entry["effort"] = "high"
+                entry["critic2_cmd"] = render_cmd(campaign, "critic", eid, render_attempt, 2, phase=phase)
         rows.append(entry)
     skeleton = dict(ph.get("skeleton") or {})
     sk_name = dp.prompt_for(phase, None)
@@ -764,11 +783,21 @@ def record_critics(campaign: str, phase: str) -> int:
 
 def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, seconds: int | None = None) -> int:
     record_critics(campaign, phase)
+    report_path = design_dir(campaign) / "_staging" / phase / "merge.report.json"
+    if report_path.is_file():
+        report_path.unlink()            # birth 2: never read a previous run's report
     proc = run_script("registry.py", campaign, "merge", "--phase", phase, "--day", str(day))
     print(proc.stdout.strip())
     if proc.stderr.strip():
         print(proc.stderr.strip(), file=sys.stderr)
-    report = read_json(design_dir(campaign) / "_staging" / phase / "merge.report.json") or {}
+    fragments_waiting = any(is_fragment(p) for p in (design_dir(campaign) / "_staging" / phase).glob("*.json")) \
+        if (design_dir(campaign) / "_staging" / phase).is_dir() else False
+    if proc.returncode not in (0, 1) or (fragments_waiting and not report_path.is_file()):
+        # birth 2 (3.1): registry.py died on a fragment and the conductor saw exit 0 and 77 seed calls
+        print(f"designer: registry.py merge crashed (exit {proc.returncode}); nothing seeded, {phase} unchanged — "
+              "the traceback above is a development finding; fix the script, then run this merge again", file=sys.stderr)
+        return 1
+    report = read_json(report_path) or {}
     refused: dict = report.get("refused") or {}
     seed = run_script("design_seed.py", campaign, "--phase", phase)
     print(seed.stdout.strip())

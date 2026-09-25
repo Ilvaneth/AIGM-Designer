@@ -84,20 +84,31 @@ def critique_chains(ph: dict) -> tuple[dict, str, list, str, list]:
     chains: dict = {}
     phase_verdict, wishes_verdict = "—", "—"
     phase_lines: list = []
+    phase_chain: list = []
     for rec in crit.get("records") or []:
         eid = rec.get("entity_id") or ""
         findings = rec.get("findings") or []
-        if eid.startswith("skeleton"):
-            continue
-        if eid == ph.get("id") or eid.startswith("P") and len(eid) == 2:
-            if any(f.get("rubric_id") == "rubric_wishes" for f in findings):
-                wishes_verdict = rec.get("verdict") or "—"
+        kind = rec.get("kind")
+        if kind is None:            # records written before birth 2 carried no kind
+            if eid.startswith("skeleton"):
+                kind = "skeleton"
+            elif eid == ph.get("id") or (eid.startswith("P") and len(eid) == 2):
+                kind = "wishes" if any(f.get("rubric_id") == "rubric_wishes" for f in findings) else "phase"
             else:
-                phase_verdict = rec.get("verdict") or "—"
-                phase_lines = [f"{f.get('rubric_id')} → {f.get('entity_id')} ({f.get('verdict')}{', ' + f['reason_code'] if f.get('reason_code') else ''})"
-                               for f in findings if f.get("verdict") in ("fix", "rerun")]
+                kind = "entity"
+        if kind == "skeleton":
+            continue
+        if kind == "wishes":
+            wishes_verdict = rec.get("verdict") or "—"
+            continue
+        if kind == "phase":
+            phase_chain.append(rec.get("verdict") or "—")
+            phase_lines = [f"{f.get('rubric_id')} → {f.get('entity_id')} ({f.get('verdict')}{', ' + f['reason_code'] if f.get('reason_code') else ''})"
+                           for f in findings if f.get("verdict") in ("fix", "rerun")]
             continue
         chains.setdefault(eid, []).append(f"c{rec.get('critic', 1)}:{rec.get('verdict')}")
+    if phase_chain:
+        phase_verdict = " → ".join(phase_chain)
     return chains, phase_verdict, phase_lines, wishes_verdict, list(crit.get("skeleton_verdicts") or [])
 
 
@@ -391,11 +402,20 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
     if ph is None:
         return 2
     crit = ph.setdefault("critique", {"phase_loops": 0, "verdicts": [], "entity_loops_total": 0})
-    crit.setdefault("records", []).append({"entity_id": entity, "critic": critic, "verdict": verdict, "findings": findings,
-                                           "at": now_iso()})
-    if entity.startswith("skeleton"):
+    # birth 2: the skeleton critics returned entity_id "P4" and were counted as phase verdicts, the wishes critic's
+    # pass overwrote the phase critic's fix on the card — the kind is the file the return was saved as
+    stem = Path(file).name.split(".critic", 1)[0]
+    kind = "skeleton" if stem == "skeleton" else "wishes" if stem == "wishes" else "phase" if stem == "phase" \
+        else "phase" if (entity == phase or entity.startswith("phase")) else "entity"
+    if kind == "entity" and entity.startswith("skeleton"):
+        kind = "skeleton"
+    crit.setdefault("records", []).append({"entity_id": entity if kind == "entity" else stem, "critic": critic, "verdict": verdict,
+                                           "findings": findings, "kind": kind, "at": now_iso()})
+    if kind == "skeleton":
         crit.setdefault("skeleton_verdicts", []).append(verdict)
-    elif entity == phase or entity.startswith("phase"):
+    elif kind == "wishes":
+        crit.setdefault("wishes_verdicts", []).append(verdict)
+    elif kind == "phase":
         crit["verdicts"].append(verdict)
         if verdict == "fix":
             crit["phase_loops"] = int(crit.get("phase_loops") or 0) + 1

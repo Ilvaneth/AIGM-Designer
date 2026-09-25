@@ -153,8 +153,8 @@ class Wiring(unittest.TestCase):
         self.assertTrue((staging / "merged" / "site_sunken_pier.critic2.json").is_file())
         m = self.c.json("design/design.json")
         recs = m["phases"]["P6"]["critique"]["records"]
-        self.assertEqual({(r["entity_id"], r["critic"]) for r in recs[-3:]}, {("site_sunken_pier", 2), ("P6", 1), ("skeleton", 1)})
-        self.assertEqual(m["phases"]["P6"]["critique"]["verdicts"][-1], "fix")
+        self.assertEqual({(r["entity_id"], r["critic"]) for r in recs[-3:]}, {("site_sunken_pier", 2), ("wishes", 1), ("skeleton", 1)})
+        self.assertEqual(m["phases"]["P6"]["critique"]["wishes_verdicts"][-1], "fix", "the wishes critic has its own record (birth 2)")
 
 
 if __name__ == "__main__":

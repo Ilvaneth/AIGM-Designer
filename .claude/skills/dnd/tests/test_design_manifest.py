@@ -126,7 +126,7 @@ class OnTheFixture(unittest.TestCase):
         canonical = self.c.json("design/dm-only/entities.json")["entities"]
         files = dm.read_budget(self.c.name, canonical, "npc_yesra")
         self.assertTrue(files[0].endswith("npc_yesra.md"))
-        self.assertTrue(any(f.endswith(str(Path("dm-only") / "npcs" / "npc_yesra.md")) for f in files))
+        self.assertTrue(any(f.endswith("dm-only/npcs/npc_yesra.md") for f in files), "campaign-relative posix paths (birth 2)")
         self.assertTrue(any(f.endswith("faction_court_of_mourners.md") for f in files), "one hop")
         self.assertTrue(any(f.endswith("site_blind_lantern.md") for f in files), "two hops via faction_court_of_mourners")
         self.assertFalse(any(f.endswith("settlement_reedham.md") for f in files), "three hops away")

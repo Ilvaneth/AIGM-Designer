@@ -198,6 +198,8 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
                     if not is_fragment(frag):
                         continue
                     info = read_json(frag) or {}
+                    if info.get("id") and seen.get(info["id"], ("",))[0] == "staged":
+                        continue        # a newer fragment waits in the staging root: it is the truth (birth 2)
                     if info.get("id"):
                         # a container (document / batch) is merged once its file moved here; a stub row
                         # in the registry is a reservation, not a merged entity (tuning birth 1)
@@ -268,7 +270,8 @@ def rel(campaign: str, path: Path) -> str:
 
 
 def read_budget(campaign: str, canonical: dict, eid: str, hops: int = 2) -> list[str]:
-    """Absolute paths an agent may read for `eid`: its own files and those within `hops` refs."""
+    """Campaign-relative paths an agent may read for `eid`: its own files and those within `hops` refs (the agent
+    runs in the campaign dir; birth 2's begin JSON mixed absolute and relative forms of the same file)."""
     root = campaign_dir(campaign)
     frontier, seen = {eid}, {eid}
     for _ in range(hops):
@@ -283,10 +286,10 @@ def read_budget(campaign: str, canonical: dict, eid: str, hops: int = 2) -> list
     for other in sorted(seen, key=lambda x: (x != eid, x)):
         f = canonical.get(other, {}).get("file")
         if f and (root / f).is_file():
-            files.append(str(root / f))
+            files.append(f)
             mirror = root / "design" / "dm-only" / Path(f).relative_to("design") if f.startswith("design/") and not f.startswith("design/dm-only/") else None
             if mirror and mirror.is_file():
-                files.append(str(mirror))
+                files.append(rel(campaign, mirror))
     return files
 
 

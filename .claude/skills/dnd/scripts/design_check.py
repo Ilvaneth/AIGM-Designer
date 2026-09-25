@@ -197,7 +197,8 @@ def check_refs(b: Bible, only: str | None) -> list[Finding]:
             for role in ("leader", "heir", "hq"):
                 target = ent.get(role)
                 if not target:
-                    E(eid, "role_unfilled", f"{role} is empty")
+                    if not b.is_pending(ent):        # a P3 faction stub is filled by P4 (birth 2)
+                        E(eid, "role_unfilled", f"{role} is empty")
                 elif target not in ents:
                     E(eid, "role_dangling", f"{role} names {target}, which does not exist")
                 elif role != "hq" and ents[target].get("type") != "npc":
@@ -271,7 +272,7 @@ def check_stamps(b: Bible, only: str | None) -> list[Finding]:
             changed = sorted(k for k in set(want) | set(have) if want.get(k) != have.get(k))
             out.append(Finding("stamps", "error", eid, "stamp_drift",
                                f"stamped field(s) differ from birth: {', '.join(changed)}"))
-        if ent.get("type") == "site":
+        if ent.get("type") == "site" and not b.is_pending(ent):     # a site stub reserved by P2/P3 is stamped by P6
             tier = ent.get("danger_tier")
             if not isinstance(tier, int) or not 1 <= tier <= 5:
                 out.append(Finding("stamps", "error", eid, "bad_tier", "danger_tier must be an integer 1-5"))

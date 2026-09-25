@@ -212,8 +212,20 @@ def prose_errors(eid: str, frag: dict, root: Path, container: bool) -> tuple[lis
     """Existence, the three-heading split and the mirror front matter of the files a fragment names."""
     errs: list[str] = []
     warns: list[str] = []
-    pub = frag.get("prose") or {}
-    mir = frag.get("dm_only_prose") or {}
+    def info_of(key):
+        # `{file, bytes, sha256}` is the shape; a bare path string is accepted (birth 2: npc_olavene wrote one);
+        # anything else is refused with a reason instead of crashing the merge
+        v = frag.get(key)
+        if v in (None, "", {}):
+            return {}, None
+        if isinstance(v, str):
+            return {"file": v}, None
+        if isinstance(v, dict):
+            return v, None
+        return {}, f"{eid}: {key} must be an object {{file, bytes, sha256}} or a path string (got {type(v).__name__})"
+    pub, e_pub = info_of("prose")
+    mir, e_mir = info_of("dm_only_prose")
+    errs += [e for e in (e_pub, e_mir) if e]
     pub_file = pub.get("file") if isinstance(pub, dict) else None
     mir_file = mir.get("file") if isinstance(mir, dict) else None
     for key, info in (("prose", pub), ("dm_only_prose", mir)):

@@ -20,7 +20,7 @@ Roster of the phase: {{roster}}
 - **Every fan-out entity is on the roster** with a stub fragment: factions in P4, major and supporting NPCs in P5, sites in P6, chapters in P7; batches (`villagebatch_`, `npcbatch_`, `seedbatch_`) name their members.
 - **Stubs carry their stamps** (`tier`, `polity`, `faction`, `danger_tier`, `act` …) and `status: pending` with `owner_phase`; ids are `<type>_<slug>` and the secret ones are opaque (`npc_s01`-style).
 - **No secret name is public**: a secret entity's `name` and `aliases` are words that appear nowhere in the public files or the public registry; a hidden identity is a `dm_only` relation, never an alias.
-- **Naming**: English fantasy names from the campaign's naming languages, no blacklist hit, no first-name collision across the roster.
+- **Naming**: English fantasy names from the campaign's naming languages, no blacklist hit, no first-name collision across the roster; every id is the slug of the entity's **own** name (a faction called the Tidewell Company is `faction_tidewell_company`, not `faction_margin_house`).
 - **The map and the matrices are consistent** (P3: one hub per region, edges with days; P4: every pair has a stance and one reason line; P5: every NPC has ≥2 edges).
 
 ### The rubric
