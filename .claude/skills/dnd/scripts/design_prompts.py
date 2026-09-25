@@ -194,10 +194,16 @@ def read_budget(campaign: str, entity_id: str | None) -> list[str]:
 
 
 def render(campaign: str, name: str, entity_id: str | None = None, attempt: int | None = None,
-           critic_order: int = 1, question: str | None = None) -> str:
+           critic_order: int = 1, question: str | None = None, phase_override: str | None = None) -> str:
     fm, body = load(name)
     manifest = dm.load(campaign)
     phase = str(fm.get("phase") or "")
+    if phase not in dm.PHASES:
+        # an all-phase prompt (the critics) serves the phase the conductor names, else the entity's phase;
+        # tuning birth 1 rendered every critic for "Phase all" with the three special rubrics only
+        phase = phase_override or str(manifest.get("entities", {}).get(entity_id or "", {}).get("phase") or "")
+        if phase not in dm.PHASES and str(fm.get("role") or "") in ("critic", "phase_critic"):
+            raise SystemExit(f"design_prompts: {name} is an all-phase prompt; pass --phase PN (entity {entity_id or '-'} has no phase)")
     kind = str(fm.get("kind") or "")
     role = str(fm.get("role") or "")
     ph = manifest["phases"].get(phase) or {}
@@ -273,6 +279,7 @@ def main(argv=None) -> int:
     r.add_argument("--id")
     r.add_argument("--attempt", type=int)
     r.add_argument("--critic-order", type=int, default=1)
+    r.add_argument("--phase", help="all-phase prompts (the critics): the phase they serve")
     r.add_argument("--question", help="ask prompts: the yes/no question")
     r.add_argument("--out")
     a = ap.parse_args(argv)
@@ -290,7 +297,7 @@ def main(argv=None) -> int:
     if not a.campaign:
         print("design_prompts: render needs -c CAMP", file=sys.stderr)
         return 2
-    text = render(a.campaign, a.name, a.id, a.attempt, a.critic_order, a.question)
+    text = render(a.campaign, a.name, a.id, a.attempt, a.critic_order, a.question, a.phase)
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8", newline="\n")
         print(f"design_prompts: wrote {a.out} ({len(text)} chars)")

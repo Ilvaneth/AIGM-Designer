@@ -673,11 +673,13 @@ def document_roster(campaign: str, phase: str) -> list[str]:
     return []
 
 
-def render_cmd(campaign: str, name: str, entity_id: str | None, attempt: int, order: int = 1) -> str:
+def render_cmd(campaign: str, name: str, entity_id: str | None, attempt: int, order: int = 1, phase: str | None = None) -> str:
     cmd = f"py -X utf8 {SCRIPTS / 'design_prompts.py'} -c {campaign} render {name}"
     if entity_id:
         cmd += f" --id {entity_id}"
     cmd += f" --attempt {attempt}"
+    if phase:
+        cmd += f" --phase {phase}"
     if order != 1:
         cmd += f" --critic-order {order}"
     return cmd
@@ -688,20 +690,20 @@ def prompt_bundle(campaign: str, phase: str, name: str, entity_id: str | None, a
     out_dir = design_dir(campaign) / "_prompts" / phase
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = entity_id or "skeleton"
-    text = dp.render(campaign, name, entity_id, attempt)
+    text = dp.render(campaign, name, entity_id, attempt, phase_override=phase)
     path = out_dir / f"{stem}.md"
     path.write_text(text, encoding="utf-8", newline="\n")
     fm, _ = dp.load(name)
-    bundle = {"prompt": name, "prompt_cmd": render_cmd(campaign, name, entity_id, attempt), "prompt_file": str(path),
+    bundle = {"prompt": name, "prompt_cmd": render_cmd(campaign, name, entity_id, attempt, phase=phase), "prompt_file": str(path),
               "prompt_chars": len(text), "critics": int(fm.get("critics") or 1), "effort": fm.get("effort", "medium")}
-    if entity_id:
-        crit = dp.render(campaign, "critic", entity_id, attempt, 1)
-        cpath = out_dir / f"{stem}.critic.md"
-        cpath.write_text(crit, encoding="utf-8", newline="\n")
-        bundle["critic_cmd"] = render_cmd(campaign, "critic", entity_id, attempt)
-        bundle["critic_file"] = str(cpath)
-        if bundle["critics"] > 1:
-            bundle["critic2_cmd"] = render_cmd(campaign, "critic", entity_id, attempt, 2)
+    critic_name = "critic" if entity_id else "skeleton_critic"
+    crit = dp.render(campaign, critic_name, entity_id or "skeleton", attempt, 1, phase_override=phase)
+    cpath = out_dir / f"{stem}.critic.md"
+    cpath.write_text(crit, encoding="utf-8", newline="\n")
+    bundle["critic_cmd"] = render_cmd(campaign, critic_name, entity_id or "skeleton", attempt, phase=phase)
+    bundle["critic_file"] = str(cpath)
+    if bundle["critics"] > 1:
+        bundle["critic2_cmd"] = render_cmd(campaign, critic_name, entity_id or "skeleton", attempt, 2, phase=phase)
     return bundle
 
 
@@ -730,8 +732,8 @@ def pending_with_prompts(campaign: str, phase: str) -> dict:
     sk_name = dp.prompt_for(phase, None)
     if sk_name and skeleton.get("status") in (None, "pending"):
         skeleton.update(prompt_bundle(campaign, phase, sk_name, None, attempt))
-    phase_critic = {"prompt": "phase_critic", "prompt_cmd": render_cmd(campaign, "phase_critic", None, attempt)}
-    wishes_critic = {"prompt": "wishes_critic", "prompt_cmd": render_cmd(campaign, "wishes_critic", None, attempt)}
+    phase_critic = {"prompt": "phase_critic", "prompt_cmd": render_cmd(campaign, "phase_critic", None, attempt, phase=phase)}
+    wishes_critic = {"prompt": "wishes_critic", "prompt_cmd": render_cmd(campaign, "wishes_critic", None, attempt, phase=phase)}
     return {"campaign": campaign, "phase": phase, "attempt": attempt, "auto_approve": auto_approve(data),
             "skeleton": skeleton, "directions": ph.get("directions", []), "seed": data["seed"]["master"],
             "entities": rows, "phase_critic": phase_critic, "wishes_critic": wishes_critic,

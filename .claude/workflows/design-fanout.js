@@ -4,8 +4,8 @@ export const meta = {
   whenToUse: 'Run by the blind conductor after `designer.py phase PN merge` absorbed the skeleton and `phase PN begin --json` listed the pending entities; pass that JSON as args. Also the `detail` path with one entity.',
   phases: [
     { title: 'Write', detail: 'one fresh agent per pending entity, prompt rendered by design_prompts.py' },
-    { title: 'Critique', detail: 'one critic per entity (two on the premise, BBEG and lieutenants), a fix loop at most twice' },
-    { title: 'Phase critique', detail: 'the cross-entity rubric and the wishes rubric' },
+    { title: 'Critique', detail: 'one critic per entity (two on the premise, BBEG and lieutenants), a fix loop at most twice; the second critic\'s fix is acted on too' },
+    { title: 'Phase critique', detail: 'the cross-entity rubric and the wishes rubric; entities the phase critic names get one targeted fix' },
   ],
 }
 
@@ -83,7 +83,7 @@ const critique = (e, order, loop) => agent(bootstrap('critic', order === 2 ? e.c
 })
 
 const fix = (e, loop, verdict) => agent(bootstrap('writer (fix loop)', e.prompt_cmd, e,
-  `A critic returned "${verdict}" on your previous attempt. Read design/_staging/${a.phase}/${e.id}.critique.md (and the dm-only copy if the critic wrote one) and repair exactly what its findings name; keep every stamped field; this is fix loop ${loop} of ${MAX_FIX_LOOPS}. Overwrite the prose and rewrite the fragment last.`), {
+  `A critic returned "${verdict}" on your previous attempt. Read design/_staging/${a.phase}/${e.id}.critique.md (and the dm-only copy if the critic wrote one; the phase critic writes design/_staging/${a.phase}/phase.critique.md) and repair exactly what its findings name; keep every stamped field; this is fix loop ${loop} of ${MAX_FIX_LOOPS}. Overwrite the prose and rewrite the fragment last.`), {
   label: `${a.phase}.${e.id}.fix${loop}`,
   phase: 'Write',
   schema: WRITER,
@@ -109,8 +109,18 @@ const results = await pipeline(entities,
       r.verdicts.push(verdict ? verdict.verdict : 'critique_missing')
     }
     if (r.e.critics === 2 && r.e.critic2_cmd) {
-      const second = await critique(r.e, 2, 1)
+      let second = await critique(r.e, 2, 1)
       r.verdicts.push(second ? 'c2:' + second.verdict : 'c2:critique_missing')
+      // tuning birth 1: the second critic's `fix` was recorded and ignored; it gets one loop of its own
+      if (second && second.verdict === 'fix' && r.loops < MAX_FIX_LOOPS) {
+        r.loops += 1
+        const again = await fix(r.e, r.loops, 'fix (second critic)')
+        if (again && again.status === 'staged') {
+          r.write = again
+          second = await critique(r.e, 2, 2)
+          r.verdicts.push(second ? 'c2:' + second.verdict : 'c2:critique_missing')
+        }
+      }
     }
     return r
   },
@@ -126,12 +136,28 @@ log(`${a.phase}: ${staged.length} staged, ${failed.length} failed, ${loops} fix 
 phase('Phase critique')
 let phaseVerdict = null
 let wishesVerdict = null
+let phaseFixes = []
 if (a.phase_critic && a.phase_critic.prompt_cmd && staged.length) {
   const pc = await agent(bootstrap('phase critic', a.phase_critic.prompt_cmd, { id: a.phase },
     `Save your return as design/_staging/${a.phase}/phase.critic1.json before returning it.`), {
     label: `${a.phase}.phase_critic`, phase: 'Phase critique', schema: CRITIC, effort: 'high',
   })
   phaseVerdict = pc ? pc.verdict : 'critique_missing'
+  // tuning birth 1: the phase critic's verdict was never acted on. Every staged entity a `fix` finding
+  // names gets one targeted fix and one re-critique (loop 3, so the record stays distinct); the phase
+  // critic is not re-run, the card shows its verdict and the fixes applied.
+  if (pc && pc.verdict !== 'pass') {
+    const named = [...new Set((pc.findings || []).filter(f => f.verdict === 'fix' || f.verdict === 'rerun').map(f => f.entity_id))]
+    const targets = entities.filter(e => staged.includes(e.id) && named.includes(e.id))
+    phaseFixes = await parallel(targets.map(e => () =>
+      fix(e, 3, 'fix (phase critic)').then(async (w) => {
+        if (!w || w.status !== 'staged') return { id: e.id, fixed: false }
+        const v = await critique(e, 1, 3)
+        return { id: e.id, fixed: true, verdict: v ? v.verdict : 'critique_missing' }
+      })))
+    phaseFixes = phaseFixes.filter(Boolean)
+    log(`${a.phase}: phase critic said ${pc.verdict}; ${phaseFixes.length} targeted fix(es) applied`)
+  }
 }
 if (a.wishes_critic && a.wishes_critic.prompt_cmd && staged.length) {
   const wc = await agent(bootstrap('wishes critic', a.wishes_critic.prompt_cmd, { id: a.phase },
@@ -149,6 +175,7 @@ return {
   fix_loops: loops,
   verdicts: Object.fromEntries(done.map(r => [r.e.id, r.verdicts])),
   phase_verdict: phaseVerdict,
+  phase_fixes: phaseFixes,
   wishes_verdict: wishesVerdict,
   next: 'designer.py phase ' + a.phase + ' merge → check → card → approve',
 }

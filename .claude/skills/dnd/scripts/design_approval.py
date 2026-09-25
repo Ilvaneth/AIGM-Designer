@@ -336,7 +336,9 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
     crit = ph.setdefault("critique", {"phase_loops": 0, "verdicts": [], "entity_loops_total": 0})
     crit.setdefault("records", []).append({"entity_id": entity, "critic": critic, "verdict": verdict, "findings": findings,
                                            "at": now_iso()})
-    if entity == phase or entity.startswith("phase"):
+    if entity.startswith("skeleton"):
+        crit.setdefault("skeleton_verdicts", []).append(verdict)
+    elif entity == phase or entity.startswith("phase"):
         crit["verdicts"].append(verdict)
         if verdict == "fix":
             crit["phase_loops"] = int(crit.get("phase_loops") or 0) + 1
