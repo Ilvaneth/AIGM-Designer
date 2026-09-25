@@ -20,7 +20,8 @@ CLI:
   designer.py -c CAMP phase PN merge [--day N]              registry merge + design_seed + statuses
   designer.py -c CAMP phase PN check                        design_check --phase (redacted)
   designer.py -c CAMP phase PN card                         the phase card (design_approval.py)
-  designer.py -c CAMP phase PN approve [--card F] [--onay]  record approval (+ path-scoped commit)
+  designer.py -c CAMP phase PN approve [--card F] [--onay] [--round TEXT --scope S]
+                                                             record approval (+ path-scoped commit) or a correction round
   designer.py -c CAMP phase PN rerun --reason TEXT [--reseed]
   designer.py -c CAMP status [--json]
   designer.py -c CAMP abandon --reason TEXT                 retire names and used rows, disarm
@@ -811,8 +812,13 @@ def phase_card(campaign: str, phase: str) -> int:
     return 0
 
 
-def approve_phase(campaign: str, phase: str, card: str | None, onay: bool) -> int:
+def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round_text: str | None = None,
+                  scope: str | None = None) -> int:
     m = dm.load(campaign)
+    if round_text:
+        rc = dm.approve(campaign, argparse.Namespace(phase=phase, card=None, commit=None, round=round_text,
+                                                    scope=scope or "fact", affected=None))
+        return rc
     if not (auto_approve(m) or onay):
         print("designer: a real birth is approved only with the player's explicit `onay` (pass --onay after they typed it)",
               file=sys.stderr)
@@ -943,6 +949,8 @@ def main(argv=None) -> int:
     ph.add_argument("--day", type=int, default=0)
     ph.add_argument("--card")
     ph.add_argument("--onay", action="store_true")
+    ph.add_argument("--round", help="approve: record a correction round instead of approving")
+    ph.add_argument("--scope", choices=("fact", "entity", "phase", "direction"))
     ph.add_argument("--reason")
     ph.add_argument("--reseed", action="store_true")
     ph.add_argument("--session-id")
@@ -983,7 +991,7 @@ def main(argv=None) -> int:
         if a.step == "card":
             return phase_card(c, a.phase)
         if a.step == "approve":
-            return approve_phase(c, a.phase, a.card, a.onay)
+            return approve_phase(c, a.phase, a.card, a.onay, a.round, a.scope)
         if a.step == "rerun":
             if not a.reason:
                 print("designer: rerun needs --reason", file=sys.stderr)
