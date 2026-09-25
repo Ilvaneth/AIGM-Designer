@@ -1,0 +1,657 @@
+# regions.yaml — lands (item 6.1-6.2, 6.5): biome / climate combinations, the fixed danger tiers and
+# their distribution over regions, tonal-identity seeds (one line that makes a region unlike every
+# other, no reskins), the travel table's six categories and weights (4 / 1 / 1 / 1 / 3 / 2 on a d12,
+# SKILL-travel), subtable seeds by biome, landmark kinds, traveller and faction-presence seeds.
+#
+# A region is a `region_` entity with a stamped danger tier and polity, 2-4 landmarks (map nodes),
+# exactly one hub settlement, and a travel table generated at birth in the Ashen Crown format: six
+# d6 subtables for the Early tier (threat stage 1-2) and a Late tier (stage 3+) that redefines Combat
+# and Faction/Political. `[KANCA]` marks a result that opens a hook. Mounted travel by default.
+# Combat rows come from monster-ecology.yaml by the biome's ecology tags, never from this file.
+schema_version: 1
+table: regions
+consumed_by: [P3, P6, P8, validator]
+plan: "item 6.1-6.2, 6.5, 9.3, 17 #14, SKILL-travel, risk 24.1 #10"
+roll: {labels: [P3.region_biome.<n>, P3.region_identity.<n>, P3.region_tier.<n>, P3.landmark.<region>.<n>, P3.social.<region>.<n>, P3.faction_presence.<region>.<n>], avoid_used: true, note: "biome and identity are rolled per region; tiers are assigned by the distribution row, not rolled"}
+rules:
+  counts: "scale.yaml regions; exactly one hub settlement per region; 2-4 landmarks per region, each a map node"
+  danger_tiers: {T1: [0, 2], T2: [3, 6], T3: [7, 11], T4: [12, 16], T5: [17, 30]}
+  tier_is_fixed: "set by the fiction at birth, stamped, never derived from party level; the tier is the ceiling of the region's ordinary sites and its travel Combat subtable; over-tier sites inside a region are the exception the public telegraphs are about"
+  travel_table:
+    categories: [Quiet/Texture, Social, Environmental, Combat, Discovery, Faction/Political]
+    d12: {Quiet/Texture: [1, 4], Social: [5, 5], Environmental: [6, 6], Combat: [7, 7], Discovery: [8, 10], Faction/Political: [11, 12]}
+    subtable_rows: 6
+    late_tier_redefines: [Combat, Faction/Political]
+    hook_mark: "[KANCA]"
+    hooks_min: {Discovery: 3, Faction/Political: 3, Combat: 1}
+    unique_result: "each subtable has at least one result that could happen only in this region (the critique question of item 6)"
+    news_first: "Discovery and Faction/Political consult the news feed before falling back to the table (SKILL-travel rules 1 and 5)"
+    road_shifts: "a region whose routes are mostly `none` or `track` moves one d12 point from Quiet/Texture to Environmental; a region crossed by a highway moves one point from Quiet/Texture to Social"
+  insets: "a region unreachable by normal travel exists off-graph as an inset with an entry site or null (map.json insets)"
+hooks_common:
+  - {phase: P3, must: "the region file carries identity line, biome and climate, polity, stamped tier, factions present, settlements with the hub, 2-4 landmarks, sites with tiers, the public telegraph lines and the full travel table"}
+  - {phase: P6, must: "the region's sites use its ecology tags; at most the over-tier count the danger dial allows sit above its tier"}
+  - {phase: P8, must: "the primer names the region, its polity and what everyone says about its dangerous places"}
+
+tables:
+
+  tier_distribution:
+    note: "how the fixed tiers spread over the regions of a scale; `band` is the level band's own tier (start level 1 → T1)"
+    rows:
+      - id: tierdist_short
+        scale: short
+        label: Short — one or two regions
+        rule: "the hub region at the band's tier; a second region, if any, one tier above; over-tier Act 1 sites per the danger dial sit inside the hub region"
+        hooks:
+          - {phase: P3, must: "if two regions, the second is reachable only through the first (the hub rule)"}
+      - id: tierdist_standard
+        scale: standard
+        label: Standard — four to six regions
+        rule: "regions span the band's tier through band+3; at least one region two tiers above the start; the capital's region is at most band+1; one region may be an inset"
+        hooks:
+          - {phase: P3, must: "the tiers form a gradient outward from the start settlement, with one exception the telegraphs explain"}
+      - id: tierdist_epic
+        scale: epic
+        label: Epic — eight to twelve regions
+        rule: "all five tiers present; at least two T5 regions; at least one inset; no two adjacent regions share a tier unless a polity border separates them"
+        hooks:
+          - {phase: P3, must: "the player map shows the tier gradient as what the folk say, never as numbers"}
+
+  biome:
+    notation: d24
+    rows:
+      - id: biome_salt_marsh
+        label: Salt marsh and tidal coast
+        climates: [climate_maritime, climate_temperate]
+        terrain_tr: [kıyı, sazlık, tuz düzlüğü, kayalık kıyı, burun]
+        ecology_tags: [coast, marsh, water]
+        site_type_bias: {dungeon: 2, stronghold: 1, wilderness: 3, urban: 1, planar: 1, social: 1}
+        texture_seeds: ["the flats crackle in the morning sun and the horses prick their ears at nothing", "a boat crusted in salt, miles from the sea", "fog turns the reeds to walls and brings every sound close", "gulls circling over something the road does not show"]
+        environmental_seeds: ["the tide takes the coast road for two hours: wait, or Survival DC 12 through the reeds and half a day lost", "a salt storm: CON DC 10 or a level of exhaustion", "mud in the reeds: STR DC 12 or a horse is lamed", "the crust breaks over brine: DEX DC 12 or 1d6"]
+        discovery_seeds: ["a fresh drag-mark above the tideline", "hundreds of footprints, all leading out of one place", "a stone with letters older than the flood", "tide-marks cut into a cliff: someone's timetable"]
+        landmark_seeds: ["a broken breakwater where a ship went down", "the one road between town and village, reeds on both sides", "white flats east of the village, cracked and silent"]
+        identity_seeds: [identity_land_remembers, identity_tide_owns]
+        hooks:
+          - {phase: P3, must: "the tide is a timed hazard on at least one route; the flats hold the over-tier site"}
+      - id: biome_sea_cliffs
+        label: Sea cliffs and headlands
+        climates: [climate_maritime, climate_cold]
+        terrain_tr: [yar, burun, koy, kayalık]
+        ecology_tags: [coast, cliff, water]
+        site_type_bias: {dungeon: 3, stronghold: 2, wilderness: 2, urban: 1, planar: 1, social: 0}
+        texture_seeds: ["a beacon tower with no keeper's smoke", "the path narrows to a ledge over a hundred feet of surf", "seals watching from a rock like a jury", "wind that takes hats and words"]
+        environmental_seeds: ["a rockfall closes the ledge: DEX DC 13 or 2d6 and a horse lost", "gale: no travel today or CON DC 12 each hour", "a cove reachable only at low tide, the way back gone by dusk", "fog on the headland: the beacon is the only bearing"]
+        discovery_seeds: ["a wreck's ribs in a cove nobody can reach by land", "steps cut into the cliff, ending in the sea", "a rope ladder, new, where the map says nothing", "a shrine on the point with fresh offerings"]
+        landmark_seeds: ["the tallest headland, with a beacon that is or is not lit", "a sea-arch the fishers pass through for luck", "a cove with a name that means a drowning"]
+        identity_seeds: [identity_watchers, identity_edge_of_map]
+        hooks:
+          - {phase: P3, must: "at least one site is reachable only by sea or by a ledge with a DC"}
+      - id: biome_dunes
+        label: Dunes and shingle shore
+        climates: [climate_maritime, climate_hot_dry]
+        terrain_tr: [kumul, çakıl kıyı, tuz gölü]
+        ecology_tags: [coast, desert, water]
+        site_type_bias: {dungeon: 2, stronghold: 1, wilderness: 3, urban: 1, planar: 1, social: 1}
+        texture_seeds: ["dunes that were not there last week", "a ship's figurehead half-buried, facing inland", "the shingle sings under hooves", "salt lakes that reflect a sky the wrong colour"]
+        environmental_seeds: ["sand on the wind: visibility ten paces, Survival DC 12 or a day lost", "a dune collapse over a buried thing: STR DC 12 to dig a horse out", "no fresh water for a day's ride", "the shingle shifts underfoot: horses at half pace"]
+        discovery_seeds: ["a buried building's roofline showing after a storm", "a line of stakes marking a road the sea took", "footprints that stop mid-dune", "a message cairn with a date"]
+        landmark_seeds: ["a lighthouse with the sea a mile away now", "a great dune the folk call by a person's name", "the stakes of the drowned road"]
+        identity_seeds: [identity_land_moves, identity_buried]
+        hooks:
+          - {phase: P3, must: "one landmark is something the dunes uncovered; the site under it is over-tier"}
+      - id: biome_river_delta
+        label: River delta
+        climates: [climate_temperate, climate_hot_wet]
+        terrain_tr: [delta, kanal, ada, bataklık]
+        ecology_tags: [river, marsh, water]
+        site_type_bias: {dungeon: 1, stronghold: 2, wilderness: 3, urban: 2, planar: 0, social: 2}
+        texture_seeds: ["channels that change with the season; the ferryman's map is the only map", "rice or reed cut to the waterline, the stubble like a shaved head", "boats moored to trees", "the smell of silt and something cooking"]
+        environmental_seeds: ["the ferry is on the other side and the ferryman is not: half a day", "a channel silted since the map: Survival DC 12 or the route doubles", "fever water: CON DC 11 after a night here or a disease from the hazards list", "a flood pulse from upstream: horses to high ground, DEX DC 12"]
+        discovery_seeds: ["a sunken barge with its cargo intact", "a shrine on stilts nobody has tended", "a channel cut by hand, straight as a rule, leading nowhere the map knows", "a body in the reeds, downstream of somewhere"]
+        landmark_seeds: ["the ferry crossing with the ferryman's house", "the old lighthouse at the river mouth", "a drowned village at low water"]
+        identity_seeds: [identity_water_is_road, identity_downstream]
+        hooks:
+          - {phase: P3, must: "routes are channels with a ferry or a boat; the map's days assume the ferry"}
+      - id: biome_river_valley
+        label: Farmed river valley
+        climates: [climate_temperate]
+        terrain_tr: [vadi, tarla, nehir yolu, köprü]
+        ecology_tags: [river, farmland, forest]
+        site_type_bias: {dungeon: 1, stronghold: 2, wilderness: 1, urban: 2, planar: 0, social: 3}
+        texture_seeds: ["mill wheels turning; someone always at the bridge", "harvest carts, then empty fields, then frost", "a chapel bell from the next village answering this one's", "the river brown and fast after rain"]
+        environmental_seeds: ["the bridge is down: the ford is Survival DC 12 or a day around", "spring flood over the road: wait or swim the horses, STR DC 12", "a farm dog pack: not combat, but the horses bolt without Animal Handling DC 12", "black ice on the bridge: DEX DC 10 or 1d6"]
+        discovery_seeds: ["a field with a stone circle the plough goes around", "a mill that grinds at night with nobody inside", "a boundary stone moved, the old line still visible", "a burnt farm nobody will name"]
+        landmark_seeds: ["the great bridge and its toll house", "the mill that never stops", "the old boundary stone"]
+        identity_seeds: [identity_everyone_knows, identity_debt_land]
+        hooks:
+          - {phase: P3, must: "the price table is cheapest here; the tier is the band's or lower"}
+      - id: biome_lake_country
+        label: Lakes and islands
+        climates: [climate_temperate, climate_cold]
+        terrain_tr: [göl, ada, kıyı yolu, sazlık]
+        ecology_tags: [lake, water, forest]
+        site_type_bias: {dungeon: 2, stronghold: 2, wilderness: 2, urban: 1, planar: 2, social: 1}
+        texture_seeds: ["a lake so still the far shore is upside down", "an island with one tree and one light", "ice booming in the night", "fishers who row standing"]
+        environmental_seeds: ["the lake road floods: a boat or a day around", "thin ice: DEX DC 13 or into the water, cold damage", "mist on the water: the island is not where it was", "a squall on the crossing: Athletics DC 12 for the oarsman"]
+        discovery_seeds: ["a drowned bell heard from the boat", "an island with a walled garden and no landing", "a boat adrift with the oars shipped", "stone steps going down into the lake"]
+        landmark_seeds: ["the island the folk do not row to", "the lake's one bridge", "the drowned bell"]
+        identity_seeds: [identity_under_the_water, identity_islands_keep]
+        hooks:
+          - {phase: P6, must: "one site is on an island; its escape geometry is the boat"}
+      - id: biome_fen
+        label: Fen and bog
+        climates: [climate_temperate, climate_cold]
+        terrain_tr: [bataklık, turba, saz, tümsek yolu]
+        ecology_tags: [marsh, water, bog]
+        site_type_bias: {dungeon: 3, stronghold: 1, wilderness: 3, urban: 0, planar: 2, social: 0}
+        texture_seeds: ["lights over the bog that are not lanterns", "a causeway of logs, half of them missing", "the smell of peat and rot", "a heron that does not fly when you pass"]
+        environmental_seeds: ["the causeway gives: STR DC 12 or a horse in the bog, an hour to free it", "the path is gone under water: Survival DC 14 or the night in the fen", "bog gas: CON DC 11 or poisoned for an hour", "a false light leads off the path: WIS DC 12"]
+        discovery_seeds: ["a preserved body in the peat, dressed like nobody living", "a hut on stilts with a fire lit", "a road of stones under the water, going somewhere", "bog iron worked into a shape"]
+        landmark_seeds: ["the causeway and its keeper's hut", "the drowned road", "the lights"]
+        identity_seeds: [identity_preserved, identity_lights]
+        hooks:
+          - {phase: P6, must: "a site's entrance is under water part of the day"}
+      - id: biome_old_forest
+        label: Old forest
+        climates: [climate_temperate, climate_hot_wet]
+        terrain_tr: [orman, orman yolu, açıklık, dere]
+        ecology_tags: [forest, deep_forest]
+        site_type_bias: {dungeon: 2, stronghold: 1, wilderness: 4, urban: 0, planar: 2, social: 0}
+        texture_seeds: ["trees too wide to see around; the road bends for them", "silence where there should be birds", "a clearing with a ring of stumps, all the same height", "moss on every side of the trunks"]
+        environmental_seeds: ["the road is blocked by a fall: half a day to cut through, or off the road", "the canopy hides the sky: Survival DC 13 to keep a bearing", "a hunt in progress: the horses panic, Animal Handling DC 12", "a river swollen under the trees: STR DC 12 to cross"]
+        discovery_seeds: ["a woodcutter's camp abandoned with the axe in the block", "a tree with a door", "a shrine hung with tools", "a road older than the forest, its stones between the roots"]
+        landmark_seeds: ["the oldest tree, with a name", "the woodcutters' hall at the edge", "the clearing of stumps"]
+        identity_seeds: [identity_forest_watches, identity_older_than_us]
+        hooks:
+          - {phase: P3, must: "the forest's tier is above the band; the road through it is the only safe line"}
+      - id: biome_pine_uplands
+        label: Pine uplands
+        climates: [climate_cold, climate_highland]
+        terrain_tr: [çam ormanı, yayla, dere yatağı, patika]
+        ecology_tags: [forest, hills, cold]
+        site_type_bias: {dungeon: 2, stronghold: 2, wilderness: 3, urban: 0, planar: 1, social: 1}
+        texture_seeds: ["resin smell and needles underfoot; the horses go quiet", "a charcoal burner's smoke, then no burner", "snow in the shade in the month it should be gone", "wolves heard, never seen"]
+        environmental_seeds: ["a stream crossing in melt: STR DC 12 or swept, 1d6", "cold night: no fire means exhaustion", "a track lost under needles: Survival DC 12", "a tree comes down in wind: DEX DC 12 or 2d6"]
+        discovery_seeds: ["a charcoal camp with a body in the clamp", "a tree carved with tallies going back years", "a cabin with a locked door and a warm chimney", "a deer stand overlooking a road that should not matter"]
+        landmark_seeds: ["the burners' clearing", "the stand of pines that all lean one way", "the frozen stream"]
+        identity_seeds: [identity_quiet_people, identity_winter_waits]
+        hooks:
+          - {phase: P6, must: "one site is a lair whose occupants leave tracks the travel table finds"}
+      - id: biome_grazing_hills
+        label: Grazing hills
+        climates: [climate_temperate, climate_highland]
+        terrain_tr: [tepe, otlak, koyun yolu, taş duvar]
+        ecology_tags: [hills, farmland, grassland]
+        site_type_bias: {dungeon: 2, stronghold: 2, wilderness: 2, urban: 1, planar: 0, social: 2}
+        texture_seeds: ["stone walls that go over the horizon", "a shepherd's whistle, and the flock turns as one", "a barrow on every third hilltop", "clouds' shadows racing over the grass"]
+        environmental_seeds: ["fog on the tops: Survival DC 11 or a barrow you did not mean to find", "a flock blocks the road for an hour", "a hill stream in spate: half a day around", "hail: shelter or 1d4 and a spooked horse"]
+        discovery_seeds: ["a barrow with the door stone moved", "a sheep killed and not eaten", "a wall built around nothing", "a hilltop with stones set to the sun"]
+        landmark_seeds: ["the great barrow", "the shepherds' cross", "the hill with the stones"]
+        identity_seeds: [identity_barrows, identity_everyone_knows]
+        hooks:
+          - {phase: P6, must: "a barrow is a minor site with a lore payoff and a tier at or below the band"}
+      - id: biome_moor
+        label: Moor and heath
+        climates: [climate_temperate, climate_cold, climate_highland]
+        terrain_tr: [kır, fundalık, turbalık, tepe yolu]
+        ecology_tags: [moor, hills, bog]
+        site_type_bias: {dungeon: 2, stronghold: 2, wilderness: 3, urban: 0, planar: 1, social: 1}
+        texture_seeds: ["heather to the horizon and one standing stone", "the wind never stops; the horses turn their tails to it", "a gibbet at the crossroads, empty", "peat smoke from a house you cannot see"]
+        environmental_seeds: ["bog between the tracks: STR DC 12 or a horse to the belly", "no shelter: a storm means exhaustion without a wall", "the track forks and both are old: Survival DC 12", "a hare bolts and a horse throws its rider: DEX DC 10"]
+        discovery_seeds: ["a stone with a hand carved in it, pointing", "a cottage with the door open and the table laid", "a ring of burnt ground", "a coach wheel, alone"]
+        landmark_seeds: ["the crossroads gibbet", "the standing stone", "the inn on the moor, the only one"]
+        identity_seeds: [identity_nobody_stops, identity_edge_of_map]
+        hooks:
+          - {phase: P3, must: "the moor inn is a settlement anchor or a site; nothing else offers a roof"}
+      - id: biome_high_mountains
+        label: High mountains
+        climates: [climate_highland, climate_cold]
+        terrain_tr: [dağ, geçit, buzul, kaya]
+        ecology_tags: [mountain, cliff, cold]
+        site_type_bias: {dungeon: 3, stronghold: 3, wilderness: 3, urban: 0, planar: 2, social: 0}
+        texture_seeds: ["the pass ahead white in the month it should be green", "an eagle level with the road", "thin air; the horses blow at every rise", "a cairn every hundred paces, some fallen"]
+        environmental_seeds: ["the pass is closed by snow: back, or a day's detour and Survival DC 13", "rockfall: DEX DC 13 or 2d6", "cold at altitude: CON DC 12 each night without shelter", "a ledge with a drop: Animal Handling DC 12 to lead the horses"]
+        discovery_seeds: ["a frozen body with a letter", "a monastery seen from the pass and not on the map", "a mine entrance with the props rotten", "a bridge of a single rope"]
+        landmark_seeds: ["the pass and its shrine", "the peak with a name that is a warning", "the rope bridge"]
+        identity_seeds: [identity_watchers, identity_older_than_us]
+        hooks:
+          - {phase: P3, must: "the pass is a map edge with a season flag; the region's tier is above the band"}
+      - id: biome_foothills
+        label: Foothills and passes
+        climates: [climate_highland, climate_temperate]
+        terrain_tr: [etek, geçit yolu, vadi, taş köprü]
+        ecology_tags: [hills, mountain, forest]
+        site_type_bias: {dungeon: 2, stronghold: 3, wilderness: 2, urban: 1, planar: 0, social: 2}
+        texture_seeds: ["terraces, then goats, then rock", "a watchtower on every spur", "the road cut into the hillside, a wall on one side, air on the other", "bells from a village you will not reach today"]
+        environmental_seeds: ["a landslip over the road: half a day to clear", "a mountain storm comes up in an hour: shelter or exhaustion", "the ford is high: STR DC 12", "loose scree: DEX DC 11 or a lamed horse"]
+        discovery_seeds: ["a tower with its door bricked from inside", "terraces gone wild, a house in them", "a milestone with a distance to a place that no longer exists", "a smugglers' cache in a culvert"]
+        landmark_seeds: ["the first watchtower", "the terraced valley", "the milestone"]
+        identity_seeds: [identity_border, identity_watchers]
+        hooks:
+          - {phase: P4, must: "a faction holds the passes; its asset is the toll or the towers"}
+      - id: biome_steppe
+        label: Grass steppe
+        climates: [climate_steppe]
+        terrain_tr: [bozkır, otlak, kuyu, kervan yolu]
+        ecology_tags: [grassland, steppe, open]
+        site_type_bias: {dungeon: 1, stronghold: 2, wilderness: 3, urban: 1, planar: 1, social: 2}
+        texture_seeds: ["grass to every horizon; the sky is most of the world", "a rider seen for an hour before you meet", "a well with a wooden cover and a bucket on a chain", "the wind carries a bell from nowhere"]
+        environmental_seeds: ["no water until the next well: a day's ration or CON DC 12", "grass fire on the wind: ride, DEX DC 12 or 2d6", "a storm with nothing to hide behind: exhaustion", "the well is fouled: Survival DC 13 to find another"]
+        discovery_seeds: ["a stone rider, life-size, alone", "a camp struck this morning; the fires warm", "a kurgan with a fresh hole", "a road of packed earth, invisible until you are on it"]
+        landmark_seeds: ["the great well", "the stone rider", "the kurgan"]
+        identity_seeds: [identity_distance, identity_horse_people]
+        hooks:
+          - {phase: P3, must: "waypoints are wells; a route without a well is marked"}
+      - id: biome_sand_desert
+        label: Sand desert
+        climates: [climate_hot_dry]
+        terrain_tr: [çöl, kumul, vaha, kervansaray]
+        ecology_tags: [desert, sand, open]
+        site_type_bias: {dungeon: 3, stronghold: 2, wilderness: 3, urban: 1, planar: 2, social: 1}
+        texture_seeds: ["heat that stops everything at noon; travel is at dawn and dusk", "a caravanserai's walls a day before you reach them", "the stars the only road", "sand in everything, forever"]
+        environmental_seeds: ["sandstorm: shelter or CON DC 13 and a day lost", "the oasis is dry: a day to the next, rations halved", "heat: CON DC 12 at noon without shade", "a dune collapse: STR DC 12 to free a horse"]
+        discovery_seeds: ["a city's top storey above the sand", "a caravan's bones, the goods still packed", "an inscription on a rock in a script nobody reads", "a well with steps going down further than a well needs"]
+        landmark_seeds: ["the caravanserai", "the buried city", "the singing dune"]
+        identity_seeds: [identity_buried, identity_distance]
+        hooks:
+          - {phase: P6, must: "the buried city is a major site above the band, telegraphed by the caravanserai's keeper"}
+      - id: biome_stone_desert
+        label: Stone desert and wadis
+        climates: [climate_hot_dry]
+        terrain_tr: [taşlık, vadi, kanyon, kaya]
+        ecology_tags: [desert, rock, canyon]
+        site_type_bias: {dungeon: 3, stronghold: 2, wilderness: 2, urban: 1, planar: 1, social: 1}
+        texture_seeds: ["rock the colour of rust; the wadis green for one week a year", "a lizard on every warm stone", "a canyon that echoes the horses back at them", "nights so cold the water skin freezes"]
+        environmental_seeds: ["a flash flood in the wadi: DEX DC 13 to reach the wall, 3d6 and the horses if not", "the canyon forks: Survival DC 12", "heat: CON DC 12 at noon", "a scorpion in a boot: the hazards list"]
+        discovery_seeds: ["tombs cut into the canyon wall, doors open", "a cistern, full, in the wrong place", "paintings of animals that do not live here", "a rope down a shaft, taut"]
+        landmark_seeds: ["the canyon of tombs", "the cistern", "the arch"]
+        identity_seeds: [identity_older_than_us, identity_buried]
+        hooks:
+          - {phase: P6, must: "the tombs are a site with the room table's structural share at the high end"}
+      - id: biome_tundra
+        label: Tundra
+        climates: [climate_cold]
+        terrain_tr: [tundra, donmuş göl, kar, kayalık]
+        ecology_tags: [cold, tundra, open]
+        site_type_bias: {dungeon: 2, stronghold: 1, wilderness: 4, urban: 0, planar: 2, social: 0}
+        texture_seeds: ["light that lasts all night in one season and never comes in another", "the ground frozen a hand's depth down all year", "a herd on the horizon, moving like weather", "a sky with colours in it"]
+        environmental_seeds: ["whiteout: no travel, or Survival DC 14", "cold: CON DC 13 each night, exhaustion", "a frozen lake to cross: DEX DC 12 on the ice", "no fuel: the fire is dung or nothing"]
+        discovery_seeds: ["a thing frozen in the ground, older than the ground", "a stone hut with a sealed door", "a ship on the tundra, a hundred miles from any sea", "bones arranged in a line to the north"]
+        landmark_seeds: ["the ship on the tundra", "the sealed hut", "the line of bones"]
+        identity_seeds: [identity_winter_waits, identity_edge_of_map]
+        hooks:
+          - {phase: P3, must: "travel days double in the dark season; the calendar says which months"}
+      - id: biome_jungle
+        label: Jungle
+        climates: [climate_hot_wet]
+        terrain_tr: [orman, nehir, bataklık, harabe]
+        ecology_tags: [jungle, river, ruins]
+        site_type_bias: {dungeon: 3, stronghold: 1, wilderness: 4, urban: 0, planar: 2, social: 0}
+        texture_seeds: ["green in every direction and the sky a rumour", "rain at the same hour each day", "a temple's stair under vines, going up", "insects that stop all at once"]
+        environmental_seeds: ["fever: CON DC 12 after a night, or a disease from the hazards list", "the river rises over the trail: a day", "a bridge of vine: Athletics DC 12, horses cannot", "leeches, rot, a boot ruined: the hazards list"]
+        discovery_seeds: ["a stone face in the river bank", "a village on stilts, abandoned mid-meal", "a road of fitted stone under the leaf litter", "a cage hanging from a tree"]
+        landmark_seeds: ["the stair", "the stone face", "the falls"]
+        identity_seeds: [identity_forest_watches, identity_buried]
+        hooks:
+          - {phase: P6, must: "the ruins are a major site above the band; the trail to them is a route with a season flag"}
+      - id: biome_volcanic
+        label: Volcanic lands
+        climates: [climate_hot_dry, climate_temperate]
+        terrain_tr: [lav tarlası, kül, kaplıca, yanardağ]
+        ecology_tags: [volcanic, rock, fire]
+        site_type_bias: {dungeon: 3, stronghold: 2, wilderness: 2, urban: 1, planar: 3, social: 0}
+        texture_seeds: ["ash on the road like grey snow", "hot springs steaming in the cold", "the mountain's smoke leaning with the wind", "black glass underfoot, sharp"]
+        environmental_seeds: ["ash fall: CON DC 11 or an hour of coughing, visibility gone", "a vent opens: DEX DC 12 or 2d6 fire", "the ground is hot through the boots: the horses will not go", "a tremor: DEX DC 10 or thrown"]
+        discovery_seeds: ["a village under ash, the roofs showing", "an altar at the crater's lip, used", "glass that was a person", "a forge built into a vent, still hot"]
+        landmark_seeds: ["the mountain", "the springs", "the glass field"]
+        identity_seeds: [identity_land_is_awake, identity_buried]
+        hooks:
+          - {phase: P2, must: "the Elemental Plane of Fire is touched or its vortex is here"}
+      - id: biome_caverns
+        label: Caverns
+        climates: [climate_underground]
+        terrain_tr: [mağara, tünel, yeraltı nehri, uçurum]
+        ecology_tags: [underground, cave, deep]
+        site_type_bias: {dungeon: 4, stronghold: 2, wilderness: 2, urban: 1, planar: 2, social: 0}
+        texture_seeds: ["the lamp's circle and nothing beyond it", "water heard, never found", "a draught from somewhere with a smell", "rock that rings when struck"]
+        environmental_seeds: ["bad air: CON DC 12 or exhaustion, retreat", "a chasm across the tunnel: a rope, Athletics DC 12", "the lamp oil is low: a day in the dark", "a flooded gallery: swim or a day around"]
+        discovery_seeds: ["a carved door in a natural wall", "a camp with a cold fire and a map", "a shaft with daylight at the top, unreachable", "bones in a niche, arranged"]
+        landmark_seeds: ["the great chasm", "the shaft of light", "the ringing hall"]
+        identity_seeds: [identity_under_the_water, identity_older_than_us]
+        hooks:
+          - {phase: P3, must: "routes are tunnels; the region has a stratum depth and a way up"}
+      - id: biome_fungus_deeps
+        label: Fungus forests of the deep
+        climates: [climate_underground]
+        terrain_tr: [mantar ormanı, spor tarlası, göl, kaya]
+        ecology_tags: [underground, fungus, deep]
+        site_type_bias: {dungeon: 3, stronghold: 2, wilderness: 3, urban: 1, planar: 2, social: 1}
+        texture_seeds: ["light from the caps, blue and slow", "spores like snow; everyone wears a cloth", "a lake that glows from below", "stalks as wide as towers"]
+        environmental_seeds: ["spore cloud: CON DC 12 or poisoned", "the light dims for a day: no travel without lamps", "a stalk falls: DEX DC 12 or 2d6", "the lake path is under water: a day"]
+        discovery_seeds: ["a farm of fungus, tended, nobody there", "a boat on the glowing lake", "a hall grown, not built", "a statue with fungus for a face"]
+        landmark_seeds: ["the great stalk", "the glowing lake", "the spore field"]
+        identity_seeds: [identity_lights, identity_quiet_people]
+        hooks:
+          - {phase: P2, must: "the calendar counts by the caps' light cycle"}
+      - id: biome_dead_city_lands
+        label: The lands of a dead city
+        climates: [climate_temperate, climate_hot_dry, climate_steppe]
+        terrain_tr: [harabe, eski yol, kırık köprü, sur]
+        ecology_tags: [ruins, urban, open]
+        site_type_bias: {dungeon: 4, stronghold: 2, wilderness: 1, urban: 2, planar: 2, social: 0}
+        texture_seeds: ["a road better than any living road, going to a city nobody lives in", "aqueduct arches with trees on top", "a wall that goes on for a day", "the statues have all been turned to face one way"]
+        environmental_seeds: ["a collapse in the old road: Survival DC 12 to find the way around", "the wells are poisoned: a day's water", "a cellar opens under a horse: STR DC 12", "dust storm off the ruins: CON DC 11"]
+        discovery_seeds: ["a market with the awnings still up", "a library with the roof gone and the shelves full", "a district that burned yesterday, in a city dead a century", "a gate with a new lock"]
+        landmark_seeds: ["the gate", "the aqueduct", "the palace on the hill"]
+        identity_seeds: [identity_older_than_us, identity_nobody_stops]
+        hooks:
+          - {phase: P6, must: "the city is the capstone or a major site; its districts are sites of their own"}
+      - id: biome_drowned_lands
+        label: Drowned lands
+        climates: [climate_maritime, climate_temperate]
+        terrain_tr: [sular altı, çatı, kanal, dalgakıran]
+        ecology_tags: [water, ruins, marsh]
+        site_type_bias: {dungeon: 3, stronghold: 1, wilderness: 3, urban: 2, planar: 1, social: 0}
+        texture_seeds: ["roofs above the water, a road of them", "a church tower with a boat tied to the bell", "fish in the streets", "the water so clear you can read the shop signs"]
+        environmental_seeds: ["the boat channel is blocked by a fallen roof: an hour, Athletics DC 11", "a squall over the drowned town: DEX DC 12 or capsized", "cold water: CON DC 11 after a swim", "the tide drops and the boat grounds on a chimney: wait"]
+        discovery_seeds: ["a house with a dry room and a lamp", "a treasury with the door open under ten feet of water", "a boat that is not yours, tied where yours was", "a name painted on a roof, fresh"]
+        landmark_seeds: ["the bell tower", "the breakwater that failed", "the dry house"]
+        identity_seeds: [identity_under_the_water, identity_land_remembers]
+        hooks:
+          - {phase: P2, must: "the flood is a dated event with a divergence row"}
+      - id: biome_salt_flats
+        label: Salt flats
+        climates: [climate_hot_dry, climate_steppe, climate_maritime]
+        terrain_tr: [tuz düzlüğü, kabuk, kuyu, sınır taşı]
+        ecology_tags: [desert, salt, open]
+        site_type_bias: {dungeon: 2, stronghold: 1, wilderness: 3, urban: 0, planar: 3, social: 0}
+        texture_seeds: ["white to the horizon; the horizon is a lie", "the crust crackles; underneath, something breathes", "a heat shimmer with a tower in it", "no birds"]
+        environmental_seeds: ["snow-blindness by noon: WIS DC 11 or blinded for an hour", "the crust breaks over brine: DEX DC 12 or 1d6 and a horse stuck", "no water: rations or CON DC 12", "a salt storm: shelter or exhaustion"]
+        discovery_seeds: ["footprints going out and none coming back", "a well in the middle of nothing, with a lid", "a shape of a person in salt, hollow", "a road of stakes ending at a hole"]
+        landmark_seeds: ["the well", "the salt shape", "the stakes"]
+        identity_seeds: [identity_land_remembers, identity_nobody_stops]
+        hooks:
+          - {phase: P6, must: "the flats hold the over-tier site; the primer's dangerous-places line is about it"}
+
+  identity:
+    note: "seeds for the one line that makes a region unlike every other; rolled per region with --avoid-used inside the campaign, then written in the narration language; `sense` is what the line must lean on"
+    notation: d20
+    rows:
+      - id: identity_land_remembers
+        label: The land remembers the dead
+        sense: sound
+        hooks:
+          - {phase: P3, must: "a Quiet/Texture and a Discovery result show the remembering"}
+      - id: identity_tide_owns
+        label: The tide owns the roads
+        sense: time
+        hooks:
+          - {phase: P3, must: "an Environmental result is the tide with a DC; a route note names the safe hours"}
+      - id: identity_watchers
+        label: Someone is always watching from a height
+        sense: sight
+        hooks:
+          - {phase: P4, must: "the watchers are a faction's intel; a Faction result is a signal seen"}
+      - id: identity_edge_of_map
+        label: The edge of what is mapped
+        sense: sight
+        hooks:
+          - {phase: P8, must: "the player map ends here with the folk's word for beyond"}
+      - id: identity_land_moves
+        label: The land is not where it was
+        sense: time
+        hooks:
+          - {phase: P3, must: "a landmark has moved since the last map; the route days carry a range"}
+      - id: identity_buried
+        label: Something large is buried here
+        sense: sight
+        hooks:
+          - {phase: P6, must: "the buried thing is a site; a Discovery result is a piece of it showing"}
+      - id: identity_water_is_road
+        label: Water is the only road
+        sense: sound
+        hooks:
+          - {phase: P3, must: "every route is a channel; a Social result is a boat"}
+      - id: identity_downstream
+        label: Everything here comes from upstream
+        sense: smell
+        hooks:
+          - {phase: P4, must: "the upstream polity is a faction with a stance; a Discovery result is something it sent"}
+      - id: identity_everyone_knows
+        label: Everyone knows everyone and says nothing
+        sense: sound
+        hooks:
+          - {phase: P5, must: "Social results name roster NPCs; secrets here surface through gossip"}
+      - id: identity_debt_land
+        label: The land is owned and the people are owed
+        sense: sight
+        hooks:
+          - {phase: P4, must: "a Faction result is a collector; the region's polity has law ≥ 3"}
+      - id: identity_under_the_water
+        label: The old world is under the water
+        sense: sight
+        hooks:
+          - {phase: P2, must: "a deep-past event put it there; a Discovery result is something surfacing"}
+      - id: identity_islands_keep
+        label: Every island keeps its own law
+        sense: sound
+        hooks:
+          - {phase: P3, must: "settlements here are islands with one anchor each"}
+      - id: identity_preserved
+        label: Nothing here rots
+        sense: smell
+        hooks:
+          - {phase: P6, must: "a site's occupants are preserved dead; the ecology says why"}
+      - id: identity_lights
+        label: Lights that are not lanterns
+        sense: sight
+        hooks:
+          - {phase: P3, must: "an Environmental result is a false light; a Discovery result is where a light led"}
+      - id: identity_forest_watches
+        label: The forest watches and keeps count
+        sense: sound
+        hooks:
+          - {phase: P6, must: "a site's attitude to intruders is `test`"}
+      - id: identity_older_than_us
+        label: Older than any record
+        sense: sight
+        hooks:
+          - {phase: P2, must: "the region's landmarks predate the first age"}
+      - id: identity_quiet_people
+        label: The people here do not talk to outsiders
+        sense: sound
+        hooks:
+          - {phase: P5, must: "Social results are one line and a look; one NPC is the exception"}
+      - id: identity_winter_waits
+        label: Winter is the ruler here
+        sense: temperature
+        hooks:
+          - {phase: P3, must: "travel days differ by season on every route"}
+      - id: identity_barrows
+        label: The dead are under every hill
+        sense: sight
+        hooks:
+          - {phase: P6, must: "at least two minor sites are barrows"}
+      - id: identity_nobody_stops
+        label: Nobody stops here; the road goes through
+        sense: time
+        hooks:
+          - {phase: P3, must: "the region has no hub of its own; the travel table is written from the neighbour's hub"}
+      - id: identity_border
+        label: A border runs through it and everyone is on the wrong side
+        sense: sight
+        hooks:
+          - {phase: P4, must: "two polities' stance edge is this border; a Faction result is a patrol from either"}
+      - id: identity_distance
+        label: Distance is the danger
+        sense: time
+        hooks:
+          - {phase: P3, must: "route days are the longest on the map; waypoints are the only shelter"}
+      - id: identity_horse_people
+        label: A people who live on horseback
+        sense: sound
+        hooks:
+          - {phase: P5, must: "the demographic table gives them a share; their camp is a moving settlement"}
+      - id: identity_land_is_awake
+        label: The land is awake and does not like us
+        sense: temperature
+        hooks:
+          - {phase: P6, must: "an Environmental result is the land acting; the over-tier site is its heart"}
+
+  landmark_kind:
+    notation: d14
+    rows:
+      - id: landmark_ruin
+        label: A ruin
+        hooks:
+          - {phase: P6, must: "a ruin landmark is a site or the telegraph of one"}
+      - id: landmark_monument
+        label: A monument
+        hooks:
+          - {phase: P2, must: "the monument records a dated event; its as-taught line is on it"}
+      - id: landmark_natural
+        label: A natural wonder
+        hooks:
+          - {phase: P3, must: "a Quiet/Texture result is the wonder seen"}
+      - id: landmark_battlefield
+        label: A battlefield
+        hooks:
+          - {phase: P2, must: "the battle is an event; the winner's and loser's lines differ"}
+      - id: landmark_crossing
+        label: A crossing (bridge, ford, ferry, pass)
+        hooks:
+          - {phase: P3, must: "the crossing is a map edge's note; a route without it costs a day"}
+      - id: landmark_watch
+        label: A watch (tower, beacon, lamp)
+        hooks:
+          - {phase: P4, must: "a faction holds it; a Faction result is its signal"}
+      - id: landmark_grave
+        label: A grave or barrow
+        hooks:
+          - {phase: P5, must: "someone in the roster has kin in it"}
+      - id: landmark_wall
+        label: A wall or boundary
+        hooks:
+          - {phase: P4, must: "the wall is a stance edge between two factions or polities"}
+      - id: landmark_wreck
+        label: A wreck
+        hooks:
+          - {phase: P2, must: "the wreck is a dated event with witnesses"}
+      - id: landmark_tree
+        label: A tree or grove
+        hooks:
+          - {phase: P2, must: "a god or a power is tied to it"}
+      - id: landmark_well
+        label: A well, spring or cistern
+        hooks:
+          - {phase: P3, must: "the well is a waypoint; its water is a route note"}
+      - id: landmark_stone
+        label: A standing stone or circle
+        hooks:
+          - {phase: P2, must: "the stone predates the record or marks a rite"}
+      - id: landmark_road_end
+        label: Where the road ends
+        hooks:
+          - {phase: P8, must: "the primer says why nobody goes further"}
+      - id: landmark_gate
+        label: A gate (to a city, a pass, a plane)
+        hooks:
+          - {phase: P3, must: "the gate is a map node with a keeper"}
+
+  social_seed:
+    notation: d12
+    note: "traveller archetypes for the Social subtable; bound to a roster NPC or a minor stub when written"
+    rows:
+      - id: social_courier
+        label: A courier with a sealed letter
+        hooks:
+          - {phase: P4, must: "the letter is a faction's; opening it is a provocation rung"}
+      - id: social_pilgrim
+        label: A pilgrim going the wrong way
+        hooks:
+          - {phase: P2, must: "the pilgrimage is a festival or a god's place"}
+      - id: social_deserter
+        label: A deserter
+        hooks:
+          - {phase: P4, must: "the deserter names a martial faction's front step"}
+      - id: social_collector
+        label: A tax or tithe collector
+        hooks:
+          - {phase: P4, must: "the collector is the state or the church; the party's goods are counted"}
+      - id: social_widow
+        label: A widow carrying something of the dead
+        hooks:
+          - {phase: P5, must: "she is a minor NPC with a Known Fact"}
+      - id: social_patrol
+        label: A patrol that asks questions
+        hooks:
+          - {phase: P4, must: "the patrol's faction and its doctrine on exposure decide the questions"}
+      - id: social_merchant_wrong_goods
+        label: A merchant with the wrong goods for this road
+        hooks:
+          - {phase: P3, must: "the goods are from the economy table's needs list of the next settlement"}
+      - id: social_children
+        label: Children where there should be none
+        hooks:
+          - {phase: P3, must: "the nearest settlement's fear explains them"}
+      - id: social_corpse_cart
+        label: A corpse cart
+        hooks:
+          - {phase: P2, must: "funerary custom from the pantheon decides what the cart does"}
+      - id: social_hermit
+        label: A hermit who knows the road
+        hooks:
+          - {phase: P3, must: "the hermit gives one discoverable line about a landmark"}
+      - id: social_survey
+        label: A survey party measuring something
+        hooks:
+          - {phase: P4, must: "the survey is a faction's operation step, visible"}
+      - id: social_rival_company
+        label: Another company on the same errand
+        hooks:
+          - {phase: P7, must: "the rivals want a seed's reward; they are NPCs with names"}
+
+  faction_presence:
+    notation: d10
+    note: "shapes for the Faction/Political subtable; each names a faction and, where it can, an operation step"
+    rows:
+      - id: fpres_proclamation
+        label: A proclamation nailed up
+        hooks:
+          - {phase: P4, must: "the text is a front step's public face"}
+      - id: fpres_patrol
+        label: A patrol on the road
+        hooks:
+          - {phase: P4, must: "the faction's typical forces, at the region's tier"}
+      - id: fpres_caravan_early
+        label: A caravan too early or too late
+        hooks:
+          - {phase: P4, must: "the caravan is an asset moving on a step"}
+      - id: fpres_closed_crossing
+        label: A crossing closed
+        hooks:
+          - {phase: P3, must: "the map edge's note changes; travel-times are regenerated"}
+      - id: fpres_notice
+        label: A notice of execution, sale or seizure
+        hooks:
+          - {phase: P4, must: "the named person or asset is in the registry"}
+      - id: fpres_envoy
+        label: An envoy under a flag
+        hooks:
+          - {phase: P4, must: "the envoy travels between two factions whose stance is moving"}
+      - id: fpres_unloading
+        label: Goods unloaded where no port is
+        hooks:
+          - {phase: P4, must: "the criminal faction's asset; a hook to its site"}
+      - id: fpres_recruiter
+        label: A recruiter with a drum
+        hooks:
+          - {phase: P4, must: "a martial or resistance faction's front is mustering"}
+      - id: fpres_defaced
+        label: A shrine or sign defaced
+        hooks:
+          - {phase: P4, must: "two factions' stance dropped this week; the news record exists"}
+      - id: fpres_new_owner
+        label: A place with a new owner
+        hooks:
+          - {phase: play, must: "a control flip from the overlay; the travel result renders the news record"}

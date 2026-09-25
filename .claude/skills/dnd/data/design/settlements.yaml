@@ -1,0 +1,387 @@
+# settlements.yaml — the settlement template's parts (item 6.4, 13.3): kinds with population bands,
+# district counts and small-point budgets; anchor kinds (six fixed at birth, era variants from
+# dials.yaml); district types; economy goods with their sources and pairings; what a settlement
+# fears; local-problem seeds (each becomes a `seed_` entity); small-point kinds for JIT filling
+# (each filled point a permanent `place_` entity); wealth and law ladders. Villages are light: one
+# sentence, one problem, one NPC. Every name is an English fantasy name from naming.yaml patterns.
+schema_version: 1
+table: settlements
+consumed_by: [P3, P5, P8, validator, play]
+plan: "item 6.4, 13.3, 17 #15, errata 24.2 #14"
+roll: {labels: [P3.settlement_fear.<id>, P3.settlement_problem.<id>, P3.settlement_goods.<id>.<n>, P3.district.<id>.<n>, P3.small_point.<id>.<n>], avoid_used: true, note: "kind, wealth and law are chosen by the skeleton from the scale and the polity; fears, problems, goods and districts are rolled"}
+rules:
+  counts: "scale.yaml settlements by kind; exactly one hub per region; the capital is the largest settlement of its polity"
+  anchors: "six kinds fixed at birth (temple, guild_hall, inn, market, seat, signature) plus the era's variants; each anchor is a place_ entity with an owner from the roster"
+  small_points: "the budget is filled by `detail`, never at birth; each filled point is a place_ entity (settlement, district, kind, owner, services) and never changes once named"
+  three_truths: "obvious (any visitor, within an hour), discoverable (a week or a friend), secret (dm-only): the third truth is why the settlement is the way it is"
+  village: "one sentence, one problem, one NPC; no districts, no anchors beyond the inn or the shrine"
+  price_modifier: "base from the wealth ladder; play-time changes live in the overlay"
+hooks_common:
+  - {phase: P3, must: "the settlement file carries kind, population, wealth, law and its keeper, polity, ruler, region, districts, economy, fear, local problem, the anchor table and the empty small-point table"}
+  - {phase: P5, must: "anchor owners and the ruler are roster NPCs; a village's one NPC is minor tier"}
+  - {phase: P8, must: "the primer lists the settlement, who rules it and what it sells"}
+
+tables:
+
+  kind:
+    rows:
+      - id: kind_village
+        label: Village
+        population: [40, 400]
+        districts: 0
+        anchors: [inn_or_shrine]
+        small_point_budget: [2, 4]
+        npcs_from_roster: 1
+        law_default: 1
+        hooks:
+          - {phase: P3, must: "one sentence of atmosphere, one problem seed, one NPC; the travel table of its region is written from the hub, not from here"}
+      - id: kind_town
+        label: Town
+        population: [800, 5000]
+        districts: [2, 3]
+        anchors: [temple, guild_hall, inn, market, seat, signature]
+        small_point_budget: [10, 15]
+        npcs_from_roster: [4, 7]
+        law_default: 3
+        hooks:
+          - {phase: P3, must: "every anchor has an owner and a services line; the signature place could exist only here"}
+      - id: kind_city
+        label: City
+        population: [8000, 40000]
+        districts: [5, 8]
+        anchors: [temple, guild_hall, inn, market, seat, signature, era_variant]
+        small_point_budget: [30, 40]
+        npcs_from_roster: [8, 14]
+        law_default: 4
+        hooks:
+          - {phase: P3, must: "each district has a character line and a fear; the map gets a city inset"}
+      - id: kind_metropolis
+        label: Metropolis
+        population: [60000, 200000]
+        districts: [8, 12]
+        anchors: [temple, guild_hall, inn, market, seat, signature, era_variant, second_temple, second_market]
+        small_point_budget: [50, 60]
+        npcs_from_roster: [14, 22]
+        law_default: 4
+        hooks:
+          - {phase: P3, must: "at least two districts are foreign quarters with their own naming language"}
+
+  anchor_kind:
+    note: "the fixed places; services are what the party can buy or ask; `owner_role` is the roster role that holds it"
+    rows:
+      - id: anchor_temple
+        label: Temple
+        services: [rites, healing for a fee, funerals, sanctuary]
+        owner_role: priest
+        hooks:
+          - {phase: P2, must: "the temple's god is from the pantheon; its church archetype sets the services"}
+      - id: anchor_guild_hall
+        label: Guild hall
+        services: [the faction's service menu, membership, work]
+        owner_role: guild_master
+        hooks:
+          - {phase: P4, must: "the hall belongs to a faction with archetype guild or the signature institution"}
+      - id: anchor_inn
+        label: Inn
+        services: [rooms, meals, rumours, stabling]
+        owner_role: innkeeper
+        hooks:
+          - {phase: P5, must: "the innkeeper is an ordinary-people NPC with a speech tic and a Known Fact"}
+      - id: anchor_market
+        label: Market
+        services: [the economy's goods, trade goods, news]
+        owner_role: none
+        hooks:
+          - {phase: P3, must: "the price table lists the market's goods with the modifier"}
+      - id: anchor_seat
+        label: Seat of rule
+        services: [audience, law, taxes, warrants]
+        owner_role: ruler
+        hooks:
+          - {phase: P4, must: "the seat is the state faction's HQ asset or a named sub-asset"}
+      - id: anchor_signature
+        label: Signature place
+        services: [the signature institution's or phenomenon's one service]
+        owner_role: keeper
+        hooks:
+          - {phase: P1, must: "the signature place references a signature_ entity"}
+      - id: anchor_harbourmaster
+        label: Harbourmaster's house
+        services: [berths, passage, manifests, the tide]
+        owner_role: official
+        era: era_nautical
+        hooks:
+          - {phase: P3, must: "sea routes leave from here; the manifests are a discoverable source"}
+      - id: anchor_printing_house
+        label: Printing house
+        services: [broadsheets, letters copied, a press for hire]
+        owner_role: printer
+        era: era_renaissance
+        hooks:
+          - {phase: P8, must: "the day-0 rumours are its broadsheet"}
+      - id: anchor_exchange
+        label: Exchange
+        services: [credit, letters of exchange, prices posted]
+        owner_role: banker
+        era: era_renaissance
+        hooks:
+          - {phase: P4, must: "a trade faction holds it; the price modifier is posted here"}
+      - id: anchor_agora
+        label: Agora
+        services: [assembly, trials in public, the market's law]
+        owner_role: none
+        era: era_ancient
+        hooks:
+          - {phase: P4, must: "the polity's decisions are made here in public; a Faction result is an assembly"}
+      - id: anchor_shaft
+        label: The shaft or lift
+        services: [passage up and down, the toll, the light]
+        owner_role: keeper
+        era: era_underground
+        hooks:
+          - {phase: P3, must: "the shaft is the settlement's map edge to the stratum above"}
+      - id: anchor_walls
+        label: The walls and gate
+        services: [entry, curfew, the watch]
+        owner_role: captain
+        hooks:
+          - {phase: P4, must: "the gate is where law is enforced; the captain is a supporting or minor NPC"}
+      - id: anchor_bathhouse
+        label: Bathhouse
+        services: [baths, gossip, a meeting nobody sees]
+        owner_role: keeper
+        hooks:
+          - {phase: P5, must: "one private channel is the bathhouse's"}
+      - id: anchor_utility
+        label: The magical utility (lamps, wards, water)
+        services: [light, wards, water, the bill]
+        owner_role: guild_master
+        era: era_any
+        hooks:
+          - {phase: P2, must: "only when the magic dial is high or break_magic_is_municipal is rolled"}
+
+  district_type:
+    notation: d16
+    rows:
+      - id: district_quay
+        label: The quay
+        character: "day labour by day, the criminal faction by night"
+        fear_seed: "a ship that does not come"
+        law_modifier: -1
+        hooks:
+          - {phase: P4, must: "the criminal faction's asset is here"}
+      - id: district_upper
+        label: The upper town
+        character: "closed doors, old families, the seat within sight"
+        fear_seed: "a name struck from the rolls"
+        law_modifier: 1
+        hooks:
+          - {phase: P5, must: "the ruler's heir and the betrayal candidate live here"}
+      - id: district_market_ward
+        label: The market ward
+        character: "stalls, weights, arguments, the guild's eye"
+        fear_seed: "the fair not coming"
+        law_modifier: 0
+        hooks:
+          - {phase: P3, must: "the price table is measured here"}
+      - id: district_temple_ward
+        label: The temple ward
+        character: "bells, beggars, the church's police"
+        fear_seed: "the god's silence made official"
+        law_modifier: 1
+        hooks:
+          - {phase: P2, must: "the temple anchor and the festival route are here"}
+      - id: district_craft
+        label: The craft ward
+        character: "smoke, noise, the guild hall, apprentices"
+        fear_seed: "the master's death without a successor"
+        law_modifier: 0
+        hooks:
+          - {phase: P4, must: "the guild faction's fracture lives here"}
+      - id: district_foreign
+        label: The foreign quarter
+        character: "another naming language, another god, its own inn"
+        fear_seed: "expulsion"
+        law_modifier: -1
+        hooks:
+          - {phase: P5, must: "the demographic table gives this quarter its people; one NPC is their voice"}
+      - id: district_low_town
+        label: The low town
+        character: "mud, debt, the collector's rounds"
+        fear_seed: "the ledger"
+        law_modifier: -1
+        hooks:
+          - {phase: P9, must: "one socket is a PC from here"}
+      - id: district_garrison
+        label: The garrison
+        character: "drill, barracks, the muster ground"
+        fear_seed: "the order to march"
+        law_modifier: 2
+        hooks:
+          - {phase: P4, must: "the martial faction's typical forces are counted here"}
+      - id: district_grave_ward
+        label: The grave ward
+        character: "the necropolis, the wardens, the reading houses"
+        fear_seed: "the dead not staying"
+        law_modifier: 0
+        hooks:
+          - {phase: P6, must: "a minor site is under it"}
+      - id: district_scholars
+        label: The scholars' quarter
+        character: "the archive, the school, the licence office"
+        fear_seed: "a book found"
+        law_modifier: 1
+        hooks:
+          - {phase: P2, must: "the regulator or the archive is here; the Act 2 clue can be"}
+      - id: district_burnt
+        label: The burnt ward
+        character: "a fire nobody has rebuilt from; squatters and rumours"
+        fear_seed: "who set it"
+        law_modifier: -2
+        hooks:
+          - {phase: P2, must: "the fire is a dated event with a divergence"}
+      - id: district_river
+        label: The river ward
+        character: "mills, tanners, the smell, the bridge"
+        fear_seed: "the river rising"
+        law_modifier: 0
+        hooks:
+          - {phase: P3, must: "an Environmental result is the river here"}
+      - id: district_inner
+        label: The walled inner town
+        character: "the old wall, the seat, the oldest temple, a curfew"
+        fear_seed: "the gate shut against them"
+        law_modifier: 2
+        hooks:
+          - {phase: P4, must: "the access chain to the ruler runs through the gate"}
+      - id: district_tents
+        label: The tent town
+        character: "refugees, herders or an army's followers outside the wall"
+        fear_seed: "being counted"
+        law_modifier: -2
+        hooks:
+          - {phase: P2, must: "a recent event put them here"}
+      - id: district_mines
+        label: The mine head
+        character: "the shaft, the tally house, the company's men"
+        fear_seed: "the water below"
+        law_modifier: 0
+        hooks:
+          - {phase: P6, must: "the mine is a site with a stamped depth"}
+      - id: district_drowned
+        label: The drowned ward
+        character: "streets under water at high tide, boats for carts"
+        fear_seed: "the next flood"
+        law_modifier: -1
+        hooks:
+          - {phase: P3, must: "the tide is a route note inside the city"}
+
+  economy_good:
+    notation: d24
+    note: "a settlement sells 1-3 and needs 1-3; `pairs_with_need` is the usual need of a place that sells this"
+    rows:
+      - {id: good_grain, label: Grain, sources: [biome_river_valley, biome_grazing_hills, biome_steppe], pairs_with_need: [iron, salt], hooks: [{phase: P3, must: "a grain seller's price falls after the harvest festival"}]}
+      - {id: good_wool, label: Wool, sources: [biome_grazing_hills, biome_moor, biome_pine_uplands], pairs_with_need: [dye, grain], hooks: [{phase: P4, must: "the wool trade is a guild or trade faction's asset"}]}
+      - {id: good_timber, label: Timber, sources: [biome_old_forest, biome_pine_uplands, biome_jungle], pairs_with_need: [iron, grain], hooks: [{phase: P3, must: "the timber road is a route with a season flag"}]}
+      - {id: good_iron, label: Iron, sources: [biome_foothills, biome_high_mountains, biome_fen], pairs_with_need: [grain, timber], hooks: [{phase: P6, must: "the mine is a site"}]}
+      - {id: good_salt, label: Salt, sources: [biome_salt_marsh, biome_salt_flats, biome_dunes], pairs_with_need: [timber, iron], hooks: [{phase: P4, must: "the salt tax is a state asset"}]}
+      - {id: good_fish, label: Fish, sources: [biome_salt_marsh, biome_sea_cliffs, biome_lake_country, biome_river_delta], pairs_with_need: [salt, rope], hooks: [{phase: P3, must: "fish prices follow the calendar's fair season"}]}
+      - {id: good_wine, label: Wine, sources: [biome_river_valley, biome_foothills, biome_volcanic], pairs_with_need: [pottery, grain], hooks: [{phase: P4, must: "a vineyard is a place_ someone owns"}]}
+      - {id: good_cloth, label: Cloth, sources: [biome_river_valley, biome_river_delta], pairs_with_need: [wool, dye], hooks: [{phase: P4, must: "a craft guild holds the looms"}]}
+      - {id: good_dye, label: Dye, sources: [biome_salt_marsh, biome_jungle, biome_river_delta], pairs_with_need: [cloth, salt], hooks: [{phase: P3, must: "the dye is a colour the primer names as this place's"}]}
+      - {id: good_glass, label: Glass, sources: [biome_sand_desert, biome_dunes, biome_volcanic], pairs_with_need: [timber, salt], hooks: [{phase: P3, must: "the glassworks is an anchor or a small point"}]}
+      - {id: good_books, label: Books and paper, sources: [biome_river_valley, biome_dead_city_lands], pairs_with_need: [cloth, ink], hooks: [{phase: P2, must: "the archive is the regulator's or a scholarly faction's"}]}
+      - {id: good_horses, label: Horses, sources: [biome_steppe, biome_grazing_hills, biome_moor], pairs_with_need: [grain, iron], hooks: [{phase: P3, must: "the horse market sets the mounted travel default's price"}]}
+      - {id: good_stone, label: Stone, sources: [biome_foothills, biome_high_mountains, biome_stone_desert, biome_dead_city_lands], pairs_with_need: [timber, grain], hooks: [{phase: P3, must: "the quarry is a landmark"}]}
+      - {id: good_ore, label: Ore and metals, sources: [biome_high_mountains, biome_caverns, biome_volcanic], pairs_with_need: [grain, timber], hooks: [{phase: P6, must: "the mine is a site with a fixed tier"}]}
+      - {id: good_gems, label: Gems, sources: [biome_caverns, biome_fungus_deeps, biome_stone_desert], pairs_with_need: [grain, water], hooks: [{phase: P4, must: "the gem trade is a faction's asset and a smuggling seed"}]}
+      - {id: good_spice, label: Spice, sources: [biome_jungle, biome_sand_desert, biome_river_delta], pairs_with_need: [salt, cloth], hooks: [{phase: P3, must: "spice comes by a route from the map's edge"}]}
+      - {id: good_oil, label: Oil (lamp, olive, whale), sources: [biome_sea_cliffs, biome_foothills, biome_salt_marsh], pairs_with_need: [pottery, timber], hooks: [{phase: P1, must: "if the signature phenomenon is a light, oil is its economy"}]}
+      - {id: good_rope, label: Rope and tar, sources: [biome_salt_marsh, biome_pine_uplands, biome_sea_cliffs], pairs_with_need: [timber, fish], hooks: [{phase: P3, must: "the ropewalk is a small point"}]}
+      - {id: good_pottery, label: Pottery, sources: [biome_river_valley, biome_volcanic, biome_river_delta], pairs_with_need: [timber, grain], hooks: [{phase: P3, must: "the kiln is a small point"}]}
+      - {id: good_leather, label: Leather, sources: [biome_grazing_hills, biome_steppe, biome_moor], pairs_with_need: [salt, oak_bark], hooks: [{phase: P3, must: "the tannery is in the river or low ward"}]}
+      - {id: good_fur, label: Fur, sources: [biome_tundra, biome_pine_uplands, biome_old_forest], pairs_with_need: [grain, iron], hooks: [{phase: P3, must: "the fur market is seasonal"}]}
+      - {id: good_amber, label: Amber and rarities, sources: [biome_dunes, biome_drowned_lands, biome_sea_cliffs], pairs_with_need: [grain, cloth], hooks: [{phase: P6, must: "a rarity is a site payoff"}]}
+      - {id: good_fungus, label: Fungus and deep produce, sources: [biome_fungus_deeps, biome_caverns], pairs_with_need: [light, iron], hooks: [{phase: P3, must: "only in an underground era or region"}]}
+      - {id: good_relics, label: Relics and the dead's goods, sources: [biome_dead_city_lands, biome_drowned_lands, biome_stone_desert], pairs_with_need: [grain, protection], hooks: [{phase: P4, must: "the relic trade is the criminal faction's or the church's, and a taboo"}]}
+
+  fear:
+    notation: d16
+    rows:
+      - {id: fear_lantern_relit, label: "That the dark thing lights again", hooks: [{phase: P6, must: "the feared thing is an over-tier site's telegraph"}]}
+      - {id: fear_river_rising, label: The river or sea rising, hooks: [{phase: P2, must: "a dated flood exists"}]}
+      - {id: fear_the_count, label: Being counted, hooks: [{phase: P4, must: "the counting faction has an operation step here"}]}
+      - {id: fear_the_tithe, label: The tithe or tax coming due, hooks: [{phase: P4, must: "the collector's visit is a calendar date"}]}
+      - {id: fear_lords_return, label: The old lord's return, hooks: [{phase: P4, must: "a claimant exists in the roster or a resistance faction"}]}
+      - {id: fear_sickness, label: The sickness coming back, hooks: [{phase: P2, must: "the sickness is a dated event"}]}
+      - {id: fear_other_town, label: The other town, hooks: [{phase: P4, must: "two settlements' factions have a −2 stance"}]}
+      - {id: fear_thing_in_well, label: The thing in the well, hooks: [{phase: P6, must: "a minor site is under the settlement"}]}
+      - {id: fear_wedding, label: A wedding that must not happen, hooks: [{phase: P5, must: "two roster NPCs are the couple; a faction wants it stopped"}]}
+      - {id: fear_road_closing, label: The road closing, hooks: [{phase: P3, must: "the settlement has one route; its edge has a season flag"}]}
+      - {id: fear_mine_flooding, label: The mine flooding, hooks: [{phase: P6, must: "the mine site's escape geometry is the fear"}]}
+      - {id: fear_child_wrong, label: A child born wrong, hooks: [{phase: P1, must: "the signature phenomenon marks children"}]}
+      - {id: fear_the_silence, label: The silence spreading, hooks: [{phase: P2, must: "a god's silence or the dead month"}]}
+      - {id: fear_ship, label: A ship, hooks: [{phase: P2, must: "the last ship is a dated event"}]}
+      - {id: fear_name_spoken, label: A name being spoken, hooks: [{phase: P1, must: "naming.json's taboo or the silenced god"}]}
+      - {id: fear_being_forgotten, label: Being forgotten by the capital, hooks: [{phase: P4, must: "the state faction's target list does not include this settlement"}]}
+
+  problem:
+    notation: d16
+    note: "each becomes a seed_ entity: hook + complication + resolution + reward, tied to ≥1 NPC or faction"
+    rows:
+      - {id: problem_debt, label: A debt to a faction, hooks: [{phase: P4, must: "the creditor faction's asset is the debtor's place_"}]}
+      - {id: problem_missing, label: A missing person, hooks: [{phase: P6, must: "where they went is a site or an NPC"}]}
+      - {id: problem_inheritance, label: A contested inheritance, hooks: [{phase: P5, must: "two NPCs claim; one is the betrayal candidate"}]}
+      - {id: problem_tax, label: A tax that cannot be paid, hooks: [{phase: P4, must: "the state's doctrine on loss decides what happens"}]}
+      - {id: problem_well, label: The well gone bad, hooks: [{phase: P6, must: "the cause is a site or the phenomenon"}]}
+      - {id: problem_feud, label: A feud between two houses, hooks: [{phase: P5, must: "four NPCs with two speech tics each side"}]}
+      - {id: problem_wrong_grave, label: A body in the wrong grave, hooks: [{phase: P2, must: "funerary custom makes it a crime"}]}
+      - {id: problem_stranger, label: A stranger who stayed, hooks: [{phase: P5, must: "the stranger is a secret NPC or a lieutenant's agent"}]}
+      - {id: problem_smuggling, label: Smuggling through the anchor, hooks: [{phase: P4, must: "the criminal faction's operation step"}]}
+      - {id: problem_rulers_illness, label: The ruler's illness, hooks: [{phase: P4, must: "succession is the heir field; the illness has a cause"}]}
+      - {id: problem_festival, label: A festival that must happen, hooks: [{phase: P2, must: "the festival is on the calendar within 30 days"}]}
+      - {id: problem_bridge, label: The bridge is down, hooks: [{phase: P3, must: "travel-times change until it is rebuilt"}]}
+      - {id: problem_haunting, label: A haunting, hooks: [{phase: P6, must: "a minor site with a lore payoff"}]}
+      - {id: problem_apprentice, label: A runaway apprentice, hooks: [{phase: P4, must: "the guild's exit terms are the complication"}]}
+      - {id: problem_stolen_seal, label: A stolen seal, hooks: [{phase: P4, must: "the seal is an asset; who has it is a clue"}]}
+      - {id: problem_cult_in_mill, label: A rite in the mill, hooks: [{phase: P4, must: "the cult faction's cell, with a true belief"}]}
+
+  small_point_kind:
+    note: "kinds the `detail` step fills the budget with; owner and services are written then"
+    rows:
+      - {id: sp_smithy, label: Smithy, services: [repairs, weapons, horseshoes], hooks: [{phase: play, must: "prices from the economy line and the overlay modifier"}]}
+      - {id: sp_bakery, label: Bakery, services: [bread, gossip], hooks: [{phase: play, must: "a Known Fact source for the district"}]}
+      - {id: sp_bathhouse, label: Bathhouse, services: [baths, a private word], hooks: [{phase: play, must: "a private channel"}]}
+      - {id: sp_moneylender, label: Moneylender, services: [loans, exchange, a ledger], hooks: [{phase: play, must: "a debt seed"}]}
+      - {id: sp_apothecary, label: Apothecary, services: [potions of healing at the loot table's price, poisons under the counter], hooks: [{phase: play, must: "the taboo on selling healing, if rolled, applies"}]}
+      - {id: sp_tannery, label: Tannery, services: [leather, hides bought], hooks: [{phase: play, must: "in the river or low ward"}]}
+      - {id: sp_stable, label: Stable, services: [mounts, stabling, a cart], hooks: [{phase: play, must: "the mounted travel default's supplier"}]}
+      - {id: sp_chandler, label: Chandler, services: [candles, oil, rope], hooks: [{phase: play, must: "lamp oil is a travel supply"}]}
+      - {id: sp_shrine, label: Shrine, services: [a lesser god's rite], hooks: [{phase: play, must: "a lesser god of the pantheon"}]}
+      - {id: sp_gate, label: A district gate, services: [entry, curfew], hooks: [{phase: play, must: "the watch's questions"}]}
+      - {id: sp_well, label: A well, services: [water, gossip], hooks: [{phase: play, must: "a fear seed if the well is the settlement's"}]}
+      - {id: sp_warehouse, label: Warehouse, services: [storage, a faction's goods], hooks: [{phase: play, must: "a faction asset"}]}
+      - {id: sp_tavern, label: Tavern (no rooms), services: [drink, a fight, a rumour], hooks: [{phase: play, must: "never the opening scene (forbidden_tavern_opening)"}]}
+      - {id: sp_washhouse, label: Wash-house, services: [gossip, laundry], hooks: [{phase: play, must: "the women's Known Facts"}]}
+      - {id: sp_scriptorium, label: Scriptorium, services: [copies, letters written, a reader], hooks: [{phase: play, must: "a discoverable source"}]}
+      - {id: sp_ropewalk, label: Ropewalk, services: [rope, a long covered walk], hooks: [{phase: play, must: "a meeting place"}]}
+      - {id: sp_fishmarket, label: Fish market, services: [fish, boats for hire], hooks: [{phase: play, must: "the boat is an escape route"}]}
+      - {id: sp_gallows, label: The gallows or the stocks, services: [the law seen], hooks: [{phase: play, must: "a Faction result or a news record"}]}
+      - {id: sp_orphanage, label: Orphanage or foundling house, services: [children, records], hooks: [{phase: play, must: "a socket or a signature institution"}]}
+      - {id: sp_ferry, label: Ferry stage, services: [crossing, the ferryman's news], hooks: [{phase: play, must: "a map edge's note"}]}
+
+  wealth:
+    rows:
+      - {id: wealth_destitute, label: Destitute, price_modifier: 0.8, budget_multiplier: 0.6, hooks: [{phase: P3, must: "the market lacks half the goods list"}]}
+      - {id: wealth_poor, label: Poor, price_modifier: 0.9, budget_multiplier: 0.8, hooks: [{phase: P3, must: "no magic items for sale"}]}
+      - {id: wealth_modest, label: Modest, price_modifier: 1.0, budget_multiplier: 1.0, hooks: [{phase: P3, must: "the default"}]}
+      - {id: wealth_prosperous, label: Prosperous, price_modifier: 1.2, budget_multiplier: 1.2, hooks: [{phase: P3, must: "a second inn and a moneylender among the small points"}]}
+      - {id: wealth_wealthy, label: Wealthy, price_modifier: 1.5, budget_multiplier: 1.4, hooks: [{phase: P3, must: "an exchange or a bank anchor; the loot table's uncommon items may be for sale"}]}
+
+  law:
+    rows:
+      - {id: law_1, label: "Law 1 — custom only", meaning: "no watch; disputes settled by elders or blood", hooks: [{phase: P3, must: "a village default"}]}
+      - {id: law_2, label: "Law 2 — a sheriff", meaning: "one officer, part-time; the gallows is a tree", hooks: [{phase: P3, must: "the officer is a minor NPC"}]}
+      - {id: law_3, label: "Law 3 — a watch", meaning: "a paid watch, a court day, a lockup", hooks: [{phase: P3, must: "the town default; the watch's captain is named"}]}
+      - {id: law_4, label: "Law 4 — a court and a prison", meaning: "judges, warrants, a curfew in some districts", hooks: [{phase: P4, must: "the state faction's access chain includes the court"}]}
+      - {id: law_5, label: "Law 5 — the law is everywhere", meaning: "papers checked at gates, informers, the regulator's licence", hooks: [{phase: P8, must: "the primer states what a traveller must carry"}]}

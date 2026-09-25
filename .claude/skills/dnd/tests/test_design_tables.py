@@ -348,6 +348,70 @@ class Floors(unittest.TestCase):
         self.assertGreaterEqual(len(dt.rows("calendar.yaml#week")), 3)
         self.assertGreaterEqual(len(dt.rows("calendar.yaml#start_anchor")), 5)
 
+    # --- batch C: lands ---------------------------------------------------------
+
+    def test_regions_tiers_travel_weights_and_biomes(self):
+        doc = dt.load("regions.yaml")
+        self.assertEqual(doc["rules"]["danger_tiers"], {"T1": [0, 2], "T2": [3, 6], "T3": [7, 11], "T4": [12, 16], "T5": [17, 30]})
+        d12 = doc["rules"]["travel_table"]["d12"]
+        self.assertEqual(list(d12), ["Quiet/Texture", "Social", "Environmental", "Combat", "Discovery", "Faction/Political"])
+        self.assertEqual([hi - lo + 1 for lo, hi in d12.values()], [4, 1, 1, 1, 3, 2])
+        self.assertEqual({r["scale"] for r in dt.rows("regions.yaml#tier_distribution")}, {"short", "standard", "epic"})
+        climates = {r["id"] for r in dt.rows("calendar.yaml#climate")}
+        identities = {r["id"] for r in dt.rows("regions.yaml#identity")}
+        biomes = dt.rows("regions.yaml#biome")
+        self.assertGreaterEqual(len(biomes), 20)
+        for b in biomes:
+            with self.subTest(biome=b["id"]):
+                self.assertTrue(set(b["climates"]) <= climates, b["climates"])
+                self.assertTrue(set(b["identity_seeds"]) <= identities, b["identity_seeds"])
+                self.assertTrue(b["ecology_tags"] and b["terrain_tr"])
+                self.assertEqual(set(b["site_type_bias"]), {"dungeon", "stronghold", "wilderness", "urban", "planar", "social"})
+                for key in ("texture_seeds", "environmental_seeds", "discovery_seeds"):
+                    self.assertGreaterEqual(len(b[key]), 3, key)
+                self.assertGreaterEqual(len(b["landmark_seeds"]), 2)
+        self.assertGreaterEqual(len(identities), 20)
+        for r in dt.rows("regions.yaml#identity"):
+            self.assertIn(r["sense"], ("sound", "sight", "smell", "time", "temperature"), r["id"])
+        self.assertGreaterEqual(len(dt.rows("regions.yaml#landmark_kind")), 12)
+        self.assertGreaterEqual(len(dt.rows("regions.yaml#social_seed")), 10)
+        self.assertGreaterEqual(len(dt.rows("regions.yaml#faction_presence")), 8)
+
+    def test_settlements_kinds_anchors_and_goods(self):
+        kinds = {r["id"]: r for r in dt.rows("settlements.yaml#kind")}
+        self.assertEqual(list(kinds), ["kind_village", "kind_town", "kind_city", "kind_metropolis"])
+        self.assertEqual(kinds["kind_village"]["districts"], 0)
+        self.assertEqual(kinds["kind_town"]["districts"], [2, 3])
+        self.assertEqual(kinds["kind_city"]["districts"], [5, 8])
+        self.assertEqual(kinds["kind_city"]["small_point_budget"], [30, 40])
+        for k in ("temple", "guild_hall", "inn", "market", "seat", "signature"):
+            self.assertIn(k, kinds["kind_town"]["anchors"])
+        anchors = dt.rows("settlements.yaml#anchor_kind")
+        anchor_ids = {a["id"] for a in anchors}
+        for k in ("anchor_temple", "anchor_guild_hall", "anchor_inn", "anchor_market", "anchor_seat", "anchor_signature"):
+            self.assertIn(k, anchor_ids)
+        eras = {r["id"] for r in dt.rows("dials.yaml#era")} | {"era_any"}
+        for a in anchors:
+            self.assertTrue(a["services"], a["id"])
+            if "era" in a:
+                self.assertIn(a["era"], eras, a["id"])
+        biomes = {r["id"] for r in dt.rows("regions.yaml#biome")}
+        goods = dt.rows("settlements.yaml#economy_good")
+        self.assertGreaterEqual(len(goods), 20)
+        for g in goods:
+            self.assertTrue(set(g["sources"]) <= biomes, (g["id"], g["sources"]))
+            self.assertTrue(g["pairs_with_need"], g["id"])
+        self.assertGreaterEqual(len(dt.rows("settlements.yaml#district_type")), 14)
+        for d in dt.rows("settlements.yaml#district_type"):
+            self.assertIn(d["law_modifier"], (-2, -1, 0, 1, 2), d["id"])
+            self.assertTrue(d["character"] and d["fear_seed"], d["id"])
+        self.assertGreaterEqual(len(dt.rows("settlements.yaml#fear")), 14)
+        self.assertGreaterEqual(len(dt.rows("settlements.yaml#problem")), 14)
+        self.assertGreaterEqual(len(dt.rows("settlements.yaml#small_point_kind")), 16)
+        wealth = dt.rows("settlements.yaml#wealth")
+        self.assertEqual([w["price_modifier"] for w in wealth], [0.8, 0.9, 1.0, 1.2, 1.5])
+        self.assertEqual(len(dt.rows("settlements.yaml#law")), 5)
+
     def test_forbidden_defaults_from_item_4_5_are_all_present(self):
         ids = {r["id"] for r in dt.rows("forbidden.yaml")}
         for needed in ("forbidden_awakening_ancient_evil", "forbidden_chosen_one", "forbidden_prophecy",
