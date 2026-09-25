@@ -106,6 +106,10 @@ class Convention(unittest.TestCase):
                 refs += r.get(key) or []
             for key in ("secret_archetype_bias", "pantheon_type_bias", "era_bias"):
                 refs += (r.get("effects") or {}).get(key) or []
+            refs += r.get("touch_bias") or []
+            refs += (r.get("overrides") or {}).get("pantheon_type_bias") or []
+            if (r.get("overrides") or {}).get("pantheon_type"):
+                refs.append(r["overrides"]["pantheon_type"])
             for ref in refs:
                 table = ref.split("_", 1)[0]
                 prefix_table = {"secret": "secrets", "break": "trope-breaks", "tension": "tensions",
@@ -226,6 +230,85 @@ class Floors(unittest.TestCase):
                 self.assertGreaterEqual(len(r.get("mutations") or []), 2, r["id"])
         for r in dt.rows("signatures.yaml#people"):
             self.assertTrue(r.get("srd_reskin"), r["id"])
+
+    # --- batch B: cosmos -------------------------------------------------------
+
+    def test_pantheon_types_presence_and_the_srd_domains(self):
+        self.assertEqual([r["id"] for r in dt.rows("pantheon.yaml#type")],
+                         ["pantheon_polytheist", "pantheon_dualist", "pantheon_dead_gods", "pantheon_silent_gods",
+                          "pantheon_ancestor_gods"])
+        self.assertGreaterEqual(len(dt.rows("pantheon.yaml#presence")), 5)
+        domains = [r["label"] for r in dt.rows("pantheon.yaml#domain_scaffold")]
+        self.assertEqual(domains, ["Knowledge", "Life", "Light", "Nature", "Tempest", "Trickery", "War", "Death"])
+        self.assertEqual(dt.load("pantheon.yaml")["rules"]["domains"], domains)
+        self.assertEqual([r["id"] for r in dt.rows("pantheon.yaml#rank")], ["rank_greater", "rank_lesser", "rank_power"])
+        self.assertGreaterEqual(len(dt.rows("pantheon.yaml#church_archetype")), 8)
+        self.assertGreaterEqual(len(dt.rows("pantheon.yaml#relationship")), 8)
+        secrets = dt.rows("pantheon.yaml#god_secret")
+        self.assertGreaterEqual(len(secrets), 8)
+        for r in secrets:
+            self.assertIn(r["tier"], ("discoverable", "secret"), r["id"])
+        # every scaffold row points at real festival and god-secret rows
+        fest = {r["id"] for r in dt.rows("calendar.yaml#festival_type")}
+        god_secret_ids = {r["id"] for r in secrets}
+        for r in dt.rows("pantheon.yaml#domain_scaffold"):
+            self.assertIn(r["festival_kind"], fest, r["id"])
+            self.assertTrue(set(r["secret_tendency"]) <= god_secret_ids, r["id"])
+            self.assertTrue(r["alignments"] and r["symbol_kinds"] and r["church_shape"] and r["folk_ask_for"])
+
+    def test_planes_baseline_is_the_srd_and_deviations_exist(self):
+        base = dt.rows("planes.yaml#baseline")
+        labels = {r["label"] for r in base}
+        for name in ("The Material Plane", "The Ethereal Plane", "The Astral Plane", "The Elemental Chaos",
+                     "The Nine Hells", "Elysium", "Hades"):
+            self.assertIn(name, labels)
+        for r in base:
+            self.assertIn(r["group"], ("material", "transitive", "inner", "outer", "demiplane"), r["id"])
+            self.assertTrue(r["srd"], r["id"])
+        self.assertGreaterEqual(len(dt.rows("planes.yaml#deviation")), 6)
+        rates = {r["id"]: r for r in dt.rows("planes.yaml#time_rate")}
+        self.assertGreaterEqual(len(rates), 5)
+        self.assertEqual(rates["rate_same"]["rate"], 1)
+        self.assertGreaterEqual(len(dt.rows("planes.yaml#way_in")), 6)
+        self.assertGreaterEqual(len(dt.rows("planes.yaml#cost")), 6)
+
+    def test_magic_tables_and_the_wild_gate(self):
+        for sub, floor in (("source", 10), ("constraint", 8), ("visibility", 5), ("taboo", 10), ("regulator", 8), ("wild", 6)):
+            self.assertGreaterEqual(len(dt.rows(f"magic.yaml#{sub}")), floor, sub)
+        self.assertEqual(dt.rows("magic.yaml#wild")[0]["id"], "wild_no")
+        for r in dt.rows("dials.yaml#magic"):
+            gate = r["effects"]["wild_magic_roll"]
+            self.assertEqual(gate["notation"], "d6")
+            self.assertTrue(set(gate["on"]) <= {1, 2, 3, 4, 5, 6}, r["id"])
+
+    def test_history_tables(self):
+        for sub, floor in (("age_template", 12), ("event_type", 14), ("divergence", 10), ("memory", 6)):
+            self.assertGreaterEqual(len(dt.rows(f"history.yaml#{sub}")), floor, sub)
+        for r in dt.rows("history.yaml#divergence"):
+            self.assertIn(r["tier"], ("public", "discoverable", "secret"), r["id"])
+        self.assertEqual(dt.rows("history.yaml#divergence")[0]["id"], "div_none")
+        self.assertGreaterEqual(dt.rows("history.yaml#divergence")[0]["weight"], 3)
+
+    def test_calendar_months_are_thirty_days_and_climates_have_seasons(self):
+        doc = dt.load("calendar.yaml")
+        self.assertEqual(doc["rules"]["month_length"], 30)
+        self.assertIn("--month-length 30", doc["rules"]["init_call"])
+        climates = dt.rows("calendar.yaml#climate")
+        self.assertGreaterEqual(len(climates), 6)
+        for c in climates:
+            self.assertGreaterEqual(len(c["seasons"]), 2, c["id"])
+            for s in c["seasons"]:
+                self.assertEqual(set(s["tone"]), {"temperature", "sky", "smell", "sound"}, c["id"])
+            self.assertTrue(c["hazards"], c["id"])
+        for y in dt.rows("calendar.yaml#year_shape"):
+            self.assertEqual(y["year_days"], y["months"] * 30 + y["intercalary_days"], y["id"])
+        self.assertGreaterEqual(len(dt.rows("calendar.yaml#festival_type")), 14)
+        domains = set(dt.load("pantheon.yaml")["rules"]["domains"])
+        for f in dt.rows("calendar.yaml#festival_type"):
+            self.assertTrue(set(f["domain_affinity"]) <= domains, f["id"])
+        self.assertGreaterEqual(len(dt.rows("calendar.yaml#moon")), 6)
+        self.assertGreaterEqual(len(dt.rows("calendar.yaml#week")), 3)
+        self.assertGreaterEqual(len(dt.rows("calendar.yaml#start_anchor")), 5)
 
     def test_forbidden_defaults_from_item_4_5_are_all_present(self):
         ids = {r["id"] for r in dt.rows("forbidden.yaml")}

@@ -187,7 +187,7 @@ tables:
           caster_share_of_roster: 0.02
           loot_item_multiplier: 0.25
           regulator: "none needed; the signature phenomenon is regulated as a natural hazard or a rite, not as spellcraft"
-          wild_magic_roll: {notation: d6, on: []}
+          wild_magic_roll: {notation: d6, "on": []}
           planes_touched_modifier: -1
           srd_note: "PC casters are the exception the primer names; NPC casters are reskinned monsters, never class NPCs"
         hooks:
@@ -202,7 +202,7 @@ tables:
           caster_share_of_roster: 0.08
           loot_item_multiplier: 0.6
           regulator: "one institution licenses or hunts casters; it is a faction"
-          wild_magic_roll: {notation: d6, on: [1]}
+          wild_magic_roll: {notation: d6, "on": [1]}
           planes_touched_modifier: 0
         hooks:
           - {phase: P4, must: "the regulator is a faction with a fracture about the phenomenon"}
@@ -215,7 +215,7 @@ tables:
           caster_share_of_roster: 0.15
           loot_item_multiplier: 1.0
           regulator: "a guild; membership is a service menu and a fracture"
-          wild_magic_roll: {notation: d6, on: [1, 2]}
+          wild_magic_roll: {notation: d6, "on": [1, 2]}
           planes_touched_modifier: 0
         hooks:
           - {phase: P4, must: "the mage guild exists and offers identify, training and a price list"}
@@ -227,7 +227,7 @@ tables:
           caster_share_of_roster: 0.3
           loot_item_multiplier: 1.5
           regulator: "municipal: magic is infrastructure and the city bills for it"
-          wild_magic_roll: {notation: d6, on: [1, 2, 3]}
+          wild_magic_roll: {notation: d6, "on": [1, 2, 3]}
           planes_touched_modifier: 1
         hooks:
           - {phase: P3, must: "at least one settlement anchor is a magical utility (lamps, wards, a lift)"}

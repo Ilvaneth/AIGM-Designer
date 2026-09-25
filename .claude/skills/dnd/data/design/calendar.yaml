@@ -1,0 +1,316 @@
+# calendar.yaml — the custom calendar every campaign gets (item 5, calendar): month names from the
+# culture's naming language (naming.yaml patterns.month), day names (patterns.day), seasons with a
+# per-month sensory tone (temperature, sky, smell, sound: the "felt season" rule), moons and phases,
+# festivals derived from the gods, a start date anchored to the timeline. Months are ALWAYS 30 days.
+# P2 ends with the `calendar.py init` call; the `seasons`, `moons` and `festivals` blocks the fixture
+# calendar.json carries are written beside it.
+schema_version: 1
+table: calendar
+consumed_by: [P2, P3, P7, P8]
+plan: "item 5 (calendar), 17 #13"
+roll: {labels: [P2.climate, P2.year_shape, P2.week, P2.moon, P2.start_anchor, P2.festival.<n>], avoid_used: true}
+rules:
+  month_length: 30
+  months: "year_shape.months names from patterns.month, all distinct, all English"
+  day_names: "week.days names from patterns.day"
+  seasons: "climate rows give the season order and a sensory template per season; the cosmology writes one felt line per month from it"
+  festivals: "at least one per greater god, at least one per season, each with a month, a day, a god and a one-line custom; festival names from the festival_type label patterns"
+  start_date: "start_anchor picks the day; the calendar's day 0 is birth; session 1 opens on the start date"
+  init_call: "calendar.py -c CAMP init --date \"<day> <Month> <year>\" --months \"...\" --month-length 30 --day-names \"...\""
+hooks_common:
+  - {phase: P2, must: "the cosmology's Calendar section lists months, day names, per-month tone, moon(s), festivals and the start date with the init call"}
+  - {phase: P3, must: "region travel tables mention the season they are written for"}
+  - {phase: P7, must: "the doom day and every front step are calendar dates, never session counts"}
+
+tables:
+
+  climate:
+    notation: d8
+    rows:
+      - id: climate_temperate
+        label: Temperate
+        weight: 3
+        seasons:
+          - {name: winter, tone: {temperature: "cold, frost by morning", sky: "low grey", smell: "wet wood smoke", sound: "wind in bare branches"}}
+          - {name: spring, tone: {temperature: "cool, warming", sky: "fast clouds", smell: "turned earth", sound: "water everywhere"}}
+          - {name: summer, tone: {temperature: "warm, one hot week", sky: "high and pale", smell: "hay and dust", sound: "insects, a distant bell"}}
+          - {name: autumn, tone: {temperature: "cooling, first frost late", sky: "long light, early dusk", smell: "rot and apples", sound: "geese, carts"}}
+        hazards: [flood in spring, fever in late summer, road ice in winter]
+        hooks:
+          - {phase: P3, must: "spring floods and winter ice appear in the travel tables"}
+      - id: climate_cold
+        label: Cold
+        weight: 1
+        seasons:
+          - {name: long_winter, tone: {temperature: "killing cold", sky: "dark by afternoon", smell: "tallow and wet fur", sound: "ice cracking"}}
+          - {name: thaw, tone: {temperature: "mud and melt", sky: "sudden brightness", smell: "everything the snow hid", sound: "rushing water"}}
+          - {name: short_summer, tone: {temperature: "mild, never hot", sky: "light all night", smell: "grass and fish", sound: "birds, hammers"}}
+          - {name: freeze, tone: {temperature: "the first hard frost", sky: "iron", smell: "smoke", sound: "silence returning"}}
+        hazards: [exposure, the sea freezing, hunger before thaw]
+        hooks:
+          - {phase: P2, must: "the long winter is the hard season; the simulation's food pressure uses it"}
+      - id: climate_hot_dry
+        label: Hot and dry
+        weight: 1
+        seasons:
+          - {name: dry, tone: {temperature: "heat that stops work at noon", sky: "white", smell: "dust and hot stone", sound: "cicadas, nothing"}}
+          - {name: rains, tone: {temperature: "warm, wet", sky: "towering cloud", smell: "wet dust, sudden green", sound: "flash floods in the wadis"}}
+          - {name: cool, tone: {temperature: "pleasant, cold nights", sky: "clear, stars", smell: "cook fires", sound: "markets"}}
+        hazards: [thirst, flash flood, sandstorm]
+        hooks:
+          - {phase: P3, must: "water sources are map nodes; a route without water is marked"}
+      - id: climate_hot_wet
+        label: Hot and wet
+        weight: 1
+        seasons:
+          - {name: wet, tone: {temperature: "hot, heavy", sky: "daily storms", smell: "rot and flowers", sound: "rain on leaves, frogs"}}
+          - {name: drier, tone: {temperature: "hot, bearable", sky: "haze", smell: "smoke from clearing", sound: "birds at dusk"}}
+        hazards: [fever, rivers rising, things that bite]
+        hooks:
+          - {phase: P6, must: "disease hazards from the SRD appear in site ecologies"}
+      - id: climate_maritime
+        label: Maritime
+        weight: 2
+        seasons:
+          - {name: storms, tone: {temperature: "cold, wet", sky: "racing", smell: "salt spray, tar", sound: "surf, halyards"}}
+          - {name: mists, tone: {temperature: "cool", sky: "fog to noon", smell: "wet rope, weed", sound: "bells, muffled"}}
+          - {name: fair, tone: {temperature: "warm days, cool nights", sky: "clear", smell: "fish, pitch", sound: "gulls, cargo"}}
+          - {name: gales, tone: {temperature: "cooling", sky: "the first gale", smell: "weed torn up", sound: "wind in the rigging"}}
+        hazards: [gales, fog, the tide]
+        hooks:
+          - {phase: P3, must: "sea routes carry a season flag; gales close them"}
+      - id: climate_highland
+        label: Highland
+        weight: 1
+        seasons:
+          - {name: snow, tone: {temperature: "bitter", sky: "hard blue or blizzard", smell: "cold stone", sound: "wind, avalanche"}}
+          - {name: melt, tone: {temperature: "cold, wet", sky: "changeable", smell: "wet moss", sound: "torrents"}}
+          - {name: grazing, tone: {temperature: "cool, bright", sky: "huge", smell: "sheep, thyme", sound: "bells, distance"}}
+          - {name: fall, tone: {temperature: "sharp", sky: "early stars", smell: "peat smoke", sound: "flocks coming down"}}
+        hazards: [passes closing, thin air, falling]
+        hooks:
+          - {phase: P3, must: "passes are map edges with a season flag"}
+      - id: climate_steppe
+        label: Steppe
+        weight: 1
+        seasons:
+          - {name: winter, tone: {temperature: "dry cold", sky: "enormous", smell: "dung fires", sound: "wind without end"}}
+          - {name: green, tone: {temperature: "mild", sky: "storms on the horizon", smell: "grass", sound: "herds moving"}}
+          - {name: burnt, tone: {temperature: "hot", sky: "brown haze", smell: "dust, grass fire", sound: "crickets"}}
+        hazards: [grass fire, no water, no shelter]
+        hooks:
+          - {phase: P3, must: "distances are long; waypoints are wells"}
+      - id: climate_underground
+        label: Underground (no sky)
+        weight: 1
+        seasons:
+          - {name: bloom, tone: {temperature: "warm, damp", sky: "fungus light rising", smell: "spore and wet stone", sound: "drip, distant work"}}
+          - {name: dim, tone: {temperature: "cooling", sky: "the light fading", smell: "smoke from lamps", sound: "bells counting hours"}}
+          - {name: dark, tone: {temperature: "cold", sky: "none", smell: "oil", sound: "everything closer"}}
+        hazards: [bad air, the light failing, things in the dark]
+        hooks:
+          - {phase: P2, must: "months are counted by the light's cycle or a great clock; the calendar says which"}
+
+  year_shape:
+    notation: d4
+    rows:
+      - id: year_twelve_months
+        label: Twelve months
+        weight: 3
+        months: 12
+        intercalary_days: 0
+        year_days: 360
+        hooks:
+          - {phase: P2, must: "twelve month names from patterns.month, three per season in a four-season climate"}
+      - id: year_ten_plus_dead_days
+        label: Ten months and the dead days
+        months: 10
+        intercalary_days: 5
+        year_days: 305
+        hooks:
+          - {phase: P2, must: "the five dead days are a festival or a fear; no front step falls on them"}
+      - id: year_thirteen_moons
+        label: Thirteen moons
+        months: 13
+        intercalary_days: 0
+        year_days: 390
+        hooks:
+          - {phase: P2, must: "the moon pattern is one moon with a 30-day cycle; months are moons"}
+      - id: year_eight_months
+        label: Eight long months
+        months: 8
+        intercalary_days: 0
+        year_days: 240
+        hooks:
+          - {phase: P2, must: "the short year is a fact of the primer; ages and lifespans count in it"}
+
+  week:
+    notation: d4
+    rows:
+      - id: week_six_day
+        label: Six days
+        days: 6
+        hooks:
+          - {phase: P2, must: "six day names from patterns.day; the sixth is the rest or market day"}
+      - id: week_seven_day
+        label: Seven days
+        days: 7
+        weight: 2
+        hooks:
+          - {phase: P2, must: "seven day names; the holy day is named for a god"}
+      - id: week_ten_day
+        label: Ten days
+        days: 10
+        hooks:
+          - {phase: P2, must: "ten day names; three weeks to a month"}
+      - id: week_five_day
+        label: Five days
+        days: 5
+        hooks:
+          - {phase: P2, must: "five day names; six weeks to a month"}
+
+  moon:
+    notation: d7
+    rows:
+      - id: moon_one_thirty
+        label: One moon, thirty-day cycle
+        weight: 3
+        hooks:
+          - {phase: P2, must: "the moon is named; the phase on day 0 is stated; full moon is a travel-table modifier"}
+      - id: moon_two
+        label: Two moons
+        hooks:
+          - {phase: P2, must: "both named; the night both are full has a name and a rule"}
+      - id: moon_dark
+        label: A dark moon
+        hooks:
+          - {phase: P2, must: "the moon is never seen; the tide or the phenomenon shows where it is"}
+      - id: moon_none_stars
+        label: No moon, only stars
+        hooks:
+          - {phase: P3, must: "night travel is by stars; a cloudy night is a hazard"}
+      - id: moon_is_a_plane
+        label: The moon is a place
+        hooks:
+          - {phase: P2, must: "the moon is a touched plane or an off-graph region"}
+      - id: moon_with_a_face
+        label: A moon with a face
+        hooks:
+          - {phase: P8, must: "the primer reads the face's phases as the folk do"}
+      - id: moon_tidal
+        label: A moon that drives the phenomenon
+        hooks:
+          - {phase: P1, must: "the signature phenomenon's cycle is the moon's"}
+
+  festival_type:
+    notation: d16
+    rows:
+      - id: fest_harvest
+        label: The harvest feast
+        domain_affinity: [Life, Nature]
+        hooks:
+          - {phase: P3, must: "the price modifier dips after it"}
+      - id: fest_remembrance
+        label: The day of the dead
+        domain_affinity: [Death]
+        hooks:
+          - {phase: P5, must: "NPCs' dead are named on it; a Known Fact surfaces"}
+      - id: fest_lighting
+        label: The lighting
+        domain_affinity: [Light, Knowledge]
+        hooks:
+          - {phase: P6, must: "one lamp or beacon is not lit, and everyone knows which"}
+      - id: fest_tide
+        label: The tide or flood day
+        domain_affinity: [Tempest, Nature]
+        hooks:
+          - {phase: P3, must: "the coast or river region's travel table changes on it"}
+      - id: fest_naming
+        label: The naming day
+        domain_affinity: [Knowledge, Trickery]
+        hooks:
+          - {phase: P1, must: "naming.json's rite of naming is this day"}
+      - id: fest_oath
+        label: Oath renewal
+        domain_affinity: [War, Light]
+        hooks:
+          - {phase: P4, must: "stance edges may shift on it; an unrenewed oath is a news record"}
+      - id: fest_trial
+        label: The god's trial or judgement
+        domain_affinity: [Knowledge, Death]
+        hooks:
+          - {phase: P7, must: "a verdict date is a front step"}
+      - id: fest_fair
+        label: The great market
+        domain_affinity: [Trickery, Life]
+        hooks:
+          - {phase: P3, must: "the price table has a fair modifier; the fair is a chapter node candidate"}
+      - id: fest_muster
+        label: The muster
+        domain_affinity: [War]
+        hooks:
+          - {phase: P4, must: "martial factions count their champions on it"}
+      - id: fest_thaw
+        label: First thaw
+        domain_affinity: [Nature, Life]
+        hooks:
+          - {phase: P3, must: "closed routes reopen after it"}
+      - id: fest_first_frost
+        label: First frost
+        domain_affinity: [Death, Nature]
+        hooks:
+          - {phase: P3, must: "routes close after it; the travel tables switch season"}
+      - id: fest_lament
+        label: The lament
+        domain_affinity: [Death, Light]
+        hooks:
+          - {phase: P2, must: "the lament mourns a dated event; its true layer is the reason"}
+      - id: fest_founding
+        label: Founding day
+        domain_affinity: [War, Knowledge]
+        hooks:
+          - {phase: P2, must: "the founding event's taught layer is recited"}
+      - id: fest_masks
+        label: The masks (a reversal)
+        domain_affinity: [Trickery]
+        hooks:
+          - {phase: P6, must: "a social site is the masked night; attitude to intruders is `test`"}
+      - id: fest_the_count
+        label: The count
+        domain_affinity: [Knowledge]
+        hooks:
+          - {phase: P5, must: "the uncounted are a demographic row"}
+      - id: fest_silence
+        label: The silent day
+        domain_affinity: [Death, Knowledge]
+        hooks:
+          - {phase: P8, must: "the primer says what may not be said"}
+
+  start_anchor:
+    notation: d6
+    rows:
+      - id: anchor_festival_eve
+        label: The eve of a festival
+        weight: 2
+        hooks:
+          - {phase: P9, must: "the session-1 pack's opening bang uses the festival"}
+      - id: anchor_season_start
+        label: The first day of a season
+        hooks:
+          - {phase: P3, must: "the travel tables are written for that season"}
+      - id: anchor_days_before_doom
+        label: A counted number of days before the doom
+        hooks:
+          - {phase: P7, must: "the doom day minus the target days is the start; the count is stated in the DM pitch"}
+      - id: anchor_after_event
+        label: The day after a dated event
+        hooks:
+          - {phase: P2, must: "the event is the most recent one; its news is day-0 rumour"}
+      - id: anchor_market_day
+        label: A market day
+        hooks:
+          - {phase: P9, must: "the start settlement's small points include the market's stalls"}
+      - id: anchor_midwinter
+        label: Midwinter or the dead days
+        hooks:
+          - {phase: P2, must: "the hard season is on; rest pressure and food are the first problems"}

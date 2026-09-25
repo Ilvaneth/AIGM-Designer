@@ -1,0 +1,456 @@
+# pantheon.yaml — how a campaign's gods are built (item 5, pantheon). Count by scale (scale.yaml `gods`).
+#
+# Two ORTHOGONAL public rolls (risk 24.1 #18): `type` (what the gods are) and `presence` (how they
+# show), so two campaigns with the same type still feel different. A trope break's
+# `overrides.pantheon_type` replaces the type roll and is logged as forced. Every deity, saint,
+# archfey, demon lord and primordial is one `god_` entity with a `rank` (greater / lesser / power):
+# one table, one naming language, one relationship web. Domains come from the SRD's eight so clerics
+# and paladins work mechanically; the SRD's four historical pantheons are only a structural scaffold
+# (`domain_scaffold`), never a source of names. What common folk believe goes to the primer
+# (public); what is true goes to dm-only (the god's secret, the villain's god, the silenced god).
+schema_version: 1
+table: pantheon
+consumed_by: [P2, P4, P5, P8, validator]
+plan: "item 5, 17 #9, errata 24.2 #11, risk 24.1 #18"
+roll: {labels: [P2.pantheon_type, P2.pantheon_presence], avoid_used: true, note: "type and presence are rolled separately; a break override skips the type roll"}
+rules:
+  domains: [Knowledge, Life, Light, Nature, Tempest, Trickery, War, Death]
+  domain_coverage: {short: "Life plus at least three others", standard: "at least six of the eight", epic: "all eight"}
+  each_god_carries: [name, rank, domains (1-2), alignment, symbol, as_worshipped, disposition, church, relations (at least one), secret (with a secrecy tier)]
+  church_field: "filled for every god at every scale; a separate faction_ church per god only in epic (errata 24.2 #11); in short and standard the field points at the religious faction or a named institution"
+  premise_binding: "one god embodies the villain's answer to the tension, one the world's default; both are named in the dm-only cosmology (the critique question of item 5)"
+  naming: "phonetic mode of the culture's language plus an epithet from naming.yaml patterns.god_epithet; powers get their epithet first and their name second"
+hooks_common:
+  - {phase: P2, must: "every god has all the fields in rules.each_god_carries; relations form one connected web"}
+  - {phase: P4, must: "the religious faction (optional in short) is a church of a god here; its true belief may differ from the god's public face"}
+  - {phase: P8, must: "the primer carries each god as worshipped, never as they are"}
+
+tables:
+
+  type:
+    notation: d5
+    rows:
+      - id: pantheon_polytheist
+        label: Polytheist
+        weight: 3
+        rule: "many gods, all real enough to answer; the tension is between them"
+        effects: {cleric_spells: "granted by the god", festivals: "one per greater god", primer_line: "the gods are many and they quarrel"}
+        hooks:
+          - {phase: P2, must: "at least one rivalry and one alliance in the web; the villain's god and the world's god are different gods"}
+      - id: pantheon_dualist
+        label: Dualist
+        weight: 1
+        rule: "two great powers and their courts; every lesser god and power belongs to one side or claims to be outside"
+        effects: {cleric_spells: "granted by a side", festivals: "two great feasts, one per side", primer_line: "there are two, and you are with one"}
+        hooks:
+          - {phase: P2, must: "the two sides map to the tension's poles; at least one power stands outside and is the interesting one"}
+          - {phase: P4, must: "the religious faction is one side's church; its fracture is a member who doubts the split"}
+      - id: pantheon_dead_gods
+        label: Dead gods
+        weight: 1
+        rule: "the gods died or were killed; worship continues, spells still come from somewhere, and that somewhere is the question"
+        effects: {cleric_spells: "from the corpse, the memory or an impostor (secret)", festivals: "days of mourning", primer_line: "the gods are dead; the rites remain"}
+        conflicts_with: [pantheon_silent_gods]
+        hooks:
+          - {phase: P2, must: "a deep-past event is the death; each god's secret says what answers prayers now"}
+          - {phase: P8, must: "the primer states what a cleric believes their power is"}
+      - id: pantheon_silent_gods
+        label: Silent gods
+        weight: 2
+        rule: "the gods exist and do not answer; the silence has a date, and whoever explains it holds the churches"
+        effects: {cleric_spells: "still granted; the silence is about words, not power", festivals: "vigils and readings", primer_line: "the gods have not spoken since the Silence"}
+        conflicts_with: [pantheon_dead_gods]
+        hooks:
+          - {phase: P2, must: "the silence is a dated event with a taught and a true layer; at least one god's secret is why"}
+      - id: pantheon_ancestor_gods
+        label: Ancestor gods
+        weight: 1
+        rule: "the gods were people of this land; godhood is a career the dead can have, and the living keep the lists"
+        effects: {cleric_spells: "granted by a lineage", festivals: "the ancestors' days", primer_line: "the gods were ours once"}
+        hooks:
+          - {phase: P2, must: "every god has a mortal biography in the history; one candidate for godhood is pending"}
+          - {phase: P5, must: "at least one NPC is a descendant with a claim"}
+
+  presence:
+    notation: d6
+    rows:
+      - id: presence_never
+        label: Never shown
+        weight: 2
+        rule: "no manifestation in living memory; faith is the only evidence"
+        hooks:
+          - {phase: P2, must: "the magic system says where cleric spells come from in a world that has never seen a god"}
+      - id: presence_omens
+        label: Through omens
+        weight: 3
+        rule: "weather, birds, births and fires are read as the gods' speech; the readers are an institution"
+        hooks:
+          - {phase: P4, must: "the omen readers are a faction or a service of the religious faction; a wrong reading is a fracture"}
+      - id: presence_clergy_only
+        label: Through the ordained
+        weight: 2
+        rule: "miracles happen, only through the ordained; the ordination is the power"
+        hooks:
+          - {phase: P4, must: "ordination is an access chain; who ordains is the church's secret"}
+      - id: presence_in_places
+        label: Only at their places
+        weight: 2
+        rule: "a god answers only at its site; the site is the church's asset and everyone else's pilgrimage"
+        hooks:
+          - {phase: P6, must: "each greater god's place is a site or a settlement anchor"}
+      - id: presence_walking
+        label: They walk
+        weight: 1
+        rule: "gods or their avatars walk the land, rarely and on dated occasions; a sighting is a news record"
+        hooks:
+          - {phase: P2, must: "the last walking is a dated event with witnesses"}
+          - {phase: P5, must: "at least one NPC saw a god and is not believed"}
+      - id: presence_through_phenomenon
+        label: Through the phenomenon
+        weight: 2
+        rule: "the signature magic phenomenon is the gods' only voice; whoever controls the phenomenon speaks for them"
+        hooks:
+          - {phase: P1, must: "the signature institution regulates the phenomenon and therefore the gods"}
+
+  domain_scaffold:
+    note: "the SRD scaffold: per domain the shapes a god's symbol, church and asks take; no names"
+    rows:
+      - id: domain_knowledge
+        label: Knowledge
+        alignments: [LN, N, LG, NE]
+        symbol_kinds: [an open or closed book, an eye, a scroll, a key, a lamp]
+        church_shape: [archive, school, court of readers, an order of scribes]
+        folk_ask_for: [a reading, a verdict, a cure for forgetting, a child's letters]
+        festival_kind: fest_the_count
+        faction_affinity: [scholarly, religious, guild]
+        secret_tendency: [godsecret_lying_about_domain, godsecret_is_the_phenomenon]
+        hooks:
+          - {phase: P2, must: "a Knowledge god's church keeps records the history's true layer contradicts"}
+      - id: domain_life
+        label: Life
+        alignments: [NG, LG, N, CG]
+        symbol_kinds: [a sheaf, a hand, a cup, a hearth, a sun over water]
+        church_shape: [hospice, household rite, mendicant order, a temple with a well]
+        folk_ask_for: [healing, a safe birth, rain, a harvest]
+        festival_kind: fest_harvest
+        faction_affinity: [religious, trade]
+        secret_tendency: [godsecret_fading, godsecret_was_mortal]
+        hooks:
+          - {phase: P5, must: "the Life god's priest is an ordinary-people NPC the party meets in chapter 1"}
+      - id: domain_light
+        label: Light
+        alignments: [LG, NG, LN, N]
+        symbol_kinds: [a lamp, a sunburst, a candle, a beacon, a mirror]
+        church_shape: [watch house, order of lamplighters, a temple on a height, a tribunal]
+        folk_ask_for: [safety at night, truth in a dispute, a lit way]
+        festival_kind: fest_lighting
+        faction_affinity: [religious, state]
+        secret_tendency: [godsecret_is_two_gods, godsecret_villains_patron]
+        hooks:
+          - {phase: P6, must: "a Light god's place is a beacon or a watch, and one has failed"}
+      - id: domain_nature
+        label: Nature
+        alignments: [N, NG, CN, CG]
+        symbol_kinds: [a leaf, an antler, a wave, a root, a beast's eye]
+        church_shape: [no clergy, a circle at a landmark, a herders' rite, a river people's mooring]
+        folk_ask_for: [a calm sea, game, a mild winter, a way through]
+        festival_kind: fest_thaw
+        faction_affinity: [resistance, trade]
+        secret_tendency: [godsecret_bound, godsecret_is_the_land]
+        hooks:
+          - {phase: P3, must: "a Nature god's presence is a region's landmark, not a building"}
+      - id: domain_tempest
+        label: Tempest
+        alignments: [CN, N, CG, CE]
+        symbol_kinds: [a wave, a lightning fork, a horn, a broken mast, three lines of rain]
+        church_shape: [a harbour temple, a sailors' rite, a mountain shrine, no temple at all]
+        folk_ask_for: [a safe crossing, wind, the enemy's fleet drowned]
+        festival_kind: fest_tide
+        faction_affinity: [martial, trade, criminal]
+        secret_tendency: [godsecret_not_silent, godsecret_bound]
+        hooks:
+          - {phase: P2, must: "a Tempest god's disposition is written for the season the campaign starts in"}
+      - id: domain_trickery
+        label: Trickery
+        alignments: [CN, CG, NE, CE]
+        symbol_kinds: [a mask, a coin with two faces, a fox, a knot, a closed door]
+        church_shape: [a mystery cult, a players' guild, a thieves' rite, a secret society]
+        folk_ask_for: [luck, a good lie, a lost thing found, revenge that cannot be traced]
+        festival_kind: fest_masks
+        faction_affinity: [criminal, guild]
+        secret_tendency: [godsecret_is_new, godsecret_is_two_gods]
+        hooks:
+          - {phase: P4, must: "a Trickery god's church is the criminal faction or its rival"}
+      - id: domain_war
+        label: War
+        alignments: [LN, CN, LE, NG]
+        symbol_kinds: [a spear, a wall, a shield with a crack, a horn, a red hand]
+        church_shape: [a muster hall, a champions' order, a state church, a warband's rite]
+        folk_ask_for: [victory, a son returned, courage, a clean death]
+        festival_kind: fest_muster
+        faction_affinity: [martial, state]
+        secret_tendency: [godsecret_villains_patron, godsecret_usurper]
+        hooks:
+          - {phase: P4, must: "a War god's church is the martial faction or the state's; its endgame is a named war"}
+      - id: domain_death
+        label: Death
+        alignments: [N, LN, NE, LE]
+        symbol_kinds: [an extinguished lamp, a closed eye, a ferry, a scale, a raven]
+        church_shape: [grave wardens, a household rite, an order of readers, no church at all]
+        folk_ask_for: [a good death, the dead kept quiet, a debt cancelled, an end]
+        festival_kind: fest_remembrance
+        faction_affinity: [religious, criminal]
+        secret_tendency: [godsecret_fading, godsecret_was_mortal, godsecret_is_the_phenomenon]
+        hooks:
+          - {phase: P2, must: "the Death god's disposition names what death is in this world; the afterlife's truth is discoverable or secret"}
+
+  rank:
+    rows:
+      - id: rank_greater
+        label: Greater
+        share: {short: [1, 2], standard: [2, 3], epic: [3, 4]}
+        can: [grant spells, hold a festival, have a church with a faction, be the villain's god]
+        cannot: [die on screen without a beat, be a person]
+        naming: "name first, epithet second"
+        hooks:
+          - {phase: P2, must: "every greater god has a church with a place and at least two relations"}
+      - id: rank_lesser
+        label: Lesser
+        share: {short: [1, 3], standard: [2, 4], epic: [3, 6]}
+        can: [grant spells, be worshipped in one region or trade, be silenced, be new]
+        cannot: [hold a separate faction outside epic]
+        naming: "name first, epithet optional"
+        hooks:
+          - {phase: P3, must: "each lesser god is local to a region, a settlement or a trade named in its church field"}
+      - id: rank_power
+        label: Power
+        share: {short: [0, 1], standard: [1, 3], epic: [3, 5]}
+        can: [be a saint, an archfey, a demon lord, a primordial, a dead hero; be met; be killed; be a site's boss]
+        cannot: [grant spells unless a break says so]
+        naming: "epithet first, name second or never"
+        hooks:
+          - {phase: P6, must: "a power that can be met is a site occupant with a fixed CR or a touched plane's keeper"}
+
+  church_archetype:
+    rows:
+      - id: church_temple_state
+        label: Established temple
+        hierarchy: "high priest, provincial priests, a temple in every town"
+        services: [healing for a fee, marriages, verdicts, letters of passage]
+        fracture_seed: "the provincial priests against the capital"
+        faction_archetype: religious
+        hooks:
+          - {phase: P4, must: "the established temple is the religious faction; its stance to the state is ≥ +1 at birth"}
+      - id: church_mendicant
+        label: Mendicant order
+        hierarchy: "no seat; wandering brothers and sisters; an elder in each region"
+        services: [healing for free, news, a bed on the road]
+        fracture_seed: "an elder who took a house"
+        faction_archetype: religious
+        hooks:
+          - {phase: P3, must: "a mendicant is a travel-table result in at least two regions"}
+      - id: church_mystery_cult
+        label: Mystery cult
+        hierarchy: "initiates by degree; the highest degree is a secret"
+        services: [initiation, a secret, protection from the cult itself]
+        fracture_seed: "a degree that learned the secret and left"
+        faction_archetype: cult
+        hooks:
+          - {phase: P4, must: "the cult has a true belief a reasonable person could hold (forbidden.yaml)"}
+      - id: church_household_rite
+        label: Household rite
+        hierarchy: "none; the eldest keeps the rite; no clergy, no building"
+        services: [none to strangers; hospitality to guests under the rite]
+        fracture_seed: "a household that stopped"
+        faction_archetype: none
+        hooks:
+          - {phase: P8, must: "the primer describes the rite as something every native does at home"}
+      - id: church_guild_church
+        label: Craft church
+        hierarchy: "masters are priests; the guild hall is the temple"
+        services: [training, blessing of tools, identify]
+        fracture_seed: "journeymen barred from the rite"
+        faction_archetype: guild
+        hooks:
+          - {phase: P4, must: "the guild's service menu includes one religious service"}
+      - id: church_watch_house
+        label: Watch house
+        hierarchy: "watchers on shifts; a warden; towers or lamps as temples"
+        services: [warning, a lit road, a place to wait out the night]
+        fracture_seed: "a watch that saw something and did not ring"
+        faction_archetype: religious
+        hooks:
+          - {phase: P6, must: "one watch has failed and is a site"}
+      - id: church_hospice
+        label: Hospice
+        hierarchy: "a mother or father of the house; sisters and brothers; lay servants"
+        services: [healing, a good death, a bed for the poor]
+        fracture_seed: "who is turned away"
+        faction_archetype: religious
+        hooks:
+          - {phase: P5, must: "the hospice's head is a supporting NPC with a Known Fact about a death"}
+      - id: church_tribunal
+        label: Tribunal
+        hierarchy: "judges ordained by the god; clerks; a court building"
+        services: [verdicts, oaths witnessed, sanctuary]
+        fracture_seed: "a verdict everyone knows was bought"
+        faction_archetype: religious
+        hooks:
+          - {phase: P4, must: "the tribunal's access chain runs through its clerks"}
+      - id: church_pilgrimage
+        label: Pilgrimage road
+        hierarchy: "shrine keepers along a road; a great shrine at the end"
+        services: [passage, hospitality, a cure at the end]
+        fracture_seed: "the keepers who tax the road"
+        faction_archetype: trade
+        hooks:
+          - {phase: P3, must: "the pilgrimage road is a map route with shrines as waypoints"}
+      - id: church_heretic_underground
+        label: Heretic underground
+        hierarchy: "cells; a prophet nobody has met"
+        services: [a different reading of the god, hiding, a rite the temple forbids]
+        fracture_seed: "the cell that wants to go public"
+        faction_archetype: resistance
+        hooks:
+          - {phase: P4, must: "the underground's stance to the established church is −3; the god's secret decides who is right"}
+      - id: church_ancestor_hall
+        label: Ancestor hall
+        hierarchy: "family elders; a hall of tokens; a keeper of the lists"
+        services: [a name, a vote of the dead, a lineage confirmed]
+        fracture_seed: "a family struck from the list"
+        faction_archetype: state
+        hooks:
+          - {phase: P5, must: "the keeper of the lists is an NPC; the lists are a Known Facts source"}
+
+  relationship:
+    rows:
+      - id: rel_rivalry
+        label: Rivalry
+        shows_in_worship: "two festivals on the same day; the town chooses"
+        shows_in_factions: "their churches' stance is ≤ −1"
+        hooks:
+          - {phase: P4, must: "the rivalry is a stance edge with a dated reason"}
+      - id: rel_alliance
+        label: Alliance
+        shows_in_worship: "one temple serves both; a shared rite"
+        shows_in_factions: "their churches' stance is ≥ +1"
+        hooks:
+          - {phase: P2, must: "the alliance has a term one god has not kept (discoverable)"}
+      - id: rel_silenced_one
+        label: The silenced one
+        shows_in_worship: "a god whose name is not said; an empty niche"
+        shows_in_factions: "a faction that says the name anyway"
+        hooks:
+          - {phase: P2, must: "who silenced the god and why is the god's secret; the calendar has the gap"}
+      - id: rel_parent_child
+        label: Parent and child
+        shows_in_worship: "the child's festival follows the parent's; the child's church is the parent's daughter house"
+        shows_in_factions: "the daughter church wants its own seat"
+        hooks:
+          - {phase: P4, must: "succession in the parent's church is the fracture"}
+      - id: rel_debt
+        label: A debt between gods
+        shows_in_worship: "a tithe paid by one temple to another"
+        shows_in_factions: "the tithe is an asset on the board"
+        hooks:
+          - {phase: P2, must: "the debt is a deep-past event; what was borrowed is the discoverable layer"}
+      - id: rel_stolen_domain
+        label: A stolen domain
+        shows_in_worship: "two gods claim the same domain; clerics of both exist"
+        shows_in_factions: "two churches contest one site"
+        hooks:
+          - {phase: P6, must: "the contested site is on the intended path"}
+      - id: rel_bond
+        label: A bond or marriage
+        shows_in_worship: "a joint feast; a rite of the two names"
+        shows_in_factions: "the bond's breaking is a front step"
+        hooks:
+          - {phase: P7, must: "the bond's state at each act is a consequence, not an event"}
+      - id: rel_absent
+        label: The absent one
+        shows_in_worship: "a god everyone expects back; a kept place at the table"
+        shows_in_factions: "a faction waiting, another that has stopped"
+        hooks:
+          - {phase: P2, must: "where the god went is secret; whether it returns is an ending"}
+      - id: rel_usurped
+        label: The usurped
+        shows_in_worship: "the old god's symbols under the new god's paint"
+        shows_in_factions: "the old worship survives as the heretic underground"
+        hooks:
+          - {phase: P3, must: "one old temple still stands, repurposed, as a settlement anchor"}
+      - id: rel_mirror
+        label: The mirror
+        shows_in_worship: "two gods of one domain with opposite answers to the tension"
+        shows_in_factions: "their churches are the villain's and the world's"
+        hooks:
+          - {phase: P2, must: "the mirror pair are the villain's god and the world's god"}
+      - id: rel_trial
+        label: On trial
+        shows_in_worship: "a god's rites suspended pending a verdict"
+        shows_in_factions: "the tribunal and the defenders are factions"
+        hooks:
+          - {phase: P7, must: "the verdict is a beat's world_pressure or a doom"}
+
+  god_secret:
+    note: "every god has one; the default tier is discoverable unless the row says secret"
+    rows:
+      - id: godsecret_is_dead
+        label: Is dead
+        tier: secret
+        hooks:
+          - {phase: P2, must: "who or what answers the prayers is written; the death is a dated or deep-past event"}
+      - id: godsecret_was_mortal
+        label: Was a mortal
+        tier: discoverable
+        hooks:
+          - {phase: P2, must: "the mortal's biography is in the history with a name the primer does not carry"}
+      - id: godsecret_is_two_gods
+        label: Is two gods
+        tier: secret
+        hooks:
+          - {phase: P2, must: "the two answer different prayers; the split is why the domain contradicts itself"}
+      - id: godsecret_villains_patron
+        label: Backs the villain
+        tier: secret
+        hooks:
+          - {phase: P4, must: "the BBEG's relation to this god is `serves` or `is`"}
+      - id: godsecret_bound
+        label: Is bound
+        tier: secret
+        hooks:
+          - {phase: P6, must: "the binding is a site or a touched plane"}
+      - id: godsecret_lying_about_domain
+        label: Lies about its domain
+        tier: discoverable
+        hooks:
+          - {phase: P2, must: "the true domain is one of the eight; the church's records show the drift"}
+      - id: godsecret_fading
+        label: Is fading
+        tier: discoverable
+        hooks:
+          - {phase: P7, must: "the fading is a clock; an ending says whether the god lasts"}
+      - id: godsecret_is_new
+        label: Is younger than claimed
+        tier: discoverable
+        hooks:
+          - {phase: P2, must: "the god's first festival has a real date within the history's span"}
+      - id: godsecret_usurper
+        label: Replaced the god whose name it wears
+        tier: secret
+        hooks:
+          - {phase: P2, must: "the replaced god is a rel_usurped or rel_silenced_one row"}
+      - id: godsecret_is_the_phenomenon
+        label: Is the signature phenomenon
+        tier: secret
+        hooks:
+          - {phase: P1, must: "the signature phenomenon's rule is the god's disposition"}
+      - id: godsecret_not_silent
+        label: Is not silent; nobody listens
+        tier: discoverable
+        hooks:
+          - {phase: P3, must: "the god's speech is a travel-table result in its region"}
+      - id: godsecret_is_the_land
+        label: Is the land itself
+        tier: secret
+        hooks:
+          - {phase: P3, must: "the region's fixed danger tier is the god's mood"}

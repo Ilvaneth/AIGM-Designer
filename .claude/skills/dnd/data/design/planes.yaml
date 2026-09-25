@@ -1,0 +1,299 @@
+# planes.yaml — the cosmology's planes (item 5, planes). The baseline is the SRD 5.1 appendix
+# "The Planes of Existence": the Material Plane, the two Transitive Planes (Ethereal, Astral), the
+# four Elemental Planes inside the Elemental Chaos, the Outer Planes (sixteen by alignment, of which
+# the SRD names Elysium, Hades and the Nine Hells) and demiplanes. The designer decides per plane
+# whether it exists unchanged, is renamed / altered / merged / removed by a trope break, and which
+# planes are TOUCHED (scale.yaml `planes_touched`): a touched plane is a `plane_` entity with a
+# way in, a cost, a site and a time rate (`calendar.py plane enter --rate`). Untouched planes still
+# exist for spells (Banishment, Plane Shift, Etherealness, Astral Projection, Gate), and the primer
+# carries one rule line: plane-referencing spells work according to THIS world's cosmology.
+schema_version: 1
+table: planes
+consumed_by: [P2, P6, P8]
+plan: "item 5 (planes), 17 #10, item 18.3"
+roll: {labels: [P2.plane_deviation.<baseline id>, P2.plane_touched.<n>, P2.plane_rate.<n>, P2.plane_way.<n>, P2.plane_cost.<n>], avoid_used: false, note: "deviation is rolled per baseline row the tone or a break flags; touched planes are chosen, then rate / way / cost are rolled per touched plane"}
+rules:
+  touched_count: "scale.yaml planes_touched, plus the tone's and magic dial's planes_touched_modifier, never below 0"
+  touched_plane_carries: [way_in, cost, site (a site_ entity with a fixed tier), time_rate, keeper (a power or a creature), what_it_wants_from_visitors]
+  untouched: "exists for spells; a local name is optional; no site, no entity unless a break names it"
+  primer_line: "one sentence per plane the folk have a word for; the rule that spells follow this cosmology"
+  calendar: "time_rate rows give the `--rate` (material minutes per local minute) or `--rate-range` calendar.py takes"
+hooks_common:
+  - {phase: P2, must: "the cosmology's Planes section lists the baseline verdict per plane, the touched planes with all six fields, and the primer rule line"}
+  - {phase: P8, must: "the primer names only the planes a native has a word for"}
+
+tables:
+
+  baseline:
+    note: "the SRD appendix; `srd` is the appendix's own description in one line; ids are table rows, not registry ids"
+    rows:
+      - id: baseline_material
+        label: The Material Plane
+        group: material
+        srd: "the nexus where the planes' forces collide in mortal life; every campaign world is here"
+        spells: []
+        hooks:
+          - {phase: P2, must: "always exists; the cosmology never deviates it"}
+      - id: baseline_ethereal
+        label: The Ethereal Plane
+        group: transitive
+        srd: "a misty, fog-bound dimension; its Border Ethereal overlaps the Material and Inner Planes"
+        spells: [etherealness, see invisibility, true seeing, blink]
+        touch_bias: [tone_horror, tone_cosmic]
+        hooks:
+          - {phase: P2, must: "if touched, the fog has a local name and the ghosts of the campaign live in it"}
+      - id: baseline_astral
+        label: The Astral Plane
+        group: transitive
+        srd: "the realm of thought and dream, a silvery sea travelled as a disembodied soul"
+        spells: [astral projection, plane shift]
+        touch_bias: [tone_cosmic]
+        hooks:
+          - {phase: P2, must: "if touched, dreams are the way in and the magic system's visibility says what dreams show"}
+      - id: baseline_air
+        label: The Elemental Plane of Air
+        group: inner
+        srd: "one of the four Elemental Planes ringing the Material Plane"
+        spells: [conjure elemental, plane shift, gate]
+        touch_bias: [tone_swashbuckling]
+        hooks:
+          - {phase: P2, must: "if touched, a vortex portal on a height is its way in (the SRD's portal rule)"}
+      - id: baseline_earth
+        label: The Elemental Plane of Earth
+        group: inner
+        srd: "one of the four Elemental Planes; solid earth at its pure extent"
+        spells: [conjure elemental, plane shift, gate]
+        touch_bias: [era_underground]
+        hooks:
+          - {phase: P2, must: "if touched, a mine or a cave is its vortex"}
+      - id: baseline_fire
+        label: The Elemental Plane of Fire
+        group: inner
+        srd: "one of the four Elemental Planes; the efreeti's home city is the appendix's example bargain"
+        spells: [conjure elemental, plane shift, gate]
+        touch_bias: [tone_dark_fantasy]
+        hooks:
+          - {phase: P2, must: "if touched, the heart of a volcano or a great kiln is its vortex"}
+      - id: baseline_water
+        label: The Elemental Plane of Water
+        group: inner
+        srd: "one of the four Elemental Planes; the depths of the ocean lead to it"
+        spells: [conjure elemental, plane shift, gate]
+        touch_bias: [era_nautical]
+        hooks:
+          - {phase: P2, must: "if touched, the deep sea is its vortex; a coastal culture has a name for it"}
+      - id: baseline_chaos
+        label: The Elemental Chaos
+        group: inner
+        srd: "the churning tumult in which the four Elemental Planes are suspended"
+        spells: [plane shift, gate]
+        touch_bias: [tone_cosmic]
+        hooks:
+          - {phase: P2, must: "if touched, wild magic's shape is planar bleed from it"}
+      - id: baseline_upper
+        label: The Upper Planes
+        group: outer
+        srd: "the Outer Planes with some element of good; celestials dwell there"
+        spells: [plane shift, gate, banishment]
+        hooks:
+          - {phase: P2, must: "the cosmology says whether any Upper Plane has a local name; a silent-gods pantheon usually removes or seals them"}
+      - id: baseline_elysium
+        label: Elysium
+        group: outer
+        srd: "a neutral good Upper Plane; the appendix's example of alignment dissonance"
+        spells: [plane shift, gate]
+        hooks:
+          - {phase: P2, must: "if the afterlife is a place, this row or a renamed form of it is where the taught history sends the good dead"}
+      - id: baseline_lower
+        label: The Lower Planes
+        group: outer
+        srd: "the Outer Planes with some element of evil; fiends dwell there"
+        spells: [plane shift, gate, banishment]
+        hooks:
+          - {phase: P2, must: "the cosmology says which Lower Plane the fiends of this world come from, if any"}
+      - id: baseline_hades
+        label: Hades
+        group: outer
+        srd: "an Outer Plane named by the appendix among the realms of the dead"
+        spells: [plane shift, gate]
+        touch_bias: [tone_grimdark]
+        hooks:
+          - {phase: P2, must: "if touched, it is the realm of the dead the folk fear, under a local name"}
+      - id: baseline_nine_hells
+        label: The Nine Hells
+        group: outer
+        srd: "an Outer Plane of nine layers; the appendix's example of distance meaning nothing"
+        spells: [plane shift, gate]
+        touch_bias: [tone_political]
+        hooks:
+          - {phase: P2, must: "if touched, its contracts are the way in and the cost; break_fiends_keep_the_banks fits here"}
+      - id: baseline_demiplane
+        label: Demiplanes
+        group: demiplane
+        srd: "small extradimensional spaces with their own rules, entered through a single point"
+        spells: [demiplane, gate, plane shift]
+        hooks:
+          - {phase: P6, must: "a demiplane touched by the campaign is a site with one entrance and a stamped minimum depth"}
+
+  deviation:
+    notation: d8
+    rows:
+      - id: dev_unchanged
+        label: Unchanged
+        weight: 3
+        rule: "exists as the SRD describes; the folk may have no word for it"
+        hooks:
+          - {phase: P8, must: "no primer line unless a spell a PC has references it"}
+      - id: dev_renamed
+        label: Renamed
+        weight: 2
+        rule: "the same plane under a local name from the naming language"
+        hooks:
+          - {phase: P2, must: "the local name is a registry alias; spells work as printed"}
+      - id: dev_merged
+        label: Merged
+        rule: "two baseline planes are one here (the dead and the sea; fire and the hells)"
+        hooks:
+          - {phase: P2, must: "spells that reference either reach the merged plane; the primer says so"}
+      - id: dev_removed
+        label: Removed
+        rule: "the plane does not exist; spells that reference it fail or are redirected, stated in the primer"
+        hooks:
+          - {phase: P8, must: "the primer lists the affected spells and what happens"}
+      - id: dev_inverted
+        label: Inverted
+        rule: "the plane's nature is reversed (the Upper Planes are the prison; the Nine Hells are the court of law)"
+        hooks:
+          - {phase: P2, must: "the inversion is public or discoverable, never secret: a trope break or a signature carries it"}
+      - id: dev_is_this_world
+        label: Is a place in this world
+        rule: "the plane is a region, a depth or a moon of the Material Plane (secret_planes_are_one's public form)"
+        hooks:
+          - {phase: P3, must: "the place is a map node or an off-graph inset"}
+      - id: dev_secret_holds
+        label: The big secret's home
+        rule: "the plane exists and is where the secret's Act 3 clue is"
+        hooks:
+          - {phase: P6, must: "the plane is touched; its site is the Act 3 clue site"}
+      - id: dev_reachable_by_death
+        label: Reachable by dying
+        rule: "the plane is where the dead go and the living can follow, at a cost"
+        hooks:
+          - {phase: P2, must: "the cost row is cost_the_way_back or cost_years; the afterlife's truth is discoverable"}
+
+  time_rate:
+    notation: d6
+    note: "rate = material minutes per local minute, the value calendar.py plane enter --rate takes"
+    rows:
+      - id: rate_same
+        label: Same as the Material
+        weight: 3
+        rate: 1
+        hooks:
+          - {phase: P2, must: "the entity's time_rate is 1; the calendar needs no plane state beyond the name"}
+      - id: rate_slow
+        label: Slow (an hour there is minutes here)
+        rate: 0.1
+        hooks:
+          - {phase: P7, must: "a front step can be raced by entering the plane"}
+      - id: rate_fast
+        label: Fast (an hour there is a day here)
+        rate: 24
+        hooks:
+          - {phase: P7, must: "the doom clock is the danger of entering; the primer's folklore knows people who came back old"}
+      - id: rate_stopped
+        label: Stopped
+        rate: 0
+        hooks:
+          - {phase: P2, must: "nothing ages there; the keeper is someone from the history"}
+      - id: rate_seasonal
+        label: Varies with the season or the moon
+        rate_range: "0.5:30"
+        hooks:
+          - {phase: P2, must: "the calendar's moon or season decides the rate; calendar.py takes --rate-range"}
+      - id: rate_bargained
+        label: Set by the keeper
+        rate_range: "0.25:4"
+        hooks:
+          - {phase: P6, must: "the site's boss or keeper sets the rate as part of the cost"}
+
+  way_in:
+    notation: d8
+    rows:
+      - id: way_gate_site
+        label: A portal site
+        weight: 2
+        rule: "a standing stone circle, a tower, a ship or a whole town that exists in both planes (the SRD's portal kinds)"
+        hooks:
+          - {phase: P6, must: "the portal is a site or a site's payoff room"}
+      - id: way_ritual_date
+        label: A rite on a date
+        rule: "the way opens for a rite performed on a calendar date"
+        hooks:
+          - {phase: P2, must: "the date is a festival or the dead days"}
+      - id: way_death
+        label: Death or near death
+        rule: "the dying cross; the nearly dead glimpse"
+        hooks:
+          - {phase: P5, must: "one NPC has been and returned wrong"}
+      - id: way_dream
+        label: Dream
+        rule: "sleepers cross; the Astral is the road"
+        hooks:
+          - {phase: P2, must: "the magic system's dream rule and the Astral deviation agree"}
+      - id: way_tide
+        label: The tide or the season
+        rule: "at the lowest tide or the shortest day the way is open for an hour"
+        hooks:
+          - {phase: P2, must: "the calendar marks the hour"}
+      - id: way_mirror
+        label: A mirror or a reflection
+        rule: "still water, a polished shield, a mirror kept shrouded"
+        hooks:
+          - {phase: P1, must: "sig_phen_mirror_doors, if rolled, is this way"}
+      - id: way_phenomenon
+        label: Through the signature phenomenon
+        rule: "the phenomenon at full strength is the door"
+        hooks:
+          - {phase: P1, must: "the phenomenon's rule states the door"}
+      - id: way_guide
+        label: A guide creature
+        rule: "a creature (a power, a beast, a psychopomp) takes those it chooses"
+        hooks:
+          - {phase: P6, must: "the guide is a creature_ entity with a fixed CR and a price"}
+
+  cost:
+    notation: d8
+    rows:
+      - id: cost_years
+        label: Years of life
+        hooks:
+          - {phase: P5, must: "someone who paid is an NPC, visibly older"}
+      - id: cost_memory
+        label: A memory
+        hooks:
+          - {phase: P5, must: "a Known Fact is what the crossing takes"}
+      - id: cost_name
+        label: A name
+        hooks:
+          - {phase: P1, must: "naming.json's rite of naming can restore it, at a price"}
+      - id: cost_sense
+        label: A sense or a part of the body
+        hooks:
+          - {phase: P5, must: "one NPC bears the mark and trades on it"}
+      - id: cost_tithe
+        label: A tithe in coin or goods
+        hooks:
+          - {phase: P4, must: "whoever collects the tithe is a faction; the tithe is an asset"}
+      - id: cost_oath
+        label: An oath that binds
+        hooks:
+          - {phase: P9, must: "a socket is a PC bound by such an oath"}
+      - id: cost_companion
+        label: Someone left behind
+        hooks:
+          - {phase: P6, must: "the site's keeper holds the left-behind; they are a rescue payoff"}
+      - id: cost_the_way_back
+        label: The way back
+        hooks:
+          - {phase: P7, must: "an ending is the party not returning, or returning changed"}

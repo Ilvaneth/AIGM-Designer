@@ -1,0 +1,263 @@
+# history.yaml — the timeline (item 5, history): 3-5 named ages, 8-12 dated events in the last 200
+# years (500 in epic) plus 3-5 deep-past events, every event an `event_` entity with two layers:
+# as taught (public) and as it happened (discoverable or secret). The villain's origin and the big
+# secret are pinned to the timeline; living memory (which NPCs witnessed which event) seeds the
+# Known Facts ledgers of P5. Age and event names are English names (errata 24.2 #17).
+schema_version: 1
+table: history
+consumed_by: [P2, P4, P5, P7, P8]
+plan: "item 5 (history), 17 #12, item 8.6"
+roll: {labels: [P2.age.<n>, P2.event.<n>, P2.divergence.<n>], avoid_used: true, note: "ages and event types are rolled per slot; divergence is rolled per dated event, weight 3 on none"}
+rules:
+  ages: "scale.yaml history.ages; the last age is the present and is named for what it lacks or fears; the first age holds the deep past"
+  events: "scale.yaml history.dated_events over history.years_covered, plus history.deep_past_events; at least one event per age"
+  pins: [the villain's origin, the big secret's origin, the signature institution's founding, the last war or disaster, the start settlement's founding or refounding]
+  layers: "every event has `as_taught` (public) and `as_happened` (discoverable or secret); a divergence row of `div_none` means the layers agree"
+  living_memory: "every event within 60 years lists witnesses among the NPC roster; a witness holds a Known Fact from the as_happened layer only if the divergence row allows"
+hooks_common:
+  - {phase: P2, must: "each age and event carries its id, a year or span, its taught line and, where they differ, its true line in dm-only"}
+  - {phase: P5, must: "Known Facts baselines are filled from the witness lists"}
+  - {phase: P8, must: "the primer's history is the taught layer only, sectioned per culture"}
+
+tables:
+
+  age_template:
+    notation: d14
+    rows:
+      - id: age_founding
+        label: The Founding
+        span_hint: "the first age; ends with a date everyone knows"
+        hooks:
+          - {phase: P2, must: "the founding event is in it; its as_happened layer is the first place the big secret can hide"}
+      - id: age_golden
+        label: The Golden Age
+        span_hint: "an age everyone wishes they were born in; it ended for a reason nobody agrees on"
+        hooks:
+          - {phase: P2, must: "the ending is a dated event with a divergence"}
+      - id: age_silence
+        label: The Silence
+        span_hint: "an age defined by an absence (of gods, of ships, of rain, of a people)"
+        hooks:
+          - {phase: P2, must: "what fell silent is a registry entity; the silence has a date"}
+      - id: age_flood
+        label: The Flood
+        span_hint: "an age that began with the land changing shape"
+        hooks:
+          - {phase: P3, must: "a landmark is what the flood left; a region's biome is the flood's"}
+      - id: age_the_war_of
+        label: The War of {Name}
+        span_hint: "an age of one war, named for its cause or its loser"
+        hooks:
+          - {phase: P4, must: "two factions' stance is the war's; the war's end is a treaty event"}
+      - id: age_long_peace
+        label: The Long Peace
+        span_hint: "an age with no war, whose price someone paid"
+        hooks:
+          - {phase: P2, must: "the peace's as_happened layer names what was given for it"}
+      - id: age_dimming
+        label: The Dimming
+        span_hint: "an age in which something is slowly going out"
+        hooks:
+          - {phase: P7, must: "the dimming is a clock the doom completes"}
+      - id: age_reckoning
+        label: The Reckoning
+        span_hint: "an age of tribunals, lists and settlements of old debts"
+        hooks:
+          - {phase: P4, must: "a faction's endgame is the reckoning completed or escaped"}
+      - id: age_wandering
+        label: The Wandering
+        span_hint: "an age in which a people moved, arrived or left"
+        hooks:
+          - {phase: P5, must: "the demographic table shows the arrivals with a district"}
+      - id: age_lanterns
+        label: The Age of {Thing}
+        span_hint: "an age named for what was built in it (lanterns, roads, walls, mills)"
+        hooks:
+          - {phase: P3, must: "the things built are landmarks or anchors that still stand"}
+      - id: age_kings
+        label: The Age of {Rulers}
+        span_hint: "an age named for a dynasty or an office that no longer rules"
+        hooks:
+          - {phase: P4, must: "a claimant to the old office is an NPC or a resistance faction"}
+      - id: age_plague
+        label: The Sickness
+        span_hint: "an age of a disease that changed the law"
+        hooks:
+          - {phase: P8, must: "the primer carries a law that dates from the sickness"}
+      - id: age_now_named_for_fear
+        label: The present, named for what it fears
+        span_hint: "the last age; its name is a fear or a lack (the Waiting, the Unlit, the Short Years)"
+        hooks:
+          - {phase: P2, must: "the present age's name is the taught form of the doom"}
+      - id: age_before
+        label: Before
+        span_hint: "an unnamed deep age; ruins older than the record"
+        hooks:
+          - {phase: P6, must: "one major site predates the record"}
+
+  event_type:
+    notation: d16
+    rows:
+      - id: evtype_founding
+        label: A founding
+        hooks:
+          - {phase: P3, must: "the founded thing is a settlement, an institution or a polity on the map"}
+      - id: evtype_treaty
+        label: A treaty
+        hooks:
+          - {phase: P4, must: "the treaty's terms are a stance edge; its breach is a front step"}
+      - id: evtype_disaster
+        label: A disaster
+        hooks:
+          - {phase: P3, must: "the disaster left a landmark; a list of who was saved exists"}
+      - id: evtype_war
+        label: A war
+        hooks:
+          - {phase: P4, must: "the war's sides are factions or their ancestors; a veteran is an NPC"}
+      - id: evtype_succession
+        label: A succession
+        hooks:
+          - {phase: P4, must: "the succession's loser has heirs; one is the betrayal candidate"}
+      - id: evtype_discovery
+        label: A discovery
+        hooks:
+          - {phase: P2, must: "what was discovered touches the magic system or the phenomenon"}
+      - id: evtype_plague
+        label: A sickness
+        hooks:
+          - {phase: P5, must: "at least one NPC is marked by it"}
+      - id: evtype_miracle
+        label: A miracle
+        hooks:
+          - {phase: P2, must: "the god credited has a secret about it"}
+      - id: evtype_heresy
+        label: A heresy
+        hooks:
+          - {phase: P4, must: "the heretics survive as a faction, a cell or a rite"}
+      - id: evtype_exile
+        label: An exile
+        hooks:
+          - {phase: P5, must: "the exiles' descendants are in the demographic table"}
+      - id: evtype_migration
+        label: A migration
+        hooks:
+          - {phase: P3, must: "the migrants' route is a map route; their settlement is a district or a village"}
+      - id: evtype_vanishing
+        label: A vanishing
+        hooks:
+          - {phase: P6, must: "where the vanished went is a site"}
+      - id: evtype_naming
+        label: A naming or renaming
+        hooks:
+          - {phase: P1, must: "naming.json records the old name as an alias"}
+      - id: evtype_wreck_or_loss
+        label: A wreck or a loss
+        hooks:
+          - {phase: P6, must: "what was lost is an item_ or a site payoff"}
+      - id: evtype_silencing
+        label: A silencing
+        hooks:
+          - {phase: P2, must: "the silenced thing is a god, a people or an institution with a rel_silenced_one row"}
+      - id: evtype_building
+        label: A building
+        hooks:
+          - {phase: P3, must: "the built thing is a landmark or an anchor; who paid is discoverable"}
+
+  divergence:
+    notation: d12
+    note: "how the as_taught and as_happened layers differ; rolled per dated event"
+    rows:
+      - id: div_none
+        label: The layers agree
+        weight: 3
+        tier: public
+        hooks:
+          - {phase: P2, must: "the event has one line; the validator does not expect a dm-only mirror"}
+      - id: div_winner_was_loser
+        label: The winner was the loser
+        tier: discoverable
+        hooks:
+          - {phase: P2, must: "the other side's account exists somewhere as a clue"}
+      - id: div_hero_was_many
+        label: The hero was several people
+        tier: discoverable
+        hooks:
+          - {phase: P5, must: "one of the several has descendants in the roster"}
+      - id: div_disaster_was_caused
+        label: The disaster was caused
+        tier: secret
+        hooks:
+          - {phase: P4, must: "the cause is a faction's ancestor or the villain's origin"}
+      - id: div_treaty_was_surrender
+        label: The treaty was a surrender
+        tier: discoverable
+        hooks:
+          - {phase: P4, must: "the surrendered thing is an asset the other side still holds"}
+      - id: div_miracle_was_a_machine
+        label: The miracle was a device or a rite
+        tier: secret
+        hooks:
+          - {phase: P6, must: "the device is an item_ or a site payoff"}
+      - id: div_date_is_wrong
+        label: The date is wrong
+        tier: discoverable
+        hooks:
+          - {phase: P2, must: "the calendar or a grave shows the true date"}
+      - id: div_villain_was_victim
+        label: The villain of the story was the victim
+        tier: secret
+        hooks:
+          - {phase: P5, must: "the victim's line still exists and knows"}
+      - id: div_did_not_happen
+        label: It never happened
+        tier: secret
+        hooks:
+          - {phase: P2, must: "who invented it and why is a god's or a faction's secret"}
+      - id: div_two_events_were_one
+        label: Two events were one
+        tier: discoverable
+        hooks:
+          - {phase: P2, must: "the two taught events are both entities; the true one is the dm-only mirror"}
+      - id: div_price_was_hidden
+        label: The price was hidden
+        tier: secret
+        hooks:
+          - {phase: P7, must: "the price is still being paid; a front step is the next payment"}
+      - id: div_someone_survived
+        label: Someone survived who should not have
+        tier: secret
+        hooks:
+          - {phase: P5, must: "the survivor is a secret NPC with an opaque id"}
+
+  memory:
+    notation: d7
+    note: "who holds the as_happened layer; drives the witness lists and the Known Facts baseline"
+    rows:
+      - id: mem_elders
+        label: The elders
+        hooks:
+          - {phase: P5, must: "at least two elder NPCs hold Known Facts from the event"}
+      - id: mem_one_survivor
+        label: One survivor
+        hooks:
+          - {phase: P4, must: "the survivor is in the load_bearing set"}
+      - id: mem_records
+        label: An institution's records
+        hooks:
+          - {phase: P6, must: "the records are an item_ in a site or an anchor"}
+      - id: mem_the_dead
+        label: The dead, if they can be read
+        hooks:
+          - {phase: P1, must: "only if the signature phenomenon or institution reads the dead"}
+      - id: mem_nobody
+        label: Nobody living
+        hooks:
+          - {phase: P6, must: "the truth is a site's payoff, never a person"}
+      - id: mem_a_song
+        label: A song or a saying
+        hooks:
+          - {phase: P8, must: "the primer carries the song as folklore"}
+      - id: mem_the_land
+        label: The land shows it
+        hooks:
+          - {phase: P3, must: "a landmark is the evidence; the travel table can find it"}
