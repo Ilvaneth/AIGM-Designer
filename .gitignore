@@ -9,3 +9,6 @@ __pycache__/
 
 # Generated test campaigns (plan item 22.6)
 campaigns/_test-*/
+
+# A JSON rendering of the SRD YAML dropped into data/ on 2026-09-25 (no script reads it; the YAML and dnd5e_srd.json are the sources)
+.claude/skills/dnd/data/srd-5.1-json/
