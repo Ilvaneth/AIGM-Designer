@@ -412,6 +412,129 @@ class Floors(unittest.TestCase):
         self.assertEqual([w["price_modifier"] for w in wealth], [0.8, 0.9, 1.0, 1.2, 1.5])
         self.assertEqual(len(dt.rows("settlements.yaml#law")), 5)
 
+    # --- batch D: powers ---------------------------------------------------------
+
+    def test_factions_archetypes_triggers_and_closed_lists(self):
+        archetypes = dt.rows("factions.yaml#archetype")
+        self.assertEqual([a["value"] for a in archetypes],
+                         ["state", "religious", "guild", "criminal", "martial", "scholarly", "resistance", "cult", "trade"])
+        endgames = {r["id"] for r in dt.rows("factions.yaml#endgame")}
+        fractures = {r["id"] for r in dt.rows("factions.yaml#fracture")}
+        for a in archetypes:
+            with self.subTest(archetype=a["id"]):
+                self.assertTrue(a["typical_forces"] and a["services"] and a["hq_kinds"])
+                self.assertTrue(set(a["endgame_bias"]) <= endgames, a["endgame_bias"])
+                self.assertTrue(set(a["fracture_bias"]) <= fractures, a["fracture_bias"])
+                self.assertIn(a["doctrine_default"]["aggression"], (0, 1, 2, 3))
+                self.assertIn(a["doctrine_default"]["target_preference"], dt.load("factions.yaml")["rules"]["target_preference"])
+        self.assertEqual([t["value"] for t in dt.rows("factions.yaml#trigger")],
+                         ["alliance", "loss", "gain", "exposure", "death", "betrayal"])
+        moves = {m["value"] for m in dt.rows("simulation.yaml#move")}
+        for t in dt.rows("factions.yaml#trigger"):
+            self.assertTrue(set(t["weights_template"]) <= moves, (t["id"], t["weights_template"]))
+        self.assertEqual({r["value"] for r in dt.rows("factions.yaml#step_kind")}, {"timed", "contested", "party-only"})
+        self.assertEqual(dt.rows("factions.yaml#provocation_rung")[0]["parks"], False)
+        self.assertEqual(dt.rows("factions.yaml#provocation_rung")[-1]["id"], "rung_war")
+        for sub, floor in (("fracture", 12), ("endgame", 12), ("secret_kind", 8), ("cult_doctrine", 8), ("access_link", 6),
+                           ("service", 10), ("abandon_if", 5)):
+            self.assertGreaterEqual(len(dt.rows(f"factions.yaml#{sub}")), floor, sub)
+        for r in dt.rows("factions.yaml#secret_kind"):
+            self.assertIn(r["tier"], ("discoverable", "secret"), r["id"])
+
+    def test_forbidden_structural_checks_point_at_real_closed_lists(self):
+        """Every forbidden row's structural field names a table row set whose `value`s include the forbidden ones, flagged."""
+        present = {n[:-5] for n in dt.list_tables()}
+        checked = 0
+        for r in dt.rows("forbidden.yaml"):
+            table, _, sub = r["structural"]["table"].partition("#")
+            if table[:-5] not in present:
+                continue
+            rows = dt.rows(f"{table}#{sub}")
+            if not rows or "value" not in rows[0]:
+                continue   # a field on rows (npcs.yaml#demographic alignment_fixed), not a closed list
+            values = {x["value"]: x for x in rows}
+            for v in r["structural"]["forbidden_values"]:
+                with self.subTest(forbidden=r["id"], value=v):
+                    self.assertIn(v, values)
+                    self.assertTrue(values[v].get("forbidden"), f"{v} must be flagged forbidden in {table}#{sub}")
+                    checked += 1
+        self.assertGreaterEqual(checked, 8)
+
+    def test_antagonists_visibility_fronts_dooms_and_stages(self):
+        self.assertEqual(len(dt.rows("antagonists.yaml#visibility")), 5)
+        self.assertTrue(dt.load("antagonists.yaml")["roll"]["secret"])
+        shapes = dt.rows("antagonists.yaml#villain_shape")
+        self.assertGreaterEqual(len([s for s in shapes if not s.get("forbidden")]), 10)
+        origins = dt.rows("antagonists.yaml#origin")
+        self.assertGreaterEqual(len([o for o in origins if not o.get("forbidden")]), 8)
+        bfa = {r["value"]: r for r in dt.rows("antagonists.yaml#bbeg_faction_archetype")}
+        self.assertEqual(set(bfa), {a["value"] for a in dt.rows("factions.yaml#archetype")})
+        self.assertTrue(bfa["religious"]["forbidden"])
+        ids = {r["id"] for _, _, r in every_row()}
+        self.assertTrue(set(bfa["religious"]["allowed_via"]) <= ids)
+        kinds = {r["value"] for r in dt.rows("factions.yaml#step_kind")}
+        fronts = dt.rows("antagonists.yaml#front_template")
+        self.assertGreaterEqual(len(fronts), 6)
+        for f in fronts:
+            with self.subTest(front=f["id"]):
+                ats = [p["at"] for p in f["portents"]]
+                self.assertTrue(4 <= len(ats) <= 6, ats)
+                self.assertEqual(ats, sorted(ats))
+                self.assertEqual(ats[-1], 1.0)
+                self.assertTrue(all(0 < a <= 1 for a in ats))
+                self.assertTrue({p["kind"] for p in f["portents"]} <= kinds)
+                self.assertTrue(any(p["kind"] == "party-only" for p in f["portents"]), "a front telegraphs the party at least once")
+        levers = {r["id"] for r in dt.rows("antagonists.yaml#buy_time_lever")}
+        self.assertGreaterEqual(len(levers), 5)
+        dooms = dt.rows("antagonists.yaml#doom_shape")
+        self.assertGreaterEqual(len(dooms), 8)
+        for d in dooms:
+            self.assertTrue(set(d["levers"]) <= levers, d["id"])
+            self.assertTrue(d["stage5"], d["id"])
+        stages = dt.rows("antagonists.yaml#escalation_stage")
+        self.assertEqual([s["stage"] for s in stages], [1, 2, 3, 4, 5])
+        self.assertEqual([s["travel_tier"] for s in stages], ["early", "early", "late", "late", "late"])
+        self.assertGreaterEqual(len(dt.rows("antagonists.yaml#lieutenant_role")), 8)
+        for lt in dt.rows("antagonists.yaml#lieutenant_role"):
+            self.assertEqual(lt["tier"], "major", lt["id"])
+
+    def test_simulation_moves_outcomes_and_brakes(self):
+        moves = dt.rows("simulation.yaml#move")
+        self.assertEqual({m["value"] for m in moves},
+                         {"seize", "sabotage", "bribe", "spy", "persuade", "assassinate", "besiege", "negotiate", "hold", "consolidate"})
+        outcomes = {o["id"] for o in dt.rows("simulation.yaml#outcome")}
+        for m in moves:
+            with self.subTest(move=m["id"]):
+                self.assertIn(m["on_success"], outcomes)
+                self.assertIn(m["on_failure"], outcomes)
+                self.assertIn(m["visibility"], ("public", "rumored", "secret"))
+                self.assertGreaterEqual(m["cost"], 0)
+                if m["big_outcome"]:
+                    self.assertTrue(m["contested"], "a big outcome is always contested")
+        self.assertEqual(next(m for m in moves if m["value"] == "hold")["cost"], 0)
+        move_ids = {m["id"] for m in moves}
+        for n in dt.rows("simulation.yaml#news_template"):
+            self.assertTrue(set(n["kinds"]) <= move_ids, n["id"])
+            self.assertIn(n["visibility"], ("public", "rumored", "secret"))
+        shifts = {s["id"]: s for s in dt.rows("simulation.yaml#stance_shift")}
+        self.assertEqual(shifts["shift_betrayal"]["delta"], -2)
+        self.assertEqual(shifts["shift_alliance"]["delta"], 1)
+        self.assertTrue(shifts["shift_betrayal"]["large"])
+        delay = next(c for c in dt.rows("simulation.yaml#cascade") if c["id"] == "cascade_intel_delay")["delay_days"]
+        self.assertEqual(sorted(delay), [0, 1, 2, 3])
+        self.assertEqual(next(c for c in dt.rows("simulation.yaml#cascade") if c["id"] == "cascade_cap")["max_chain"], 3)
+        self.assertGreaterEqual(len(dt.rows("simulation.yaml#succession")), 5)
+        self.assertGreaterEqual(len(dt.rows("simulation.yaml#economy_modifier")), 6)
+        for e in dt.rows("simulation.yaml#economy_modifier"):
+            self.assertTrue(e["goods"] and e["duration_days"] > 0, e["id"])
+        brakes = {b["id"]: b["action"] for b in dt.rows("simulation.yaml#brake")}
+        self.assertEqual(brakes["brake_party_asset"], "park")
+        self.assertEqual(brakes["brake_controller_party"], "skip")
+        self.assertEqual(brakes["brake_load_bearing"], "cap")
+        rules = dt.load("simulation.yaml")["rules"]
+        for key in ("opposed_check", "load_bearing", "brakes", "volatility", "determinism", "big_outcomes"):
+            self.assertIn(key, rules)
+
     def test_forbidden_defaults_from_item_4_5_are_all_present(self):
         ids = {r["id"] for r in dt.rows("forbidden.yaml")}
         for needed in ("forbidden_awakening_ancient_evil", "forbidden_chosen_one", "forbidden_prophecy",

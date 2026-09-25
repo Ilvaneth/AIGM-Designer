@@ -1,0 +1,237 @@
+# antagonists.yaml — the antagonist hierarchy (item 7.5): BBEG visibility patterns (a secret roll
+# so it is never the same twice), the closed lists the validator checks (villain shape, origin,
+# faction archetype: risk 24.1 #10, forbidden.yaml), front templates (4-6 portents on calendar days
+# as operation steps), lieutenant roles, doom shapes, the five threat-escalation stages the fronts
+# drive, and the buy-time levers every front must carry (risk 24.1 #16).
+#
+# Counts by scale: scale.yaml antagonists. The BBEG embodies the villain's answer to the tension.
+# BBEG and lieutenants are major tier with a goals.py record (threatened / blocked / permanent_loss
+# pre-written); regional villains are supporting tier, site bosses at a fixed CR, their front on the
+# faction's operation (errata 24.2 #3). The doom day is fixed at birth on a hard calendar and moves
+# only through a party-caused structured block (24.6 #3).
+schema_version: 1
+table: antagonists
+consumed_by: [P4, P5, P6, P7, validator, play]
+plan: "item 7.5, 10.5, 17 #17, errata 24.2 #3, risk 24.1 #10 #16, 24.6 #3"
+roll: {labels: [P4.bbeg_visibility, P4.bbeg_shape, P4.bbeg_origin, P4.front_template, P4.doom_shape, P4.lieutenant_role.<n>], secret: true, avoid_used: true, note: "all antagonist rolls are secret; the card shows only the archetype class and the clue count per act (24.6 #6)"}
+rules:
+  doom_day: "mid(target_sessions) × doom.days_per_session_default × (1 + doom.slack_min), rounded to a calendar date; the front's portents spread over it; lieutenants' clocks end at 30-60% of it"
+  goals: "BBEG and lieutenants: goals.py add --kind npc with a metric and the three responses; regional villains: none"
+  stage_from_steps: "the threat escalation stage is an overlay value advanced when a BBEG front step completes, never on DM feel; stage 5 is the doom"
+  never_offscreen: "BBEG and lieutenants never die off-screen (load_bearing); regional villains fall only to a tier-matched faction, as a parked scene"
+  reference_party: "a boss is sized against a reference party at the tier's intended level, never the actual party (item 9.9)"
+hooks_common:
+  - {phase: P4, must: "each antagonist is an npc_ with a faction, a front (or a place on the faction's operation) and a dossier at the effort the plan sets (BBEG, lieutenants: high, two critics)"}
+  - {phase: P7, must: "each beat's world_pressure is one of the front's steps; the doom is the loss ending's world_after"}
+  - {phase: validator, must: "villain_shape, origin and bbeg_faction_archetype are values from these lists and not forbidden ones"}
+
+tables:
+
+  visibility:
+    notation: d5
+    rows:
+      - id: vis_known_untouchable
+        label: Known and untouchable
+        rule: "everyone knows who; nobody can touch them (a seat, a law, a wall of allies)"
+        hooks:
+          - {phase: P4, must: "the access chain to the BBEG is the campaign; every link is a faction"}
+      - id: vis_known_wrong_person
+        label: Known, but the wrong person
+        rule: "the world names a villain; the world is wrong; the real one hides behind the named one"
+        hooks:
+          - {phase: P5, must: "the wrongly named is a supporting NPC with a life that will be ruined"}
+      - id: vis_behind_visible_front
+        label: Behind a visible front
+        rule: "a face is public (a lieutenant, an institution); the BBEG is the hand nobody sees"
+        hooks:
+          - {phase: P5, must: "the face is a lieutenant with `controls` / `commands` relationship lines to the BBEG in dm-only"}
+      - id: vis_mystery_among_candidates
+        label: A mystery among candidates
+        rule: "three or four plausible candidates, all with motive; the truth is one of them"
+        hooks:
+          - {phase: P5, must: "each candidate is an NPC with a secret that is not the one; the clue trail eliminates them in act order"}
+      - id: vis_process_or_institution
+        label: Not a person but a process
+        rule: "the antagonist is an institution, a market, a plague, a rite; its lieutenants are people who serve it"
+        hooks:
+          - {phase: P4, must: "the BBEG entity is a faction or a signature_; the lieutenants are its officers; the doom is the process completing"}
+
+  villain_shape:
+    note: "closed list for the registry field `villain_shape` (risk 24.1 #10); the three forbidden shapes exist only so forbidden.yaml can name them"
+    rows:
+      - {id: shape_reformer, value: reformer, label: The reformer, rule: "wants to fix the world and has chosen the cost", hooks: [{phase: P1, must: "fits secret_villain_is_right; the win ending must answer the reform"}]}
+      - {id: shape_collector, value: collector, label: The collector, rule: "gathers things (names, years, relics, people) toward a completion", hooks: [{phase: P7, must: "the metric is the collection; portents are acquisitions"}]}
+      - {id: shape_heir, value: heir, label: The heir, rule: "owed something by the history and taking it", hooks: [{phase: P2, must: "the inheritance is an event's divergence"}]}
+      - {id: shape_peacemaker, value: peacemaker, label: The peacemaker, rule: "keeps a peace that buries a crime and will bury anyone who digs", hooks: [{phase: P2, must: "the treaty event's as-happened layer"}]}
+      - {id: shape_institution, value: institution, label: The institution, rule: "a body with officers, not a person", hooks: [{phase: P4, must: "vis_process_or_institution; the faction is the BBEG"}]}
+      - {id: shape_rival, value: rival, label: The rival, rule: "wants what the party wants, for reasons as good", hooks: [{phase: P9, must: "one PC's mission collides with it"}]}
+      - {id: shape_parent, value: parent, label: The parent or teacher, rule: "made someone in the party or the world, and wants it back", hooks: [{phase: P9, must: "a socket binds a PC to them"}]}
+      - {id: shape_convert, value: convert, label: The convert, rule: "was on the world's side once and saw something", hooks: [{phase: P5, must: "a former ally in the roster remembers them kindly"}]}
+      - {id: shape_survivor, value: survivor, label: The survivor, rule: "lived through the disaster and will not let it happen again, at any price", hooks: [{phase: P2, must: "the disaster is a dated event with a witness list that includes them"}]}
+      - {id: shape_process, value: process, label: The process, rule: "a plague, a market, a rite, a debt: no one wills it and everyone feeds it", hooks: [{phase: P4, must: "vis_process_or_institution"}]}
+      - {id: shape_beloved, value: beloved, label: The beloved, rule: "loved by the people; moving against them costs the party the people", hooks: [{phase: P8, must: "the primer speaks of them warmly"}]}
+      - {id: shape_stranger, value: stranger, label: The stranger from outside, rule: "from beyond the map, with a reason the map does not know", hooks: [{phase: P3, must: "an inset region or the edge of the map is theirs"}]}
+      - {id: shape_dark_lord, value: dark_lord, label: Dark lord in a black tower (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_dark_lord_black_tower)"}]}
+      - {id: shape_whispering_advisor, value: whispering_advisor, label: The whispering advisor (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_evil_advisor)"}]}
+      - {id: shape_secretly_evil_ruler, value: secretly_evil_ruler, label: The secretly evil ruler (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_secretly_evil_ruler)"}]}
+
+  origin:
+    note: "closed list for the registry field `bbeg_origin`; the origin is a choice made by a living person within the history's span"
+    rows:
+      - {id: origin_choice_in_history, value: choice_in_history, label: A choice at a dated event, hooks: [{phase: P2, must: "the event is within years_covered and has a divergence"}]}
+      - {id: origin_bargain, value: bargain, label: A bargain with a power, hooks: [{phase: P2, must: "the power is a rank_power god or a plane's keeper"}]}
+      - {id: origin_loss, value: loss, label: A loss at a dated event, hooks: [{phase: P2, must: "the loss is on the witness list"}]}
+      - {id: origin_inheritance, value: inheritance, label: An inheritance, hooks: [{phase: P4, must: "the inherited thing is an asset"}]}
+      - {id: origin_taken_by_phenomenon, value: taken_by_phenomenon, label: The phenomenon took them, hooks: [{phase: P1, must: "the signature phenomenon's cost"}]}
+      - {id: origin_conversion, value: conversion, label: A conversion, hooks: [{phase: P2, must: "the converting god or doctrine is in the pantheon or a cult"}]}
+      - {id: origin_ambition_at_court, value: ambition_at_court, label: An ambition at court, hooks: [{phase: P4, must: "the court is the state faction's access chain"}]}
+      - {id: origin_wrong_done, value: wrong_done, label: A wrong done to them, hooks: [{phase: P5, must: "the wrongdoer is in the roster or the history"}]}
+      - {id: origin_made_by_institution, value: made_by_institution, label: Made by the institution, hooks: [{phase: P1, must: "the signature institution raised or shaped them"}]}
+      - {id: origin_awakened_ancient, value: awakened_ancient, label: Awakened ancient evil (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_awakening_ancient_evil)"}]}
+
+  bbeg_faction_archetype:
+    note: "which archetype the BBEG's faction may have; religious only through an allowed secret or break (forbidden_corrupt_church_default_villain)"
+    rows:
+      - {id: bfa_state, value: state, label: State, hooks: [{phase: P4, must: "the BBEG holds a seat or is the ruler's rival"}]}
+      - {id: bfa_guild, value: guild, label: Guild, hooks: [{phase: P4, must: "the BBEG is a master or the regulator's head"}]}
+      - {id: bfa_criminal, value: criminal, label: Criminal, hooks: [{phase: P4, must: "the front runs through the criminal faction's assets"}]}
+      - {id: bfa_martial, value: martial, label: Martial, hooks: [{phase: P4, must: "the doom is a war"}]}
+      - {id: bfa_scholarly, value: scholarly, label: Scholarly, hooks: [{phase: P4, must: "the doom is a discovery or a rite"}]}
+      - {id: bfa_resistance, value: resistance, label: Resistance, hooks: [{phase: P4, must: "the villain's answer is the resistance's endgame"}]}
+      - {id: bfa_cult, value: cult, label: Cult, hooks: [{phase: P4, must: "the cult doctrine is the villain's answer"}]}
+      - {id: bfa_trade, value: trade, label: Trade, hooks: [{phase: P4, must: "the doom is a monopoly or a debt"}]}
+      - {id: bfa_religious, value: religious, label: Religious (forbidden by default), forbidden: true, allowed_via: [secret_cure_is_the_cause, secret_gods_are_prisoners, break_gods_on_trial], hooks: [{phase: validator, must: "an error unless an allowed_via id is in the campaign's rolls"}]}
+
+  front_template:
+    note: "4-6 portents as operation steps; `at` is the fraction of the doom clock each portent lands at; kinds are factions.yaml step kinds"
+    notation: d8
+    rows:
+      - id: front_gathering
+        label: The gathering
+        portents:
+          - {at: 0.15, kind: timed, shape: "recruits or buys the first hands; a notice, a rumour of pay"}
+          - {at: 0.35, kind: contested, shape: "takes a supply (a well, a road, a warehouse)"}
+          - {at: 0.55, kind: contested, shape: "strikes a rival and takes its asset"}
+          - {at: 0.75, kind: party-only, shape: "closes the place the rite needs"}
+          - {at: 1.0, kind: timed, shape: "the rite; the doom"}
+        hooks:
+          - {phase: P7, must: "the Act 1 beat's world_pressure is the first or second portent"}
+      - id: front_count
+        label: The count
+        portents:
+          - {at: 0.1, kind: timed, shape: "a census, a listing, a register opened"}
+          - {at: 0.3, kind: timed, shape: "the first names struck"}
+          - {at: 0.5, kind: contested, shape: "a district emptied"}
+          - {at: 0.7, kind: party-only, shape: "someone the party knows is counted"}
+          - {at: 0.9, kind: contested, shape: "the registers moved to the seat"}
+          - {at: 1.0, kind: timed, shape: "the count closed; the doom"}
+        hooks:
+          - {phase: P5, must: "the counted NPC is load-bearing"}
+      - id: front_silence
+        label: The silence
+        portents:
+          - {at: 0.2, kind: timed, shape: "a witness goes quiet"}
+          - {at: 0.4, kind: contested, shape: "a record burns"}
+          - {at: 0.6, kind: contested, shape: "the last archive is taken"}
+          - {at: 0.8, kind: party-only, shape: "the last witness is found"}
+          - {at: 1.0, kind: timed, shape: "the truth is gone; the doom"}
+        hooks:
+          - {phase: P1, must: "the big secret's clue trail runs against this front"}
+      - id: front_purchase
+        label: The purchase
+        portents:
+          - {at: 0.15, kind: timed, shape: "a debt is bought"}
+          - {at: 0.35, kind: contested, shape: "a seat's vote is bought"}
+          - {at: 0.55, kind: contested, shape: "a settlement's ruler is bought"}
+          - {at: 0.8, kind: party-only, shape: "the party is offered a price"}
+          - {at: 1.0, kind: timed, shape: "the polity is owned; the doom"}
+        hooks:
+          - {phase: P4, must: "each purchase is a control flip through ≥2 steps"}
+      - id: front_flood
+        label: The flood
+        portents:
+          - {at: 0.1, kind: timed, shape: "the water, the sickness or the thing is seen at the edge"}
+          - {at: 0.3, kind: timed, shape: "a village falls"}
+          - {at: 0.5, kind: contested, shape: "a road is cut"}
+          - {at: 0.7, kind: contested, shape: "a town is besieged"}
+          - {at: 0.85, kind: party-only, shape: "the flood reaches a place the party holds or an ally"}
+          - {at: 1.0, kind: timed, shape: "the capital; the doom"}
+        hooks:
+          - {phase: P3, must: "each portent moves the travel tier of a region toward Late"}
+      - id: front_trial
+        label: The trial
+        portents:
+          - {at: 0.2, kind: timed, shape: "a charge is read"}
+          - {at: 0.4, kind: contested, shape: "a witness is turned"}
+          - {at: 0.6, kind: party-only, shape: "the party is summoned"}
+          - {at: 0.8, kind: contested, shape: "the judge is replaced"}
+          - {at: 1.0, kind: timed, shape: "the verdict; the doom"}
+        hooks:
+          - {phase: P2, must: "the trial is a festival date or the god's-trial break"}
+      - id: front_road
+        label: The road
+        portents:
+          - {at: 0.15, kind: contested, shape: "a crossing taken"}
+          - {at: 0.35, kind: contested, shape: "a toll imposed"}
+          - {at: 0.55, kind: timed, shape: "a caravan goes through unhindered"}
+          - {at: 0.75, kind: party-only, shape: "the party's road closes"}
+          - {at: 1.0, kind: timed, shape: "the road is the villain's; the doom"}
+        hooks:
+          - {phase: P3, must: "each portent changes a map edge's note; travel-times regenerate"}
+      - id: front_lamp
+        label: The lamp
+        portents:
+          - {at: 0.1, kind: timed, shape: "something gathers (oil, salt, years, names)"}
+          - {at: 0.3, kind: contested, shape: "a keeper is replaced"}
+          - {at: 0.5, kind: timed, shape: "the gathered thing is moved"}
+          - {at: 0.7, kind: party-only, shape: "the last piece is asked of someone the party knows"}
+          - {at: 1.0, kind: timed, shape: "the lamp is lit; the doom"}
+        hooks:
+          - {phase: P6, must: "the lamp's place is the capstone or major site of the last act"}
+
+  lieutenant_role:
+    notation: d10
+    rows:
+      - {id: lt_hand, label: The hand (enforcer), tier: major, hooks: [{phase: P6, must: "a site boss at a fixed CR inside the band"}]}
+      - {id: lt_voice, label: The voice (public face), tier: major, hooks: [{phase: P5, must: "the face of vis_behind_visible_front; voice samples that never mention the BBEG"}]}
+      - {id: lt_purse, label: The purse, tier: major, hooks: [{phase: P4, must: "holds the front's economic asset"}]}
+      - {id: lt_hunter, label: The hunter, tier: major, hooks: [{phase: P9, must: "one PC's personal antagonist"}]}
+      - {id: lt_believer, label: The believer, tier: major, hooks: [{phase: P4, must: "holds the doctrine more purely than the BBEG; a fracture seed"}]}
+      - {id: lt_traitor, label: The traitor in waiting, tier: major, hooks: [{phase: P4, must: "the betrayal candidate of the BBEG's faction"}]}
+      - {id: lt_engineer, label: The engineer of the doom, tier: major, hooks: [{phase: P7, must: "removing them is a buy-time lever"}]}
+      - {id: lt_keeper, label: The keeper of the secret, tier: major, hooks: [{phase: P1, must: "holds the Act 3 clue or guards it"}]}
+      - {id: lt_child, label: The child (the heir), tier: major, hooks: [{phase: P4, must: "the BBEG's heir; succession makes them the BBEG"}]}
+      - {id: lt_convert, label: The convert (a former ally), tier: major, hooks: [{phase: P5, must: "a roster NPC's Known Facts remember them on the other side"}]}
+
+  doom_shape:
+    notation: d10
+    rows:
+      - {id: doom_rite_completed, label: The rite completed, stage5: "the rite is done and the world is different; the villain's answer is the law", levers: [lever_hostage, lever_date, lever_engineer], hooks: [{phase: P7, must: "the loss ending's world_after is this"}]}
+      - {id: doom_city_falls, label: The city falls, stage5: "the capital is taken; the polity is the villain's", levers: [lever_supply, lever_rival, lever_date], hooks: [{phase: P3, must: "the city is a settlement asset; the siege is a contested step"}]}
+      - {id: doom_god_answers, label: The god answers, stage5: "a god speaks or wakes, for the villain", levers: [lever_witness, lever_date, lever_engineer], hooks: [{phase: P2, must: "the god's secret and presence row"}]}
+      - {id: doom_border_closes, label: The border closes, stage5: "the map shrinks; a region is lost to the map", levers: [lever_supply, lever_rival], hooks: [{phase: P3, must: "the region becomes an inset"}]}
+      - {id: doom_plague_peaks, label: The sickness peaks, stage5: "a people, a district or a settlement is gone", levers: [lever_supply, lever_witness, lever_engineer], hooks: [{phase: P5, must: "the demographic table loses a row"}]}
+      - {id: doom_seat_taken, label: The seat taken, stage5: "the villain rules openly", levers: [lever_rival, lever_hostage, lever_date], hooks: [{phase: P4, must: "a control flip of the HQ through ≥2 steps"}]}
+      - {id: doom_dead_rise, label: The dead rise, stage5: "the dead walk and the living are the minority", levers: [lever_witness, lever_engineer], hooks: [{phase: P6, must: "every site's ecology changes at stage 5"}]}
+      - {id: doom_truth_buried, label: The truth buried forever, stage5: "the last proof is gone; the world keeps the lie", levers: [lever_witness, lever_hostage], hooks: [{phase: P1, must: "the clue trail's Act 3 clue is what is buried"}]}
+      - {id: doom_phenomenon_overflows, label: The phenomenon overflows, stage5: "the signature phenomenon at full strength, everywhere", levers: [lever_engineer, lever_date, lever_supply], hooks: [{phase: P1, must: "the phenomenon's overflow rule"}]}
+      - {id: doom_last_witness_dies, label: The last witness dies, stage5: "nobody living can prove it; the villain is right by default", levers: [lever_witness, lever_hostage], hooks: [{phase: P5, must: "the witness is load-bearing from day 0"}]}
+
+  buy_time_lever:
+    note: "every front carries at least one designed lever the party can pull to move a portent later (risk 24.1 #16); the doom day itself moves only through a party-caused structured block"
+    rows:
+      - {id: lever_hostage, label: Something the front needs that the party can hold, hooks: [{phase: P7, must: "the thing is an entity; holding it delays the next portent by a stated number of days"}]}
+      - {id: lever_date, label: A ritual date that can be missed, hooks: [{phase: P2, must: "the date is on the calendar; missing it pushes the portent to the next occurrence"}]}
+      - {id: lever_rival, label: A rival faction that can be pointed at the front, hooks: [{phase: P4, must: "the rival's stance and a move that targets the front's asset"}]}
+      - {id: lever_supply, label: A supply line that can be cut, hooks: [{phase: P3, must: "a map edge or a waypoint"}]}
+      - {id: lever_witness, label: A witness who can be protected, hooks: [{phase: P5, must: "a load-bearing NPC"}]}
+      - {id: lever_engineer, label: The engineer who can be removed, hooks: [{phase: P6, must: "the lieutenant is a site boss; removing them is a parked or played scene, never off-screen"}]}
+
+  escalation_stage:
+    note: "world.md's five stages; the stage is an overlay value advanced by BBEG front steps"
+    rows:
+      - {id: stage_1_now, stage: 1, label: Now, travel_tier: early, price_modifier: 1.0, news_lines_per_scene: 1, hooks: [{phase: P7, must: "the starting state; the primer describes it"}]}
+      - {id: stage_2_stirring, stage: 2, label: Stirring, travel_tier: early, price_modifier: 1.05, news_lines_per_scene: 2, hooks: [{phase: P7, must: "advanced by the first portent"}]}
+      - {id: stage_3_active, stage: 3, label: Active, travel_tier: late, price_modifier: 1.1, news_lines_per_scene: 2, hooks: [{phase: P3, must: "travel tables switch to Late; SKILL-travel's tier is the stage, not the level"}]}
+      - {id: stage_4_crisis, stage: 4, label: Crisis, travel_tier: late, price_modifier: 1.25, news_lines_per_scene: 3, hooks: [{phase: P7, must: "the doom's telegraph scene is here"}]}
+      - {id: stage_5_no_return, stage: 5, label: No Return, travel_tier: late, price_modifier: 1.5, news_lines_per_scene: 3, hooks: [{phase: P7, must: "the doom; the loss ending's world_after applies"}]}

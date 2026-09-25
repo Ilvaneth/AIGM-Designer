@@ -1,0 +1,124 @@
+# simulation.yaml — the living world's rules (item 7.7, the simulation charter 24.6 #3, risks 24.1
+# #3 #8 #9 #15 #20): move types with costs, the opposed-check formula, outcomes, stance drift, the
+# cascade cap and intel delay, news templates, succession, economy modifiers, asset defence, and
+# the brakes. `factions.py simulate` (slice 2) reads this file; nothing in the weekly loop is decided
+# by the LLM, which only renders each news record's `line_tr` into the narration language.
+schema_version: 1
+table: simulation
+consumed_by: [P4, P7, play]
+plan: "item 7.7, 10.5, 17 #18, 24.6 #3, risk 24.1 #3 #8 #9 #15 #16 #20"
+rules:
+  loop: "each week, each active faction with controller `world`, in power order: pick a target from objective, stances and doctrine (the party is one actor among many); pick a move by the doctrine's weights for the week's dominant trigger (or `hold` when nothing triggered); spend move points; resolve; write outcomes; emit a news record; run react with intel delay; repeat up to the cascade cap"
+  opposed_check: "attacker: power + intel + points_spent + d20 vs defender: power + intel + asset_defence + d20; ties to the defender; a margin ≥ 5 is a big success (the outcome's `big` form), a margin ≤ −5 a big failure (the attacker loses a point of power for 30 days)"
+  contest_within_tier: "a faction may contest only assets whose asset_tier is within one of its power tier (power 1-2 → T1-2, 3 → T2-3, 4 → T3-4, 5 → T4-5)"
+  big_outcomes: "control flip, HQ loss, leader removal happen only as the last step of a ≥2-step dated operation, never from a single weekly move"
+  volatility: "scale.yaml volatility: at most 1 control flip and N large stance shifts per week across the board; moves beyond the budget resolve as `hold`"
+  load_bearing: "computed at every simulate: key NPCs of unplayed sites, delivery paths of unresolved beats, clue holders, thread layers and personal antagonists, unfilled sockets, unresolved planted hooks, BBEG and lieutenants; a removing outcome against a member caps at threatened / wounded / fled and is parked"
+  brakes: "a move that targets a party asset (an allied NPC with stance ≥ 2 to the party, a place_ the party owns, a faction with controller party) is parked as a pending_scene with the roll already made; load prints pending scenes first; the dead-time skip stops on the first pending day"
+  determinism: "random.Random(f'{master}:sim:{day}:{faction}:{n}') per resolution; the roll is stored on the news record"
+  coupling: "simulate runs at load for elapsed days, at end before sweep and prep, and mid-session when the calendar jumps 7+ days; `_meta.simulated_to_day` is the watermark"
+  news_volume: "≤ 2-3 lines per scene opening, region-filtered by reach, delivered through a person, a rumour or a visible change; the escalation stage sets the count"
+  doom: "fixed at birth; moves later only through a party-caused structured block (a lever pulled); a failed contested step retries at cost"
+hooks_common:
+  - {phase: P4, must: "every faction's doctrine names moves from this file; every operation step has a kind from factions.yaml"}
+  - {phase: play, must: "the weekly summary at end lists resolved moves with their news lines, secret items excluded"}
+
+tables:
+
+  move:
+    note: "the bounded move list; `cost` in move points; `targets` what the move acts on; `big_outcome` marks moves that can only complete an operation, never flip control alone"
+    rows:
+      - {id: move_seize, value: seize, label: Seize, cost: 2, targets: [asset], contested: true, on_success: outcome_control_flip, on_failure: outcome_nothing, big_outcome: true, visibility: public, hooks: [{phase: play, must: "only as an operation step; alone it is a raid that yields intel or a stance shift"}]}
+      - {id: move_sabotage, value: sabotage, label: Sabotage, cost: 2, targets: [asset, step], contested: true, on_success: outcome_asset_destroyed, on_failure: outcome_stance_shift, big_outcome: false, visibility: rumored, hooks: [{phase: play, must: "a destroyed asset leaves a landmark or a news line; the price modifier moves"}]}
+      - {id: move_bribe, value: bribe, label: Bribe or buy an ally, cost: 1, targets: [faction, npc], contested: true, on_success: outcome_stance_shift, on_failure: outcome_intel_gained, big_outcome: false, visibility: secret, hooks: [{phase: play, must: "success: target's stance +1 toward the actor; failure: the target learns and tells someone"}]}
+      - {id: move_spy, value: spy, label: Spy, cost: 1, targets: [faction, asset], contested: true, on_success: outcome_intel_gained, on_failure: outcome_nothing, big_outcome: false, visibility: secret, hooks: [{phase: play, must: "success adds the target's next step to the actor's `knows`"}]}
+      - {id: move_persuade, value: persuade, label: Persuade or propaganda, cost: 1, targets: [settlement, faction], contested: true, on_success: outcome_stance_shift, on_failure: outcome_stance_shift, big_outcome: false, visibility: public, hooks: [{phase: play, must: "success +1, failure −1 with the target; a proclamation news record either way"}]}
+      - {id: move_assassinate, value: assassinate, label: Assassinate, cost: 3, targets: [npc], contested: true, on_success: outcome_npc_removed, on_failure: outcome_stance_shift, big_outcome: true, visibility: rumored, hooks: [{phase: play, must: "capped by load_bearing; a leader only as an operation's last step; failure: stance −2 and exposure"}]}
+      - {id: move_besiege, value: besiege, label: Besiege, cost: 3, targets: [settlement, site], contested: true, on_success: outcome_step_advanced, on_failure: outcome_step_failed, big_outcome: true, visibility: public, hooks: [{phase: play, must: "the settlement's economy modifier `siege` applies while it lasts"}]}
+      - {id: move_negotiate, value: negotiate, label: Negotiate, cost: 1, targets: [faction], contested: false, on_success: outcome_stance_shift, on_failure: outcome_nothing, big_outcome: false, visibility: public, hooks: [{phase: play, must: "both stances +1 if the target's doctrine on alliance weights negotiate; else nothing and a news line"}]}
+      - {id: move_hold, value: hold, label: Hold, cost: 0, targets: [], contested: false, on_success: outcome_nothing, on_failure: outcome_nothing, big_outcome: false, visibility: secret, hooks: [{phase: play, must: "a real move: points bank up to twice the weekly budget; a hold in a loss week keeps the asset defence +1"}]}
+      - {id: move_consolidate, value: consolidate, label: Consolidate, cost: 1, targets: [asset], contested: false, on_success: outcome_defence_raised, on_failure: outcome_nothing, big_outcome: false, visibility: rumored, hooks: [{phase: play, must: "asset defence +1 for 30 days on one owned asset"}]}
+
+  outcome:
+    rows:
+      - {id: outcome_control_flip, label: Control flips, writes: [overlay.control, overlay.ruler if settlement, factions.assets, news], hooks: [{phase: play, must: "region tables and the settlement's ruler follow; the price modifier `control_flip` applies"}]}
+      - {id: outcome_asset_destroyed, label: Asset destroyed, writes: [factions.assets, overlay.status, news], hooks: [{phase: play, must: "a place_ is `destroyed` in the overlay, never deleted from the registry"}]}
+      - {id: outcome_stance_shift, label: Stance shifts, writes: [factions.stances, news], hooks: [{phase: play, must: "by the stance_shift table; large shifts count against the volatility budget"}]}
+      - {id: outcome_step_advanced, label: Operation step advances, writes: [factions.operation, overlay.threat_stage if BBEG, news], hooks: [{phase: play, must: "a BBEG step advances the escalation stage"}]}
+      - {id: outcome_step_failed, label: Operation step fails, writes: [factions.operation, news], hooks: [{phase: play, must: "the step's due day moves +7 and the actor pays 1 point; a second failure abandons the operation"}]}
+      - {id: outcome_npc_removed, label: NPC removed, writes: [overlay.alive, factions.heir, goals.status, news], hooks: [{phase: play, must: "load_bearing caps it at threatened / wounded / fled and parks the scene; a removed leader triggers succession"}]}
+      - {id: outcome_intel_gained, label: Intel gained, writes: [factions.knows], hooks: [{phase: play, must: "no news record; the knowledge shows in the next move"}]}
+      - {id: outcome_defence_raised, label: Defence raised, writes: [factions.assets, overlay], hooks: [{phase: play, must: "asset_defence +1 with an until_day"}]}
+      - {id: outcome_nothing, label: Nothing visible, writes: [], hooks: [{phase: play, must: "a rumoured news line at most"}]}
+
+  stance_shift:
+    note: "stances are −3..+3; `large` shifts count against the weekly volatility budget"
+    rows:
+      - {id: shift_betrayal, label: Betrayal, delta: -2, large: true, hooks: [{phase: play, must: "the betrayed faction's trigger is `betrayal`"}]}
+      - {id: shift_alliance, label: Alliance made, delta: 1, large: false, hooks: [{phase: play, must: "third parties with a −2 stance to either react with `alliance`"}]}
+      - {id: shift_treaty, label: Treaty, delta: 2, large: true, hooks: [{phase: play, must: "only through negotiate as an operation's last step; an event_ may be registered"}]}
+      - {id: shift_attack, label: Attacked, delta: -1, large: false, hooks: [{phase: play, must: "any contested move against an asset"}]}
+      - {id: shift_aid, label: Aided, delta: 1, large: false, hooks: [{phase: play, must: "a consolidate on an ally's asset or a successful negotiate"}]}
+      - {id: shift_insult, label: Insulted, delta: -1, large: false, hooks: [{phase: play, must: "a failed persuade or bribe that was noticed"}]}
+      - {id: shift_decay, label: Decay toward baseline, delta: 1, large: false, hooks: [{phase: play, must: "every 30 days a stance moves one step toward its birth value unless a move touched it that month"}]}
+      - {id: shift_party_bound, label: The party's stance is never auto-moved past ±2, delta: 0, large: false, hooks: [{phase: play, must: "±3 with the party only through a played scene"}]}
+
+  cascade:
+    rows:
+      - {id: cascade_react, label: A resolved move is an event; react runs for every faction that learns of it, hooks: [{phase: play, must: "the learning faction's doctrine trigger decides its next move's weights"}]}
+      - {id: cascade_intel_delay, label: Intel delay by rating, delay_days: {3: 1, 2: 3, 1: 7, 0: 14}, hooks: [{phase: play, must: "public news reaches everyone at the intel-0 delay; secret outcomes reach only intel 3 and the involved"}]}
+      - {id: cascade_cap, label: Chain cap, max_chain: 3, hooks: [{phase: play, must: "after three reactions in one tick the rest wait for next week"}]}
+      - {id: cascade_budget, label: Volatility budget, hooks: [{phase: play, must: "control flips and large shifts beyond scale.yaml's weekly numbers resolve as hold"}]}
+
+  news_template:
+    note: "kind and line shape per move outcome; the shape is English for the writer, `line_tr` is rendered in the narration language at end"
+    rows:
+      - {id: news_proclamation, label: A proclamation, kinds: [move_persuade, move_negotiate], visibility: public, shape: "A notice or a herald: {faction} declares {what}; {settlement} hears it first.", hooks: [{phase: play, must: "reach includes the settlement and its region"}]}
+      - {id: news_sighting, label: A sighting, kinds: [move_seize, move_besiege, move_consolidate], visibility: public, shape: "{faction}'s people seen at {asset}; {what changed}.", hooks: [{phase: play, must: "refs include the asset"}]}
+      - {id: news_rumour, label: A rumour, kinds: [move_sabotage, move_bribe, move_spy], visibility: rumored, shape: "They say {someone} did {what} at {where}; nobody saw who.", hooks: [{phase: play, must: "the actor is not named unless intel 3 heard it"}]}
+      - {id: news_body, label: A body, kinds: [move_assassinate], visibility: rumored, shape: "{npc} found {how} at {where}; {faction} mourns or denies.", hooks: [{phase: play, must: "a load-bearing NPC yields `threatened` wording: attacked, missing, fled"}]}
+      - {id: news_price, label: A price, kinds: [move_besiege, move_seize, move_sabotage], visibility: public, shape: "{good} costs {more/less} in {settlement} since {what}.", hooks: [{phase: play, must: "the economy modifier's until_day is the record's"}]}
+      - {id: news_absence, label: An absence, kinds: [move_hold, move_spy], visibility: rumored, shape: "{faction} has gone quiet; {someone} has not been seen at {place}.", hooks: [{phase: play, must: "at most one absence line per week"}]}
+      - {id: news_letter, label: A letter, kinds: [move_negotiate, move_bribe], visibility: secret, shape: "A letter between {a} and {b} exists; {who} knows.", hooks: [{phase: play, must: "secret; reaches the party only through a scene"}]}
+      - {id: news_step, label: A portent, kinds: [move_seize, move_besiege, move_assassinate, move_persuade], visibility: public, shape: "{the portent's shape}, seen from {settlement}.", hooks: [{phase: play, must: "every completed BBEG step emits one; the stage advances"}]}
+      - {id: news_succession, label: A succession, kinds: [move_assassinate], visibility: public, shape: "{heir} now speaks for {faction}; {what they said first}.", hooks: [{phase: play, must: "the heir's first act is the faction's death reaction line"}]}
+      - {id: news_parked, label: A parked scene's shadow, kinds: [move_seize, move_assassinate, move_sabotage], visibility: public, shape: "Something is moving against {party asset}; {sign}.", hooks: [{phase: play, must: "the pending scene's warning; delivered before the scene"}]}
+
+  succession:
+    rows:
+      - {id: succ_heir, label: The named heir succeeds, weight: 4, hooks: [{phase: play, must: "the default; doctrine shifts by the succ_doctrine_shift row"}]}
+      - {id: succ_council, label: A council chooses, weight: 2, hooks: [{phase: play, must: "the betrayal candidate contests; a contested step is added to the operation"}]}
+      - {id: succ_contested, label: Two claimants, weight: 2, hooks: [{phase: play, must: "the faction's stance to itself: power −1 for 60 days; a news record per claimant"}]}
+      - {id: succ_dissolves, label: The faction dissolves, weight: 1, hooks: [{phase: play, must: "only with no heir and no council: assets to the highest-stance ally, members to the roster as minor NPCs"}]}
+      - {id: succ_party_offered, label: The seat is offered to the party, weight: 1, hooks: [{phase: play, must: "parked as a pending scene; controller becomes party only by a played choice"}]}
+      - {id: succ_doctrine_shift, label: Doctrine shifts on succession, hooks: [{phase: play, must: "aggression ±1 toward the heir's dossier axis; target_preference may change; reactions text keeps the faction's voice"}]}
+
+  economy_modifier:
+    note: "overlay price modifiers with an until_day; multiplicative with the settlement's wealth base"
+    rows:
+      - {id: econ_war, label: War, goods: {weapons: 1.5, iron: 1.3, grain: 1.2}, duration_days: 60, hooks: [{phase: play, must: "when two factions with settlements are at −3"}]}
+      - {id: econ_siege, label: Siege, goods: {grain: 3.0, fish: 3.0, all: 1.5}, duration_days: 30, hooks: [{phase: play, must: "while a besiege step is open; food may be unavailable"}]}
+      - {id: econ_control_flip, label: New owner, goods: {all: 1.1}, duration_days: 30, hooks: [{phase: play, must: "after a control flip"}]}
+      - {id: econ_festival, label: Festival, goods: {all: 0.9, wine: 1.2}, duration_days: 3, hooks: [{phase: play, must: "on the calendar's festival days"}]}
+      - {id: econ_plague, label: Sickness, goods: {healing: 2.0, grain: 1.3}, duration_days: 60, hooks: [{phase: play, must: "a sickness portent or a disease hazard outbreak"}]}
+      - {id: econ_harvest, label: Harvest, goods: {grain: 0.8}, duration_days: 30, hooks: [{phase: play, must: "after the harvest festival in grain-selling settlements"}]}
+      - {id: econ_road_closed, label: Road closed, goods: {all: 1.2}, duration_days: 30, hooks: [{phase: play, must: "when the settlement's only route is closed"}]}
+      - {id: econ_treaty, label: Treaty, goods: {all: 0.9}, duration_days: 60, hooks: [{phase: play, must: "between the two polities' markets after a treaty shift"}]}
+
+  asset_defence:
+    note: "the defender's asset_defence term; asset_tier decides who may contest it"
+    rows:
+      - {id: def_settlement, label: Settlement, defence: "law level + 1 if walled", tier: "its region's danger tier", hooks: [{phase: play, must: "a hub settlement is +1"}]}
+      - {id: def_site, label: Site, defence: "danger tier", tier: "its stamped danger tier", hooks: [{phase: play, must: "an unplayed site's key NPC is load-bearing"}]}
+      - {id: def_place, label: Place (a small point or anchor), defence: 1, tier: "its settlement's region tier", hooks: [{phase: play, must: "anchors are +1"}]}
+      - {id: def_npc, label: NPC, defence: "major 3, supporting 2, minor 1", tier: "the tier of the site or settlement they are in", hooks: [{phase: play, must: "load_bearing members cannot be removed"}]}
+      - {id: def_route, label: Route or crossing, defence: 1, tier: "its region's tier", hooks: [{phase: play, must: "a taken route changes the map edge's note"}]}
+
+  brake:
+    rows:
+      - {id: brake_party_asset, label: Party asset targeted, action: park, hooks: [{phase: play, must: "pending_scene with the roll made; the simulation continues"}]}
+      - {id: brake_load_bearing, label: Load-bearing entity targeted by a removing outcome, action: cap, hooks: [{phase: play, must: "threatened / wounded / fled; parked"}]}
+      - {id: brake_controller_party, label: Faction with controller party, action: skip, hooks: [{phase: play, must: "never auto-moved; the party moves it at end"}]}
+      - {id: brake_doom_fixed, label: Doom day, action: hold, hooks: [{phase: play, must: "the doom moves only through a party-caused structured block; a lever pulled"}]}
+      - {id: brake_regional_villain, label: Regional villain targeted, action: park, hooks: [{phase: play, must: "falls only to a tier-matched faction, as a parked scene"}]}
+      - {id: brake_stale_site, label: Detailed, unplayed site touched by news, action: flag, hooks: [{phase: play, must: "overlay status detailed-stale; re-detail ecology and contents only"}]}

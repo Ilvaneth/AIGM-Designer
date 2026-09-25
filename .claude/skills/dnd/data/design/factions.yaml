@@ -1,0 +1,286 @@
+# factions.yaml — powers (item 7.1-7.4, 7.6): archetypes and the quota, fracture types, endgame
+# shapes, secret kinds, the six canonical doctrine triggers (errata 24.2 #5), cult doctrines that a
+# reasonable person could hold, provocation-ladder rungs, access-chain links, service menus, the
+# operation step kinds and the abandon-if predicate vocabulary. Every faction is `design/factions/
+# <id>.md` in the four-phase dossier, a registry row and a factions.json row; polities are factions
+# with archetype `state`. Move names and costs live in simulation.yaml; a doctrine's move weights
+# use those names.
+schema_version: 1
+table: factions
+consumed_by: [P4, P5, P7, validator, play]
+plan: "item 7.1-7.4, 7.6, 17 #16, errata 24.2 #5, risk 24.1 #4 #8 #9, 24.6 #3 #4"
+roll: {labels: [P4.archetype.<n>, P4.fracture.<id>, P4.endgame.<id>, P4.secret.<id>, P4.cult_doctrine.<id>, P4.provocation.<id>.<rung>, P4.access.<id>.<link>], avoid_used: true, note: "the quota fills first; archetypes beyond it roll from the pool; every other draw is per faction"}
+rules:
+  counts: "scale.yaml factions.count and factions.quota; the signature institution is one of them"
+  dossier: [Identity & Belief, Power & Resources, Structure & People, Intelligence & Operations]
+  mandatory:
+    - "fracture (never `none`), secret with a tier, endgame, betrayal candidate (an NPC), heir (an NPC)"
+    - "a stance −3..+3 to every other faction and to the party; the skeleton writes one reason line per stance edge, both dossiers carry it (risk 24.1 #19)"
+    - "power 1-5, intel 0-3, assets (registry ids: settlements, sites, places, NPCs), an HQ that exists"
+    - "machine doctrine: aggression 0-3, target_preference, move_weights per trigger (simulation.yaml moves); a prose reaction line per trigger"
+    - "a first operation with ≥2 dated steps of a step_kind, an abandon_if predicate, an optional metric"
+    - "controller `world` or `party`; a `party` faction is never auto-moved"
+    - "a provocation ladder of 3-4 rungs whose first rung is never war; a 2-4 link access chain to the leader"
+  triggers: [alliance, loss, gain, exposure, death, betrayal]
+  stance_scale: {-3: "at war or blood feud", -2: "hostile; will act against", -1: "cold; will not help", 0: "indifferent", 1: "warm; will trade", 2: "allied; will act for", 3: "bound; will die for"}
+  power_scale: {1: "a household or a cell", 2: "a district or a village", 3: "a town or a trade", 4: "a region", 5: "a polity"}
+  intel_scale: {0: "learns only public news, late", 1: "learns in a week", 2: "learns in three days", 3: "learns next day; has a spy somewhere"}
+  target_preference: [rival, objective-holder, weakest, nearest, ally-in-need, the-party]
+  srd_stat_blocks: "typical forces anchor to the SRD NPC appendix: acolyte, archmage, assassin, bandit, bandit captain, berserker, commoner, cult fanatic, cultist, druid, gladiator, guard, knight, mage, noble, priest, scout, spy, thug, tribal warrior, veteran"
+hooks_common:
+  - {phase: P4, must: "every mandatory field above is present; the validator's factions module counts them"}
+  - {phase: P5, must: "leader, heir, betrayal candidate and the access chain's links are roster NPCs under the stacking rules"}
+  - {phase: P7, must: "each act's A/B scenario uses that act's own factions; a beat's world_pressure is a step id"}
+
+tables:
+
+  archetype:
+    notation: d9
+    rows:
+      - id: archetype_state
+        value: state
+        label: State (a polity)
+        typical_forces: [guard, veteran, knight, scout]
+        power: [3, 5]
+        intel: [1, 2]
+        services: [warrants, passage papers, a hearing, a commission]
+        doctrine_default: {aggression: 1, target_preference: rival}
+        hq_kinds: [anchor_seat]
+        endgame_bias: [endgame_the_seat, endgame_border_moved, endgame_successor_crowned]
+        fracture_bias: [fracture_succession, fracture_regional_branch, fracture_old_guard]
+        hooks:
+          - {phase: P4, must: "government, ruler, capital, law level and stances to other polities live in factions.json; the ruler is the leader"}
+      - id: archetype_religious
+        value: religious
+        label: Religious (a church)
+        typical_forces: [acolyte, priest, cult fanatic, guard]
+        power: [2, 4]
+        intel: [2, 3]
+        services: [healing for a fee, funerals, sanctuary, a verdict, a rite]
+        doctrine_default: {aggression: 1, target_preference: objective-holder}
+        hq_kinds: [anchor_temple]
+        endgame_bias: [endgame_rite_completed, endgame_god_answered, endgame_truth_published]
+        fracture_bias: [fracture_doctrine_split, fracture_the_one_who_knows, fracture_paid_and_believers]
+        hooks:
+          - {phase: P2, must: "the church is a god's church_archetype row; its true belief may differ from the god's public face"}
+      - id: archetype_guild
+        value: guild
+        label: Guild
+        typical_forces: [commoner, thug, mage, spy]
+        power: [2, 4]
+        intel: [1, 3]
+        services: [training, identify, a licence, credit, work]
+        doctrine_default: {aggression: 1, target_preference: objective-holder}
+        hq_kinds: [anchor_guild_hall]
+        endgame_bias: [endgame_monopoly, endgame_work_completed, endgame_debt_collected]
+        fracture_bias: [fracture_old_guard, fracture_the_metric, fracture_regional_branch]
+        hooks:
+          - {phase: P4, must: "membership terms, dues and a service menu are in the dossier; the mage guild, if the regulator, lists the licence"}
+      - id: archetype_criminal
+        value: criminal
+        label: Criminal or secret society
+        typical_forces: [bandit, bandit captain, thug, spy, assassin]
+        power: [1, 3]
+        intel: [2, 3]
+        services: [fencing, passage, information, a hire, a false paper]
+        doctrine_default: {aggression: 2, target_preference: weakest}
+        hq_kinds: [site, anchor_inn, district_quay]
+        endgame_bias: [endgame_monopoly, endgame_enemy_erased, endgame_debt_collected]
+        fracture_bias: [fracture_a_debt, fracture_member_of_the_enemy, fracture_the_pure_and_the_practical]
+        hooks:
+          - {phase: P6, must: "its HQ or den is a site with attitude `negotiate` or `capture`"}
+      - id: archetype_martial
+        value: martial
+        label: Martial order or company
+        typical_forces: [veteran, knight, berserker, gladiator, scout]
+        power: [2, 4]
+        intel: [0, 2]
+        services: [a hire, training, escort, a champion]
+        doctrine_default: {aggression: 2, target_preference: rival}
+        hq_kinds: [district_garrison, site]
+        endgame_bias: [endgame_enemy_erased, endgame_border_moved, endgame_city_taken]
+        fracture_bias: [fracture_old_guard, fracture_paid_and_believers, fracture_founder_returns]
+        hooks:
+          - {phase: P4, must: "its front is a war on the calendar; the muster festival counts its champions"}
+      - id: archetype_scholarly
+        value: scholarly
+        label: Scholarly order
+        typical_forces: [mage, acolyte, commoner, archmage]
+        power: [1, 3]
+        intel: [3, 3]
+        services: [identify, a reading, a map, research, a licence]
+        doctrine_default: {aggression: 0, target_preference: objective-holder}
+        hq_kinds: [district_scholars, anchor_utility]
+        endgame_bias: [endgame_truth_published, endgame_work_completed, endgame_god_answered]
+        fracture_bias: [fracture_the_one_who_knows, fracture_doctrine_split, fracture_the_metric]
+        hooks:
+          - {phase: P2, must: "its archive holds the history's records; the big secret's Act 2 clue may be there"}
+      - id: archetype_resistance
+        value: resistance
+        label: Resistance
+        typical_forces: [bandit, scout, veteran, commoner, spy]
+        power: [1, 3]
+        intel: [1, 3]
+        services: [hiding, passage, information, a cause]
+        doctrine_default: {aggression: 2, target_preference: rival}
+        hq_kinds: [site, district_low_town, district_burnt]
+        endgame_bias: [endgame_the_seat, endgame_truth_published, endgame_survival]
+        fracture_bias: [fracture_the_pure_and_the_practical, fracture_member_of_the_enemy, fracture_founder_returns]
+        hooks:
+          - {phase: P4, must: "its stance to a state faction is −3 with a dated reason; its true belief is not nostalgia unless break_the_enemy_won says so"}
+      - id: archetype_cult
+        value: cult
+        label: Cult
+        typical_forces: [cultist, cult fanatic, thug, priest]
+        power: [1, 3]
+        intel: [1, 2]
+        services: [initiation, a secret, protection from itself]
+        doctrine_default: {aggression: 2, target_preference: objective-holder}
+        hq_kinds: [site, district_grave_ward, anchor_bathhouse]
+        endgame_bias: [endgame_rite_completed, endgame_god_answered, endgame_the_phenomenon_owned]
+        fracture_bias: [fracture_the_one_who_knows, fracture_doctrine_split, fracture_a_debt]
+        hooks:
+          - {phase: P4, must: "its cult_doctrine row is one a reasonable person could hold (forbidden_generic_evil_cult)"}
+      - id: archetype_trade
+        value: trade
+        label: Trade consortium
+        typical_forces: [commoner, guard, spy, noble]
+        power: [2, 4]
+        intel: [2, 3]
+        services: [credit, goods, passage, a price]
+        doctrine_default: {aggression: 1, target_preference: weakest}
+        hq_kinds: [anchor_exchange, anchor_market, anchor_harbourmaster]
+        endgame_bias: [endgame_monopoly, endgame_debt_collected, endgame_work_completed]
+        fracture_bias: [fracture_the_metric, fracture_regional_branch, fracture_a_debt]
+        hooks:
+          - {phase: P3, must: "its assets move the price modifiers of the settlements it holds"}
+
+  fracture:
+    notation: d12
+    note: "closed list; `none` exists only so the validator can name it, and is forbidden"
+    rows:
+      - {id: fracture_succession, value: succession, label: A contested succession, hooks: [{phase: P5, must: "the heir and the betrayal candidate are the two claimants"}]}
+      - {id: fracture_doctrine_split, value: doctrine_split, label: A doctrinal split, hooks: [{phase: P4, must: "the two readings are both in the dossier; one is the leader's"}]}
+      - {id: fracture_old_guard, value: old_guard, label: The old guard against the new, hooks: [{phase: P5, must: "an elder NPC and a young one, both with Known Facts"}]}
+      - {id: fracture_the_one_who_knows, value: the_one_who_knows, label: One member knows the secret and has not spoken, hooks: [{phase: P5, must: "that member is a supporting NPC with a surfacing path"}]}
+      - {id: fracture_a_debt, value: a_debt, label: A debt the faction cannot pay, hooks: [{phase: P4, must: "the creditor is another faction; the debt is an asset"}]}
+      - {id: fracture_regional_branch, value: regional_branch, label: A branch that answers to nobody, hooks: [{phase: P3, must: "the branch sits in another region with its own HQ place"}]}
+      - {id: fracture_founder_returns, value: founder_returns, label: The founder or their line returns, hooks: [{phase: P2, must: "the founding event has a divergence"}]}
+      - {id: fracture_a_bond, value: a_bond, label: A marriage or bond with the enemy, hooks: [{phase: P5, must: "the bonded NPCs are in both factions' dossiers"}]}
+      - {id: fracture_the_pure_and_the_practical, value: pure_vs_practical, label: The pure against the practical, hooks: [{phase: P4, must: "the practical wing's first operation differs from the leader's"}]}
+      - {id: fracture_paid_and_believers, value: paid_vs_believers, label: The paid against the believers, hooks: [{phase: P4, must: "a loss trigger makes the paid leave"}]}
+      - {id: fracture_member_of_the_enemy, value: member_of_the_enemy, label: A member who belongs to the enemy, hooks: [{phase: P5, must: "the member is the betrayal candidate; their true faction is secret"}]}
+      - {id: fracture_the_metric, value: the_metric, label: A quota that corrupts, hooks: [{phase: P4, must: "the operation's metric is the corruption; hitting the target costs someone"}]}
+      - {id: fracture_none, value: none, label: No fracture (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error: every faction has a fracture (forbidden_monolithic_empire)"}]}
+
+  endgame:
+    notation: d12
+    rows:
+      - {id: endgame_monopoly, label: A monopoly, hooks: [{phase: P4, must: "the monopolised thing is an economy good or a service"}]}
+      - {id: endgame_the_seat, label: The seat, hooks: [{phase: P4, must: "the seat is the state's HQ or a named office"}]}
+      - {id: endgame_rite_completed, label: The rite completed, hooks: [{phase: P2, must: "the rite is a festival or a god's secret"}]}
+      - {id: endgame_enemy_erased, label: The enemy erased, hooks: [{phase: P4, must: "the enemy is a faction with a −3 stance"}]}
+      - {id: endgame_border_moved, label: The border moved, hooks: [{phase: P3, must: "the border is a region edge on the map"}]}
+      - {id: endgame_debt_collected, label: The debt collected, hooks: [{phase: P4, must: "the debtor is a faction or a settlement"}]}
+      - {id: endgame_truth_published, label: The truth published, hooks: [{phase: P1, must: "the truth touches the big secret or a divergence"}]}
+      - {id: endgame_god_answered, label: The god answered, hooks: [{phase: P2, must: "the god's presence row decides what answering looks like"}]}
+      - {id: endgame_city_taken, label: The city taken, hooks: [{phase: P3, must: "the city is a settlement asset; taking it is a ≥2-step operation"}]}
+      - {id: endgame_survival, label: Survival through the hard season, hooks: [{phase: P2, must: "the hard season is on the calendar"}]}
+      - {id: endgame_successor_crowned, label: The successor crowned, hooks: [{phase: P5, must: "the successor is the heir or the betrayal candidate"}]}
+      - {id: endgame_work_completed, label: The work completed, hooks: [{phase: P3, must: "the work is a landmark or an anchor under construction"}]}
+      - {id: endgame_the_phenomenon_owned, label: The phenomenon owned, hooks: [{phase: P1, must: "the signature phenomenon's regulator changes hands at the end"}]}
+
+  secret_kind:
+    notation: d10
+    rows:
+      - {id: fsecret_funded_by_enemy, label: Funded by the enemy, tier: secret, hooks: [{phase: P4, must: "the funder is a faction with a public −2 stance"}]}
+      - {id: fsecret_true_founder, label: The true founder, tier: discoverable, hooks: [{phase: P2, must: "the founding event's divergence"}]}
+      - {id: fsecret_asset_stolen, label: The asset is stolen, tier: discoverable, hooks: [{phase: P4, must: "the true owner wants it back; a seed"}]}
+      - {id: fsecret_member_is_villain, label: A member is the villain's, tier: secret, hooks: [{phase: P4, must: "the member is a lieutenant or the BBEG's agent"}]}
+      - {id: fsecret_cause_is_lost, label: The cause is already lost, tier: secret, hooks: [{phase: P4, must: "the leader knows; the endgame is a lie kept for the members"}]}
+      - {id: fsecret_leader_dying, label: The leader is dying, tier: discoverable, hooks: [{phase: P5, must: "the heir field matters within the campaign's span"}]}
+      - {id: fsecret_doctrine_is_cover, label: The doctrine is a cover, tier: secret, hooks: [{phase: P4, must: "true belief vs cover is written in the discoverable layer"}]}
+      - {id: fsecret_rite_costs_someone, label: The rite costs someone, tier: secret, hooks: [{phase: P1, must: "the signature phenomenon's cost falls on a named group"}]}
+      - {id: fsecret_treaty_broken, label: The treaty is already broken, tier: discoverable, hooks: [{phase: P2, must: "the treaty is an event; the breach is a front step"}]}
+      - {id: fsecret_books_false, label: The books are false, tier: discoverable, hooks: [{phase: P4, must: "the metric is wrong; the asset list is smaller than claimed"}]}
+
+  cult_doctrine:
+    note: "true beliefs a reasonable person could hold; the two forbidden values exist only for the validator"
+    rows:
+      - {id: cultdoc_world_reborn, value: world_reborn, label: The world must end to be reborn, hooks: [{phase: P4, must: "the ending it wants is one of the arc's endings"}]}
+      - {id: cultdoc_god_imprisoned, value: god_imprisoned, label: Our god is imprisoned and we will free it, hooks: [{phase: P2, must: "godsecret_bound or the pantheon's silence"}]}
+      - {id: cultdoc_dead_deserve_voice, value: dead_deserve_voice, label: The dead deserve a voice, hooks: [{phase: P2, must: "funerary custom denies it"}]}
+      - {id: cultdoc_law_is_enemy, value: law_is_enemy, label: The law is the enemy of the living, hooks: [{phase: P4, must: "the state's law level is ≥ 4"}]}
+      - {id: cultdoc_phenomenon_is_gift, value: phenomenon_is_gift, label: The phenomenon is a gift the regulator hoards, hooks: [{phase: P1, must: "the regulator is another faction"}]}
+      - {id: cultdoc_end_can_be_bought, value: end_can_be_bought, label: The end is scheduled and can be bought off, hooks: [{phase: P7, must: "the doom is the schedule; the cult's front is the payment"}]}
+      - {id: cultdoc_only_the_marked, value: only_the_marked, label: Only the marked are real people, hooks: [{phase: P5, must: "the marked are a demographic row or the touched"}]}
+      - {id: cultdoc_the_founder_will_return, value: founder_returns, label: The founder will return and count us, hooks: [{phase: P2, must: "the founder is an event_ or a dead god"}]}
+      - {id: cultdoc_evil_for_its_own_sake, value: evil_for_its_own_sake, label: Evil for its own sake (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_generic_evil_cult)"}]}
+      - {id: cultdoc_unspecified, value: unspecified, label: Unspecified (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error: a cult without a doctrine is a monster with a hat"}]}
+
+  trigger:
+    note: "the six canonical doctrine triggers; `counts_as` is what the simulation and `react` recognise; `weights_template` is the default move mix before the archetype and the skeleton adjust it"
+    rows:
+      - {id: trigger_alliance, value: alliance, label: Alliance, counts_as: "another faction's stance to a third rises to ≥ 2, or the party allies publicly", weights_template: {negotiate: 2, spy: 1, persuade: 1}, hooks: [{phase: P4, must: "the prose reaction names whom the faction turns to"}]}
+      - {id: trigger_loss, value: loss, label: Loss, counts_as: "an asset changes hands or is destroyed, a step fails", weights_template: {hold: 2, seize: 1, spy: 1}, hooks: [{phase: P4, must: "the prose reaction names what is demanded back"}]}
+      - {id: trigger_gain, value: gain, label: Gain, counts_as: "an asset gained, a step completed, a control flip in its favour", weights_template: {consolidate: 3, negotiate: 1}, hooks: [{phase: P4, must: "the prose reaction names what the gain is spent on"}]}
+      - {id: trigger_exposure, value: exposure, label: Exposure, counts_as: "its secret or an operation becomes public or reaches a hostile faction", weights_template: {bribe: 2, persuade: 1, assassinate: 1}, hooks: [{phase: P4, must: "the prose reaction names who is sacrificed or bought"}]}
+      - {id: trigger_death, value: death, label: Death, counts_as: "its leader or a key NPC is removed", weights_template: {consolidate: 3, hold: 1}, hooks: [{phase: P4, must: "succession runs (simulation.yaml succession); the prose reaction is the heir's first act"}]}
+      - {id: trigger_betrayal, value: betrayal, label: Betrayal, counts_as: "an ally's stance drops by ≥ 2 through its own move, or the party breaks a bargain", weights_template: {seize: 1, negotiate: 1, sabotage: 1}, hooks: [{phase: P4, must: "the prose reaction names the price; stance to the betrayer −2"}]}
+
+  provocation_rung:
+    note: "ladders are 3-4 rungs from these; the first rung is never war; a rung that touches a party asset is parked as a pending scene"
+    rows:
+      - {id: rung_snub, label: A snub, delay_days: [0, 3], parks: false, hooks: [{phase: P4, must: "a first rung; costs the party access or a price"}]}
+      - {id: rung_warning, label: A warning delivered, delay_days: [1, 5], parks: false, hooks: [{phase: P4, must: "through an NPC with a voice sample"}]}
+      - {id: rung_price, label: A price raised or a service withdrawn, delay_days: [1, 7], parks: false, hooks: [{phase: P3, must: "the price table or the service menu changes"}]}
+      - {id: rung_exclusion, label: Exclusion (a gate, a market, a rite), delay_days: [3, 7], parks: false, hooks: [{phase: P4, must: "the access chain closes one link"}]}
+      - {id: rung_warrant, label: A warrant, a listing or a public naming, delay_days: [5, 10], parks: false, hooks: [{phase: P4, must: "a news record with the party's name"}]}
+      - {id: rung_asset_taken, label: Something of the party's taken, delay_days: [5, 10], parks: true, hooks: [{phase: play, must: "parked as a pending scene; never resolved off-screen"}]}
+      - {id: rung_raid, label: A raid or an ambush, delay_days: [7, 14], parks: true, hooks: [{phase: play, must: "parked; the faction's typical forces at the region's tier"}]}
+      - {id: rung_war, label: Open war on the party, delay_days: [10, 20], parks: true, hooks: [{phase: P4, must: "never the first rung; only after a warrant or a raid"}]}
+
+  access_link:
+    note: "2-4 links between the party and a faction leader; each link is a person, a price or a wait"
+    rows:
+      - {id: link_doorkeeper, label: A doorkeeper who decides who waits, hooks: [{phase: P5, must: "a minor NPC with a speech tic"}]}
+      - {id: link_service, label: A service done first, hooks: [{phase: P7, must: "the service is a seed"}]}
+      - {id: link_sponsor, label: A member's sponsorship, hooks: [{phase: P5, must: "the sponsor is a supporting NPC with something to want"}]}
+      - {id: link_fee, label: A fee, hooks: [{phase: P3, must: "the fee is on the price table"}]}
+      - {id: link_rite, label: A rite undergone, hooks: [{phase: P2, must: "the rite is the church's or the signature institution's"}]}
+      - {id: link_letter, label: A letter from a rival, hooks: [{phase: P4, must: "the rival's stance decides whether it is given"}]}
+      - {id: link_debt, label: A debt owed to the faction, hooks: [{phase: P9, must: "a socket can fill it"}]}
+      - {id: link_wait, label: A wait of days, hooks: [{phase: P7, must: "the wait is calendar days; a front step may pass meanwhile"}]}
+
+  service:
+    note: "menus for guilds and any faction that trades with the party; prices anchor to the SRD equipment tables and loot-budget.yaml"
+    rows:
+      - {id: service_training, label: Training (a tool, a language, a weapon), hooks: [{phase: P8, must: "the primer lists the price and the weeks"}]}
+      - {id: service_identify, label: Identify, hooks: [{phase: P6, must: "the loot table's items are identified here or nowhere"}]}
+      - {id: service_fencing, label: Fencing stolen goods, hooks: [{phase: P4, must: "criminal only; the price is a stance"}]}
+      - {id: service_information, label: Information, hooks: [{phase: P5, must: "what the faction knows is its `knows` list and its intel"}]}
+      - {id: service_passage, label: Passage (a road, a gate, a sea route), hooks: [{phase: P3, must: "the route's note names the toll"}]}
+      - {id: service_healing, label: Healing, hooks: [{phase: P2, must: "the church's; the taboo on selling healing, if rolled, applies"}]}
+      - {id: service_licence, label: A licence, hooks: [{phase: P2, must: "the regulator's; the magic constraint decides what it permits"}]}
+      - {id: service_credit, label: Credit, hooks: [{phase: P4, must: "trade or guild; a debt seed"}]}
+      - {id: service_sanctuary, label: Sanctuary, hooks: [{phase: P4, must: "the church's or the hearth-law's; the state's doctrine on exposure tests it"}]}
+      - {id: service_hire, label: A hire (guards, a champion, a crew), hooks: [{phase: P4, must: "the faction's typical forces at a price"}]}
+      - {id: service_rite, label: A reading or a rite, hooks: [{phase: P1, must: "the signature institution's one service"}]}
+      - {id: service_map, label: A map or a guide, hooks: [{phase: P3, must: "the guide gives one discoverable route note"}]}
+
+  step_kind:
+    note: "operation steps (risk 24.1 #8); every step has a due day on the calendar"
+    rows:
+      - {id: step_timed, value: timed, label: Timed, rule: "completes on its due day unless abandon_if holds; no defender", hooks: [{phase: play, must: "the simulation completes it and emits a news record"}]}
+      - {id: step_contested, value: contested, label: Contested, rule: "names a defender; resolved by the opposed check on its due day; a failed step retries at cost", hooks: [{phase: play, must: "big outcomes (control flip, HQ loss, leader removal) only through ≥2 contested steps"}]}
+      - {id: step_party_only, value: party-only, label: Party-only, rule: "cannot resolve off-screen; telegraphed two weeks ahead through the news feed; parked as a pending scene on its due day", hooks: [{phase: P7, must: "a beat's world_pressure may be this kind; the telegraph scene is the two-week warning"}]}
+
+  abandon_if:
+    note: "predicate vocabulary for operations; predicates read the overlay and the stores, joined by `or` / `and`"
+    rows:
+      - {id: pred_control, label: "control(ENTITY) == FACTION|party", hooks: [{phase: play, must: "reads overlay control"}]}
+      - {id: pred_alive, label: "alive(NPC) == dead|fled", hooks: [{phase: play, must: "reads overlay alive"}]}
+      - {id: pred_stance, label: "stance(A, B) <= N", hooks: [{phase: play, must: "reads factions.json stances"}]}
+      - {id: pred_day, label: "day >= N", hooks: [{phase: play, must: "reads the calendar's day counter"}]}
+      - {id: pred_metric, label: "metric >= target", hooks: [{phase: play, must: "reads the operation's own metric"}]}
+      - {id: pred_seen, label: "party_seen(ENTITY)", hooks: [{phase: play, must: "reads overlay seen_in_play"}]}
