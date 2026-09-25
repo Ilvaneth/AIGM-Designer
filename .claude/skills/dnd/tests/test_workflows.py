@@ -98,6 +98,7 @@ class Wiring(unittest.TestCase):
         self.guard.__exit__(None, None, None)
 
     def test_begin_names_the_workflow_and_carries_both_phase_critics(self):
+        self.c.reopen("P6", "prerolled")
         proc = self.c.run("designer.py", "phase", "P6", "begin", "--json", check=True)
         out = json.loads(proc.stdout[proc.stdout.index("{"):])
         self.assertIn(out["workflow"], ("design-skeleton", "design-fanout"))
@@ -105,6 +106,7 @@ class Wiring(unittest.TestCase):
         self.assertIn("render wishes_critic", out["wishes_critic"]["prompt_cmd"])
         m = self.c.json("design/design.json")
         m["phases"]["P3"]["skeleton"] = {"status": "pending", "agent": None}   # the fixture's skeleton is merged; reset it
+        m["phases"]["P3"]["status"] = "prerolled"
         self.c.path("design/design.json").write_text(json.dumps(m, ensure_ascii=False, indent=2), encoding="utf-8")
         proc = self.c.run("designer.py", "phase", "P3", "begin", "--json", check=True)
         out = json.loads(proc.stdout[proc.stdout.index("{"):])

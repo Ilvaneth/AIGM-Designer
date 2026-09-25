@@ -17,11 +17,15 @@ CLI:
   designer.py -c CAMP arm --mode birth|detail|playtest [--session-id ID] | disarm
   designer.py -c CAMP preroll --phase PN [--attempt N]      every labelled roll of the phase
   designer.py -c CAMP phase PN begin [--json]               reconcile, arm, roster with read budgets and prompts
-  designer.py -c CAMP phase PN merge [--day N]              registry merge + design_seed + statuses
+  designer.py -c CAMP phase PN merge [--day N] [--tokens N] [--seconds S]
+                                                             registry merge (per unit) + design_seed + statuses;
+                                                             refused units become `failed` with their reason
+  designer.py -c CAMP phase PN drop --id ID --reason TEXT    drop a roster item that never reached the registry
   designer.py -c CAMP phase PN check                        design_check --phase (redacted)
   designer.py -c CAMP phase PN card                         the phase card (design_approval.py)
-  designer.py -c CAMP phase PN approve [--card F] [--onay] [--round TEXT --scope S]
-                                                             record approval (+ path-scoped commit) or a correction round
+  designer.py -c CAMP phase PN approve [--card F] [--onay] [--force] [--round TEXT --scope S]
+                                                             record approval (+ path-scoped commit) or a correction round;
+                                                             refused while a roster item is not merged unless --force
   designer.py -c CAMP phase PN rerun --reason TEXT [--reseed]
   designer.py -c CAMP status [--json]
   designer.py -c CAMP abandon --reason TEXT                 retire names and used rows, disarm
@@ -612,6 +616,9 @@ def phase_begin(campaign: str, phase: str, as_json: bool, session_id: str | None
     if prev and m["phases"][prev]["status"] != "approved":
         print(f"designer: {prev} is {m['phases'][prev]['status']}, not approved; {phase} cannot begin", file=sys.stderr)
         return 1
+    if m["phases"][phase]["status"] == "approved":
+        print(f"designer: {phase} is approved; `phase {phase} rerun --reason …` reopens it", file=sys.stderr)
+        return 1
     arm(campaign, "birth", session_id)
     dm.reconcile(campaign, quiet=True)
     data = dm.load(campaign)
@@ -699,11 +706,13 @@ def pending_with_prompts(campaign: str, phase: str) -> dict:
             continue
         budget = dm.read_budget(campaign, canonical, eid) if eid in canonical else []
         files = list(dict.fromkeys(budget + list(reads.get(eid) or [])))
-        entry = {"id": eid, "status": row.get("status", "pending"), "attempt": int(row.get("attempt") or 0),
+        recorded = int(row.get("attempt") or 0)
+        render_attempt = recorded + 1 if row.get("status") in ("failed", "staged") and recorded else max(attempt, recorded or attempt)
+        entry = {"id": eid, "status": row.get("status", "pending"), "attempt": recorded, "render_attempt": render_attempt,
                  "last_error": row.get("last_error"), "files": files}
         name = dp.prompt_for(phase, eid)
         if name:
-            entry.update(prompt_bundle(campaign, phase, name, eid, attempt))
+            entry.update(prompt_bundle(campaign, phase, name, eid, render_attempt))
         rows.append(entry)
     skeleton = dict(ph.get("skeleton") or {})
     sk_name = dp.prompt_for(phase, None)
@@ -739,27 +748,62 @@ def record_critics(campaign: str, phase: str) -> int:
     return n
 
 
-def phase_merge(campaign: str, phase: str, day: int) -> int:
+def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, seconds: int | None = None) -> int:
     record_critics(campaign, phase)
     proc = run_script("registry.py", campaign, "merge", "--phase", phase, "--day", str(day))
     print(proc.stdout.strip())
-    if proc.returncode != 0:
+    if proc.stderr.strip():
         print(proc.stderr.strip(), file=sys.stderr)
-        return 1
+    report = read_json(design_dir(campaign) / "_staging" / phase / "merge.report.json") or {}
+    refused: dict = report.get("refused") or {}
     seed = run_script("design_seed.py", campaign, "--phase", phase)
     print(seed.stdout.strip())
     if seed.returncode != 0:
         print(seed.stderr.strip(), file=sys.stderr)
-        return 1
     absorb_skeleton(campaign, phase)
     dm.reconcile(campaign, quiet=True)
     data = dm.load(campaign)
     ph = data["phases"][phase]
+    for uid, reasons in refused.items():
+        row = data["entities"].setdefault(uid, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
+                                                "last_error": None, "file": None, "stage_file": None, "agent": None})
+        row["status"] = "failed"
+        row["last_error"] = "; ".join(reasons)[:600]
+        row["attempt"] = max(int(row.get("attempt") or 0), 1)
+        if uid not in (ph.get("roster") or []) and not (ph.get("skeleton") or {}).get("status") in (None, "pending"):
+            ph.setdefault("roster", []).append(uid)
+    if tokens:
+        ph.setdefault("tokens", {"out": 0})["out"] = int((ph.get("tokens") or {}).get("out") or 0) + int(tokens)
+    if seconds:
+        ph["wall_s"] = int(ph.get("wall_s") or 0) + int(seconds)
     if ph["status"] in ("running", "generated", "partial"):
         ph["status"] = "merged" if not any(data["entities"].get(e, {}).get("status") in ("pending", "staged", "failed")
                                            for e in ph.get("roster") or []) else "partial"
-        dm.save(campaign, data, f"designer.py phase {phase} merge")
+    dm.save(campaign, data, f"designer.py phase {phase} merge")
+    if refused:
+        print(f"designer: {phase} {len(refused)} unit(s) refused and marked failed — the next `phase {phase} begin --json` "
+              f"lists them with the reason: {', '.join(sorted(refused))}", file=sys.stderr)
     print(f"designer: {phase} {data['phases'][phase]['status']}")
+    return 1 if (refused or seed.returncode != 0) else 0
+
+
+def phase_drop(campaign: str, phase: str, entity_id: str, reason: str) -> int:
+    """Drop a roster item that never reached the registry (a failed batch or document); registry entities go through design_revise."""
+    data = dm.load(campaign)
+    ph = data["phases"][phase]
+    canonical = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
+    if entity_id in canonical:
+        print(f"designer: {entity_id} is in the registry; remove it with design_revise.py round --scope entity --action remove",
+              file=sys.stderr)
+        return 1
+    if entity_id not in (ph.get("roster") or []):
+        print(f"designer: {entity_id} is not on {phase}'s roster", file=sys.stderr)
+        return 1
+    ph["roster"] = [e for e in ph["roster"] if e != entity_id]
+    ph.setdefault("dropped", {})[entity_id] = {"reason": reason, "at": now_iso()}
+    data["entities"].pop(entity_id, None)
+    dm.save(campaign, data, f"designer.py phase {phase} drop {entity_id}")
+    print(f"designer: {phase} dropped {entity_id} ({reason}); roster {len(ph['roster'])}")
     return 0
 
 
@@ -841,7 +885,7 @@ def phase_card(campaign: str, phase: str) -> int:
 
 
 def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round_text: str | None = None,
-                  scope: str | None = None) -> int:
+                  scope: str | None = None, force: bool = False) -> int:
     m = dm.load(campaign)
     if round_text:
         rc = dm.approve(campaign, argparse.Namespace(phase=phase, card=None, commit=None, round=round_text,
@@ -858,7 +902,8 @@ def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round
             if rc != 0:
                 return rc
     sha = design_commit(campaign, f"{phase} approved")
-    rc = dm.approve(campaign, argparse.Namespace(phase=phase, card=card, commit=sha, round=None, scope=None, affected=None))
+    rc = dm.approve(campaign, argparse.Namespace(phase=phase, card=card, commit=sha, round=None, scope=None, affected=None,
+                                                force=force))
     if rc == 0:
         print(f"designer: {phase} approved ({'auto' if auto_approve(m) else 'onay'}; commit {sha or 'none'})")
         if not auto_approve(m):
@@ -910,6 +955,12 @@ def status(campaign: str, as_json: bool) -> int:
     print(f"designer: {campaign} — mode {out['mode']}, auto_approve {out['auto_approve']}, guard {'armed' if out['armed'] else 'unarmed'}, seed {out['seed']}")
     for p, v in out["phases"].items():
         print(f"  {p}  {v['status']:<18} attempt {v['attempt'] or 0}  roster {v['roster']}")
+        for eid in m["phases"][p].get("roster") or []:
+            row = m["entities"].get(eid, {})
+            if row.get("status") == "failed":
+                print(f"      failed {eid}: {(row.get('last_error') or '?')[:160]}")
+        for eid, info in (m["phases"][p].get("dropped") or {}).items():
+            print(f"      dropped {eid}: {info.get('reason')}")
     print(f"  rolls: {out['public_rolls']} public, {out['secret_rolls']} secret · tables {out['tables']}")
     return 0
 
@@ -973,9 +1024,13 @@ def main(argv=None) -> int:
 
     ph = sub.add_parser("phase")
     ph.add_argument("phase")
-    ph.add_argument("step", choices=("begin", "merge", "check", "card", "approve", "rerun"))
+    ph.add_argument("step", choices=("begin", "merge", "check", "card", "approve", "rerun", "drop"))
     ph.add_argument("--json", action="store_true")
     ph.add_argument("--day", type=int, default=0)
+    ph.add_argument("--tokens", type=int, help="merge: output tokens the Workflow reported, added to the phase")
+    ph.add_argument("--seconds", type=int, help="merge: wall-clock seconds the Workflow reported, added to the phase")
+    ph.add_argument("--force", action="store_true", help="approve: accept an incomplete roster")
+    ph.add_argument("--id", help="drop: the roster item")
     ph.add_argument("--card")
     ph.add_argument("--onay", action="store_true")
     ph.add_argument("--round", help="approve: record a correction round instead of approving")
@@ -1014,13 +1069,18 @@ def main(argv=None) -> int:
         if a.step == "begin":
             return phase_begin(c, a.phase, a.json, a.session_id)
         if a.step == "merge":
-            return phase_merge(c, a.phase, a.day)
+            return phase_merge(c, a.phase, a.day, a.tokens, a.seconds)
+        if a.step == "drop":
+            if not (a.id and a.reason):
+                print("designer: drop needs --id and --reason", file=sys.stderr)
+                return 2
+            return phase_drop(c, a.phase, a.id, a.reason)
         if a.step == "check":
             return phase_check(c, a.phase)
         if a.step == "card":
             return phase_card(c, a.phase)
         if a.step == "approve":
-            return approve_phase(c, a.phase, a.card, a.onay, a.round, a.scope)
+            return approve_phase(c, a.phase, a.card, a.onay, a.round, a.scope, a.force)
         if a.step == "rerun":
             if not a.reason:
                 print("designer: rerun needs --reason", file=sys.stderr)

@@ -20,6 +20,7 @@ from _campaign import TestCampaign, SCRIPTS, PROJECT, CAMPAIGNS
 
 sys.path.insert(0, str(SCRIPTS))
 import design_tables as dt  # noqa: E402
+from design_io import is_fragment  # noqa: E402
 from paths import runtime_dir  # noqa: E402
 
 MARKER = runtime_dir() / "active-design.json"
@@ -218,13 +219,15 @@ class FixturePhase(unittest.TestCase):
         self.guard.__exit__(None, None, None)
 
     def test_begin_merge_check_card_approve_and_rerun(self):
+        self.c.reopen("P6", "prerolled")
         begin = run("-c", self.c.name, "phase", "P6", "begin", "--json", check=True)
         out = json.loads(begin.stdout[begin.stdout.index("{"):])
         self.assertEqual(out["phase"], "P6")
         self.assertTrue(MARKER.is_file())
         merge = run("-c", self.c.name, "phase", "P6", "merge", check=True)
         self.assertIn("merge", merge.stdout)
-        self.assertFalse(list(self.c.path("design/_staging/P6").glob("*.json")), "fragments moved to merged/")
+        left = [p.name for p in self.c.path("design/_staging/P6").glob("*.json") if is_fragment(p)]
+        self.assertEqual(left, [], "fragments moved to merged/ (the merge report is not a fragment)")
         check = run("-c", self.c.name, "phase", "P6", "check", check=True)
         self.assertIn("0 errors", check.stdout)
         self.assertEqual(self.c.json("design/design.json")["phases"]["P6"]["validator"]["errors"], 0)
@@ -249,12 +252,18 @@ class FixturePhase(unittest.TestCase):
         self.assertIn("odalar dar", m["phases"]["P6"]["directions"])
 
     def test_begin_refuses_when_the_previous_phase_is_not_approved(self):
+        self.c.reopen("P6", "prerolled")
         m = self.c.json("design/design.json")
         m["phases"]["P5"]["status"] = "awaiting_approval"
         self.c.path("design/design.json").write_text(json.dumps(m, ensure_ascii=False, indent=2), encoding="utf-8")
         proc = run("-c", self.c.name, "phase", "P6", "begin")
         self.assertEqual(proc.returncode, 1)
         self.assertIn("not approved", proc.stderr)
+
+    def test_begin_refuses_an_approved_phase(self):
+        proc = run("-c", self.c.name, "phase", "P6", "begin")
+        self.assertEqual(proc.returncode, 1, "an approved phase is closed; rerun reopens it (tuning birth 1, 3.5)")
+        self.assertIn("rerun", proc.stderr)
 
 
 if __name__ == "__main__":

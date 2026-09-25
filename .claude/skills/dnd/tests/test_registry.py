@@ -85,7 +85,10 @@ class Registry(unittest.TestCase):
         self.assertEqual(proc.returncode, 1)
         self.assertIn("without --revise: faction", proc.stderr)
         self.assertEqual(self.c.path("design/dm-only/entities.json").read_bytes(), before)
-        self.assertTrue(self.c.path(ROLL_FRAGMENT).exists(), "fragment stays in staging")
+        self.assertFalse(self.c.path(ROLL_FRAGMENT).exists(), "a refused fragment leaves staging")
+        self.assertTrue(self.c.path("design/_staging/P5/refused/npc_yesra.attempt-1.json").exists(), "…for refused/, named by attempt")
+        report = self.c.json("design/_staging/P5/merge.report.json")
+        self.assertIn("without --revise: faction", report["refused"]["npc_yesra"][0])
 
     def test_merge_refuses_a_secret_stamp_change_too(self):
         frag = self.c.json(ROLL_FRAGMENT)
@@ -119,7 +122,7 @@ class Registry(unittest.TestCase):
         self.assertEqual(self.c.json("design/entities.json")["entities"]["npc_yesra"]["summary"],
                          "Yeni bir özet.")
 
-    def test_merge_refuses_when_the_prose_file_is_missing_and_writes_nothing(self):
+    def test_merge_refuses_the_unit_whose_prose_file_is_missing_and_applies_the_others(self):
         good = self.c.json(ROLL_FRAGMENT)
         good["registry"]["summary"] = "Değişti."
         self.c.write_json(ROLL_FRAGMENT, good)
@@ -134,7 +137,8 @@ class Registry(unittest.TestCase):
         self.assertIn("prose file missing", proc.stderr)
         ents = self.c.json("design/dm-only/entities.json")["entities"]
         self.assertNotIn("npc_hayalet", ents)
-        self.assertNotEqual(ents["npc_yesra"]["summary"], "Değişti.", "the good fragment was not applied either")
+        self.assertEqual(ents["npc_yesra"]["summary"], "Değişti.", "the merge is per unit: the good fragment is applied (tuning birth 1)")
+        self.assertIn("refused 1: npc_hayalet", proc.stdout)
 
     def test_merge_rejects_a_secret_in_the_public_stamps(self):
         frag = self.c.json(ROLL_FRAGMENT)
@@ -152,7 +156,7 @@ class Registry(unittest.TestCase):
         frag["prose"] = {"file": "design/sites/site_yeni.md", "bytes": None, "sha256": None}
         frag["dm_only_prose"] = None
         frag["overlay"] = {"status": "detailed"}
-        self.c.path("design/sites/site_yeni.md").write_text("---\nentity: site_yeni\n---\n", encoding="utf-8")
+        self.c.path("design/sites/site_yeni.md").write_text("---\nentity: site_yeni\nsecrecy: public\n---\n", encoding="utf-8")
         self.c.write_json("design/_staging/P6/site_yeni.json", frag)
         # the fixture's own fragment stays byte-identical, so it merges as a no-op
         self.c.run("registry.py", "merge", "--phase", "P6", "--day", "3", check=True)

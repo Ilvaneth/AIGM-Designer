@@ -44,14 +44,15 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from design_io import (campaign_dir, design_dir, dm_only_dir, now_iso, read_json, sha256_file,  # noqa: E402
-                       stamp_meta, write_json_atomic)
+from design_io import (campaign_dir, design_dir, dm_only_dir, is_container, is_fragment, is_stub,  # noqa: E402
+                       now_iso, read_json, sha256_file, stamp_meta, write_json_atomic)
 from design_tables import DIAL_NAMES, arc_shape, dial_values  # noqa: E402
 
 PHASES = tuple(f"P{i}" for i in range(10))
 PHASE_STATUSES = ("pending", "prerolled", "running", "generated", "merged", "validated", "critiqued",
                   "awaiting_approval", "approved", "partial", "failed", "stale", "needs-check")
 ENTITY_STATUSES = ("pending", "staged", "merged", "validated", "critiqued", "failed")
+SKELETON_PHASES = ("P3", "P4", "P5", "P6", "P7")     # the phases a skeleton agent opens (design_prompts.PROMPT_BY_PHASE)
 ENTITY_RANK = {s: i for i, s in enumerate(("pending", "failed", "staged", "merged", "validated", "critiqued"))}
 SCOPES = ("fact", "entity", "phase", "direction")
 ANSWERS = ("evet", "hayır", "spoiler vermeden cevaplanamaz")
@@ -186,7 +187,7 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
     if staging.is_dir():
         for phase_dir in sorted(p for p in staging.iterdir() if p.is_dir() and p.name in PHASES):
             for frag in sorted(phase_dir.glob("*.json")):
-                if frag.name == "skeleton.json" or frag.name.endswith((".facts.json", ".news.json", ".critique.json", ".prompt.json")):
+                if not is_fragment(frag):
                     continue
                 info = read_json(frag) or {}
                 if info.get("id"):
@@ -194,11 +195,18 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
             merged = phase_dir / "merged"
             if merged.is_dir():
                 for frag in sorted(merged.glob("*.json")):
-                    if frag.name == "skeleton.json" or frag.name.endswith((".facts.json", ".news.json", ".critique.json", ".prompt.json")):
+                    if not is_fragment(frag):
                         continue
                     info = read_json(frag) or {}
                     if info.get("id"):
-                        status = "merged" if info["id"] in canonical else "staged"
+                        # a container (document / batch) is merged once its file moved here; a stub row
+                        # in the registry is a reservation, not a merged entity (tuning birth 1)
+                        if is_container(info):
+                            status = "merged"
+                        elif info["id"] in canonical:
+                            status = "pending" if is_stub(canonical[info["id"]]) else "merged"
+                        else:
+                            status = "staged"
                         seen[info["id"]] = (status, rel(campaign, frag), int(info.get("attempt") or 1))
     changed = 0
     for eid, row in data["entities"].items():
@@ -218,9 +226,11 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
             row["attempt"] = max(int(row.get("attempt") or 0), attempt)
             if disk == "staged":
                 new = "staged"                       # disk proves less than the record: downgrade
+            elif disk == "pending":
+                new = "failed" if recorded == "failed" else "pending"   # a stub awaiting its filler
             else:
                 new = recorded if ENTITY_RANK.get(recorded, 0) >= ENTITY_RANK["merged"] else "merged"
-        elif eid in canonical:
+        elif eid in canonical and not is_stub(canonical[eid]):
             new = recorded if ENTITY_RANK.get(recorded, 0) >= ENTITY_RANK["merged"] else "merged"
         else:
             new = "failed" if recorded == "failed" else "pending"
@@ -236,8 +246,8 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
             changed += 1
     for pn, ph in data["phases"].items():
         roster = ph.get("roster") or []
-        if not roster:
-            continue
+        if not roster or ph["status"] == "approved":
+            continue        # an approved phase is frozen; only `rerun` reopens it (tuning birth 1)
         statuses = [data["entities"].get(e, {}).get("status", "pending") for e in roster]
         done = all(ENTITY_RANK.get(s, 0) >= ENTITY_RANK["merged"] for s in statuses)
         if done and ph["status"] in ("running", "generated", "partial"):
@@ -394,6 +404,14 @@ def approve(campaign: str, a) -> int:
         print(f"design_manifest: {a.phase} has failed entities ({', '.join(failed)}); rerun the pending list "
               "or drop them via revise before approving", file=sys.stderr)
         return 1
+    incomplete = [e for e in ph.get("roster") or []
+                  if ENTITY_RANK.get(data["entities"].get(e, {}).get("status", "pending"), 0) < ENTITY_RANK["merged"]]
+    skeleton_pending = a.phase in SKELETON_PHASES and (ph.get("skeleton") or {}).get("status") == "pending"
+    if (incomplete or skeleton_pending) and not getattr(a, "force", False):
+        what = (["the skeleton"] if skeleton_pending else []) + incomplete
+        print(f"design_manifest: {a.phase} is not complete ({', '.join(what)} not merged); run `phase {a.phase} begin --json` "
+              "and the fan-out again, drop the item, or approve --force", file=sys.stderr)
+        return 1
     card = Path(a.card)
     if not card.is_file():
         print(f"design_manifest: card {card} not found", file=sys.stderr)
@@ -404,6 +422,14 @@ def approve(campaign: str, a) -> int:
                            "commit": a.commit})
     ph["status"] = "approved"
     ph["finished"] = ph.get("finished") or now_iso()
+    if not ph.get("wall_s") and ph.get("started"):
+        try:
+            from datetime import datetime
+            t0 = datetime.fromisoformat(str(ph["started"]).replace("Z", "+00:00"))
+            t1 = datetime.fromisoformat(ph["finished"].replace("Z", "+00:00"))
+            ph["wall_s"] = max(0, int((t1 - t0).total_seconds()))
+        except ValueError:
+            pass
     save(campaign, data, f"design_manifest.py approve --phase {a.phase}")
     print(f"design_manifest: {a.phase} approved (card {ph['approval']['card_sha256'][:12]}…, commit {a.commit})")
     return 0

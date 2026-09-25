@@ -58,6 +58,13 @@ class TestCampaign:
     def temp_files(self) -> list:
         return [p for p in self.dir.rglob(".*.tmp")]
 
+    def reopen(self, phase: str, status: str = "merged", **fields) -> None:
+        """The fixture's phases are all approved and an approved phase is frozen; tests that drive a phase reopen it first."""
+        m = self.json("design/design.json")
+        m["phases"][phase]["status"] = status
+        m["phases"][phase].update(fields)
+        self.write_json("design/design.json", m)
+
 
 class MarkerGuard:
     """Keep the real runtime marker (the read guard's active-design.json) out of a test's way and

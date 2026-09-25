@@ -37,6 +37,41 @@ ENTITY_TYPES = (
 )
 SECRECY = ("public", "discoverable", "secret")
 
+# Staging vocabulary shared by registry.py, design_manifest.py and designer.py (tuning birth 1, 2026-09-25).
+NON_FRAGMENTS = ("skeleton.json",)
+NON_FRAGMENT_SUFFIXES = (".facts.json", ".news.json", ".critique.json", ".prompt.json", ".report.json", ".secret.json")
+# A container fragment stands for a document or a batch: it is not a registry entity itself; its
+# `rows[]` (registry rows) merge one by one and its members are separate fragments.
+CONTAINER_PREFIXES = ("doc_", "calculus_", "primer_", "villagebatch_", "npcbatch_", "seedbatch_")
+CONTAINER_TYPES = ("batch", "doc", "document", "calculus", "primer_section", "session1")
+# Folders under design/ the validator and the guard treat as the conductor's or the agents' scratch, never bible prose.
+SCRATCH_DIRS = ("_staging", "_prompts", "_approval", "_revised", "_snapshots")
+CRITIC_FILE = re.compile(r"\.critic\d")
+
+
+def is_fragment(path) -> bool:
+    """A staging JSON that is a commit record; skeleton, facts, news, critique, prompt and report files are not."""
+    name = Path(path).name
+    return name not in NON_FRAGMENTS and not name.endswith(NON_FRAGMENT_SUFFIXES) and not CRITIC_FILE.search(name)
+
+
+def is_container(frag: dict) -> bool:
+    """A document or batch fragment (`doc_cosmology`, `villagebatch_1`, `calculus_<slug>` ...)."""
+    if not isinstance(frag, dict):
+        return False
+    fid = str(frag.get("id") or "")
+    row = frag.get("registry")
+    if fid.startswith(CONTAINER_PREFIXES) or frag.get("type") in CONTAINER_TYPES:
+        return True
+    if isinstance(row, dict) and (row.get("type") in CONTAINER_TYPES or row.get("kind") in CONTAINER_TYPES):
+        return True
+    return False
+
+
+def is_stub(row) -> bool:
+    """A reserved registry row a later phase fills: its stamps are not frozen yet."""
+    return isinstance(row, dict) and row.get("status") == "pending"
+
 # Overlay fields and their closed values (docs/schemas/overlay.md). None = an id.
 OVERLAY_FIELDS: dict[str, tuple | None] = {
     "status": ("skeleton", "detailed", "detailed-stale", "played", "played-improvised"),

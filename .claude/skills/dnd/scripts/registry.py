@@ -29,7 +29,7 @@ a change to any stamped field unless --revise carries a revision-log id, and it
 writes nothing at all when any fragment is bad: disk is truth, and a half-merged
 phase is worse than a failed one.
 
-Exit codes: 0 ok · 1 refused (stamp drift, bad fragment, unknown id) · 2 usage
+Exit codes: 0 ok · 1 at least one unit refused (the others are merged; see _staging/PN/merge.report.json) · 2 usage
 """
 
 from __future__ import annotations
@@ -37,14 +37,16 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from design_io import (ENTITY_TYPES, OVERLAY_FIELDS, SECRECY, campaign_dir, design_dir,  # noqa: E402
-                       dm_only_dir, id_type, load_overlay, now_iso, overlay_set, read_json,
-                       save_overlay, slug, stamp_meta, write_json_atomic)
+from design_io import (ENTITY_TYPES, NON_FRAGMENTS, NON_FRAGMENT_SUFFIXES, OVERLAY_FIELDS,  # noqa: E402,F401
+                       SCRATCH_DIRS, SECRECY, campaign_dir, design_dir, dm_only_dir, id_type,
+                       is_container, is_fragment, is_stub, load_overlay, now_iso, overlay_set,
+                       parse_front_matter, read_json, save_overlay, slug, stamp_meta, write_json_atomic)
 
 STATUS_TYPES = ("site", "settlement")   # entities that carry an overlay `status`
 
@@ -154,14 +156,114 @@ def row_errors(eid: str, row: dict) -> list[str]:
 
 
 # ── merge ─────────────────────────────────────────────────────────────────────
+#
+# Tuning birth 1 (2026-09-25) rewrote this: the merge is per unit, never all-or-nothing. A unit is one
+# entity fragment, or one container fragment (a document or batch: `doc_`, `calculus_`, `primer_`,
+# `villagebatch_`, `npcbatch_`, `seedbatch_`) whose `rows[]` are registry rows merged together. A unit
+# that fails is refused alone, moved to `_staging/PN/refused/`, and named with its reasons in
+# `_staging/PN/merge.report.json`; the good units are written. A stub row (`status: pending`, reserved
+# by an earlier phase) has no frozen stamps: the phase that fills it sets them. Secrecy is checked
+# here, at the door: a secret row's name or alias that is already public, a `## Secret` heading in a
+# public file, a mirror without `secrecy: secret` / `mirror_of`, a public file without `mirror`.
 
-NON_FRAGMENTS = ("skeleton.json",)
-NON_FRAGMENT_SUFFIXES = (".facts.json", ".news.json", ".critique.json", ".prompt.json")
+SECRET_HEADING = re.compile(r"^## Secret\b", re.M)
 
 
-def is_fragment(path: Path) -> bool:
-    """A staging JSON that is a commit record; the skeleton's map, facts and critique files are not."""
-    return path.name not in NON_FRAGMENTS and not path.name.endswith(NON_FRAGMENT_SUFFIXES)
+def public_prose_files(campaign: str) -> list[Path]:
+    root = design_dir(campaign)
+    out = []
+    for p in sorted(root.rglob("*.md")):
+        parts = p.relative_to(root).parts
+        if "dm-only" in parts or any(s in parts for s in SCRATCH_DIRS):
+            continue
+        out.append(p)
+    return out
+
+
+def public_words(canonical: dict, extra_rows: list[dict]) -> dict:
+    """lower-cased public name/alias -> the id that owns it."""
+    words: dict = {}
+    for row in list(canonical["entities"].values()) + extra_rows:
+        if row.get("secrecy") in ("public", "discoverable"):
+            for n in [row.get("name")] + list(row.get("aliases") or []):
+                if isinstance(n, str) and n.strip():
+                    words.setdefault(n.strip().lower(), row.get("id"))
+    return words
+
+
+def secret_name_errors(eid: str, row: dict, publics: dict, haystack: str) -> list[str]:
+    """A secret entity may not carry a name or alias that is public anywhere: the identity link goes under dm_only."""
+    errs = []
+    if row.get("secrecy") != "secret":
+        return errs
+    for n in [row.get("name")] + list(row.get("aliases") or []):
+        if not isinstance(n, str) or len(n.strip()) < 3:
+            continue
+        n = n.strip()
+        owner = publics.get(n.lower())
+        if (owner and owner != eid) or re.search(r"(?<![\w'])" + re.escape(n) + r"(?![\w])", haystack):
+            errs.append(f"{eid}: secret entity's name/alias {n!r} is already public"
+                        + (f" (the name of {owner})" if owner and owner != eid else " (in public prose)")
+                        + "; a secret identity is a dm_only relation or secret_tr line, never a public word in name/aliases")
+    return errs
+
+
+def prose_errors(eid: str, frag: dict, root: Path, container: bool) -> tuple[list[str], list[str]]:
+    """Existence, the three-heading split and the mirror front matter of the files a fragment names."""
+    errs: list[str] = []
+    warns: list[str] = []
+    pub = frag.get("prose") or {}
+    mir = frag.get("dm_only_prose") or {}
+    pub_file = pub.get("file") if isinstance(pub, dict) else None
+    mir_file = mir.get("file") if isinstance(mir, dict) else None
+    for key, info in (("prose", pub), ("dm_only_prose", mir)):
+        if not info:
+            continue
+        f = root / str(info.get("file", ""))
+        if not f.is_file():
+            errs.append(f"{eid}: {key} file missing: {info.get('file')}")
+        elif info.get("bytes") not in (None, f.stat().st_size):
+            warns.append(f"{eid}: {key} is {f.stat().st_size} bytes, fragment says {info['bytes']}")
+    if pub_file and (root / pub_file).is_file():
+        if str(pub_file).startswith("design/dm-only/"):
+            errs.append(f"{eid}: prose.file is under design/dm-only/; the public file belongs outside it")
+        else:
+            text = (root / pub_file).read_text(encoding="utf-8", errors="replace")
+            if SECRET_HEADING.search(text):
+                errs.append(f"{eid}: public file {pub_file} carries a `## Secret` heading; the Secret section exists only in the mirror under design/dm-only/")
+            fm = parse_front_matter(text)
+            if fm.get("secrecy") not in ("public", "discoverable"):
+                errs.append(f"{eid}: public file {pub_file} front matter needs secrecy: public|discoverable (has {fm.get('secrecy')!r})")
+            if mir_file and fm.get("mirror") != mir_file:
+                errs.append(f"{eid}: public file {pub_file} front matter must name `mirror: {mir_file}`")
+            if not container and fm.get("entity") not in (None, eid):
+                errs.append(f"{eid}: public file {pub_file} front matter says entity: {fm.get('entity')}")
+    if mir_file and (root / mir_file).is_file():
+        if not str(mir_file).startswith("design/dm-only/"):
+            errs.append(f"{eid}: dm_only_prose.file must live under design/dm-only/")
+        else:
+            fm = parse_front_matter((root / mir_file).read_text(encoding="utf-8", errors="replace"))
+            if fm.get("secrecy") != "secret":
+                errs.append(f"{eid}: mirror {mir_file} front matter needs `secrecy: secret` (has {fm.get('secrecy')!r})")
+            if pub_file and fm.get("mirror_of") != pub_file:
+                errs.append(f"{eid}: mirror {mir_file} front matter must name `mirror_of: {pub_file}`")
+    return errs, warns
+
+
+def stamp_check(eid: str, row: dict, canonical: dict, snapshot: dict, revise: str | None) -> tuple[list[str], list[str], list[str]]:
+    """(errors, warnings, revised_fields): stamped drift on a filled row is refused; a stub's stamps are set by its filler."""
+    existing = canonical["entities"].get(eid)
+    if eid not in snapshot["stamps"] or is_stub(existing):
+        old = snapshot["stamps"].get(eid) or {}
+        new = stamps_of(row)
+        changed = sorted(k for k in old if k in new and old[k] != new[k])
+        return [], ([f"{eid}: stub's reserved stamp(s) {', '.join(changed)} changed by its filler"] if changed else []), []
+    new_stamps = stamps_of(row)
+    drift = sorted(k for k in set(snapshot["stamps"][eid]) | set(new_stamps)
+                   if snapshot["stamps"][eid].get(k) != new_stamps.get(k))
+    if drift and not revise:
+        return [f"{eid}: stamped field(s) changed without --revise: {', '.join(drift)}"], [], []
+    return [], [], drift
 
 
 def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) -> int:
@@ -178,89 +280,118 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
     snapshot = load_snapshot(campaign)
     overlay = load_overlay(campaign)
     root = campaign_dir(campaign)
+    haystack = "\n".join(p.read_text(encoding="utf-8", errors="replace") for p in public_prose_files(campaign))
 
-    errors: list[str] = []
-    warnings: list[str] = []
-    plan: list[tuple[Path, dict]] = []
+    # first pass: parse every unit and collect the rows it wants to write
+    units: list[dict] = []
     for frag_path in fragments:
         try:
             frag = json.loads(frag_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
-            errors.append(f"{frag_path.name}: not valid JSON ({e})")
+            units.append({"path": frag_path, "id": frag_path.stem, "container": False, "frag": {}, "rows": [],
+                          "errors": [f"{frag_path.name}: not valid JSON ({e})"]})
             continue
-        eid = frag.get("id")
-        row = frag.get("registry")
-        if not eid or not isinstance(row, dict):
-            errors.append(f"{frag_path.name}: fragment needs `id` and a `registry` object")
-            continue
-        errors.extend(row_errors(eid, row))
+        uid = frag.get("id") or frag_path.stem
+        container = is_container(frag)
+        rows: list[tuple[str, dict]] = []
+        errors: list[str] = []
+        if container:
+            for r in frag.get("rows") or []:
+                if isinstance(r, dict) and r.get("id"):
+                    rows.append((r["id"], r))
+                else:
+                    errors.append(f"{uid}: a container row lacks `id`")
+        else:
+            row = frag.get("registry")
+            if not frag.get("id") or not isinstance(row, dict):
+                errors.append(f"{frag_path.name}: fragment needs `id` and a `registry` object "
+                              "(a document or batch is a container: id doc_/calculus_/primer_/…batch_, registry null, rows[])")
+            else:
+                rows.append((uid, row))
         if frag.get("phase") not in (None, phase):
-            errors.append(f"{eid}: fragment says phase {frag.get('phase')}, merging {phase}")
-        for key in ("prose", "dm_only_prose"):
-            info = frag.get(key)
-            if info:
-                f = root / info.get("file", "")
-                if not f.is_file():
-                    errors.append(f"{eid}: {key} file missing: {info.get('file')}")
-                elif info.get("bytes") not in (None, f.stat().st_size):
-                    # Line-ending conversion on checkout changes byte counts, so
-                    # a mismatch is a warning; a missing file is the error.
-                    warnings.append(f"{eid}: {key} is {f.stat().st_size} bytes, fragment says {info['bytes']}")
-        if eid in snapshot["stamps"]:
-            new_stamps = stamps_of(row)
-            drift = {k: (snapshot["stamps"][eid].get(k), new_stamps.get(k))
-                     for k in set(snapshot["stamps"][eid]) | set(new_stamps)
-                     if snapshot["stamps"][eid].get(k) != new_stamps.get(k)}
-            if drift and not revise:
-                fields = ", ".join(sorted(drift))
-                errors.append(f"{eid}: stamped field(s) changed without --revise: {fields}")
-            elif drift:
-                frag["_revised_fields"] = sorted(drift)
-        plan.append((frag_path, frag))
+            errors.append(f"{uid}: fragment says phase {frag.get('phase')}, merging {phase}")
+        units.append({"path": frag_path, "id": uid, "container": container, "frag": frag, "rows": rows, "errors": errors})
 
-    for w in warnings:
-        print(f"  ! {w}", file=sys.stderr)
-    if errors:
-        for e in errors:
-            print(f"  ✗ {e}", file=sys.stderr)
-        print(f"registry: merge refused, {len(errors)} problem(s); nothing written", file=sys.stderr)
-        return 1
+    publics = public_words(canonical, [r for u in units for _, r in u["rows"]])
+    accepted: list[dict] = []
+    refused: dict[str, list[str]] = {}
+    for u in units:
+        errs, warns = list(u["errors"]), []
+        if u["frag"]:
+            e2, w2 = prose_errors(u["id"], u["frag"], root, u["container"])
+            errs += e2
+            warns += w2
+        u["revised"] = {}
+        for eid, row in u["rows"]:
+            errs += row_errors(eid, row)
+            errs += secret_name_errors(eid, row, publics, haystack)
+            e3, w3, drift = stamp_check(eid, row, canonical, snapshot, revise)
+            errs += e3
+            warns += w3
+            if drift:
+                u["revised"][eid] = drift
+        for w in warns:
+            print(f"  ! {w}", file=sys.stderr)
+        if errs:
+            refused[u["id"]] = errs
+            for e in errs:
+                print(f"  ✗ {e}", file=sys.stderr)
+        else:
+            accepted.append(u)
 
     merged_dir = staging / "merged"
     merged_dir.mkdir(exist_ok=True)
     summary: list[str] = []
-    for frag_path, frag in plan:
-        eid, row = frag["id"], frag["registry"]
-        is_new = eid not in canonical["entities"]
-        canonical["entities"][eid] = row
-        new_stamps = stamps_of(row)
-        if is_new or eid not in snapshot["stamps"]:
-            snapshot["stamps"][eid] = new_stamps
-        elif frag.get("_revised_fields"):
-            snapshot["_meta"]["revisions"].append(
-                {"id": eid, "log_id": revise, "at": now_iso(), "fields": frag["_revised_fields"],
-                 "before": {k: snapshot["stamps"][eid].get(k) for k in frag["_revised_fields"]}})
-            snapshot["stamps"][eid] = new_stamps
-        if row["type"] in STATUS_TYPES:
-            entry = overlay["entries"].get(eid, {})
-            wanted = (frag.get("overlay") or {}).get("status")
-            if "status" not in entry:
-                overlay_set(overlay, eid, "status", wanted or "skeleton", writer="registry.py merge",
-                            day=day, birth="skeleton", reason=f"{phase} merge")
-            elif wanted and wanted != entry["status"]["value"]:
-                overlay_set(overlay, eid, "status", wanted, writer="registry.py merge",
-                            day=day, reason=f"{phase} merge")
-        summary.append(f"  {'+' if is_new else '~'} {eid}"
-                       + (f"  (stamps revised: {', '.join(frag['_revised_fields'])})"
-                          if frag.get("_revised_fields") else ""))
+    merged_ids: list[str] = []
+    for u in accepted:
+        for eid, row in u["rows"]:
+            is_new = eid not in canonical["entities"]
+            was_stub = is_stub(canonical["entities"].get(eid))
+            canonical["entities"][eid] = row
+            new_stamps = stamps_of(row)
+            if is_new or was_stub or eid not in snapshot["stamps"]:
+                snapshot["stamps"][eid] = new_stamps
+            elif u["revised"].get(eid):
+                snapshot["_meta"]["revisions"].append(
+                    {"id": eid, "log_id": revise, "at": now_iso(), "fields": u["revised"][eid],
+                     "before": {k: snapshot["stamps"][eid].get(k) for k in u["revised"][eid]}})
+                snapshot["stamps"][eid] = new_stamps
+            if row["type"] in STATUS_TYPES:
+                entry = overlay["entries"].get(eid, {})
+                wanted = (u["frag"].get("overlay") or {}).get("status")
+                if "status" not in entry:
+                    overlay_set(overlay, eid, "status", wanted or "skeleton", writer="registry.py merge",
+                                day=day, birth="skeleton", reason=f"{phase} merge")
+                elif wanted and wanted != entry["status"]["value"]:
+                    overlay_set(overlay, eid, "status", wanted, writer="registry.py merge",
+                                day=day, reason=f"{phase} merge")
+            merged_ids.append(eid)
+            summary.append(f"  {'+' if is_new else '~'} {eid}"
+                           + (f"  (stamps revised: {', '.join(u['revised'][eid])})" if u["revised"].get(eid) else "")
+                           + ("  (stub filled)" if was_stub and not is_stub(row) else ""))
+        if u["container"]:
+            summary.append(f"  > {u['id']}  (container, {len(u['rows'])} row(s))")
 
-    write_all(campaign, canonical, snapshot, f"registry.py merge --phase {phase}")
-    save_overlay(campaign, overlay, "registry.py merge")
-    for frag_path, _ in plan:
-        os.replace(frag_path, merged_dir / frag_path.name)
-    print(f"registry: merged {len(plan)} fragment(s) from {phase}")
-    print("\n".join(summary))
-    return 0
+    if accepted:
+        write_all(campaign, canonical, snapshot, f"registry.py merge --phase {phase}")
+        save_overlay(campaign, overlay, "registry.py merge")
+        for u in accepted:
+            os.replace(u["path"], merged_dir / u["path"].name)
+    refused_dir = staging / "refused"
+    for u in units:
+        if u["id"] in refused and u["path"].is_file():
+            refused_dir.mkdir(exist_ok=True)
+            k = int((u["frag"] or {}).get("attempt") or 1)
+            os.replace(u["path"], refused_dir / f"{u['path'].stem}.attempt-{k}.json")
+    report = {"phase": phase, "at": now_iso(), "merged": merged_ids,
+              "units": [u["id"] for u in accepted], "containers": [u["id"] for u in accepted if u["container"]],
+              "refused": refused}
+    write_json_atomic(staging / "merge.report.json", report)
+    print(f"registry: merged {len(accepted)} unit(s) from {phase} ({len(merged_ids)} row(s))"
+          + (f"; refused {len(refused)}: {', '.join(sorted(refused))}" if refused else ""))
+    if summary:
+        print("\n".join(summary))
+    return 1 if refused else 0
 
 
 # ── other verbs ───────────────────────────────────────────────────────────────

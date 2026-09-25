@@ -205,6 +205,11 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
     files = read_budget(campaign, entity_id)
     d = manifest["dials"]
     scope = str(fm.get("rubric_scope") or "") or None
+    directions = "\n".join(f"- {x}" for x in ph.get("directions") or []) or "- (none)"
+    erow = manifest.get("entities", {}).get(entity_id or "", {})
+    if erow.get("last_error") and role == "writer":
+        directions += (f"\n- **Attempt {attempt}:** your previous fragment was refused by the registry — {erow['last_error']} "
+                       "Repair exactly that; everything else stays as it was.")
     ctx = {
         "campaign": campaign, "campaign_dir": str(campaign_dir(campaign)).replace("\\", "/"),
         "skill_dir": str(skill_root()).replace("\\", "/"), "phase": phase, "attempt": str(attempt), "lang": d["lang"],
@@ -212,7 +217,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "seed": manifest["seed"]["master"], "entity_id": entity_id or "(skeleton)", "entity_type": (entity_id or kind).split("_", 1)[0],
         "entity_name": ent.get("name") or "(not yet named)", "entity_summary": ent.get("summary") or "(no summary yet)",
         "files": "\n".join(f"- {f}" for f in files) or "- (the skeleton decides; read the files it names)",
-        "rolls": mine, "phase_rolls": all_rolls, "directions": question if question else ("\n".join(f"- {x}" for x in ph.get("directions") or []) or "- (none)"),
+        "rolls": mine, "phase_rolls": all_rolls, "directions": question if question else directions,
         "wishes": f"must: {', '.join(d['wishes']['must']) or '—'}; must not: {', '.join(d['wishes']['must_not']) or '—'}",
         "template": paths["template"], "prose_path": paths["prose_path"], "mirror_path": paths["mirror_path"],
         "fragment_path": f"design/_staging/{phase}/{entity_id or 'skeleton'}.json",

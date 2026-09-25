@@ -96,6 +96,7 @@ class OnTheFixture(unittest.TestCase):
         shutil.copy(src, self.c.path("design/_staging/P5/npc_yesra.json"))
         src.unlink()
         self.m("mark", "--phase", "P5", "--roster", "npc_yesra,npc_ilme", check=True)
+        self.c.reopen("P5", "merged")    # an approved phase is frozen; the crash happened before approval
         proc = self.m("reconcile", check=True)
         self.assertIn("changed from disk", proc.stdout)
         data = self.c.json("design/design.json")

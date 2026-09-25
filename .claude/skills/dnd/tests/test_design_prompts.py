@@ -110,6 +110,7 @@ class Rendering(unittest.TestCase):
         self.assertNotIn("{{", text)
 
     def test_designer_begin_hands_out_prompts_and_merge_absorbs_a_skeleton(self):
+        self.c.reopen("P6", "prerolled")
         proc = self.c.run("designer.py", "phase", "P6", "begin", "--json", check=True)
         out = json.loads(proc.stdout[proc.stdout.index("{"):])
         self.assertEqual(out["phase"], "P6")
