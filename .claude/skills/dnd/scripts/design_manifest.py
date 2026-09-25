@@ -203,6 +203,15 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
     changed = 0
     for eid, row in data["entities"].items():
         recorded = row.get("status", "pending")
+        # a revise round marked the entity for a rerun: disk evidence older than that attempt does not count
+        if row.get("rerun"):
+            fresh = eid in seen and seen[eid][2] >= int(row.get("attempt") or 0)
+            if not fresh:
+                if recorded != "pending":
+                    row["status"] = "pending"
+                    changed += 1
+                continue
+            row.pop("rerun", None)
         if eid in seen:
             disk, stage_file, attempt = seen[eid]
             row["stage_file"] = stage_file
