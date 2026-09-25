@@ -1,0 +1,101 @@
+# loot-budget.yaml — treasure by danger tier (item 9.7, 17 #21): a gp range per site role, item
+# counts by rarity from the SRD's 362 magic items (119 Rare, 94 Uncommon, 90 Very Rare, 43 Legendary,
+# 4 Common, 1 Artifact, 11 Varies; 176 need attunement), the consumable ratio, the boss item rule and
+# the filler ban. The magic dial's `loot_item_multiplier` scales the item counts; gp is unscaled.
+# Doctrine (unchanged from Ashen Crown): the boss carries and drops a signature weapon and a
+# defensive item as real loot; support creatures drop nothing; plot payoff items are `item_` entities.
+schema_version: 1
+table: loot-budget
+consumed_by: [P6, P9, validator, play]
+plan: "item 9.7, 17 #21, 18.1"
+rules:
+  multiplier: "item counts × dials.yaml#magic effects.loot_item_multiplier, rounded half up; a result of 0 keeps consumables only"
+  placement: "the intended path's loot is known at birth and stays inside the tier; off-path sites roll from their own tier's row"
+  boss: "one signature weapon (an attunement item of the tier's top rarity) plus one defensive item, both dropped; a support creature drops nothing"
+  plot_items: "a plot payoff is an item_ entity with a stamped act; it does not count against the budget"
+  shops: "a settlement sells consumables and at most the wealth row's rarity (wealthy: uncommon); nothing on the filler ban is ever stocked or rolled as filler"
+  identify: "items are identified through a faction's identify service or a spell; the DM states attunement status whenever an item is described"
+hooks_common:
+  - {phase: P6, must: "the site's loot list names items by SRD index with rarity and attunement, inside the tier row"}
+  - {phase: validator, must: "the budget module sums a site's gp and items against its tier row and the multiplier"}
+
+tables:
+
+  tier:
+    note: "gp per site by role; items per site by rarity before the multiplier; `consumable_share` of the item count"
+    rows:
+      - id: loot_t1
+        label: Tier 1
+        tier: T1
+        cr: [0, 2]
+        gp: {minor: [20, 80], standard: [80, 200], major: [200, 400], capstone: [400, 600]}
+        items: {common: [0, 1], uncommon: [0, 1], rare: 0, very_rare: 0, legendary: 0}
+        consumable_share: 0.7
+        boss_rarity: {weapon: uncommon, defence: uncommon}
+        hooks:
+          - {phase: P6, must: "a T1 boss's signature weapon is a +1 weapon or an uncommon weapon with a name"}
+      - id: loot_t2
+        label: Tier 2
+        tier: T2
+        cr: [3, 6]
+        gp: {minor: [80, 250], standard: [250, 700], major: [700, 1500], capstone: [1500, 2500]}
+        items: {common: [0, 1], uncommon: [1, 2], rare: [0, 1], very_rare: 0, legendary: 0}
+        consumable_share: 0.5
+        boss_rarity: {weapon: uncommon, defence: rare}
+        hooks:
+          - {phase: P6, must: "a T2 major site holds one rare item, and it is the boss's"}
+      - id: loot_t3
+        label: Tier 3
+        tier: T3
+        cr: [7, 11]
+        gp: {minor: [250, 800], standard: [800, 2500], major: [2500, 6000], capstone: [6000, 10000]}
+        items: {common: 0, uncommon: [1, 2], rare: [1, 2], very_rare: [0, 1], legendary: 0}
+        consumable_share: 0.4
+        boss_rarity: {weapon: rare, defence: rare}
+        hooks:
+          - {phase: P6, must: "a T3 boss's defensive item is an attunement item"}
+      - id: loot_t4
+        label: Tier 4
+        tier: T4
+        cr: [12, 16]
+        gp: {minor: [800, 2500], standard: [2500, 8000], major: [8000, 20000], capstone: [20000, 35000]}
+        items: {common: 0, uncommon: [1, 2], rare: [1, 3], very_rare: [1, 2], legendary: [0, 1]}
+        consumable_share: 0.3
+        boss_rarity: {weapon: very_rare, defence: rare}
+        hooks:
+          - {phase: P6, must: "a T4 capstone holds the campaign's first legendary item, and it is a payoff"}
+      - id: loot_t5
+        label: Tier 5
+        tier: T5
+        cr: [17, 30]
+        gp: {minor: [2500, 8000], standard: [8000, 25000], major: [25000, 60000], capstone: [60000, 100000]}
+        items: {common: 0, uncommon: [1, 2], rare: [2, 3], very_rare: [1, 3], legendary: [1, 2]}
+        consumable_share: 0.25
+        boss_rarity: {weapon: legendary, defence: very_rare}
+        hooks:
+          - {phase: P6, must: "a T5 boss's signature weapon is legendary and named in the history"}
+
+  category_weights:
+    note: "which SRD categories fill a rolled slot; the index's items_by_rarity is filtered by these before the LLM picks"
+    rows:
+      - {id: cat_consumable, label: Consumables, categories: [Potion, Scroll, Ammunition], share_of_consumables: 1.0, hooks: [{phase: P6, must: "potions of healing fill at most half the consumable slots"}]}
+      - {id: cat_wondrous, label: Wondrous items, categories: [Wondrous Items], share_of_permanent: 0.45, hooks: [{phase: P6, must: "prefer items with a use in the site's own problem"}]}
+      - {id: cat_arms, label: Weapons and armor, categories: [Weapon, Armor], share_of_permanent: 0.3, hooks: [{phase: P6, must: "a weapon found is named for who carried it"}]}
+      - {id: cat_rings_rods, label: Rings, rods, wands, staves, categories: [Ring, Rod, Wand, Staff], share_of_permanent: 0.25, hooks: [{phase: P6, must: "a wand or staff in a caster's hands is used against the party first"}]}
+
+  filler_ban:
+    note: "never stocked in a shop, never rolled as filler; allowed only as a designed boss or plot item with a reason in the site file"
+    rows:
+      - {id: ban_stat_gauntlets, label: Flat stat-boost items, srd: [gauntlets-of-ogre-power, headband-of-intellect, amulet-of-health, belt-of-giant-strength, belt-of-giant-strength-hill, belt-of-giant-strength-stone, belt-of-giant-strength-frost, belt-of-giant-strength-fire, belt-of-giant-strength-cloud, belt-of-giant-strength-storm], hooks: [{phase: P6, must: "an owner rule from Ashen Crown: recurring unwanted filler"}]}
+      - {id: ban_stat_books, label: Stat-raising books, srd: [manual-of-bodily-health, manual-of-gainful-exercise, manual-of-quickness-of-action, tome-of-clear-thought, tome-of-leadership-and-influence, tome-of-understanding], hooks: [{phase: P6, must: "only as a capstone payoff with a history"}]}
+      - {id: ban_plain_plus, label: Unnamed +N gear beyond T1, srd: [], hooks: [{phase: P6, must: "a +1 weapon at T2 or above carries a name, a maker and a previous owner"}]}
+
+  hoard_flavour:
+    note: "what the gp actually is; rolled per site so treasure is never a pile of coins"
+    rows:
+      - {id: hoard_coin, label: Coin, weight: 2, hooks: [{phase: P6, must: "whose mint; the primer's money section names it"}]}
+      - {id: hoard_trade_goods, label: Trade goods, weight: 2, hooks: [{phase: P6, must: "from the SRD trade goods table; heavy, worth full value at a market"}]}
+      - {id: hoard_art, label: Art objects and jewellery, weight: 2, hooks: [{phase: P6, must: "each piece names a culture or a dead owner"}]}
+      - {id: hoard_gems, label: Gems, weight: 1, hooks: [{phase: P6, must: "light; the gem trade is a faction's"}]}
+      - {id: hoard_deed, label: A deed, a debt or a licence, weight: 1, hooks: [{phase: P4, must: "a faction asset changes hands when it is cashed"}]}
+      - {id: hoard_supplies, label: Supplies worth their weight, weight: 1, hooks: [{phase: P3, must: "the settlement's needs list; sells at full price there"}]}

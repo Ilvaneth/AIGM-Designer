@@ -1,0 +1,133 @@
+# sites.yaml — sites and dungeons (item 9): site types, role and room bands, content-ratio bands,
+# telegraph templates at three distances, escape-geometry patterns, intruder attitudes, the tier →
+# SRD hazard map, payoff types, what-if-never-visited shapes, the boss checklist and the reskin CR
+# estimator. A site is a `site_` entity with stamped danger tier, room count and act; its detail
+# format is the four-phase file with a room table whose Exits column carries [Entrance] and [Payoff]
+# markers (site_progress.py reads it). The world does not scale: tiers are the fiction's.
+schema_version: 1
+table: sites
+consumed_by: [P6, P7, validator, play]
+plan: "item 9, 13.2-13.5, 17 #22, 18.4, errata 24.2 #6 #9, 24.6 #5"
+roll: {labels: [P6.site_type.<id>, P6.telegraph.<id>.<distance>, P6.escape.<id>, P6.attitude.<id>, P6.payoff.<id>, P6.never_visited.<id>, P6.room_band.<id>], avoid_used: false, note: "type weights come from the tone and content-mix dials and the region's site_type_bias; the rest roll per site"}
+rules:
+  danger_tiers: {T1: [0, 2], T2: [3, 6], T3: [7, 11], T4: [12, 16], T5: [17, 30]}
+  tier_is_stamped: "set by the fiction, never by party level; intended-path sites match the arc's level band; off-path sites cover every tier; Act 1 territory holds the danger dial's over-tier sites"
+  room_count: "stamped; role band from scale.yaml room_bands; intended-path sites: site XP budget ÷ the tier's average room XP, clamped to the band; off-path sites roll inside the band; detail may not reduce it; the detailed table must be within ±10%"
+  xp: "the level band's total XP × 0.7 across intended-path sites; room XP uses raw CR sums without the group multiplier (the owner's xp.py rule)"
+  min_depth: "stamped: the shortest path from any entrance to the payoff room, ≥ 60% of the room count; loops lead back to exits, never to the payoff; a shortcut opens only when earned in play"
+  map: "≥ 2 entrances, verticality, a loop so retreat can use a different route; the Exits column is the graph"
+  content_bands: {combat: [40, 60], trap: [5, 15], special: [10, 15], structural: [15, 20]}
+  minor_tolerance: 20
+  detail_format: [Concept & ecology, Map, Room-by-room table, Content variety check, Running this well, Connections, Telegraphs, Escape, Attitude, Boss checklist, Sanctuary and rest pressure]
+  improvise_exception: "a minor, unlinked skeleton (band 5-10, lore or treasure payoff, tier ≤ the party's band, no clue / beat / thread / hook ref) may be run live and is marked played-improvised; its payoff is never a plot item or a major reward (24.6 #5)"
+  reference_party: "the boss checklist runs against a reference party of four at the tier's intended level (burst_check.py), never the actual party"
+  cr_estimator: "a reskin that moves HP, AC or damage by more than 25% from the base shifts CR one band; the site file records base and estimate"
+hooks_common:
+  - {phase: P6, must: "the directory row carries id, name, region, type, stamped tier, stamped room count, stamped act, thread, payoff, three telegraphs, escape, attitude, occupants, never-visited, reoccupation, status"}
+  - {phase: P7, must: "every intended-path site's thread is a beat or a chapter node; no site exists to fill a count"}
+  - {phase: validator, must: "the sites module checks thread, telegraphs, escape, attitude, payoff, tier, room count, and on a detailed site the ±10% table, the minimum depth, the content bands and no later-act reference"}
+
+tables:
+
+  site_type:
+    rows:
+      - {id: site_dungeon_planned, value: dungeon_planned, label: Planned dungeon (a built place), verticality: high, entrances: [2, 3], room_bias: {structural: 20, trap: 15}, hooks: [{phase: P6, must: "someone built it for a purpose the rooms still show"}]}
+      - {id: site_dungeon_lair, value: dungeon_lair, label: Lair, verticality: medium, entrances: [2, 2], room_bias: {combat: 60, special: 10}, hooks: [{phase: P6, must: "the occupant's ecology is the map: nest, larder, spoil"}]}
+      - {id: site_dungeon_tomb, value: dungeon_tomb, label: Tomb, verticality: medium, entrances: [2, 2], room_bias: {trap: 15, structural: 20}, hooks: [{phase: P2, must: "whose tomb is a history question; the dead's rights apply"}]}
+      - {id: site_dungeon_ruin, value: dungeon_ruin, label: Ruin, verticality: low, entrances: [3, 4], room_bias: {structural: 20, special: 15}, hooks: [{phase: P2, must: "the ruin predates or dates an event; a divergence may hide here"}]}
+      - {id: site_dungeon_natural, value: dungeon_natural, label: Natural (cave, chasm, reef), verticality: high, entrances: [2, 3], room_bias: {combat: 50, special: 15}, hooks: [{phase: P3, must: "the biome's environmental seeds are rooms"}]}
+      - {id: site_stronghold, value: stronghold, label: Stronghold or HQ (a heist), verticality: medium, entrances: [2, 3], room_bias: {combat: 45, structural: 20}, hooks: [{phase: P4, must: "a faction's HQ; its typical forces are the occupants; taking it is a control flip"}]}
+      - {id: site_wilderness, value: wilderness, label: Wilderness site, verticality: low, entrances: [3, 4], room_bias: {combat: 40, special: 15}, hooks: [{phase: P3, must: "rooms are places along a route; the travel table bleeds in"}]}
+      - {id: site_urban, value: urban, label: Urban site, verticality: medium, entrances: [2, 4], room_bias: {combat: 35, special: 15, structural: 20}, hooks: [{phase: P3, must: "inside a settlement district; law level decides who comes running"}]}
+      - {id: site_planar, value: planar, label: Planar site, verticality: high, entrances: [1, 2], room_bias: {special: 15, structural: 20}, hooks: [{phase: P2, must: "a touched plane's site; its time rate applies inside"}]}
+      - {id: site_social, value: social, label: Social site (court, festival, tribunal), verticality: low, entrances: [2, 3], room_bias: {combat: 10, special: 15, structural: 15}, hooks: [{phase: P6, must: "rooms are scenes; the payoff is a decision; the content bands use the social variant (combat 0-20)"}]}
+
+  role_band:
+    note: "scale.yaml room_bands mirrored with the XP shape; `avg_room_xp_share` is the fraction of the tier's per-room XP a room of this role averages"
+    rows:
+      - {id: role_minor, value: minor, label: Minor, rooms: [5, 10], avg_room_xp_share: 0.6, payoff_bias: [payoff_lore, payoff_treasure], hooks: [{phase: P6, must: "content bands with the ±20 tolerance"}]}
+      - {id: role_standard, value: standard, label: Standard, rooms: [11, 19], avg_room_xp_share: 1.0, payoff_bias: [payoff_plot_item, payoff_access, payoff_ally], hooks: [{phase: P6, must: "at least one sanctuary room"}]}
+      - {id: role_major, value: major, label: Major, rooms: [20, 25], avg_room_xp_share: 1.2, payoff_bias: [payoff_plot_item, payoff_access], hooks: [{phase: P6, must: "a boss with the full checklist and pre-boss attrition"}]}
+      - {id: role_capstone, value: capstone, label: Capstone, rooms: [30, 30], avg_room_xp_share: 1.4, payoff_bias: [payoff_plot_item], hooks: [{phase: P7, must: "the last act's site; the resolution beat's delivery path"}]}
+
+  telegraph:
+    note: "three distances per site: far (a rumour, a sign on the map), near (a sign on the approach), threshold (the door); the danger dial sets explicitness"
+    rows:
+      - {id: tele_rumour, distance: far, label: A rumour with a name, hooks: [{phase: P8, must: "the primer's dangerous-places line or a travel Social result"}]}
+      - {id: tele_absence, distance: far, label: An absence (no birds, no smoke, no road), hooks: [{phase: P3, must: "a Quiet/Texture result on the approach"}]}
+      - {id: tele_survivor, distance: far, label: A survivor who will not go back, hooks: [{phase: P5, must: "a minor NPC with one line and a mark"}]}
+      - {id: tele_tracks, distance: near, label: Tracks, all one way, hooks: [{phase: P3, must: "a Discovery result"}]}
+      - {id: tele_remains, distance: near, label: Remains of the last party, hooks: [{phase: P6, must: "their gear is the first loot and a warning"}]}
+      - {id: tele_wrongness, distance: near, label: A wrongness in the land, hooks: [{phase: P3, must: "the region's identity line made local"}]}
+      - {id: tele_warning, distance: threshold, label: A warning left by someone, hooks: [{phase: P6, must: "written, carved or arranged; readable without a check"}]}
+      - {id: tele_sound, distance: threshold, label: A sound from inside, hooks: [{phase: P6, must: "names the occupant's kind without a number"}]}
+      - {id: tele_watcher, distance: threshold, label: Something watching from the door, hooks: [{phase: P6, must: "the attitude row decides whether it speaks"}]}
+      - {id: tele_fresh, distance: threshold, label: Fresh use (a cut rope, a warm fire, a lit lamp), hooks: [{phase: P6, must: "the occupants are home"}]}
+
+  escape:
+    note: "escape geometry: how a party three levels early gets out; every site names one"
+    rows:
+      - {id: esc_second_entrance, label: The second entrance is the way out, hooks: [{phase: P6, must: "the map's loop leads to it"}]}
+      - {id: esc_tide_or_time, label: A timed way (the tide, the dark, the shift change), hooks: [{phase: P2, must: "the calendar or the day's hours decide"}]}
+      - {id: esc_drop, label: A drop or a slide with a cost, hooks: [{phase: P6, must: "damage or a lost item, never death"}]}
+      - {id: esc_water, label: Into the water, hooks: [{phase: P6, must: "swim DCs and where the current lands them"}]}
+      - {id: esc_bargain, label: A bargain the occupants will take, hooks: [{phase: P6, must: "attitude negotiate or capture; the price is named"}]}
+      - {id: esc_sanctuary, label: A sanctuary room that holds one night, hooks: [{phase: P6, must: "the rest-pressure line names it"}]}
+      - {id: esc_collapse, label: Bring something down behind you, hooks: [{phase: P6, must: "a structural room with a DC; the site changes permanently"}]}
+      - {id: esc_none_but_speed, label: No way but back, faster than what follows, hooks: [{phase: P6, must: "only for minor sites at or below the band; the pursuit has a speed"}]}
+
+  attitude:
+    rows:
+      - {id: att_kill, value: kill, label: Kill, hooks: [{phase: P6, must: "no parley; the telegraphs are all the warning there is"}]}
+      - {id: att_capture, value: capture, label: Capture, hooks: [{phase: P6, must: "a holding room exists; capture is an escape route in reverse"}]}
+      - {id: att_enslave, value: enslave, label: Enslave, hooks: [{phase: P6, must: "the occupants' economy needs hands; a captive can be bought back"}]}
+      - {id: att_ignore, value: ignore, label: Ignore, hooks: [{phase: P6, must: "until a threshold (a room, a theft, a noise) is crossed"}]}
+      - {id: att_negotiate, value: negotiate, label: Negotiate, hooks: [{phase: P6, must: "a spokesperson with a voice sample and a price"}]}
+      - {id: att_test, value: test, label: Test, hooks: [{phase: P6, must: "the site sets a trial; passing changes the attitude"}]}
+
+  payoff:
+    rows:
+      - {id: payoff_treasure, value: treasure, label: Treasure, hooks: [{phase: P6, must: "loot-budget.yaml's tier row"}]}
+      - {id: payoff_lore, value: lore, label: Lore, hooks: [{phase: P2, must: "a discoverable layer of an event, a god or a region"}]}
+      - {id: payoff_ally, value: ally, label: An ally, hooks: [{phase: P5, must: "an NPC in the roster, freed or persuaded"}]}
+      - {id: payoff_plot_item, value: plot_item, label: A plot item, hooks: [{phase: P7, must: "an item_ with a stamped act and a beat that needs it"}]}
+      - {id: payoff_access, value: access, label: Access, hooks: [{phase: P3, must: "a route, a plane, a district or a faction opens"}]}
+
+  never_visited:
+    note: "what the occupants do if the party never comes; wired to the simulation as a timed step or a news record"
+    rows:
+      - {id: nv_moves_on, label: The occupant moves on with what it holds, hooks: [{phase: P4, must: "a faction's timed step at day N; the payoff goes to its HQ"}]}
+      - {id: nv_grows, label: The occupant grows and spills into the region, hooks: [{phase: P3, must: "the region's travel Combat table gains a row at day N"}]}
+      - {id: nv_taken, label: Another faction takes it, hooks: [{phase: P4, must: "a contested step; the reoccupation candidate wins"}]}
+      - {id: nv_collapses, label: It collapses, floods or burns, hooks: [{phase: P6, must: "the site becomes a landmark; the payoff is lost or moved"}]}
+      - {id: nv_completes, label: The occupant completes what it was doing, hooks: [{phase: P7, must: "a front portent or a doom lever passes"}]}
+      - {id: nv_waits, label: It waits, and the waiting has a price, hooks: [{phase: P5, must: "a hostage ages, a witness dies, a debt grows"}]}
+
+  hazard_by_tier:
+    note: "the SRD's Running the Game hazards mapped to tiers by DC and damage; the index carries the full text"
+    rows:
+      - {id: haz_t1, label: Tier 1 hazards, tier: T1, traps: [Falling Net, Pits (simple), Poison Needle], diseases: [Sewer Plague], poisons: ["Serpent venom", "Assassin's blood"], madness: [short], hooks: [{phase: P6, must: "one trap at most per minor site; DCs 10-12"}]}
+      - {id: haz_t2, label: Tier 2 hazards, tier: T2, traps: [Collapsing Roof, "Pits (hidden, locking)", Poison Darts, Fire-Breathing Statue], diseases: [Sewer Plague, Sight Rot], poisons: ["Drow poison", "Pale tincture", "Truth serum"], madness: [short], hooks: [{phase: P6, must: "DCs 12-15; a trap that telegraphs"}]}
+      - {id: haz_t3, label: Tier 3 hazards, tier: T3, traps: [Fire-Breathing Statue, Rolling Sphere, Pits (spiked)], diseases: [Cackle Fever, Sight Rot], poisons: ["Malice", "Essence of ether", "Torpor", "Burnt othur fumes"], madness: [short, long], hooks: [{phase: P6, must: "DCs 15-17; a complex trap allowed"}]}
+      - {id: haz_t4, label: Tier 4 hazards, tier: T4, traps: [Rolling Sphere, Sphere of Annihilation, Collapsing Roof (structural)], diseases: [Cackle Fever], poisons: ["Wyvern poison", "Oil of taggit", "Midnight tears"], madness: [long, indefinite], hooks: [{phase: P6, must: "DCs 17-20; a trap that changes the map"}]}
+      - {id: haz_t5, label: Tier 5 hazards, tier: T5, traps: [Sphere of Annihilation, "a trap of the site's own design"], diseases: ["a disease of the site's own design"], poisons: ["Purple worm poison", "Wyvern poison"], madness: [indefinite], hooks: [{phase: P6, must: "DC 20+; every hazard is a room of its own"}]}
+
+  boss_checklist:
+    note: "the owner's v2 checklist, mandatory for every boss; run against the reference party"
+    rows:
+      - {id: boss_multi_round_hp, label: Multi-round HP sizing, rule: "HP ≥ 3 × the reference party's expected burst per round", hooks: [{phase: P6, must: "the site file shows the arithmetic"}]}
+      - {id: boss_resistance_default, label: Resistance by default, rule: "at least one damage resistance or immunity that the site telegraphs", hooks: [{phase: P6, must: "cross-checked against every roll in play (the owner's CS rule)"}]}
+      - {id: boss_terrain, label: Terrain protection, rule: "the boss room's geometry denies a straight line to the boss for at least one round", hooks: [{phase: P6, must: "the room table describes it"}]}
+      - {id: boss_attrition, label: Pre-boss attrition, rule: "≥ 2 rooms of cost between the last sanctuary and the boss", hooks: [{phase: P6, must: "the minimum depth accounts for them"}]}
+      - {id: boss_tanky_adds, label: Tanky adds, rule: "supporting creatures that soak, never that add damage nova; they drop nothing", hooks: [{phase: P6, must: "from monster-ecology's minion and elite roles at the tier"}]}
+      - {id: boss_legendary_resistance, label: Legendary resistance or a control counter, rule: "for T3+ bosses: legendary resistance or a mechanic that ends a control spell; it stops control nova, not damage nova", hooks: [{phase: P6, must: "stated with its uses per day"}]}
+      - {id: boss_items, label: The boss's items, rule: "a signature weapon and a defensive item, both real loot", hooks: [{phase: P6, must: "loot-budget.yaml boss_rarity for the tier"}]}
+      - {id: boss_burst_check, label: burst_check against the reference party, rule: "the boss cannot end in one round against four PCs at the tier's level", hooks: [{phase: P6, must: "the script's output is pasted into the site file"}]}
+
+  room_category:
+    note: "the room table's Category column; the content variety check counts them"
+    rows:
+      - {id: room_combat, value: combat, label: Combat, band: [40, 60], hooks: [{phase: P6, must: "occupants from monster-ecology at the tier; XP without the group multiplier"}]}
+      - {id: room_trap, value: trap, label: Trap or hazard, band: [5, 15], hooks: [{phase: P6, must: "from hazard_by_tier; DC and damage stated"}]}
+      - {id: room_special, value: special, label: Special (a puzzle, a rite, an NPC, a choice), band: [10, 15], hooks: [{phase: P6, must: "at least one special room is a choice with two exits"}]}
+      - {id: room_structural, value: structural, label: Structural (empty, connective, sanctuary, vertical), band: [15, 20], hooks: [{phase: P6, must: "sanctuary rooms are structural; the loop runs through them"}]}

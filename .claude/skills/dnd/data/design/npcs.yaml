@@ -1,0 +1,193 @@
+# npcs.yaml — people (item 8): the role quota the roster fills from, the stacking rules' defaults,
+# the three depth tiers, the four personality axes with weakness derivation, secret kinds paired
+# with surfacing paths, speech-tic seeds (rolled script-side, never used more than twice: risk
+# 24.1 #19), demographic templates per culture type (SRD 5.1 races plus the campaign's peoples;
+# no `alignment_fixed`: forbidden_inherently_evil_races), the role → SRD stat-block map, Known
+# Facts sources, relationship kinds and the attitude scale. Names come from the culture's naming
+# language (naming.json) and pass name_registry and the blacklist.
+schema_version: 1
+table: npcs
+consumed_by: [P3, P4, P5, P9, validator]
+plan: "item 8, 17 #19, errata 24.2 #3 #14, risk 24.1 #4 #19, 24.6 #4"
+roll: {labels: [P5.axis.<id>.<axis>, P5.secret.<id>, P5.weakness.<id>, P5.tic.<id>, P5.species.<id>, P5.gender.<id>], avoid_used: false, note: "per NPC; tics are drawn without replacement until the pool is spent twice; species and gender from the culture's demographic row"}
+rules:
+  roster: "scale.yaml named_npcs and npc_tiers; the roster fills from the role table's quota, never at random; sockets are drawn from the roster; P9 headroom +1 NPC per PC per act"
+  stacking: "at most two roles per person; ruler = state leader; lieutenant = faction leader; heir, betrayal candidate and anchor owner default to minor or stub; regional villains are supporting"
+  tiers:
+    major: [full dossier, goal tracker, Known Facts ledger]
+    supporting: [full dossier]
+    minor: [index row, one physical detail, what they want, a speech tic]
+  dossier: [appearance with species, role / CR / location, alignment, demeanor, motivation with history, secret + surfacing path + tier, weakness from personality, attitude to party, faction, current goal, schedule, four axes, ≥2 relationships, speech quirk, voice samples (2-3), offer / want, heir / heir_of, what changes if they die, Known Facts, stat anchor]
+  stat_anchor: "every NPC ties to an SRD NPC appendix block or a monster; a class NPC gets a level; every combat-capable NPC has a fixed CR"
+  demographics: "each culture (polity or people) has a demographic row; the validator flags >65% one species or >65% one gender across the roster"
+  distinctness: "no tic seed used more than twice; no two NPCs share an opening 4-gram in their voice samples; axis positions are rolled script-side"
+  names: "phonetic mode of the culture's language; no first-name collision in a campaign; the blacklist applies"
+  graph: "every NPC has ≥2 edges and sits within 2 hops of a faction or a settlement"
+hooks_common:
+  - {phase: P5, must: "every field of the tier's list is present; the critic asks what the NPC wants that has nothing to do with the party, and for the one contradiction that makes them a person"}
+  - {phase: validator, must: "the npcs module checks axes, relationships, secret with path, weakness, voice samples, stat anchor, Known Facts, drift and graph edges"}
+
+tables:
+
+  role:
+    note: "quota per scale in `count`; `tier_default` before stacking; `anchor_pool` names stat_anchor rows"
+    rows:
+      - {id: role_faction_leader, label: Faction leader, count: "one per faction", tier_default: supporting, anchor_pool: [anchor_by_archetype], hooks: [{phase: P4, must: "the leader's dossier carries the access chain's last link"}]}
+      - {id: role_heir, label: Heir, count: "one per faction leader", tier_default: minor, anchor_pool: [anchor_by_archetype], hooks: [{phase: P4, must: "factions.json heir; succession makes them the leader"}]}
+      - {id: role_betrayal_candidate, label: Betrayal candidate, count: "one per faction", tier_default: minor, anchor_pool: [anchor_by_archetype], hooks: [{phase: P4, must: "the fracture runs through them"}]}
+      - {id: role_ruler, label: Settlement ruler, count: "one per town or larger", tier_default: supporting, anchor_pool: [sa_noble, sa_knight, sa_priest], hooks: [{phase: P3, must: "the settlement's ruler field; a polity's ruler is its state leader"}]}
+      - {id: role_anchor_owner, label: Anchor-location owner, count: "one per anchor", tier_default: minor, anchor_pool: [sa_commoner, sa_priest, sa_noble, sa_mage], hooks: [{phase: P3, must: "the anchor table's owner column"}]}
+      - {id: role_bbeg, label: BBEG, count: 1, tier_default: major, anchor_pool: [anchor_by_tier], hooks: [{phase: P4, must: "antagonists.yaml; effort high, two critics"}]}
+      - {id: role_lieutenant, label: Lieutenant, count: "scale.yaml antagonists.lieutenants", tier_default: major, anchor_pool: [anchor_by_tier], hooks: [{phase: P4, must: "a faction leader; a lieutenant_role row"}]}
+      - {id: role_regional_villain, label: Regional villain, count: "scale.yaml antagonists.regional", tier_default: supporting, anchor_pool: [anchor_monster], hooks: [{phase: P6, must: "a site boss at a fixed CR; no goals.py record"}]}
+      - {id: role_ordinary, label: Ordinary people (innkeeper, smith, priest, ferryman), count: "≥ 3 in short, ≥ 6 standard, ≥ 10 epic", tier_default: minor, anchor_pool: [sa_commoner, sa_guard, sa_acolyte], hooks: [{phase: P5, must: "the party's daily contacts; at least one is supporting with a Known Fact that matters"}]}
+      - {id: role_witness, label: Witness of an event, count: "per history.yaml witness lists", tier_default: minor, anchor_pool: [sa_commoner, sa_noble], hooks: [{phase: P2, must: "living memory; a Known Fact from the as-happened layer where the divergence allows"}]}
+      - {id: role_specialist, label: Specialist (sage, guide, healer, reader), count: "1-3", tier_default: supporting, anchor_pool: [sa_mage, sa_priest, sa_scout, sa_druid], hooks: [{phase: P4, must: "a faction's service is delivered through them"}]}
+      - {id: role_free_radical, label: Free radical (unaffiliated wildcard), count: [2, 3], tier_default: supporting, anchor_pool: [any], hooks: [{phase: P5, must: "no faction; a want that crosses two factions' objectives"}]}
+      - {id: role_socket, label: Socket NPC, count: "scale.yaml sockets_per_pc × party", tier_default: inherit, anchor_pool: [inherit], hooks: [{phase: P9, must: "drawn from the roster above, never added; the socket points at them"}]}
+
+  axis:
+    note: "four axes; a position is rolled −2..+2 script-side; `weakness_from` says which pole yields which weakness pattern"
+    rows:
+      - {id: axis_trust, label: Trustworthy ↔ Deceptive, poles: [trustworthy, deceptive], prompt: "when do they lie, and to whom never", weakness_from: {trustworthy: weak_cannot_refuse, deceptive: weak_exposure}, hooks: [{phase: P5, must: "a deceptive NPC's voice samples never contain a plain lie; they omit"}]}
+      - {id: axis_ambition, label: Ambitious ↔ Content, poles: [ambitious, content], prompt: "what they would give up their post for", weakness_from: {ambitious: weak_pride, content: weak_fear_named}, hooks: [{phase: P5, must: "an ambitious NPC's current goal names a seat or a sum"}]}
+      - {id: axis_loyalty, label: Loyal ↔ Opportunistic, poles: [loyal, opportunistic], prompt: "who they would betray last", weakness_from: {loyal: weak_vow, opportunistic: weak_greed}, hooks: [{phase: P5, must: "a loyal NPC's relationships include an `allied` edge with a dated reason"}]}
+      - {id: axis_courage, label: Brave ↔ Cowardly, poles: [brave, cowardly], prompt: "what they did the last time it mattered", weakness_from: {brave: weak_grudge, cowardly: weak_need_to_be_seen}, hooks: [{phase: P5, must: "a cowardly NPC's secret is often cowardice or complicity"}]}
+
+  weakness:
+    note: "weakness derived from personality, never bolted on"
+    rows:
+      - {id: weak_pride, label: Pride, hooks: [{phase: P5, must: "how the party can use it is written"}]}
+      - {id: weak_cannot_refuse, label: A person they cannot refuse, hooks: [{phase: P5, must: "that person is in the roster"}]}
+      - {id: weak_vice, label: A vice with a schedule, hooks: [{phase: P5, must: "the schedule field shows it"}]}
+      - {id: weak_fear_named, label: A fear with a name, hooks: [{phase: P5, must: "the fear is an entity: a site, a person, a god"}]}
+      - {id: weak_debt, label: A debt, hooks: [{phase: P4, must: "the creditor is a faction or an NPC"}]}
+      - {id: weak_vow, label: A vow, hooks: [{phase: P2, must: "the vow's god or institution"}]}
+      - {id: weak_greed, label: Greed for one thing, hooks: [{phase: P6, must: "the thing is an item_ or an asset"}]}
+      - {id: weak_need_to_be_seen, label: A need to be seen, hooks: [{phase: P5, must: "the voice samples show it"}]}
+      - {id: weak_grudge, label: A grudge, hooks: [{phase: P5, must: "a `hates` edge with a dated reason"}]}
+      - {id: weak_exposure, label: A secret whose exposure ends them, hooks: [{phase: P5, must: "the surfacing path names who could expose it"}]}
+
+  secret:
+    note: "secret kinds paired with a surfacing path (how it comes out) and a default tier; dials.yaml npc_secret_bias names these by suffix"
+    rows:
+      - {id: npcsecret_complicity, label: Complicity in the premise's harm, path: "a document with their name; a victim who recognises them", tier: secret, hooks: [{phase: P1, must: "ties to the big secret or the villain's front"}]}
+      - {id: npcsecret_debt, label: A debt to the wrong people, path: "the collector comes while the party is there", tier: discoverable, hooks: [{phase: P4, must: "the creditor faction's asset list"}]}
+      - {id: npcsecret_cowardice, label: Cowardice at the moment it mattered, path: "another witness tells it differently", tier: discoverable, hooks: [{phase: P2, must: "the event is in the history with a witness list"}]}
+      - {id: npcsecret_bargain, label: A bargain with a power, path: "the price comes due on a date", tier: secret, hooks: [{phase: P2, must: "the power is a rank_power god or a plane's keeper"}]}
+      - {id: npcsecret_heresy, label: A heresy held quietly, path: "a rite performed wrongly, seen", tier: discoverable, hooks: [{phase: P2, must: "the heresy is a god's discoverable secret"}]}
+      - {id: npcsecret_a_buried_child, label: A buried child, path: "a grave with the wrong date; a name in a ledger", tier: secret, hooks: [{phase: P5, must: "the child may be alive: a secret NPC"}]}
+      - {id: npcsecret_a_lost_title, label: A lost title, path: "a document; an old servant who still bows", tier: discoverable, hooks: [{phase: P4, must: "the title is a seat in a faction's access chain"}]}
+      - {id: npcsecret_a_hidden_heir, label: A hidden heir (theirs or themselves), path: "a resemblance; a birth record", tier: secret, hooks: [{phase: P4, must: "succession; the heir field of a faction"}]}
+      - {id: npcsecret_a_broken_oath, label: A broken oath, path: "the oath's witness or its god", tier: discoverable, hooks: [{phase: P2, must: "the oath festival or the god's rite"}]}
+      - {id: npcsecret_contagion, label: They carry the contagion, path: "the mark grows; a healer notices", tier: secret, hooks: [{phase: P1, must: "the phenomenon or the sickness event"}]}
+      - {id: npcsecret_a_replaced_relative, label: A relative who came back wrong, path: "the relative slips; an old habit gone", tier: secret, hooks: [{phase: P2, must: "a touched plane or the phenomenon"}]}
+      - {id: npcsecret_what_they_saw, label: What they saw and never said, path: "a question asked the right way; drink; the anniversary", tier: discoverable, hooks: [{phase: P2, must: "a Known Fact from an event's as-happened layer"}]}
+      - {id: npcsecret_a_bought_vote, label: A bought vote, path: "the ledger; the buyer's next demand", tier: discoverable, hooks: [{phase: P4, must: "the buyer is a faction; the vote is an asset"}]}
+      - {id: npcsecret_a_second_master, label: A second master, path: "a letter; a meeting seen", tier: secret, hooks: [{phase: P4, must: "the second master is a faction with a −2 stance to the first"}]}
+      - {id: npcsecret_a_forged_lineage, label: A forged lineage, path: "a genealogy; a relative who knows", tier: secret, hooks: [{phase: P2, must: "the lineage claims an event's hero"}]}
+      - {id: npcsecret_a_false_name, label: A false name, path: "someone from before arrives", tier: discoverable, hooks: [{phase: P1, must: "naming.json's rite or the name-trade break"}]}
+      - {id: npcsecret_a_buried_fortune, label: A buried fortune, path: "a map fragment; a debt paid too easily", tier: discoverable, hooks: [{phase: P6, must: "the fortune is a minor site's payoff"}]}
+      - {id: npcsecret_a_debt_of_honour, label: A debt of honour, path: "the creditor calls it in publicly", tier: discoverable, hooks: [{phase: P5, must: "an `owes` edge"}]}
+      - {id: npcsecret_what_they_heard, label: What they heard (a voice, a god, a plane), path: "they repeat it in their sleep or their cups", tier: secret, hooks: [{phase: P2, must: "the pantheon's presence row"}]}
+      - {id: npcsecret_a_borrowed_body, label: A borrowed body, path: "a wound that heals wrong; a memory missing", tier: secret, hooks: [{phase: P2, must: "a touched plane or secret_king_is_a_copy"}]}
+      - {id: npcsecret_a_calculation, label: A calculation they will not share, path: "the numbers in their room", tier: secret, hooks: [{phase: P1, must: "secret_world_is_ending_suppressed or a doom's count"}]}
+
+  speech_tic:
+    note: "seeds for the speech quirk; drawn script-side; no seed used more than twice in a roster"
+    rows:
+      - {id: tic_never_asks, label: Never asks a question; every sentence is a statement, hooks: [{phase: P5, must: "the voice samples contain no question mark"}]}
+      - {id: tic_repeats_last_word, label: Repeats the last word of your sentence before answering, hooks: [{phase: P5, must: "shown once in the samples"}]}
+      - {id: tic_counts, label: Counts things aloud, hooks: [{phase: P5, must: "numbers in every sample"}]}
+      - {id: tic_swears_by_landmark, label: Swears by a landmark, hooks: [{phase: P3, must: "the landmark is in the region"}]}
+      - {id: tic_third_person, label: Speaks of themselves by name, hooks: [{phase: P5, must: "the name appears in the samples"}]}
+      - {id: tic_you_understand, label: Ends with 'you understand', hooks: [{phase: P5, must: "once per sample at most"}]}
+      - {id: tic_no_names, label: Never uses anyone's name, hooks: [{phase: P5, must: "titles and descriptions instead"}]}
+      - {id: tic_quotes_prices, label: Quotes a price for everything, hooks: [{phase: P3, must: "prices from the price table"}]}
+      - {id: tic_proverbs, label: Answers with a proverb, hooks: [{phase: P8, must: "the proverb is in the primer's folklore"}]}
+      - {id: tic_whispers, label: Whispers the important word, hooks: [{phase: P5, must: "marked in the samples"}]}
+      - {id: tic_one_word, label: One-word answers until paid or fed, hooks: [{phase: P5, must: "the second sample is after"}]}
+      - {id: tic_formal, label: Formal address to everyone, including animals, hooks: [{phase: P5, must: "titles invented for the party"}]}
+      - {id: tic_mispronounces, label: Mispronounces the party's names, consistently, hooks: [{phase: P5, must: "the same wrong form every time"}]}
+      - {id: tic_talks_to_animal, label: Talks to an animal, not to you, hooks: [{phase: P5, must: "the animal is in the appearance line"}]}
+      - {id: tic_lists, label: Speaks in lists of three, hooks: [{phase: P5, must: "every sample is a list"}]}
+      - {id: tic_corrects, label: Corrects your words, hooks: [{phase: P5, must: "one correction per sample"}]}
+      - {id: tic_apologises, label: Apologises for everything, hooks: [{phase: P5, must: "including things they did not do"}]}
+      - {id: tic_jargon, label: Trade jargon nobody else uses, hooks: [{phase: P3, must: "the trade is the settlement's economy"}]}
+      - {id: tic_sings, label: Sings the answer if it is bad news, hooks: [{phase: P5, must: "a bad-news sample"}]}
+      - {id: tic_asks_after_family, label: Asks after your mother before answering, hooks: [{phase: P5, must: "shown once"}]}
+      - {id: tic_weather_first, label: Talks about the weather first, always, hooks: [{phase: P2, must: "the month's felt tone"}]}
+      - {id: tic_gods_name, label: Names the god at the start of every sentence, hooks: [{phase: P2, must: "a god of the pantheon"}]}
+      - {id: tic_silence_then, label: A silence, then the answer, hooks: [{phase: P5, must: "the samples mark the pause"}]}
+      - {id: tic_speaks_of_dead, label: Speaks of a dead person as present, hooks: [{phase: P5, must: "the dead person is a Known Fact"}]}
+
+  demographic:
+    note: "species mixes per culture type; every row `alignment_fixed: false` (forbidden_inherently_evil_races); `peoples` slots are filled from monster-ecology rows with people: true or the signature people"
+    rows:
+      - {id: demo_coastal_trade, label: Coastal trade town, species: {human: 45, halfling: 15, half-elf: 10, dwarf: 8, elf: 7, gnome: 5, tiefling: 4, dragonborn: 3, half-orc: 3}, peoples_slots: 1, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P5, must: "the foreign quarter's people take the peoples slot"}]}
+      - {id: demo_upland, label: Upland and mining, species: {dwarf: 35, human: 35, half-orc: 10, gnome: 8, halfling: 5, elf: 3, tiefling: 2, half-elf: 2}, peoples_slots: 1, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P3, must: "the mine's people"}]}
+      - {id: demo_river_farm, label: River farmland, species: {human: 60, halfling: 20, half-elf: 8, gnome: 5, dwarf: 4, elf: 3}, peoples_slots: 0, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P5, must: "the drift check is tight here: 60 is inside the 65 cap only with the other rows"}]}
+      - {id: demo_capital, label: Capital city, species: {human: 40, half-elf: 12, elf: 10, dwarf: 10, halfling: 8, tiefling: 7, gnome: 5, dragonborn: 4, half-orc: 4}, peoples_slots: 2, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P3, must: "two foreign quarters"}]}
+      - {id: demo_frontier, label: Frontier and border march, species: {human: 40, half-orc: 15, dwarf: 10, halfling: 10, elf: 8, half-elf: 7, tiefling: 5, dragonborn: 5}, peoples_slots: 2, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P4, must: "the treaty people, if any, hold a slot"}]}
+      - {id: demo_underground, label: Underground settlement, species: {dwarf: 40, gnome: 20, human: 15, half-orc: 8, halfling: 5, tiefling: 5, elf: 4, half-elf: 3}, peoples_slots: 2, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P3, must: "the deep peoples from monster-ecology"}]}
+      - {id: demo_nomad, label: Nomad or herding people, species: {human: 55, half-orc: 15, halfling: 10, elf: 8, half-elf: 7, dragonborn: 5}, peoples_slots: 1, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P3, must: "a moving settlement node"}]}
+      - {id: demo_island, label: Island or delta people, species: {human: 50, halfling: 15, half-elf: 12, elf: 8, gnome: 6, dwarf: 4, tiefling: 3, dragonborn: 2}, peoples_slots: 1, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P3, must: "the water people take the slot"}]}
+      - {id: demo_marsh, label: Marsh and fen folk, species: {human: 50, halfling: 20, gnome: 10, half-elf: 8, tiefling: 5, elf: 4, dwarf: 3}, peoples_slots: 1, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P3, must: "the signature people, if marsh-born, take the slot"}]}
+      - {id: demo_signature_people, label: The signature people (their own settlement), species: {signature: 80, human: 10, other: 10}, peoples_slots: 0, gender_rule: "even ± 10", alignment_fixed: false, hooks: [{phase: P1, must: "the signature people row; their naming language is their own"}]}
+
+  stat_anchor:
+    note: "role → SRD block; `combat` false means the block is a social anchor and the NPC has no fixed CR beyond it"
+    rows:
+      - {id: sa_commoner, label: Commoner, srd: commoner, cr: 0, combat: false, roles: [innkeeper, farmer, ferryman, servant, child, elder], hooks: [{phase: P5, must: "the default for ordinary people"}]}
+      - {id: sa_noble, label: Noble, srd: noble, cr: 0.125, combat: true, roles: [ruler, heir, courtier, banker], hooks: [{phase: P5, must: "a ruler with a guard is a noble plus guards"}]}
+      - {id: sa_guard, label: Guard, srd: guard, cr: 0.125, combat: true, roles: [watchman, gatekeeper, caravan guard], hooks: [{phase: P5, must: "the law level's keepers"}]}
+      - {id: sa_veteran, label: Veteran, srd: veteran, cr: 3, combat: true, roles: [captain, sergeant, bodyguard, retired soldier], hooks: [{phase: P5, must: "a watch captain"}]}
+      - {id: sa_knight, label: Knight, srd: knight, cr: 3, combat: true, roles: [champion, marshal, lord's sword], hooks: [{phase: P4, must: "a martial faction's face"}]}
+      - {id: sa_acolyte, label: Acolyte, srd: acolyte, cr: 0.25, combat: true, roles: [junior priest, shrine keeper, novice], hooks: [{phase: P2, must: "a lesser god's servant"}]}
+      - {id: sa_priest, label: Priest, srd: priest, cr: 2, combat: true, roles: [priest, reader, hospice head, judge of the tribunal], hooks: [{phase: P2, must: "a church archetype's head"}]}
+      - {id: sa_cult_fanatic, label: Cult fanatic, srd: cult-fanatic, cr: 2, combat: true, roles: [cult leader, prophet, cell head], hooks: [{phase: P4, must: "a cult's leader"}]}
+      - {id: sa_cultist, label: Cultist, srd: cultist, cr: 0.125, combat: true, roles: [initiate, cell member], hooks: [{phase: P4, must: "a cult's typical forces"}]}
+      - {id: sa_mage, label: Mage, srd: mage, cr: 6, combat: true, roles: [guild master, regulator's head, sage with teeth, court wizard], hooks: [{phase: P2, must: "the regulator's head; spells from the index by class and level"}]}
+      - {id: sa_archmage, label: Archmage, srd: archmage, cr: 12, combat: true, roles: [the scholarly faction's head at T4+, a lieutenant], hooks: [{phase: P4, must: "only at T4 or above"}]}
+      - {id: sa_bandit, label: Bandit, srd: bandit, cr: 0.125, combat: true, roles: [smuggler, deserter, road thief, member of the resistance], hooks: [{phase: P4, must: "criminal and resistance typical forces"}]}
+      - {id: sa_bandit_captain, label: Bandit captain, srd: bandit-captain, cr: 2, combat: true, roles: [smuggler chief, resistance leader, den boss], hooks: [{phase: P4, must: "a criminal faction's leader at T1-2"}]}
+      - {id: sa_thug, label: Thug, srd: thug, cr: 0.5, combat: true, roles: [enforcer, dock muscle, guild's hand], hooks: [{phase: P4, must: "a guild's or criminal faction's enforcers"}]}
+      - {id: sa_spy, label: Spy, srd: spy, cr: 1, combat: true, roles: [informer, courier, agent, the second master's eyes], hooks: [{phase: P4, must: "intel 3 factions have one"}]}
+      - {id: sa_assassin, label: Assassin, srd: assassin, cr: 8, combat: true, roles: [the hand, the hunter], hooks: [{phase: P4, must: "a lieutenant at T3"}]}
+      - {id: sa_scout, label: Scout, srd: scout, cr: 0.5, combat: true, roles: [guide, hunter, ranger of the wardens], hooks: [{phase: P3, must: "the guide who gives a route note"}]}
+      - {id: sa_druid, label: Druid, srd: druid, cr: 2, combat: true, roles: [hermit, keeper of a landmark, the Nature god's servant], hooks: [{phase: P2, must: "a Nature god's church has one"}]}
+      - {id: sa_berserker, label: Berserker, srd: berserker, cr: 2, combat: true, roles: [champion of a martial rite, a herding people's fighter], hooks: [{phase: P4, must: "martial or nomad typical forces"}]}
+      - {id: sa_gladiator, label: Gladiator, srd: gladiator, cr: 5, combat: true, roles: [champion, arena master, a war-by-champions duellist], hooks: [{phase: P4, must: "break_war_is_ritual's champions"}]}
+      - {id: sa_tribal_warrior, label: Tribal warrior, srd: tribal-warrior, cr: 0.125, combat: true, roles: [a people's fighter, a treaty people's guard], hooks: [{phase: P5, must: "a people row's typical forces"}]}
+      - {id: anchor_by_archetype, label: By faction archetype, srd: null, cr: null, combat: true, roles: [faction leader, heir, betrayal candidate], hooks: [{phase: P4, must: "factions.yaml archetype typical_forces, the strongest block for the leader"}]}
+      - {id: anchor_by_tier, label: By tier (monster or NPC block at the tier's CR), srd: null, cr: null, combat: true, roles: [BBEG, lieutenant], hooks: [{phase: P6, must: "the index filtered by CR band; a reskin with the estimator"}]}
+      - {id: anchor_monster, label: A monster block, srd: null, cr: null, combat: true, roles: [regional villain, site boss], hooks: [{phase: P6, must: "monster-ecology's solo or leader rows at the site's tier"}]}
+
+  known_facts_source:
+    rows:
+      - {id: kf_witnessed, label: Witnessed an event, hooks: [{phase: P2, must: "history.yaml witness lists"}]}
+      - {id: kf_role, label: The role implies it, hooks: [{phase: P5, must: "an innkeeper knows who sleeps where"}]}
+      - {id: kf_faction, label: The faction knows it, hooks: [{phase: P4, must: "factions.json knows list at the NPC's access level"}]}
+      - {id: kf_channel, label: A private channel carries it, hooks: [{phase: P5, must: "channels.py membership from birth"}]}
+      - {id: kf_told, label: Told by a named NPC, hooks: [{phase: P5, must: "a `knows` edge"}]}
+      - {id: kf_rumour, label: Common rumour, hooks: [{phase: P8, must: "common-knowledge.json or a day-0 news record"}]}
+
+  relationship_kind:
+    rows:
+      - {id: rel_knows, value: knows, label: Knows, hooks: [{phase: P5, must: "what, and since when"}]}
+      - {id: rel_owes, value: owes, label: Owes, hooks: [{phase: P5, must: "what; the creditor is named"}]}
+      - {id: rel_hates, value: hates, label: Hates, hooks: [{phase: P5, must: "a dated reason both dossiers carry"}]}
+      - {id: rel_fears, value: fears, label: Fears, hooks: [{phase: P5, must: "what they think would happen"}]}
+      - {id: rel_allied, value: allied, label: Allied, hooks: [{phase: P5, must: "the terms"}]}
+      - {id: rel_controls, value: controls, label: Controls, hooks: [{phase: P4, must: "dm-only; the visible-front pattern"}]}
+      - {id: rel_commands, value: commands, label: Commands, hooks: [{phase: P4, must: "the promise or the pay"}]}
+      - {id: rel_heir_of, value: heir_of, label: Heir of, hooks: [{phase: P4, must: "factions.json heir"}]}
+      - {id: rel_loves, value: loves, label: Loves, hooks: [{phase: P5, must: "whether it is known"}]}
+
+  attitude:
+    rows:
+      - {id: attitude_hostile, value: hostile, label: Hostile, hooks: [{phase: P5, must: "will act against the party; the provocation ladder starts at rung 2"}]}
+      - {id: attitude_unfriendly, value: unfriendly, label: Unfriendly, hooks: [{phase: P5, must: "will not help without a price"}]}
+      - {id: attitude_neutral, value: neutral, label: Neutral, hooks: [{phase: P5, must: "the default"}]}
+      - {id: attitude_friendly, value: friendly, label: Friendly, hooks: [{phase: P5, must: "offers something small unasked"}]}
+      - {id: attitude_allied, value: allied, label: Allied, hooks: [{phase: P4, must: "counts as a party asset for the simulation's brake"}]}

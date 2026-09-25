@@ -535,6 +535,171 @@ class Floors(unittest.TestCase):
         for key in ("opposed_check", "load_bearing", "brakes", "volatility", "determinism", "big_outcomes"):
             self.assertIn(key, rules)
 
+    # --- batch E: people and sites, the SRD index -----------------------------------
+
+    def _index(self):
+        import json
+        path = TABLES / "srd-index-2014.json"
+        self.assertTrue(path.is_file(), "run build_design_index.py")
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def test_srd_index_is_current_and_complete(self):
+        import subprocess
+        proc = subprocess.run([sys.executable, "-X", "utf8", str(SCRIPTS / "build_design_index.py"), "--check"],
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        idx = self._index()
+        self.assertEqual(idx["_meta"]["ruleset"], "2014")
+        self.assertIn("Open Game License", idx["_meta"]["ogl_notice"])
+        self.assertNotIn("gods", idx, "errata 24.2 #19: the gods appendix is not indexed")
+        self.assertEqual(len(idx["monsters"]), 334)
+        self.assertEqual(len(idx["items"]), 362)
+        self.assertEqual(len(idx["spells"]), 319)
+        by_rarity = {k: len(v) for k, v in idx["items_by_rarity"].items()}
+        self.assertEqual(by_rarity, {"Rare": 119, "Uncommon": 94, "Very Rare": 90, "Legendary": 43, "Varies": 11, "Common": 4, "Artifact": 1})
+        self.assertEqual(sum(1 for i in idx["items"].values() if i["attunement"]), 176)
+        self.assertEqual(sum(1 for m in idx["monsters"].values() if m["source"] == "npcs"), 20)
+        self.assertGreaterEqual(sum(1 for m in idx["monsters"].values() if m["yaml_matched"]), 330)
+        self.assertGreaterEqual(sum(1 for m in idx["monsters"].values() if m["has_legendary"]), 25)
+        self.assertEqual(idx["monsters"]["adult-red-dragon"]["damage_immunities"], ["fire"])
+        self.assertTrue(idx["monsters"]["adult-red-dragon"]["legendary_resistance"])
+        self.assertTrue(idx["monsters"]["mage"]["spellcaster"])
+        haz = idx["hazards"]
+        self.assertEqual([t["name"] for t in haz["traps"]], ["Collapsing Roof", "Falling Net", "Fire-Breathing Statue", "Pits",
+                                                              "Poison Darts", "Poison Needle", "Rolling Sphere", "Sphere of Annihilation"])
+        self.assertEqual([d["name"] for d in haz["diseases"]], ["Cackle Fever", "Sewer Plague", "Sight Rot"])
+        self.assertEqual(len(haz["poisons"]), 14)
+        self.assertEqual(set(haz["madness"]), {"short", "long", "indefinite"})
+        self.assertEqual(idx["backgrounds"], ["Acolyte"])
+        self.assertEqual(len(idx["languages"]["standard"]), 8)
+        self.assertEqual(len(idx["languages"]["exotic"]), 8)
+        self.assertEqual(len(idx["trade_goods"]), 13)
+        self.assertIn("Cleric", idx["spells_by_class_level"])
+        for m in idx["monsters"].values():
+            self.assertIsNotNone(m["ecology"], m["name"])
+
+    def test_monster_ecology_covers_every_srd_monster(self):
+        import build_design_index as b
+        idx = self._index()
+        rows = dt.rows("monster-ecology.yaml")
+        self.assertEqual(len(rows), 334)
+        self.assertEqual({r["srd"] for r in rows}, set(idx["monsters"]))
+        doc = dt.load("monster-ecology.yaml")
+        self.assertEqual(doc["habitat_vocabulary"], b.HABITATS)
+        archetypes = {a["value"] for a in dt.rows("factions.yaml#archetype")}
+        region_tags = set()
+        for biome in dt.rows("regions.yaml#biome"):
+            region_tags |= set(biome["ecology_tags"])
+        self.assertTrue(region_tags <= set(b.HABITATS), region_tags - set(b.HABITATS))
+        curated = 0
+        for r in rows:
+            with self.subTest(row=r["id"]):
+                self.assertTrue(r["habitats"], "every monster lives somewhere")
+                self.assertTrue(set(r["habitats"]) <= set(b.HABITATS), r["habitats"])
+                self.assertIn(r["social_role"], b.SOCIAL_ROLES)
+                self.assertTrue(set(r["faction_affinity"]) <= archetypes, r["faction_affinity"])
+                self.assertNotIn("alignment_fixed", r)
+                if r["people"]:
+                    self.assertIn(idx["monsters"][r["srd"]]["type"], ("humanoid", "giant", "monstrosity", "fey"),
+                                  "a people is a culture: humanoids, giants, the horned folk, the fey")
+                curated += bool(r["curated"])
+                if idx["monsters"][r["srd"]]["source"] == "npcs":
+                    self.assertTrue(r["curated"], "the NPC appendix is fully curated: it is the factions' forces")
+        self.assertGreaterEqual(curated, 50, "item 24.3: v0 with 50-80 curated rows")
+
+    def test_loot_budget_tiers_match_and_filler_ban_names_real_items(self):
+        idx = self._index()
+        tiers = dt.rows("loot-budget.yaml#tier")
+        site_tiers = dt.load("sites.yaml")["rules"]["danger_tiers"]
+        self.assertEqual([t["tier"] for t in tiers], ["T1", "T2", "T3", "T4", "T5"])
+        rarities = {"common", "uncommon", "rare", "very_rare", "legendary"}
+        last_major = 0
+        for t in tiers:
+            with self.subTest(tier=t["tier"]):
+                self.assertEqual(t["cr"], site_tiers[t["tier"]])
+                self.assertEqual(set(t["items"]), rarities)
+                self.assertEqual(list(t["gp"]), ["minor", "standard", "major", "capstone"])
+                self.assertGreater(t["gp"]["major"][0], last_major)
+                last_major = t["gp"]["major"][0]
+                self.assertTrue(0 < t["consumable_share"] <= 1)
+                self.assertTrue(set(t["boss_rarity"].values()) <= rarities)
+        shares = [t["consumable_share"] for t in tiers]
+        self.assertEqual(shares, sorted(shares, reverse=True))
+        for row in dt.rows("loot-budget.yaml#filler_ban"):
+            for sid in row["srd"]:
+                self.assertIn(sid, idx["items"], sid)
+        self.assertIn("gauntlets-of-ogre-power", dt.rows("loot-budget.yaml#filler_ban")[0]["srd"])
+
+    def test_sites_bands_attitudes_and_hazard_map(self):
+        idx = self._index()
+        doc = dt.load("sites.yaml")
+        self.assertEqual(doc["rules"]["danger_tiers"], dt.load("regions.yaml")["rules"]["danger_tiers"])
+        bands = {r["value"]: r["rooms"] for r in dt.rows("sites.yaml#role_band")}
+        self.assertEqual(bands, dt.scale_shared()["room_bands"])
+        self.assertEqual({a["value"] for a in dt.rows("sites.yaml#attitude")}, {"kill", "capture", "enslave", "ignore", "negotiate", "test"})
+        self.assertEqual({p["value"] for p in dt.rows("sites.yaml#payoff")}, {"treasure", "lore", "ally", "plot_item", "access"})
+        self.assertEqual(len(dt.rows("sites.yaml#site_type")), 10)
+        distances = {}
+        for t in dt.rows("sites.yaml#telegraph"):
+            distances[t["distance"]] = distances.get(t["distance"], 0) + 1
+        self.assertEqual(set(distances), {"far", "near", "threshold"})
+        self.assertTrue(all(n >= 3 for n in distances.values()), distances)
+        cats = {r["value"]: r["band"] for r in dt.rows("sites.yaml#room_category")}
+        self.assertEqual(cats, {"combat": [40, 60], "trap": [5, 15], "special": [10, 15], "structural": [15, 20]})
+        trap_names = {t["name"] for t in idx["hazards"]["traps"]}
+        disease_names = {d["name"] for d in idx["hazards"]["diseases"]}
+        poison_names = {p["name"].replace("’", "'") for p in idx["hazards"]["poisons"]}
+        for h in dt.rows("sites.yaml#hazard_by_tier"):
+            with self.subTest(tier=h["tier"]):
+                for t in h["traps"]:
+                    base = t.split(" (")[0]
+                    self.assertTrue(base in trap_names or base.startswith("a trap"), t)
+                for d in h["diseases"]:
+                    self.assertTrue(d in disease_names or d.startswith("a disease"), d)
+                for p in h["poisons"]:
+                    self.assertIn(p, poison_names, p)
+        self.assertGreaterEqual(len(dt.rows("sites.yaml#boss_checklist")), 7)
+        self.assertGreaterEqual(len(dt.rows("sites.yaml#escape")), 6)
+        self.assertGreaterEqual(len(dt.rows("sites.yaml#never_visited")), 5)
+
+    def test_npcs_roles_axes_secrets_demographics_and_anchors(self):
+        idx = self._index()
+        roles = {r["id"] for r in dt.rows("npcs.yaml#role")}
+        for needed in ("role_faction_leader", "role_heir", "role_betrayal_candidate", "role_ruler", "role_anchor_owner", "role_bbeg",
+                       "role_lieutenant", "role_regional_villain", "role_ordinary", "role_socket", "role_free_radical"):
+            self.assertIn(needed, roles)
+        weaknesses = {w["id"] for w in dt.rows("npcs.yaml#weakness")}
+        axes = dt.rows("npcs.yaml#axis")
+        self.assertEqual(len(axes), 4)
+        for a in axes:
+            self.assertEqual(set(a["weakness_from"]), set(a["poles"]), a["id"])
+            self.assertTrue(set(a["weakness_from"].values()) <= weaknesses, a["id"])
+        secrets = {s["id"] for s in dt.rows("npcs.yaml#secret")}
+        for tone in dt.rows("dials.yaml#tone"):
+            for bias in tone["effects"]["npc_secret_bias"]:
+                self.assertIn(f"npcsecret_{bias}", secrets, (tone["id"], bias))
+        for s in dt.rows("npcs.yaml#secret"):
+            self.assertIn(s["tier"], ("discoverable", "secret"), s["id"])
+            self.assertTrue(s["path"], s["id"])
+        tics = dt.rows("npcs.yaml#speech_tic")
+        self.assertGreaterEqual(len(tics), 20)
+        self.assertEqual(len({t["label"] for t in tics}), len(tics))
+        srd_races = {"human", "dwarf", "elf", "halfling", "dragonborn", "gnome", "half-elf", "half-orc", "tiefling"}
+        for d in dt.rows("npcs.yaml#demographic"):
+            with self.subTest(demo=d["id"]):
+                self.assertIs(d["alignment_fixed"], False, "forbidden_inherently_evil_races")
+                self.assertEqual(sum(d["species"].values()), 100)
+                if d["id"] != "demo_signature_people":
+                    self.assertTrue(set(d["species"]) <= srd_races, set(d["species"]) - srd_races)
+                    self.assertLessEqual(max(d["species"].values()), 65, "item 8.4 drift cap inside one template")
+        for sa in dt.rows("npcs.yaml#stat_anchor"):
+            if sa["srd"]:
+                self.assertIn(sa["srd"], idx["monsters"], sa["id"])
+                self.assertEqual(idx["monsters"][sa["srd"]]["cr"], sa["cr"], sa["id"])
+        self.assertEqual([a["value"] for a in dt.rows("npcs.yaml#attitude")], ["hostile", "unfriendly", "neutral", "friendly", "allied"])
+        kinds = {r["value"] for r in dt.rows("npcs.yaml#relationship_kind")}
+        self.assertTrue({"knows", "owes", "hates", "fears", "allied", "controls", "commands", "heir_of"} <= kinds)
+
     def test_forbidden_defaults_from_item_4_5_are_all_present(self):
         ids = {r["id"] for r in dt.rows("forbidden.yaml")}
         for needed in ("forbidden_awakening_ancient_evil", "forbidden_chosen_one", "forbidden_prophecy",

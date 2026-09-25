@@ -1,0 +1,4694 @@
+# monster-ecology.yaml — every SRD monster's habitats, social role, faction affinity and reskin note
+# (item 9.8, 17 #20, 18.1). GENERATED rows (`curated: false`) come from build_design_index.py's
+# heuristics over the SRD's type, name and speeds; CURATED rows (`curated: true`) are hand-written and
+# survive a rebuild. Habitats use regions.yaml's ecology tags plus the planar ones; a site's Combat
+# rows and a region's Combat subtable are filtered from here by habitat and tier before the LLM
+# chooses and reskins (item 18.2). A `people: true` row is a culture, never an inherently evil race
+# (forbidden_inherently_evil_races): its members have alignments, settlements and a naming language.
+schema_version: 1
+table: monster-ecology
+consumed_by: [P3, P5, P6, validator]
+plan: "item 9.8, 17 #20, 18.1-18.2, 24.4"
+generated_by: build_design_index.py
+habitat_vocabulary: [any, coast, water, river, lake, marsh, bog, salt, cliff, forest, deep_forest, jungle, farmland, grassland, steppe, hills, moor, mountain, cold, tundra, desert, sand, rock, canyon, volcanic, fire, underground, cave, deep, fungus, ruins, urban, open, sky, planar_upper, planar_lower, planar_inner, fey, shadow]
+social_roles: [leader, elite, minion, ambient, solo]
+hooks_common:
+  - {phase: P6, must: "a site's ecology lists occupants from rows whose habitats include the site's region tags and whose CR sits in the site's tier"}
+  - {phase: P3, must: "a region's Combat subtable draws only rows of its ecology tags at its tier"}
+rows:
+  - id: eco_aboleth
+    label: "Aboleth"
+    srd: aboleth
+    cr: 10.0
+    type: "aberration"
+    source: monsters
+    habitats: [water, deep, underground, lake]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: "an old mind under a lake; its cult is a faction with a doctrine"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T3 solo for a lake or deep site; its telepathy is a telegraph"}
+  - id: eco_acolyte
+    label: "Acolyte"
+    srd: acolyte
+    cr: 0.25
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, farmland]
+    social_role: minion
+    faction_affinity: [religious]
+    people: false
+    reskin: "any church's junior; reskin the domain's cantrips to the god's symbol"
+    curated: true
+    hooks:
+      - {phase: P6, must: "the religious faction's typical forces; a shrine keeper anchor owner"}
+  - id: eco_adult_black_dragon
+    label: "Adult Black Dragon"
+    srd: adult-black-dragon
+    cr: 14.0
+    type: "dragon"
+    source: monsters
+    habitats: [marsh, bog, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_blue_dragon
+    label: "Adult Blue Dragon"
+    srd: adult-blue-dragon
+    cr: 16.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_brass_dragon
+    label: "Adult Brass Dragon"
+    srd: adult-brass-dragon
+    cr: 13.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_bronze_dragon
+    label: "Adult Bronze Dragon"
+    srd: adult-bronze-dragon
+    cr: 15.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_copper_dragon
+    label: "Adult Copper Dragon"
+    srd: adult-copper-dragon
+    cr: 14.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_gold_dragon
+    label: "Adult Gold Dragon"
+    srd: adult-gold-dragon
+    cr: 17.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_green_dragon
+    label: "Adult Green Dragon"
+    srd: adult-green-dragon
+    cr: 15.0
+    type: "dragon"
+    source: monsters
+    habitats: [forest, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_red_dragon
+    label: "Adult Red Dragon"
+    srd: adult-red-dragon
+    cr: 17.0
+    type: "dragon"
+    source: monsters
+    habitats: [volcanic, fire, mountain, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_silver_dragon
+    label: "Adult Silver Dragon"
+    srd: adult-silver-dragon
+    cr: 16.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_adult_white_dragon
+    label: "Adult White Dragon"
+    srd: adult-white-dragon
+    cr: 13.0
+    type: "dragon"
+    source: monsters
+    habitats: [cold, tundra, mountain, water]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_air_elemental
+    label: "Air Elemental"
+    srd: air-elemental
+    cr: 5.0
+    type: "elemental"
+    source: monsters
+    habitats: [desert, sand, open]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_black_dragon
+    label: "Ancient Black Dragon"
+    srd: ancient-black-dragon
+    cr: 21.0
+    type: "dragon"
+    source: monsters
+    habitats: [marsh, bog, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_blue_dragon
+    label: "Ancient Blue Dragon"
+    srd: ancient-blue-dragon
+    cr: 23.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_brass_dragon
+    label: "Ancient Brass Dragon"
+    srd: ancient-brass-dragon
+    cr: 20.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_bronze_dragon
+    label: "Ancient Bronze Dragon"
+    srd: ancient-bronze-dragon
+    cr: 22.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_copper_dragon
+    label: "Ancient Copper Dragon"
+    srd: ancient-copper-dragon
+    cr: 21.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_gold_dragon
+    label: "Ancient Gold Dragon"
+    srd: ancient-gold-dragon
+    cr: 24.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_green_dragon
+    label: "Ancient Green Dragon"
+    srd: ancient-green-dragon
+    cr: 22.0
+    type: "dragon"
+    source: monsters
+    habitats: [forest, water, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_red_dragon
+    label: "Ancient Red Dragon"
+    srd: ancient-red-dragon
+    cr: 24.0
+    type: "dragon"
+    source: monsters
+    habitats: [volcanic, fire, mountain, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_silver_dragon
+    label: "Ancient Silver Dragon"
+    srd: ancient-silver-dragon
+    cr: 23.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ancient_white_dragon
+    label: "Ancient White Dragon"
+    srd: ancient-white-dragon
+    cr: 20.0
+    type: "dragon"
+    source: monsters
+    habitats: [cold, tundra, mountain, water]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_androsphinx
+    label: "Androsphinx"
+    srd: androsphinx
+    cr: 17.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [desert, sand, open, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_animated_armor
+    label: "Animated Armor"
+    srd: animated-armor
+    cr: 1.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ankheg
+    label: "Ankheg"
+    srd: ankheg
+    cr: 2.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [farmland, grassland, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a farm's ruin; the tunnels are a minor site"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 region's field hazard"}
+  - id: eco_ape
+    label: "Ape"
+    srd: ape
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_archmage
+    label: "Archmage"
+    srd: archmage
+    cr: 12.0
+    type: "humanoid"
+    source: monsters
+    habitats: [urban]
+    social_role: solo
+    faction_affinity: [scholarly, guild]
+    people: false
+    reskin: "the regulator's head at T4+; swap the spell list to the campaign's taboo-safe schools"
+    curated: true
+    hooks:
+      - {phase: P6, must: "only at T4 or above; a lieutenant or the scholarly faction's head"}
+  - id: eco_assassin
+    label: "Assassin"
+    srd: assassin
+    cr: 8.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, ruins]
+    social_role: elite
+    faction_affinity: [criminal]
+    people: false
+    reskin: "the hand of a lieutenant; poison from the index's poisons table"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a lieutenant at T3; never a random encounter"}
+  - id: eco_awakened_shrub
+    label: "Awakened Shrub"
+    srd: awakened-shrub
+    cr: 0.0
+    type: "plant"
+    source: creatures
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_awakened_tree
+    label: "Awakened Tree"
+    srd: awakened-tree
+    cr: 2.0
+    type: "plant"
+    source: creatures
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_axe_beak
+    label: "Axe Beak"
+    srd: axe-beak
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_azer
+    label: "Azer"
+    srd: azer
+    cr: 2.0
+    type: "elemental"
+    source: monsters
+    habitats: [volcanic, fire, mountain]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_baboon
+    label: "Baboon"
+    srd: baboon
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_badger
+    label: "Badger"
+    srd: badger
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_balor
+    label: "Balor"
+    srd: balor
+    cr: 19.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_bandit
+    label: "Bandit"
+    srd: bandit
+    cr: 0.125
+    type: "humanoid"
+    source: npcs
+    habitats: [hills, forest, urban, coast]
+    social_role: minion
+    faction_affinity: [criminal, resistance]
+    people: false
+    reskin: "deserters, smugglers, road thieves; the resistance's rank and file"
+    curated: true
+    hooks:
+      - {phase: P6, must: "criminal and resistance typical forces at T1"}
+  - id: eco_bandit_captain
+    label: "Bandit Captain"
+    srd: bandit-captain
+    cr: 2.0
+    type: "humanoid"
+    source: npcs
+    habitats: [hills, forest, urban, coast]
+    social_role: leader
+    faction_affinity: [criminal, resistance]
+    people: false
+    reskin: "a den boss or a resistance cell head"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a criminal faction's leader at T1-2"}
+  - id: eco_barbed_devil
+    label: "Barbed Devil"
+    srd: barbed-devil
+    cr: 5.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_basilisk
+    label: "Basilisk"
+    srd: basilisk
+    cr: 3.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [underground, ruins, rock]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a statue garden is its larder; a minor site's telegraph"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 lair"}
+  - id: eco_bat
+    label: "Bat"
+    srd: bat
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [ruins, underground, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_bearded_devil
+    label: "Bearded Devil"
+    srd: bearded-devil
+    cr: 3.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower, forest]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_behir
+    label: "Behir"
+    srd: behir
+    cr: 11.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [jungle, grassland]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_berserker
+    label: "Berserker"
+    srd: berserker
+    cr: 2.0
+    type: "humanoid"
+    source: npcs
+    habitats: [steppe, cold, hills]
+    social_role: elite
+    faction_affinity: [martial, resistance]
+    people: false
+    reskin: "a herding people's champion; a martial rite's fighter"
+    curated: true
+    hooks:
+      - {phase: P6, must: "nomad and martial typical forces"}
+  - id: eco_black_bear
+    label: "Black Bear"
+    srd: black-bear
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [forest, hills]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a mother with cubs; not a monster"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 travel Combat row with a reason"}
+  - id: eco_black_dragon_wyrmling
+    label: "Black Dragon Wyrmling"
+    srd: black-dragon-wyrmling
+    cr: 2.0
+    type: "dragon"
+    source: monsters
+    habitats: [marsh, bog, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_black_pudding
+    label: "Black Pudding"
+    srd: black-pudding
+    cr: 4.0
+    type: "ooze"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_blink_dog
+    label: "Blink Dog"
+    srd: blink-dog
+    cr: 0.25
+    type: "fey"
+    source: creatures
+    habitats: [forest, fey]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "a fey people's hounds; can be bargained with"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a fey region's ambient life"}
+  - id: eco_blood_hawk
+    label: "Blood Hawk"
+    srd: blood-hawk
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [hills, mountain, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_blue_dragon_wyrmling
+    label: "Blue Dragon Wyrmling"
+    srd: blue-dragon-wyrmling
+    cr: 3.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_boar
+    label: "Boar"
+    srd: boar
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_bone_devil
+    label: "Bone Devil"
+    srd: bone-devil
+    cr: 9.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_brass_dragon_wyrmling
+    label: "Brass Dragon Wyrmling"
+    srd: brass-dragon-wyrmling
+    cr: 1.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_bronze_dragon_wyrmling
+    label: "Bronze Dragon Wyrmling"
+    srd: bronze-dragon-wyrmling
+    cr: 2.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_brown_bear
+    label: "Brown Bear"
+    srd: brown-bear
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_bugbear
+    label: "Bugbear"
+    srd: bugbear
+    cr: 1.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, hills, underground]
+    social_role: elite
+    faction_affinity: [martial, criminal]
+    people: true
+    reskin: "a people: a warband culture with a chief and a debt"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people row; never inherently evil"}
+  - id: eco_bulette
+    label: "Bulette"
+    srd: bulette
+    cr: 5.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, grassland, underground]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: "a landshark; its trail is a Discovery result"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 over-tier threat for a T1 region"}
+  - id: eco_camel
+    label: "Camel"
+    srd: camel
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_cat
+    label: "Cat"
+    srd: cat
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_centaur
+    label: "Centaur"
+    srd: centaur
+    cr: 2.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_chain_devil
+    label: "Chain Devil"
+    srd: chain-devil
+    cr: 8.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_chimera
+    label: "Chimera"
+    srd: chimera
+    cr: 6.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_chuul
+    label: "Chuul"
+    srd: chuul
+    cr: 4.0
+    type: "aberration"
+    source: monsters
+    habitats: [water, marsh, underground]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: "an aboleth's servants; a drowned site's guards"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 water site's elite"}
+  - id: eco_clay_golem
+    label: "Clay Golem"
+    srd: clay-golem
+    cr: 9.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_cloaker
+    label: "Cloaker"
+    srd: cloaker
+    cr: 8.0
+    type: "aberration"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_cloud_giant
+    label: "Cloud Giant"
+    srd: cloud-giant
+    cr: 9.0
+    type: "giant"
+    source: monsters
+    habitats: [hills, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_cockatrice
+    label: "Cockatrice"
+    srd: cockatrice
+    cr: 0.5
+    type: "monstrosity"
+    source: monsters
+    habitats: [grassland, hills, farmland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "a farm pest with a statue or two"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 travel Combat row"}
+  - id: eco_commoner
+    label: "Commoner"
+    srd: commoner
+    cr: 0.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, farmland, any]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: "innkeepers, farmers, ferrymen, children, elders; never rolled as a combat row"
+    curated: true
+    hooks:
+      - {phase: P6, must: "the default social anchor"}
+  - id: eco_constrictor_snake
+    label: "Constrictor Snake"
+    srd: constrictor-snake
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_copper_dragon_wyrmling
+    label: "Copper Dragon Wyrmling"
+    srd: copper-dragon-wyrmling
+    cr: 1.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_couatl
+    label: "Couatl"
+    srd: couatl
+    cr: 4.0
+    type: "celestial"
+    source: monsters
+    habitats: [planar_upper, jungle, grassland]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_crab
+    label: "Crab"
+    srd: crab
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_crocodile
+    label: "Crocodile"
+    srd: crocodile
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [marsh, bog, water, hills]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_cult_fanatic
+    label: "Cult Fanatic"
+    srd: cult-fanatic
+    cr: 2.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, ruins, underground]
+    social_role: leader
+    faction_affinity: [cult]
+    people: false
+    reskin: "a cell head or a prophet; spells by the god's domain"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a cult's leader at T1-2"}
+  - id: eco_cultist
+    label: "Cultist"
+    srd: cultist
+    cr: 0.125
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, ruins, underground]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: "a cell's initiates; give them the cult's doctrine line"
+    curated: true
+    hooks:
+      - {phase: P6, must: "cult typical forces"}
+  - id: eco_darkmantle
+    label: "Darkmantle"
+    srd: darkmantle
+    cr: 0.5
+    type: "monstrosity"
+    source: monsters
+    habitats: [underground, cave, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_death_dog
+    label: "Death Dog"
+    srd: death-dog
+    cr: 1.0
+    type: "monstrosity"
+    source: creatures
+    habitats: [hills, ruins]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_deep_gnome_svirfneblin
+    label: "Deep Gnome (Svirfneblin)"
+    srd: deep-gnome-svirfneblin
+    cr: 0.5
+    type: "humanoid"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: minion
+    faction_affinity: []
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_deer
+    label: "Deer"
+    srd: deer
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_deva
+    label: "Deva"
+    srd: deva
+    cr: 10.0
+    type: "celestial"
+    source: monsters
+    habitats: [planar_upper]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_dire_wolf
+    label: "Dire Wolf"
+    srd: dire-wolf
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, cold, hills]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a pack in a hard winter; the hard season's pressure"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 region's winter Combat row"}
+  - id: eco_djinni
+    label: "Djinni"
+    srd: djinni
+    cr: 11.0
+    type: "elemental"
+    source: monsters
+    habitats: [desert, sand, open]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_doppelganger
+    label: "Doppelganger"
+    srd: doppelganger
+    cr: 3.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [urban]
+    social_role: elite
+    faction_affinity: [criminal]
+    people: false
+    reskin: "the hollow-folk seed; a second master's agent"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a mystery-mix urban site"}
+  - id: eco_draft_horse
+    label: "Draft Horse"
+    srd: draft-horse
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_dragon_turtle
+    label: "Dragon Turtle"
+    srd: dragon-turtle
+    cr: 17.0
+    type: "dragon"
+    source: monsters
+    habitats: [coast, water]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_dretch
+    label: "Dretch"
+    srd: dretch
+    cr: 0.25
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_drider
+    label: "Drider"
+    srd: drider
+    cr: 6.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, ruins]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_drow
+    label: "Drow"
+    srd: drow
+    cr: 0.25
+    type: "humanoid"
+    source: monsters
+    habitats: [underground, deep]
+    social_role: elite
+    faction_affinity: [state, cult]
+    people: true
+    reskin: "a deep people with a state and a church; never inherently evil"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people row for underground regions"}
+  - id: eco_druid
+    label: "Druid"
+    srd: druid
+    cr: 2.0
+    type: "humanoid"
+    source: npcs
+    habitats: [forest, marsh, hills, moor]
+    social_role: elite
+    faction_affinity: [religious, resistance]
+    people: false
+    reskin: "a hermit or a landmark's keeper; the Nature god's servant"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a Nature god's church has one"}
+  - id: eco_dryad
+    label: "Dryad"
+    srd: dryad
+    cr: 1.0
+    type: "fey"
+    source: monsters
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_duergar
+    label: "Duergar"
+    srd: duergar
+    cr: 1.0
+    type: "humanoid"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: minion
+    faction_affinity: []
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_dust_mephit
+    label: "Dust Mephit"
+    srd: dust-mephit
+    cr: 0.5
+    type: "elemental"
+    source: monsters
+    habitats: [desert, sand, open]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_eagle
+    label: "Eagle"
+    srd: eagle
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [hills, mountain, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_earth_elemental
+    label: "Earth Elemental"
+    srd: earth-elemental
+    cr: 5.0
+    type: "elemental"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_efreeti
+    label: "Efreeti"
+    srd: efreeti
+    cr: 11.0
+    type: "elemental"
+    source: monsters
+    habitats: [volcanic, fire, mountain]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_elephant
+    label: "Elephant"
+    srd: elephant
+    cr: 4.0
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_elk
+    label: "Elk"
+    srd: elk
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_erinyes
+    label: "Erinyes"
+    srd: erinyes
+    cr: 12.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ettercap
+    label: "Ettercap"
+    srd: ettercap
+    cr: 2.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [forest, deep_forest]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a spider-keeper; its webs are a site's structural rooms"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 forest lair"}
+  - id: eco_ettin
+    label: "Ettin"
+    srd: ettin
+    cr: 4.0
+    type: "giant"
+    source: monsters
+    habitats: [hills, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_fire_elemental
+    label: "Fire Elemental"
+    srd: fire-elemental
+    cr: 5.0
+    type: "elemental"
+    source: monsters
+    habitats: [volcanic, fire, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_fire_giant
+    label: "Fire Giant"
+    srd: fire-giant
+    cr: 9.0
+    type: "giant"
+    source: monsters
+    habitats: [volcanic, fire, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_flesh_golem
+    label: "Flesh Golem"
+    srd: flesh-golem
+    cr: 5.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_flying_snake
+    label: "Flying Snake"
+    srd: flying-snake
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland, water, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_flying_sword
+    label: "Flying Sword"
+    srd: flying-sword
+    cr: 0.25
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_frog
+    label: "Frog"
+    srd: frog
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [marsh, bog, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_frost_giant
+    label: "Frost Giant"
+    srd: frost-giant
+    cr: 8.0
+    type: "giant"
+    source: monsters
+    habitats: [cold, tundra, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_gargoyle
+    label: "Gargoyle"
+    srd: gargoyle
+    cr: 2.0
+    type: "elemental"
+    source: monsters
+    habitats: [underground, cave, ruins]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_gelatinous_cube
+    label: "Gelatinous Cube"
+    srd: gelatinous-cube
+    cr: 2.0
+    type: "ooze"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ghast
+    label: "Ghast"
+    srd: ghast
+    cr: 2.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground, urban]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: "the leader of a ghoul pack; a grave ward's problem"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 undead site's elite"}
+  - id: eco_ghost
+    label: "Ghost"
+    srd: ghost
+    cr: 4.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, urban, moor]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a named dead person with a Known Fact; possession is a clue path"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 haunting; its payoff is lore"}
+  - id: eco_ghoul
+    label: "Ghoul"
+    srd: ghoul
+    cr: 1.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground, urban]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: "the salt-walker seed; the touched at their last stage"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 undead minion"}
+  - id: eco_giant_ape
+    label: "Giant Ape"
+    srd: giant-ape
+    cr: 7.0
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_badger
+    label: "Giant Badger"
+    srd: giant-badger
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_bat
+    label: "Giant Bat"
+    srd: giant-bat
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [ruins, underground, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_boar
+    label: "Giant Boar"
+    srd: giant-boar
+    cr: 2.0
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_centipede
+    label: "Giant Centipede"
+    srd: giant-centipede
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_constrictor_snake
+    label: "Giant Constrictor Snake"
+    srd: giant-constrictor-snake
+    cr: 2.0
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_crab
+    label: "Giant Crab"
+    srd: giant-crab
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "a coast's scavengers"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 coast travel row"}
+  - id: eco_giant_crocodile
+    label: "Giant Crocodile"
+    srd: giant-crocodile
+    cr: 5.0
+    type: "beast"
+    source: creatures
+    habitats: [marsh, bog, water, jungle]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_eagle
+    label: "Giant Eagle"
+    srd: giant-eagle
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [hills, mountain, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_elk
+    label: "Giant Elk"
+    srd: giant-elk
+    cr: 2.0
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_fire_beetle
+    label: "Giant Fire Beetle"
+    srd: giant-fire-beetle
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_frog
+    label: "Giant Frog"
+    srd: giant-frog
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [marsh, bog, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_goat
+    label: "Giant Goat"
+    srd: giant-goat
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_hyena
+    label: "Giant Hyena"
+    srd: giant-hyena
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open, jungle]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_lizard
+    label: "Giant Lizard"
+    srd: giant-lizard
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_octopus
+    label: "Giant Octopus"
+    srd: giant-octopus
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_owl
+    label: "Giant Owl"
+    srd: giant-owl
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_poisonous_snake
+    label: "Giant Poisonous Snake"
+    srd: giant-poisonous-snake
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_rat
+    label: "Giant Rat"
+    srd: giant-rat
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [urban, underground, ruins]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: "a sewer plague carrier (the diseases table)"
+    curated: true
+    hooks:
+      - {phase: P6, must: "an urban T1 ambient row"}
+  - id: eco_giant_rat_diseased
+    label: "Giant Rat (Diseased)"
+    srd: giant-rat-diseased
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_scorpion
+    label: "Giant Scorpion"
+    srd: giant-scorpion
+    cr: 3.0
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_sea_horse
+    label: "Giant Sea Horse"
+    srd: giant-sea-horse
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_shark
+    label: "Giant Shark"
+    srd: giant-shark
+    cr: 5.0
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_spider
+    label: "Giant Spider"
+    srd: giant-spider
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, underground, ruins]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "a lair's structural rooms are webs"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 forest or cave minion"}
+  - id: eco_giant_toad
+    label: "Giant Toad"
+    srd: giant-toad
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [marsh, bog, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_vulture
+    label: "Giant Vulture"
+    srd: giant-vulture
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_wasp
+    label: "Giant Wasp"
+    srd: giant-wasp
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland, water, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_weasel
+    label: "Giant Weasel"
+    srd: giant-weasel
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_giant_wolf_spider
+    label: "Giant Wolf Spider"
+    srd: giant-wolf-spider
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_gibbering_mouther
+    label: "Gibbering Mouther"
+    srd: gibbering-mouther
+    cr: 2.0
+    type: "aberration"
+    source: monsters
+    habitats: [underground, cave, water]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_glabrezu
+    label: "Glabrezu"
+    srd: glabrezu
+    cr: 9.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_gladiator
+    label: "Gladiator"
+    srd: gladiator
+    cr: 5.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban]
+    social_role: elite
+    faction_affinity: [martial, guild]
+    people: false
+    reskin: "a champion for war-by-champions; an arena master"
+    curated: true
+    hooks:
+      - {phase: P6, must: "break_war_is_ritual's champion"}
+  - id: eco_gnoll
+    label: "Gnoll"
+    srd: gnoll
+    cr: 0.5
+    type: "humanoid"
+    source: monsters
+    habitats: [grassland, steppe, desert]
+    social_role: minion
+    faction_affinity: [martial]
+    people: true
+    reskin: "a raiding people with a hunger doctrine; a people row"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a steppe region's people"}
+  - id: eco_goat
+    label: "Goat"
+    srd: goat
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_goblin
+    label: "Goblin"
+    srd: goblin
+    cr: 0.25
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, hills, underground]
+    social_role: minion
+    faction_affinity: [criminal, martial]
+    people: true
+    reskin: "a people: a tinkering, indebted culture with a naming language"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people row; never inherently evil"}
+  - id: eco_gold_dragon_wyrmling
+    label: "Gold Dragon Wyrmling"
+    srd: gold-dragon-wyrmling
+    cr: 3.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_gorgon
+    label: "Gorgon"
+    srd: gorgon
+    cr: 5.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, ruins]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_gray_ooze
+    label: "Gray Ooze"
+    srd: gray-ooze
+    cr: 0.5
+    type: "ooze"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_green_dragon_wyrmling
+    label: "Green Dragon Wyrmling"
+    srd: green-dragon-wyrmling
+    cr: 2.0
+    type: "dragon"
+    source: monsters
+    habitats: [forest, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_green_hag
+    label: "Green Hag"
+    srd: green-hag
+    cr: 3.0
+    type: "fey"
+    source: monsters
+    habitats: [marsh, bog, forest]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: "the mist-ones seed; a bargain in a bog"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 solo with attitude negotiate"}
+  - id: eco_grick
+    label: "Grick"
+    srd: grick
+    cr: 2.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_griffon
+    label: "Griffon"
+    srd: griffon
+    cr: 2.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [mountain, cliff, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "the cliff people's mounts"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a mountain T2 elite; mounts for a people"}
+  - id: eco_grimlock
+    label: "Grimlock"
+    srd: grimlock
+    cr: 0.25
+    type: "humanoid"
+    source: monsters
+    habitats: [urban, hills]
+    social_role: minion
+    faction_affinity: []
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_guard
+    label: "Guard"
+    srd: guard
+    cr: 0.125
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, farmland]
+    social_role: minion
+    faction_affinity: [state, guild]
+    people: false
+    reskin: "the watch, a gate's keepers, caravan guards"
+    curated: true
+    hooks:
+      - {phase: P6, must: "the law level's keepers at T1"}
+  - id: eco_guardian_naga
+    label: "Guardian Naga"
+    srd: guardian-naga
+    cr: 10.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [urban, farmland]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_gynosphinx
+    label: "Gynosphinx"
+    srd: gynosphinx
+    cr: 11.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [desert, sand, open, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_half_red_dragon_veteran
+    label: "Half-Red Dragon Veteran"
+    srd: half-red-dragon-veteran
+    cr: 5.0
+    type: "humanoid"
+    source: monsters
+    habitats: [volcanic, fire, mountain, urban]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_harpy
+    label: "Harpy"
+    srd: harpy
+    cr: 1.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [cliff, coast, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "the vertical people's outcasts; the song is a telegraph"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a cliff T1 minion"}
+  - id: eco_hawk
+    label: "Hawk"
+    srd: hawk
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [hills, mountain, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_hell_hound
+    label: "Hell Hound"
+    srd: hell-hound
+    cr: 3.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower, volcanic, urban]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: "the ash-hounds seed; a regulator's tool if fiends run the banks"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 elite bound to a faction"}
+  - id: eco_hezrou
+    label: "Hezrou"
+    srd: hezrou
+    cr: 8.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_hill_giant
+    label: "Hill Giant"
+    srd: hill-giant
+    cr: 5.0
+    type: "giant"
+    source: monsters
+    habitats: [hills, moor]
+    social_role: elite
+    faction_affinity: []
+    people: true
+    reskin: "the tithe giants' rank and file; a people"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a hills T2 elite; a treaty people"}
+  - id: eco_hippogriff
+    label: "Hippogriff"
+    srd: hippogriff
+    cr: 1.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_hobgoblin
+    label: "Hobgoblin"
+    srd: hobgoblin
+    cr: 0.5
+    type: "humanoid"
+    source: monsters
+    habitats: [hills, forest, urban]
+    social_role: minion
+    faction_affinity: [martial, state]
+    people: true
+    reskin: "a martial people with ranks and a code; a state faction"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people row with a martial faction"}
+  - id: eco_homunculus
+    label: "Homunculus"
+    srd: homunculus
+    cr: 0.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_horned_devil
+    label: "Horned Devil"
+    srd: horned-devil
+    cr: 11.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_hunter_shark
+    label: "Hunter Shark"
+    srd: hunter-shark
+    cr: 2.0
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_hydra
+    label: "Hydra"
+    srd: hydra
+    cr: 8.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [marsh, lake, water]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: "a marsh's old thing; its heads are the site's rooms"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T3 solo for a marsh site"}
+  - id: eco_hyena
+    label: "Hyena"
+    srd: hyena
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ice_devil
+    label: "Ice Devil"
+    srd: ice-devil
+    cr: 14.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ice_mephit
+    label: "Ice Mephit"
+    srd: ice-mephit
+    cr: 0.5
+    type: "elemental"
+    source: monsters
+    habitats: [cold, tundra, mountain]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_imp
+    label: "Imp"
+    srd: imp
+    cr: 1.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_invisible_stalker
+    label: "Invisible Stalker"
+    srd: invisible-stalker
+    cr: 6.0
+    type: "elemental"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_iron_golem
+    label: "Iron Golem"
+    srd: iron-golem
+    cr: 16.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_jackal
+    label: "Jackal"
+    srd: jackal
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_killer_whale
+    label: "Killer Whale"
+    srd: killer-whale
+    cr: 3.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_knight
+    label: "Knight"
+    srd: knight
+    cr: 3.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, hills, farmland]
+    social_role: leader
+    faction_affinity: [martial, state]
+    people: false
+    reskin: "a marshal, a lord's sword, a martial order's face"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a martial faction's face at T2"}
+  - id: eco_kobold
+    label: "Kobold"
+    srd: kobold
+    cr: 0.125
+    type: "humanoid"
+    source: monsters
+    habitats: [underground, hills, cave]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: true
+    reskin: "a trap-building people who serve something bigger; a people row"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 lair's people; traps from the hazards table"}
+  - id: eco_kraken
+    label: "Kraken"
+    srd: kraken
+    cr: 23.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [coast, water]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_lamia
+    label: "Lamia"
+    srd: lamia
+    cr: 4.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, ruins]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_lemure
+    label: "Lemure"
+    srd: lemure
+    cr: 0.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_lich
+    label: "Lich"
+    srd: lich
+    cr: 21.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground, urban]
+    social_role: solo
+    faction_affinity: [cult, scholarly]
+    people: false
+    reskin: "the dead ruler seed; its phylactery is a plot item"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T5 solo; the dead-rule secret"}
+  - id: eco_lion
+    label: "Lion"
+    srd: lion
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_lizard
+    label: "Lizard"
+    srd: lizard
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_lizardfolk
+    label: "Lizardfolk"
+    srd: lizardfolk
+    cr: 0.5
+    type: "humanoid"
+    source: monsters
+    habitats: [marsh, jungle, river]
+    social_role: minion
+    faction_affinity: [resistance]
+    people: true
+    reskin: "a marsh people with a treaty and a naming language"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a marsh region's people"}
+  - id: eco_mage
+    label: "Mage"
+    srd: mage
+    cr: 6.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban]
+    social_role: leader
+    faction_affinity: [guild, scholarly]
+    people: false
+    reskin: "a guild master, the regulator's head, a court wizard; spells from the index by level"
+    curated: true
+    hooks:
+      - {phase: P6, must: "the regulator's head at T2-3"}
+  - id: eco_magma_mephit
+    label: "Magma Mephit"
+    srd: magma-mephit
+    cr: 0.5
+    type: "elemental"
+    source: monsters
+    habitats: [volcanic, fire, mountain]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_magmin
+    label: "Magmin"
+    srd: magmin
+    cr: 0.5
+    type: "elemental"
+    source: monsters
+    habitats: [volcanic, fire, mountain]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_mammoth
+    label: "Mammoth"
+    srd: mammoth
+    cr: 6.0
+    type: "beast"
+    source: creatures
+    habitats: [cold, tundra, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_manticore
+    label: "Manticore"
+    srd: manticore
+    cr: 3.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, mountain, desert]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a talking hunter; attitude negotiate is possible"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 elite that speaks"}
+  - id: eco_marilith
+    label: "Marilith"
+    srd: marilith
+    cr: 16.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_mastiff
+    label: "Mastiff"
+    srd: mastiff
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_medusa
+    label: "Medusa"
+    srd: medusa
+    cr: 6.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_merfolk
+    label: "Merfolk"
+    srd: merfolk
+    cr: 0.125
+    type: "humanoid"
+    source: monsters
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: [trade]
+    people: true
+    reskin: "the river-nomads' cousins; a people with moorings"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a coast people row"}
+  - id: eco_merrow
+    label: "Merrow"
+    srd: merrow
+    cr: 2.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_mimic
+    label: "Mimic"
+    srd: mimic
+    cr: 2.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [ruins, underground, urban]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a chest in a sanctuary room; the special category"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1-2 special room, never twice in a site"}
+  - id: eco_minotaur
+    label: "Minotaur"
+    srd: minotaur
+    cr: 3.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: []
+    people: true
+    reskin: "the horn-singers seed: a people, not a maze monster"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people row when the signature people is horned"}
+  - id: eco_minotaur_skeleton
+    label: "Minotaur Skeleton"
+    srd: minotaur-skeleton
+    cr: 2.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_mule
+    label: "Mule"
+    srd: mule
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_mummy
+    label: "Mummy"
+    srd: mummy
+    cr: 3.0
+    type: "undead"
+    source: monsters
+    habitats: [desert, ruins, canyon]
+    social_role: elite
+    faction_affinity: [religious]
+    people: false
+    reskin: "a tomb's keeper with a name in the history"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 tomb site's boss"}
+  - id: eco_mummy_lord
+    label: "Mummy Lord"
+    srd: mummy-lord
+    cr: 15.0
+    type: "undead"
+    source: monsters
+    habitats: [desert, sand, open, ruins]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_nalfeshnee
+    label: "Nalfeshnee"
+    srd: nalfeshnee
+    cr: 13.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_night_hag
+    label: "Night Hag"
+    srd: night-hag
+    cr: 5.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower, urban, moor]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: "the dream-bleed seed's predator"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T3 solo for a dream-magic campaign"}
+  - id: eco_nightmare
+    label: "Nightmare"
+    srd: nightmare
+    cr: 3.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_noble
+    label: "Noble"
+    srd: noble
+    cr: 0.125
+    type: "humanoid"
+    source: npcs
+    habitats: [urban]
+    social_role: leader
+    faction_affinity: [state, trade]
+    people: false
+    reskin: "a ruler, an heir, a courtier, a banker; a ruler with a guard is a noble plus guards"
+    curated: true
+    hooks:
+      - {phase: P6, must: "settlement rulers and heirs"}
+  - id: eco_ochre_jelly
+    label: "Ochre Jelly"
+    srd: ochre-jelly
+    cr: 2.0
+    type: "ooze"
+    source: monsters
+    habitats: [underground, cave, ruins]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "a structural room's hazard"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a cave minion"}
+  - id: eco_octopus
+    label: "Octopus"
+    srd: octopus
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_ogre
+    label: "Ogre"
+    srd: ogre
+    cr: 2.0
+    type: "giant"
+    source: monsters
+    habitats: [hills, forest, moor]
+    social_role: elite
+    faction_affinity: []
+    people: true
+    reskin: "the tithe giants' lesser kin; a people row when the giants are the peasantry"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1-2 elite"}
+  - id: eco_ogre_zombie
+    label: "Ogre Zombie"
+    srd: ogre-zombie
+    cr: 2.0
+    type: "undead"
+    source: monsters
+    habitats: [jungle, grassland, ruins, underground]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_oni
+    label: "Oni"
+    srd: oni
+    cr: 7.0
+    type: "giant"
+    source: monsters
+    habitats: [hills, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_orc
+    label: "Orc"
+    srd: orc
+    cr: 0.5
+    type: "humanoid"
+    source: monsters
+    habitats: [hills, mountain, steppe]
+    social_role: minion
+    faction_affinity: [martial, resistance]
+    people: true
+    reskin: "a people: a martial culture with a naming language and a treaty"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people row; never inherently evil"}
+  - id: eco_otyugh
+    label: "Otyugh"
+    srd: otyugh
+    cr: 5.0
+    type: "aberration"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_owl
+    label: "Owl"
+    srd: owl
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_owlbear
+    label: "Owlbear"
+    srd: owlbear
+    cr: 3.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [forest, deep_forest]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a forest's apex; its den is a minor site"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 forest region's over-tier threat"}
+  - id: eco_panther
+    label: "Panther"
+    srd: panther
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_pegasus
+    label: "Pegasus"
+    srd: pegasus
+    cr: 2.0
+    type: "celestial"
+    source: monsters
+    habitats: [planar_upper, hills, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_phase_spider
+    label: "Phase Spider"
+    srd: phase-spider
+    cr: 3.0
+    type: "monstrosity"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_pit_fiend
+    label: "Pit Fiend"
+    srd: pit-fiend
+    cr: 20.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_planetar
+    label: "Planetar"
+    srd: planetar
+    cr: 16.0
+    type: "celestial"
+    source: monsters
+    habitats: [planar_upper]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_plesiosaurus
+    label: "Plesiosaurus"
+    srd: plesiosaurus
+    cr: 2.0
+    type: "beast"
+    source: monsters
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_poisonous_snake
+    label: "Poisonous Snake"
+    srd: poisonous-snake
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_polar_bear
+    label: "Polar Bear"
+    srd: polar-bear
+    cr: 2.0
+    type: "beast"
+    source: creatures
+    habitats: [cold, tundra, mountain, forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_pony
+    label: "Pony"
+    srd: pony
+    cr: 0.125
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_priest
+    label: "Priest"
+    srd: priest
+    cr: 2.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, farmland]
+    social_role: leader
+    faction_affinity: [religious]
+    people: false
+    reskin: "a temple's head, a reader, a hospice head, a tribunal's judge"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a church archetype's head"}
+  - id: eco_pseudodragon
+    label: "Pseudodragon"
+    srd: pseudodragon
+    cr: 0.25
+    type: "dragon"
+    source: monsters
+    habitats: [mountain, sky]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_purple_worm
+    label: "Purple Worm"
+    srd: purple-worm
+    cr: 15.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_quasit
+    label: "Quasit"
+    srd: quasit
+    cr: 1.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_quipper
+    label: "Quipper"
+    srd: quipper
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_rakshasa
+    label: "Rakshasa"
+    srd: rakshasa
+    cr: 13.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_rat
+    label: "Rat"
+    srd: rat
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_raven
+    label: "Raven"
+    srd: raven
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_red_dragon_wyrmling
+    label: "Red Dragon Wyrmling"
+    srd: red-dragon-wyrmling
+    cr: 4.0
+    type: "dragon"
+    source: monsters
+    habitats: [volcanic, fire, mountain, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_reef_shark
+    label: "Reef Shark"
+    srd: reef-shark
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_remorhaz
+    label: "Remorhaz"
+    srd: remorhaz
+    cr: 11.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [cold, tundra, mountain, underground]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_rhinoceros
+    label: "Rhinoceros"
+    srd: rhinoceros
+    cr: 2.0
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_riding_horse
+    label: "Riding Horse"
+    srd: riding-horse
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_roc
+    label: "Roc"
+    srd: roc
+    cr: 11.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_roper
+    label: "Roper"
+    srd: roper
+    cr: 5.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: "a cave's patient thing; a structural room that eats"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 cave solo"}
+  - id: eco_rug_of_smothering
+    label: "Rug of Smothering"
+    srd: rug-of-smothering
+    cr: 2.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_rust_monster
+    label: "Rust Monster"
+    srd: rust-monster
+    cr: 0.5
+    type: "monstrosity"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_saber_toothed_tiger
+    label: "Saber-Toothed Tiger"
+    srd: saber-toothed-tiger
+    cr: 2.0
+    type: "beast"
+    source: creatures
+    habitats: [cold, tundra, mountain, jungle]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_sahuagin
+    label: "Sahuagin"
+    srd: sahuagin
+    cr: 0.5
+    type: "humanoid"
+    source: monsters
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: [martial]
+    people: true
+    reskin: "the sea people; a treaty or a war"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a coast people row"}
+  - id: eco_salamander
+    label: "Salamander"
+    srd: salamander
+    cr: 5.0
+    type: "elemental"
+    source: monsters
+    habitats: [volcanic, fire, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_satyr
+    label: "Satyr"
+    srd: satyr
+    cr: 0.5
+    type: "fey"
+    source: monsters
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_scorpion
+    label: "Scorpion"
+    srd: scorpion
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_scout
+    label: "Scout"
+    srd: scout
+    cr: 0.5
+    type: "humanoid"
+    source: npcs
+    habitats: [forest, hills, moor, mountain]
+    social_role: minion
+    faction_affinity: [resistance, martial]
+    people: false
+    reskin: "a guide, a hunter, a warden of the road"
+    curated: true
+    hooks:
+      - {phase: P6, must: "the guide who gives a route note"}
+  - id: eco_sea_hag
+    label: "Sea Hag"
+    srd: sea-hag
+    cr: 2.0
+    type: "fey"
+    source: monsters
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_sea_horse
+    label: "Sea Horse"
+    srd: sea-horse
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [coast, water]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_shadow
+    label: "Shadow"
+    srd: shadow
+    cr: 0.5
+    type: "undead"
+    source: monsters
+    habitats: [ruins, urban, shadow]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: "the hollow-folk's lost shadows"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 undead minion for a shadow-touched site"}
+  - id: eco_shambling_mound
+    label: "Shambling Mound"
+    srd: shambling-mound
+    cr: 5.0
+    type: "plant"
+    source: monsters
+    habitats: [forest, water]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_shield_guardian
+    label: "Shield Guardian"
+    srd: shield-guardian
+    cr: 7.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground, urban, farmland]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_shrieker
+    label: "Shrieker"
+    srd: shrieker
+    cr: 0.0
+    type: "plant"
+    source: monsters
+    habitats: [forest, marsh]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_silver_dragon_wyrmling
+    label: "Silver Dragon Wyrmling"
+    srd: silver-dragon-wyrmling
+    cr: 2.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_skeleton
+    label: "Skeleton"
+    srd: skeleton
+    cr: 0.25
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground, urban]
+    social_role: minion
+    faction_affinity: [cult, state]
+    people: false
+    reskin: "the gilded dead seed; a civic servant when the break says so"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 minion; citizens under break_undead_civilised"}
+  - id: eco_solar
+    label: "Solar"
+    srd: solar
+    cr: 21.0
+    type: "celestial"
+    source: monsters
+    habitats: [planar_upper]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_specter
+    label: "Specter"
+    srd: specter
+    cr: 1.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, urban]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "a witness who died badly"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 haunting minion"}
+  - id: eco_spider
+    label: "Spider"
+    srd: spider
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_spirit_naga
+    label: "Spirit Naga"
+    srd: spirit-naga
+    cr: 8.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, ruins]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_sprite
+    label: "Sprite"
+    srd: sprite
+    cr: 0.25
+    type: "fey"
+    source: monsters
+    habitats: [forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_spy
+    label: "Spy"
+    srd: spy
+    cr: 1.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban]
+    social_role: elite
+    faction_affinity: [criminal, state, trade]
+    people: false
+    reskin: "an informer, a courier, the second master's eyes"
+    curated: true
+    hooks:
+      - {phase: P6, must: "intel 3 factions have one"}
+  - id: eco_steam_mephit
+    label: "Steam Mephit"
+    srd: steam-mephit
+    cr: 0.25
+    type: "elemental"
+    source: monsters
+    habitats: [planar_inner]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_stirge
+    label: "Stirge"
+    srd: stirge
+    cr: 0.125
+    type: "beast"
+    source: monsters
+    habitats: [marsh, cave, forest]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: "the moth-court seed"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 ambient row near magic"}
+  - id: eco_stone_giant
+    label: "Stone Giant"
+    srd: stone-giant
+    cr: 7.0
+    type: "giant"
+    source: monsters
+    habitats: [hills, mountain]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_stone_golem
+    label: "Stone Golem"
+    srd: stone-golem
+    cr: 10.0
+    type: "construct"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_storm_giant
+    label: "Storm Giant"
+    srd: storm-giant
+    cr: 13.0
+    type: "giant"
+    source: monsters
+    habitats: [hills, mountain, water]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_succubus_incubus
+    label: "Succubus/Incubus"
+    srd: succubus-incubus
+    cr: 4.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_bats
+    label: "Swarm of Bats"
+    srd: swarm-of-bats
+    cr: 0.25
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [ruins, underground, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_beetles
+    label: "Swarm of Beetles"
+    srd: swarm-of-beetles
+    cr: 0.5
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [forest, grassland, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_centipedes
+    label: "Swarm of Centipedes"
+    srd: swarm-of-centipedes
+    cr: 0.5
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_insects
+    label: "Swarm of Insects"
+    srd: swarm-of-insects
+    cr: 0.5
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_poisonous_snakes
+    label: "Swarm of Poisonous Snakes"
+    srd: swarm-of-poisonous-snakes
+    cr: 2.0
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [forest, grassland, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_quippers
+    label: "Swarm of Quippers"
+    srd: swarm-of-quippers
+    cr: 1.0
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [coast, water]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_rats
+    label: "Swarm of Rats"
+    srd: swarm-of-rats
+    cr: 0.25
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_ravens
+    label: "Swarm of Ravens"
+    srd: swarm-of-ravens
+    cr: 0.25
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [forest, grassland, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_spiders
+    label: "Swarm of Spiders"
+    srd: swarm-of-spiders
+    cr: 0.5
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [ruins, underground]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_swarm_of_wasps
+    label: "Swarm of Wasps"
+    srd: swarm-of-wasps
+    cr: 0.5
+    type: "swarm of Tiny beasts"
+    source: creatures
+    habitats: [forest, grassland, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_tarrasque
+    label: "Tarrasque"
+    srd: tarrasque
+    cr: 30.0
+    type: "monstrosity"
+    source: monsters
+    habitats: [hills, ruins]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_thug
+    label: "Thug"
+    srd: thug
+    cr: 0.5
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, coast]
+    social_role: minion
+    faction_affinity: [criminal, guild]
+    people: false
+    reskin: "dock muscle, a guild's hand, an enforcer"
+    curated: true
+    hooks:
+      - {phase: P6, must: "guild and criminal enforcers"}
+  - id: eco_tiger
+    label: "Tiger"
+    srd: tiger
+    cr: 1.0
+    type: "beast"
+    source: creatures
+    habitats: [jungle, grassland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_treant
+    label: "Treant"
+    srd: treant
+    cr: 9.0
+    type: "plant"
+    source: monsters
+    habitats: [forest]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_tribal_warrior
+    label: "Tribal Warrior"
+    srd: tribal-warrior
+    cr: 0.125
+    type: "humanoid"
+    source: npcs
+    habitats: [steppe, forest, jungle, marsh]
+    social_role: minion
+    faction_affinity: [resistance]
+    people: false
+    reskin: "any people's fighter; a treaty people's guard"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people row's typical forces"}
+  - id: eco_triceratops
+    label: "Triceratops"
+    srd: triceratops
+    cr: 5.0
+    type: "beast"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_troll
+    label: "Troll"
+    srd: troll
+    cr: 5.0
+    type: "giant"
+    source: monsters
+    habitats: [marsh, forest, underground]
+    social_role: elite
+    faction_affinity: []
+    people: true
+    reskin: "a people when the giants are the peasantry; otherwise a bridge's toll"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 elite; regeneration is the boss checklist's resistance"}
+  - id: eco_tyrannosaurus_rex
+    label: "Tyrannosaurus Rex"
+    srd: tyrannosaurus-rex
+    cr: 8.0
+    type: "beast"
+    source: monsters
+    habitats: [forest, grassland]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_unicorn
+    label: "Unicorn"
+    srd: unicorn
+    cr: 5.0
+    type: "celestial"
+    source: monsters
+    habitats: [planar_upper, forest]
+    social_role: solo
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_vampire_bat
+    label: "Vampire, Bat Form"
+    srd: vampire-bat
+    cr: 13.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_vampire_mist
+    label: "Vampire, Mist Form"
+    srd: vampire-mist
+    cr: 13.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: solo
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_vampire_spawn
+    label: "Vampire Spawn"
+    srd: vampire-spawn
+    cr: 5.0
+    type: "undead"
+    source: monsters
+    habitats: [urban, ruins]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: "a vampire's court"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 elite"}
+  - id: eco_vampire_vampire
+    label: "Vampire, Vampire Form"
+    srd: vampire-vampire
+    cr: 13.0
+    type: "undead"
+    source: monsters
+    habitats: [urban, ruins]
+    social_role: solo
+    faction_affinity: [state, cult]
+    people: false
+    reskin: "the dead ruler seed; a seat held for centuries"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T4 solo; a lieutenant or the BBEG"}
+  - id: eco_veteran
+    label: "Veteran"
+    srd: veteran
+    cr: 3.0
+    type: "humanoid"
+    source: npcs
+    habitats: [urban, farmland, hills]
+    social_role: elite
+    faction_affinity: [martial, state]
+    people: false
+    reskin: "a watch captain, a sergeant, a bodyguard"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a watch captain at T2"}
+  - id: eco_violet_fungus
+    label: "Violet Fungus"
+    srd: violet-fungus
+    cr: 0.25
+    type: "plant"
+    source: monsters
+    habitats: [forest, marsh]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_vrock
+    label: "Vrock"
+    srd: vrock
+    cr: 6.0
+    type: "fiend"
+    source: monsters
+    habitats: [planar_lower, hills, mountain]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_vulture
+    label: "Vulture"
+    srd: vulture
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [desert, sand, open, sky]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_warhorse
+    label: "Warhorse"
+    srd: warhorse
+    cr: 0.5
+    type: "beast"
+    source: creatures
+    habitats: [forest, grassland]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_warhorse_skeleton
+    label: "Warhorse Skeleton"
+    srd: warhorse-skeleton
+    cr: 0.5
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_water_elemental
+    label: "Water Elemental"
+    srd: water-elemental
+    cr: 5.0
+    type: "elemental"
+    source: monsters
+    habitats: [water, coast, planar_inner]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "the tide made angry; a plane's vortex guard"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 elite for a touched water plane"}
+  - id: eco_weasel
+    label: "Weasel"
+    srd: weasel
+    cr: 0.0
+    type: "beast"
+    source: creatures
+    habitats: [forest]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_werebear_bear
+    label: "Werebear, Bear Form"
+    srd: werebear-bear
+    cr: 5.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: elite
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_werebear_human
+    label: "Werebear, Human Form"
+    srd: werebear-human
+    cr: 5.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: elite
+    faction_affinity: [criminal]
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_werebear_hybrid
+    label: "Werebear, Hybrid Form"
+    srd: werebear-hybrid
+    cr: 5.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: elite
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wereboar_boar
+    label: "Wereboar, Boar Form"
+    srd: wereboar-boar
+    cr: 4.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wereboar_human
+    label: "Wereboar, Human Form"
+    srd: wereboar-human
+    cr: 4.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wereboar_hybrid
+    label: "Wereboar, Hybrid Form"
+    srd: wereboar-hybrid
+    cr: 4.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wererat_human
+    label: "Wererat, Human Form"
+    srd: wererat-human
+    cr: 2.0
+    type: "humanoid"
+    source: monsters
+    habitats: [ruins, underground, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wererat_hybrid
+    label: "Wererat, Hybrid Form"
+    srd: wererat-hybrid
+    cr: 2.0
+    type: "humanoid"
+    source: monsters
+    habitats: [ruins, underground, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wererat_rat
+    label: "Wererat, Rat Form"
+    srd: wererat-rat
+    cr: 2.0
+    type: "humanoid"
+    source: monsters
+    habitats: [ruins, underground, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_weretiger_human
+    label: "Weretiger, Human Form"
+    srd: weretiger-human
+    cr: 4.0
+    type: "humanoid"
+    source: monsters
+    habitats: [jungle, grassland, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_weretiger_hybrid
+    label: "Weretiger, Hybrid Form"
+    srd: weretiger-hybrid
+    cr: 4.0
+    type: "humanoid"
+    source: monsters
+    habitats: [jungle, grassland, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_weretiger_tiger
+    label: "Weretiger, Tiger Form"
+    srd: weretiger-tiger
+    cr: 4.0
+    type: "humanoid"
+    source: monsters
+    habitats: [jungle, grassland, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_werewolf_human
+    label: "Werewolf, Human Form"
+    srd: werewolf-human
+    cr: 3.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: true
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_werewolf_hybrid
+    label: "Werewolf, Hybrid Form"
+    srd: werewolf-hybrid
+    cr: 3.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_werewolf_wolf
+    label: "Werewolf, Wolf Form"
+    srd: werewolf-wolf
+    cr: 3.0
+    type: "humanoid"
+    source: monsters
+    habitats: [forest, urban, farmland]
+    social_role: minion
+    faction_affinity: [criminal]
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_white_dragon_wyrmling
+    label: "White Dragon Wyrmling"
+    srd: white-dragon-wyrmling
+    cr: 2.0
+    type: "dragon"
+    source: monsters
+    habitats: [cold, tundra, mountain, water]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wight
+    label: "Wight"
+    srd: wight
+    cr: 3.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground, moor]
+    social_role: elite
+    faction_affinity: [cult, state]
+    people: false
+    reskin: "a barrow's lord with a name; the dead who vote"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T2 barrow boss"}
+  - id: eco_will_o_wisp
+    label: "Will-o'-Wisp"
+    srd: will-o-wisp
+    cr: 2.0
+    type: "undead"
+    source: monsters
+    habitats: [marsh, bog, fey]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: "the lights seed; a false light with intent"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 bog travel row"}
+  - id: eco_winter_wolf
+    label: "Winter Wolf"
+    srd: winter-wolf
+    cr: 3.0
+    type: "monstrosity"
+    source: creatures
+    habitats: [cold, tundra, mountain, forest]
+    social_role: minion
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_wolf
+    label: "Wolf"
+    srd: wolf
+    cr: 0.25
+    type: "beast"
+    source: creatures
+    habitats: [forest, cold, hills]
+    social_role: ambient
+    faction_affinity: []
+    people: false
+    reskin: "a pack; winter's pressure"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 ambient row"}
+  - id: eco_worg
+    label: "Worg"
+    srd: worg
+    cr: 0.5
+    type: "monstrosity"
+    source: creatures
+    habitats: [hills, forest]
+    social_role: minion
+    faction_affinity: [martial]
+    people: false
+    reskin: "a goblin people's mounts"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a people's cavalry"}
+  - id: eco_wraith
+    label: "Wraith"
+    srd: wraith
+    cr: 5.0
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground]
+    social_role: elite
+    faction_affinity: [cult]
+    people: false
+    reskin: "the silenced one's servant; a keeper of a name"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T3 elite for a T3 site"}
+  - id: eco_wyvern
+    label: "Wyvern"
+    srd: wyvern
+    cr: 6.0
+    type: "dragon"
+    source: monsters
+    habitats: [mountain, hills, cliff]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: "a cliff's hunter; its poison is on the table"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T3 over-tier threat"}
+  - id: eco_xorn
+    label: "Xorn"
+    srd: xorn
+    cr: 5.0
+    type: "elemental"
+    source: monsters
+    habitats: [underground, cave]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_black_dragon
+    label: "Young Black Dragon"
+    srd: young-black-dragon
+    cr: 7.0
+    type: "dragon"
+    source: monsters
+    habitats: [marsh, bog, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_blue_dragon
+    label: "Young Blue Dragon"
+    srd: young-blue-dragon
+    cr: 9.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_brass_dragon
+    label: "Young Brass Dragon"
+    srd: young-brass-dragon
+    cr: 6.0
+    type: "dragon"
+    source: monsters
+    habitats: [desert, sand, open, underground]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_bronze_dragon
+    label: "Young Bronze Dragon"
+    srd: young-bronze-dragon
+    cr: 8.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_copper_dragon
+    label: "Young Copper Dragon"
+    srd: young-copper-dragon
+    cr: 7.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_gold_dragon
+    label: "Young Gold Dragon"
+    srd: young-gold-dragon
+    cr: 10.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_green_dragon
+    label: "Young Green Dragon"
+    srd: young-green-dragon
+    cr: 8.0
+    type: "dragon"
+    source: monsters
+    habitats: [forest, water, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_red_dragon
+    label: "Young Red Dragon"
+    srd: young-red-dragon
+    cr: 10.0
+    type: "dragon"
+    source: monsters
+    habitats: [volcanic, fire, mountain, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_silver_dragon
+    label: "Young Silver Dragon"
+    srd: young-silver-dragon
+    cr: 9.0
+    type: "dragon"
+    source: monsters
+    habitats: [hills, mountain, sky]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_young_white_dragon
+    label: "Young White Dragon"
+    srd: young-white-dragon
+    cr: 6.0
+    type: "dragon"
+    source: monsters
+    habitats: [cold, tundra, mountain, water]
+    social_role: elite
+    faction_affinity: []
+    people: false
+    reskin: ""
+    curated: false
+    hooks:
+      - {phase: P6, must: "candidate for sites in its habitats at its tier; reskin by the SRD's Modifying Creatures"}
+  - id: eco_zombie
+    label: "Zombie"
+    srd: zombie
+    cr: 0.25
+    type: "undead"
+    source: monsters
+    habitats: [ruins, underground, marsh]
+    social_role: minion
+    faction_affinity: [cult]
+    people: false
+    reskin: "the gilded dead's labourers"
+    curated: true
+    hooks:
+      - {phase: P6, must: "a T1 minion"}
