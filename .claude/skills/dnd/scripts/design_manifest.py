@@ -186,7 +186,7 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
     if staging.is_dir():
         for phase_dir in sorted(p for p in staging.iterdir() if p.is_dir() and p.name in PHASES):
             for frag in sorted(phase_dir.glob("*.json")):
-                if frag.name == "skeleton.json" or frag.name.endswith((".facts.json", ".critique.json", ".prompt.json")):
+                if frag.name == "skeleton.json" or frag.name.endswith((".facts.json", ".news.json", ".critique.json", ".prompt.json")):
                     continue
                 info = read_json(frag) or {}
                 if info.get("id"):
@@ -194,7 +194,7 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
             merged = phase_dir / "merged"
             if merged.is_dir():
                 for frag in sorted(merged.glob("*.json")):
-                    if frag.name == "skeleton.json" or frag.name.endswith((".facts.json", ".critique.json", ".prompt.json")):
+                    if frag.name == "skeleton.json" or frag.name.endswith((".facts.json", ".news.json", ".critique.json", ".prompt.json")):
                         continue
                     info = read_json(frag) or {}
                     if info.get("id"):

@@ -156,7 +156,7 @@ def row_errors(eid: str, row: dict) -> list[str]:
 # ── merge ─────────────────────────────────────────────────────────────────────
 
 NON_FRAGMENTS = ("skeleton.json",)
-NON_FRAGMENT_SUFFIXES = (".facts.json", ".critique.json", ".prompt.json")
+NON_FRAGMENT_SUFFIXES = (".facts.json", ".news.json", ".critique.json", ".prompt.json")
 
 
 def is_fragment(path: Path) -> bool:
