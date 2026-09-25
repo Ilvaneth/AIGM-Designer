@@ -57,3 +57,27 @@ class TestCampaign:
 
     def temp_files(self) -> list:
         return [p for p in self.dir.rglob(".*.tmp")]
+
+
+class MarkerGuard:
+    """Keep the real runtime marker (the read guard's active-design.json) out of a test's way and
+    never leave the guard armed behind: designer.py arms it, and an armed marker blocks the
+    developer's own shell."""
+
+    def __init__(self):
+        sys.path.insert(0, str(SCRIPTS))
+        from paths import runtime_dir
+        self.marker = runtime_dir() / "active-design.json"
+
+    def __enter__(self):
+        self.backup = self.marker.read_bytes() if self.marker.is_file() else None
+        if self.marker.is_file():
+            self.marker.unlink()
+        return self
+
+    def __exit__(self, *exc):
+        if self.marker.is_file():
+            self.marker.unlink()
+        if self.backup is not None:
+            self.marker.write_bytes(self.backup)
+        return False

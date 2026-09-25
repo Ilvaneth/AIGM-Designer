@@ -16,7 +16,7 @@ CLI:
         the arc skeleton, the P0 card, and the guard is armed for `birth`
   designer.py -c CAMP arm --mode birth|detail|playtest [--session-id ID] | disarm
   designer.py -c CAMP preroll --phase PN [--attempt N]      every labelled roll of the phase
-  designer.py -c CAMP phase PN begin [--json]               reconcile, arm, roster with read budgets
+  designer.py -c CAMP phase PN begin [--json]               reconcile, arm, roster with read budgets and prompts
   designer.py -c CAMP phase PN merge [--day N]              registry merge + design_seed + statuses
   designer.py -c CAMP phase PN check                        design_check --phase (redacted)
   designer.py -c CAMP phase PN card                         the phase card (design_approval.py)
@@ -48,6 +48,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dice as dice_mod  # noqa: E402
 import design_dice as dd  # noqa: E402
 import design_manifest as dm  # noqa: E402
+import design_prompts as dp  # noqa: E402
 import design_tables as dt  # noqa: E402
 from design_io import (campaign_dir, design_dir, dm_only_dir, now_iso, read_json, sha256_file,  # noqa: E402
                        stamp_meta, write_json_atomic)
@@ -615,8 +616,99 @@ def phase_begin(campaign: str, phase: str, as_json: bool, session_id: str | None
         ph["status"] = "running"
         ph["started"] = ph.get("started") or now_iso()
         ph["attempt"] = max(1, int(ph.get("attempt") or 1))
-        dm.save(campaign, data, f"designer.py phase {phase} begin")
-    return dm.pending(campaign, phase, as_json)
+    if not ph.get("roster") and dp.prompt_for(phase, None) is None:
+        ph["roster"] = document_roster(campaign, phase)
+        ph["skeleton"] = {"status": "n/a", "agent": None}
+    dm.save(campaign, data, f"designer.py phase {phase} begin")
+    out = pending_with_prompts(campaign, phase)
+    if as_json:
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+    else:
+        print(f"designer: {phase} attempt {out['attempt']}, skeleton {out['skeleton'].get('status')}, "
+              f"{len(out['entities'])} pending of {len(ph.get('roster') or [])}")
+        if out["skeleton"].get("prompt"):
+            print(f"  skeleton -> {out['skeleton']['prompt_cmd']}")
+        for e in out["entities"]:
+            print(f"  {e['id']:<28} {e['status']:<8} {e.get('prompt') or '?':<16} files {len(e['files'])}")
+    return 0
+
+
+def document_roster(campaign: str, phase: str) -> list[str]:
+    """Single-writer phases have no skeleton: the roster is the document(s) the phase writes."""
+    slug = campaign.replace("-", "_")
+    proj = (read_json(design_dir(campaign) / "entities.json") or {}).get("entities", {})
+    if phase == "P1":
+        return [f"premise_{slug}"]
+    if phase == "P2":
+        return ["doc_cosmology"]
+    if phase == "P8":
+        cultures = [eid for eid, e in proj.items() if e.get("type") == "polity"]
+        return [f"primer_{eid}" for eid in cultures] or ["primer_all"]
+    if phase == "P9":
+        threads = [f"thread_{eid[3:]}" for eid, e in proj.items() if e.get("type") == "pc"]
+        return threads + ["doc_session1"]
+    return []
+
+
+def render_cmd(campaign: str, name: str, entity_id: str | None, attempt: int, order: int = 1) -> str:
+    cmd = f"py -X utf8 {SCRIPTS / 'design_prompts.py'} -c {campaign} render {name}"
+    if entity_id:
+        cmd += f" --id {entity_id}"
+    cmd += f" --attempt {attempt}"
+    if order != 1:
+        cmd += f" --critic-order {order}"
+    return cmd
+
+
+def prompt_bundle(campaign: str, phase: str, name: str, entity_id: str | None, attempt: int) -> dict:
+    """The render command, a rendered copy under design/_prompts/ (readable by the conductor) and the critic count."""
+    out_dir = design_dir(campaign) / "_prompts" / phase
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stem = entity_id or "skeleton"
+    text = dp.render(campaign, name, entity_id, attempt)
+    path = out_dir / f"{stem}.md"
+    path.write_text(text, encoding="utf-8", newline="\n")
+    fm, _ = dp.load(name)
+    bundle = {"prompt": name, "prompt_cmd": render_cmd(campaign, name, entity_id, attempt), "prompt_file": str(path),
+              "prompt_chars": len(text), "critics": int(fm.get("critics") or 1), "effort": fm.get("effort", "medium")}
+    if entity_id:
+        crit = dp.render(campaign, "critic", entity_id, attempt, 1)
+        cpath = out_dir / f"{stem}.critic.md"
+        cpath.write_text(crit, encoding="utf-8", newline="\n")
+        bundle["critic_cmd"] = render_cmd(campaign, "critic", entity_id, attempt)
+        bundle["critic_file"] = str(cpath)
+        if bundle["critics"] > 1:
+            bundle["critic2_cmd"] = render_cmd(campaign, "critic", entity_id, attempt, 2)
+    return bundle
+
+
+def pending_with_prompts(campaign: str, phase: str) -> dict:
+    data = dm.load(campaign)
+    canonical = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
+    ph = data["phases"][phase]
+    attempt = max(1, int(ph.get("attempt") or 1))
+    reads = ph.get("reads") or {}
+    rows = []
+    for eid in ph.get("roster") or []:
+        row = data["entities"].get(eid, {"status": "pending", "attempt": 0})
+        if dm.ENTITY_RANK.get(row.get("status", "pending"), 0) >= dm.ENTITY_RANK["merged"]:
+            continue
+        budget = dm.read_budget(campaign, canonical, eid) if eid in canonical else []
+        files = list(dict.fromkeys(budget + list(reads.get(eid) or [])))
+        entry = {"id": eid, "status": row.get("status", "pending"), "attempt": int(row.get("attempt") or 0),
+                 "last_error": row.get("last_error"), "files": files}
+        name = dp.prompt_for(phase, eid)
+        if name:
+            entry.update(prompt_bundle(campaign, phase, name, eid, attempt))
+        rows.append(entry)
+    skeleton = dict(ph.get("skeleton") or {})
+    sk_name = dp.prompt_for(phase, None)
+    if sk_name and skeleton.get("status") in (None, "pending"):
+        skeleton.update(prompt_bundle(campaign, phase, sk_name, None, attempt))
+    phase_critic = {"prompt": "phase_critic", "prompt_cmd": render_cmd(campaign, "phase_critic", None, attempt)}
+    return {"campaign": campaign, "phase": phase, "attempt": attempt, "auto_approve": auto_approve(data),
+            "skeleton": skeleton, "directions": ph.get("directions", []), "seed": data["seed"]["master"],
+            "entities": rows, "phase_critic": phase_critic}
 
 
 def phase_merge(campaign: str, phase: str, day: int) -> int:
@@ -630,6 +722,7 @@ def phase_merge(campaign: str, phase: str, day: int) -> int:
     if seed.returncode != 0:
         print(seed.stderr.strip(), file=sys.stderr)
         return 1
+    absorb_skeleton(campaign, phase)
     dm.reconcile(campaign, quiet=True)
     data = dm.load(campaign)
     ph = data["phases"][phase]
@@ -639,6 +732,31 @@ def phase_merge(campaign: str, phase: str, day: int) -> int:
         dm.save(campaign, data, f"designer.py phase {phase} merge")
     print(f"designer: {phase} {data['phases'][phase]['status']}")
     return 0
+
+
+def absorb_skeleton(campaign: str, phase: str) -> bool:
+    """A skeleton agent's skeleton.json (roster, assignments, reads) becomes the phase's plan; the file moves to merged/."""
+    staging = design_dir(campaign) / "_staging" / phase
+    src = staging / "skeleton.json"
+    if not src.is_file():
+        return False
+    sk = read_json(src) or {}
+    data = dm.load(campaign)
+    ph = data["phases"][phase]
+    roster = [x for x in (sk.get("roster") or []) if isinstance(x, str)]
+    ph["roster"] = roster
+    ph["assignments"] = {k: v for k, v in (sk.get("assignments") or {}).items() if isinstance(v, str)}
+    ph["reads"] = {k: list(v) for k, v in (sk.get("reads") or {}).items() if isinstance(v, list)}
+    ph["skeleton"] = {"status": "merged", "agent": sk.get("agent") or (ph.get("skeleton") or {}).get("agent")}
+    for eid in roster:
+        data["entities"].setdefault(eid, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
+                                          "last_error": None, "file": None, "stage_file": None, "agent": None})
+    dm.save(campaign, data, f"designer.py phase {phase} merge (skeleton)")
+    merged = staging / "merged"
+    merged.mkdir(exist_ok=True)
+    src.replace(merged / "skeleton.json")
+    print(f"designer: {phase} skeleton absorbed - roster {len(roster)}, assignments {len(ph['assignments'])}")
+    return True
 
 
 def phase_check(campaign: str, phase: str) -> int:

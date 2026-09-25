@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "required": ["entity_id", "verdict", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "entity_id": {"type": "string", "description": "the entity, or the phase id for a phase-level critique"},
+    "verdict": {"type": "string", "enum": ["pass", "fix", "rerun"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rubric_id", "entity_id", "verdict"],
+        "additionalProperties": false,
+        "properties": {
+          "rubric_id": {"type": "string"},
+          "entity_id": {"type": "string"},
+          "verdict": {"type": "string", "enum": ["pass", "fix", "rerun", "note"]},
+          "reason_code": {"type": "string", "description": "a short slug, never quoted text: missing_telegraph, event_shaped, no_independent_want"}
+        }
+      }
+    },
+    "notes_file": {"type": "string", "description": "design/_staging/<phase>/<id>.critique.md with the full reasoning; dm-only when the scope was dm-only"}
+  }
+}

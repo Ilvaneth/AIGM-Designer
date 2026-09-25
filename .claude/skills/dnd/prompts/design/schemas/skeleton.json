@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "required": ["phase", "status", "roster", "assignments", "fragments"],
+  "additionalProperties": false,
+  "properties": {
+    "phase": {"type": "string", "pattern": "^P[0-9]$"},
+    "status": {"type": "string", "enum": ["staged", "failed"]},
+    "roster": {"type": "array", "items": {"type": "string", "pattern": "^[a-z]+_[a-z0-9_]+$"}, "description": "every entity id this phase's fan-out must write"},
+    "assignments": {"type": "object", "additionalProperties": {"type": "string"}, "description": "roll label prefix (region.1, faction.3, site.2) -> entity id"},
+    "fragments": {"type": "array", "items": {"type": "string"}, "description": "the staging fragments the skeleton wrote (stubs, matrices, map, beats)"},
+    "skeleton_file": {"type": "string", "description": "design/_staging/<phase>/skeleton.json"},
+    "counts": {"type": "object", "additionalProperties": {"type": "integer"}}
+  }
+}

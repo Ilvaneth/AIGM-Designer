@@ -155,12 +155,21 @@ def row_errors(eid: str, row: dict) -> list[str]:
 
 # ── merge ─────────────────────────────────────────────────────────────────────
 
+NON_FRAGMENTS = ("skeleton.json",)
+NON_FRAGMENT_SUFFIXES = (".facts.json", ".critique.json", ".prompt.json")
+
+
+def is_fragment(path: Path) -> bool:
+    """A staging JSON that is a commit record; the skeleton's map, facts and critique files are not."""
+    return path.name not in NON_FRAGMENTS and not path.name.endswith(NON_FRAGMENT_SUFFIXES)
+
+
 def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) -> int:
     staging = design_dir(campaign) / "_staging" / phase
     if not staging.is_dir():
         print(f"registry: no staging folder {staging}", file=sys.stderr)
         return 1
-    fragments = sorted(p for p in staging.glob("*.json"))
+    fragments = sorted(p for p in staging.glob("*.json") if is_fragment(p))
     if not fragments:
         print(f"registry: nothing to merge in {staging}")
         return 0

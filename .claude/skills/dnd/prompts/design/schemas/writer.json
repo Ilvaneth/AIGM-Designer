@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["entity_id", "status", "fragment"],
+  "additionalProperties": false,
+  "properties": {
+    "entity_id": {"type": "string", "pattern": "^[a-z]+_[a-z0-9_]+$"},
+    "status": {"type": "string", "enum": ["staged", "failed"]},
+    "fragment": {"type": "string", "description": "design/_staging/<phase>/<id>.json, relative to the campaign dir"},
+    "counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"},
+      "description": "numbers the phase card may print: words, rooms, telegraphs, relations, samples"
+    }
+  }
+}

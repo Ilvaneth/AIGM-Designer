@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["answer"],
+  "additionalProperties": false,
+  "properties": {
+    "answer": {"type": "string", "enum": ["evet", "hayır", "spoiler vermeden cevaplanamaz"]}
+  }
+}
