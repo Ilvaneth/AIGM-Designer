@@ -71,8 +71,8 @@ class DesignCheck(unittest.TestCase):
 
     def test_stamp_change_trips_stamps_only(self):
         canon = self.c.json("design/dm-only/entities.json")
-        canon["entities"]["site_kor_fener"]["stamped"]["danger_tier"] = 3
-        canon["entities"]["site_kor_fener"]["danger_tier"] = 3
+        canon["entities"]["site_blind_lantern"]["stamped"]["danger_tier"] = 3
+        canon["entities"]["site_blind_lantern"]["danger_tier"] = 3
         self.c.write_json("design/dm-only/entities.json", canon)
         proc = self.check()
         self.assertEqual(list(errors_by_module(proc)), ["stamps"])
@@ -80,14 +80,14 @@ class DesignCheck(unittest.TestCase):
 
     def test_missing_telegraph_trips_sites_only(self):
         canon = self.c.json("design/dm-only/entities.json")
-        canon["entities"]["site_gelgit_magarasi"]["telegraphs"].pop()
+        canon["entities"]["site_tide_cave"]["telegraphs"].pop()
         self.c.write_json("design/dm-only/entities.json", canon)
         proc = self.check()
         self.assertEqual(list(errors_by_module(proc)), ["sites"])
         self.assertIn("telegraphs", errors_by_module(proc)["sites"])
 
     def test_wrong_minimum_depth_trips_sites_only(self):
-        p = self.c.path("design/sites/site_batik_iskele.md")
+        p = self.c.path("design/sites/site_sunken_pier.md")
         text = p.read_text(encoding="utf-8")
         # room 4 no longer drops into 5: the shortest path grows to 5 rooms
         text = text.replace("| 1 (cezirde), 5 (tek yön, çukur) |", "| 1 (cezirde) |")
@@ -98,11 +98,11 @@ class DesignCheck(unittest.TestCase):
 
     def test_later_act_reference_trips_sites_only(self):
         canon = self.c.json("design/dm-only/entities.json")
-        canon["entities"]["item_kandil_muhru"]["act"] = 2
-        canon["entities"]["item_kandil_muhru"]["stamped"]["act"] = 2
+        canon["entities"]["item_lamp_seal"]["act"] = 2
+        canon["entities"]["item_lamp_seal"]["stamped"]["act"] = 2
         self.c.write_json("design/dm-only/entities.json", canon)
         snap = self.c.json("design/dm-only/_snapshots/stamps.json")
-        snap["stamps"]["item_kandil_muhru"]["act"] = 2
+        snap["stamps"]["item_lamp_seal"]["act"] = 2
         self.c.write_json("design/dm-only/_snapshots/stamps.json", snap)
         proc = self.check()
         self.assertEqual(list(errors_by_module(proc)), ["sites"])
@@ -110,7 +110,7 @@ class DesignCheck(unittest.TestCase):
 
     def test_illegal_overlay_field_trips_overlay_only(self):
         ov = self.c.json("design/overlay.json")
-        ov["entries"]["site_kor_fener"]["danger_tier"] = {"value": 5, "birth": 2, "writer": "registry.py play-set", "day": 1}
+        ov["entries"]["site_blind_lantern"]["danger_tier"] = {"value": 5, "birth": 2, "writer": "registry.py play-set", "day": 1}
         self.c.write_json("design/overlay.json", ov)
         proc = self.check()
         self.assertEqual(list(errors_by_module(proc)), ["overlay"])
@@ -118,15 +118,15 @@ class DesignCheck(unittest.TestCase):
 
     def test_unsanctioned_overlay_writer_trips_overlay_only(self):
         ov = self.c.json("design/overlay.json")
-        ov["entries"]["site_kor_fener"]["status"]["writer"] = "the DM by hand"
+        ov["entries"]["site_blind_lantern"]["status"]["writer"] = "the DM by hand"
         self.c.write_json("design/overlay.json", ov)
         proc = self.check()
         self.assertEqual(list(errors_by_module(proc)), ["overlay"])
 
     def test_missing_map_node_trips_map_only(self):
         m = self.c.json("design/map.json")
-        m["nodes"] = [n for n in m["nodes"] if n["id"] != "site_dipsiz_kuyu"]
-        m["edges"] = [e for e in m["edges"] if "site_dipsiz_kuyu" not in (e["from"], e["to"])]
+        m["nodes"] = [n for n in m["nodes"] if n["id"] != "site_bottomless_well"]
+        m["edges"] = [e for e in m["edges"] if "site_bottomless_well" not in (e["from"], e["to"])]
         self.c.write_json("design/map.json", m)
         proc = self.check()
         self.assertEqual(list(errors_by_module(proc)), ["map"])
@@ -134,7 +134,7 @@ class DesignCheck(unittest.TestCase):
 
     def test_disconnected_map_trips_map_only(self):
         m = self.c.json("design/map.json")
-        m["edges"] = [e for e in m["edges"] if e["id"] != "r_kamisli_kuyu"]
+        m["edges"] = [e for e in m["edges"] if e["id"] != "r_reedham_well"]
         self.c.write_json("design/map.json", m)
         proc = self.check()
         self.assertEqual(list(errors_by_module(proc)), ["map"])
@@ -160,11 +160,11 @@ class DesignCheck(unittest.TestCase):
 
     def test_only_limits_the_run_to_one_entity(self):
         canon = self.c.json("design/dm-only/entities.json")
-        canon["entities"]["site_gelgit_magarasi"]["telegraphs"].pop()
+        canon["entities"]["site_tide_cave"]["telegraphs"].pop()
         self.c.write_json("design/dm-only/entities.json", canon)
-        proc = self.check("--only", "site_batik_iskele")
+        proc = self.check("--only", "site_sunken_pier")
         self.assertEqual(proc.returncode, 0, proc.stdout)
-        proc = self.check("--only", "site_gelgit_magarasi")
+        proc = self.check("--only", "site_tide_cave")
         self.assertEqual(proc.returncode, 1)
 
     def test_phase_run_accepts_a_pending_stub(self):

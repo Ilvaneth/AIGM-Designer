@@ -1,0 +1,145 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "registry.py merge --phase P1",
+    "written_at": "2026-09-24T18:10:00Z"
+  },
+  "languages": {
+    "marshtongue": {
+      "label_tr": "Marshtongue — kıyı halkının dili; yerleşim adları root+root bileşikleri, kişi adları ses sisteminden",
+      "family": "liquid_vowel",
+      "onsets": [
+        "v",
+        "m",
+        "r",
+        "l",
+        "s",
+        "n",
+        "y",
+        ""
+      ],
+      "nuclei": [
+        "a",
+        "e",
+        "i",
+        "o",
+        "u"
+      ],
+      "codas": [
+        "n",
+        "r",
+        "l",
+        "s",
+        "m",
+        ""
+      ],
+      "length": [
+        2,
+        3
+      ],
+      "forbidden_clusters": [
+        "rr",
+        "ll",
+        "sr"
+      ],
+      "tr_suffix_friendly": true,
+      "modes": {
+        "person": "phonetic",
+        "god": "phonetic",
+        "place": "compound",
+        "institution": "compound"
+      },
+      "roots": {
+        "lantern": "ışık/uyarı",
+        "salt": "hafıza/koruma",
+        "reed": "sınır/gizlenme",
+        "tide": "borç/dönüş",
+        "lamp": "yas/anma",
+        "mere": "sığ su",
+        "side": "kıyı yerleşimi",
+        "ham": "köy"
+      },
+      "samples": [
+        "Velune",
+        "Ormis",
+        "Sarven",
+        "Ilme",
+        "Yesra",
+        "Tolvan",
+        "Olmar",
+        "Ameli",
+        "Selen"
+      ]
+    },
+    "cragspeak": {
+      "label_tr": "Cragspeak — yayla ve kaya halkının dili",
+      "family": "harsh_consonantal",
+      "onsets": [
+        "d",
+        "t",
+        "k",
+        "v",
+        "g",
+        "dr",
+        "kr"
+      ],
+      "nuclei": [
+        "a",
+        "o",
+        "u",
+        "ı"
+      ],
+      "codas": [
+        "k",
+        "n",
+        "sk",
+        "rt",
+        "r"
+      ],
+      "length": [
+        2,
+        2
+      ],
+      "forbidden_clusters": [
+        "kk",
+        "tt"
+      ],
+      "tr_suffix_friendly": true,
+      "modes": {
+        "person": "phonetic",
+        "god": "phonetic",
+        "place": "compound",
+        "institution": "compound"
+      },
+      "roots": {
+        "crag": "dayanma",
+        "oath": "yemin",
+        "forge": "biçim verme",
+        "march": "sınır toprağı"
+      },
+      "samples": [
+        "Draskun",
+        "Vorin",
+        "Tegrik",
+        "Kortan"
+      ]
+    }
+  },
+  "assignments": {
+    "polity_reedmarch": "marshtongue",
+    "region_saltmere": "marshtongue",
+    "faction_court_of_mourners": "marshtongue",
+    "faction_reedmarch": "marshtongue",
+    "faction_tide_brotherhood": "cragspeak",
+    "pc_selen": "marshtongue",
+    "pc_vorin": "cragspeak"
+  },
+  "banned": [
+    "Kriv Shestendeliath",
+    "Ilvaneth Duskmere",
+    "Rendric Corr",
+    "Thessaly Ondrel"
+  ]
+}

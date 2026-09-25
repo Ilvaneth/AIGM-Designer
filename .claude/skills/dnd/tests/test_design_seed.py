@@ -32,19 +32,19 @@ class DesignSeed(unittest.TestCase):
     def test_seeds_graph_goals_and_channels_once(self):
         frag = self.c.json(FRAG)
         frag["seeds"] = [
-            {"store": "goals", "op": "add", "args": {"id": "npc_yesra", "name": "Yesra Tuzokur", "kind": "npc",
+            {"store": "goals", "op": "add", "args": {"id": "npc_yesra", "name": "Yesra Saltreader", "kind": "npc",
                                                      "goal": "Bir daha okumamak", "metric_type": "boolean",
                                                      "condition": "Yesra bir daha okumadı",
                                                      "threatened": "susar", "blocked": "kaçar", "permanent_loss": "okur"}},
             {"store": "channels", "op": "add", "args": {"id": "ch_masa", "name": "Köşe masası", "type": "private-meeting",
                                                         "participants": ["npc_yesra", "npc_tolvan"], "note": "her akşam"}},
-            {"store": "factions", "op": "stance", "args": {"from": "faction_divan", "to": "party", "level": -1}},
+            {"store": "factions", "op": "stance", "args": {"from": "faction_court_of_mourners", "to": "party", "level": -1}},
         ]
         self.c.write_json(FRAG, frag)
         proc = self.c.run("design_seed.py", "--phase", "P5", "--session", "0", check=True)
         self.assertIn("call(s) made", proc.stdout)
         graph = self.c.json("graph.json")
-        self.assertTrue(any(n["id"] == "npc_yesra" and n["name"] == "Yesra Tuzokur" for n in graph["nodes"]))
+        self.assertTrue(any(n["id"] == "npc_yesra" and n["name"] == "Yesra Saltreader" for n in graph["nodes"]))
         self.assertEqual(sum(1 for e in graph["edges"] if e["from"] == "npc_yesra"), 3)
         self.assertEqual(graph["_meta"]["written_by"], "campaign_graph.py")
         goals = self.c.json("goals.json")
@@ -56,7 +56,7 @@ class DesignSeed(unittest.TestCase):
         self.assertEqual(self.c.json("factions.json")["factions"][1]["stances"]["party"], -1)
         ledger = self.c.json("design/design.json")["seeded"]
         for key in ("graph:node:npc_yesra", "goals:npc_yesra", "channels:ch_masa",
-                    "factions:faction_divan:party", "graph:edge:npc_yesra:faction_divan:member_of"):
+                    "factions:faction_court_of_mourners:party", "graph:edge:npc_yesra:faction_court_of_mourners:member_of"):
             self.assertIn(key, ledger, key)
         # second run: nothing is called again, nothing duplicated
         proc = self.c.run("design_seed.py", "--phase", "P5", check=True)
@@ -84,7 +84,7 @@ class DesignSeed(unittest.TestCase):
 
     def test_names_store_only_when_asked(self):
         frag = self.c.json(FRAG)
-        frag["seeds"] = [{"store": "names", "op": "add", "args": {"name": "Yesra Tuzokur", "type": "npc"}}]
+        frag["seeds"] = [{"store": "names", "op": "add", "args": {"name": "Yesra Saltreader", "type": "npc"}}]
         self.c.write_json(FRAG, frag)
         manifest = self.c.json("design/design.json")
         manifest["seeded"] = [k for k in manifest["seeded"] if not k.startswith("names:")]

@@ -1,0 +1,2847 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "registry.py merge --phase P9",
+    "written_at": "2026-09-24T20:00:00Z",
+    "stamp_snapshot": "design/dm-only/_snapshots/stamps.json",
+    "projection": "design/entities.json",
+    "counts": {
+      "premise": 1,
+      "signature": 3,
+      "break": 1,
+      "god": 3,
+      "plane": 1,
+      "era": 3,
+      "event": 4,
+      "polity": 1,
+      "region": 1,
+      "settlement": 2,
+      "district": 2,
+      "place": 6,
+      "faction": 3,
+      "npc": 9,
+      "site": 4,
+      "item": 2,
+      "creature": 1,
+      "arc": 1,
+      "chapter": 2,
+      "node": 6,
+      "beat": 3,
+      "seed": 2,
+      "socket": 4,
+      "thread": 2,
+      "pc": 2
+    }
+  },
+  "entities": {
+    "premise_salt_lantern": {
+      "id": "premise_salt_lantern",
+      "type": "premise",
+      "name": "Salt Lantern",
+      "aliases": [],
+      "summary": "Unutmak bir kurtuluş mudur, yoksa ikinci bir ölüm mü? Tuzdan anı okuyan bir kıyı, yanmayan bir fener, ölülerin gerçekten öldüğü bir dünya.",
+      "file": "design/premise.md",
+      "secrecy": "public",
+      "created_phase": "P1",
+      "origin": "birth",
+      "question_tr": "Unutmak bir kurtuluş mudur, yoksa ikinci bir ölüm mü?",
+      "tensions": [
+        "tension_memory_salvation"
+      ],
+      "world_default_tr": "Unutmak merhamettir; ölüyü bir kez okur, sonra bırakırsın.",
+      "signatures": [
+        "signature_salt_memory",
+        "signature_saltbound",
+        "signature_court_of_mourners"
+      ],
+      "trope_breaks": [
+        "break_no_afterlife"
+      ],
+      "pitch_tr": "Saltmere'de ölülerin son saati tuz kristalinde kalır ve Court of Mourners onu ailenin önünde bir kez okur. Ölümden sonra hiçbir şey olmadığını herkes bilir; bu yüzden hatırlanmak her şeydir. Kırk yıldır sönük Blind Lantern'in altında bir şeyler yeniden yanmaya hazırlanıyor.",
+      "stamped": {
+        "question_tr": "Unutmak bir kurtuluş mudur, yoksa ikinci bir ölüm mü?",
+        "signatures": [
+          "signature_salt_memory",
+          "signature_saltbound",
+          "signature_court_of_mourners"
+        ],
+        "trope_breaks": [
+          "break_no_afterlife"
+        ]
+      },
+      "refs": [
+        "signature_salt_memory",
+        "signature_saltbound",
+        "signature_court_of_mourners",
+        "break_no_afterlife",
+        "npc_s01",
+        "site_blind_lantern"
+      ],
+      "dm_only": {
+        "secret_archetype": "secret_magic_is_actually",
+        "secret_twist": "twist_institution_knows",
+        "secret_tr": "Salt Memory anıyı okumaz, tüketir: her okuma ölünün son saatini yok eder ve okuyucudan da eş ağırlıkta bir anı alır. Court bunu yüz yirmi yıldır bilir; 'tüketilenler defteri' bunun için tutulur, çünkü tüketilen anılar Blind Lantern'in kandilinde birikir.",
+        "villain_answer_tr": "Unutulmak ölümdür; öyleyse ben hiç unutulmayacağım, kim unutulursa unutulsun.",
+        "clues": [
+          {
+            "n": 1,
+            "act": 1,
+            "layer": "surface",
+            "placed_in": "npc_yesra",
+            "how_tr": "Yesra aynı hikâyeyi iki akşam farklı anlatır; Insight DC 12 boşluğu gösterir."
+          },
+          {
+            "n": 2,
+            "act": 1,
+            "layer": "investigation",
+            "placed_in": "site_sunken_pier",
+            "how_tr": "6. odadaki sandıkta defter parçası: 'tüketilenler' başlığı altında Lanternside ölülerinin adları."
+          },
+          {
+            "n": 3,
+            "act": 1,
+            "layer": "deep",
+            "placed_in": "site_blind_lantern",
+            "how_tr": "Kandil odasında defterin aslı ve el yazısı: Ilme'nin değil, Silent Scribe'ın eli."
+          }
+        ],
+        "dm_pitch_tr": "Court'un sessiz kâtibi Nerun, yüz yılın tüketilmiş anılarını Blind Lantern'de yakıp kendi adını kıyıdaki her kafaya yazmak istiyor. Parti bir hancının borcuyla başlar, bir okuyucunun boşluklarıyla şüphelenir, bir defter parçasıyla emin olur ve doksan altıncı günde Lantern'in kime yanacağına karar verir.",
+        "stamped_fields": [
+          "secret_archetype",
+          "secret_twist",
+          "secret_tr"
+        ]
+      }
+    },
+    "signature_salt_memory": {
+      "id": "signature_salt_memory",
+      "type": "signature",
+      "name": "Salt Memory",
+      "aliases": [
+        "tuz okuması"
+      ],
+      "summary": "Boğulanın son saati tuz kristalinde kalır; dilde eritilirse bir kez yaşanır.",
+      "file": "design/premise.md",
+      "secrecy": "public",
+      "created_phase": "P1",
+      "origin": "birth",
+      "kind": "magic",
+      "rule_tr": "Bir kristal, bir okuma. Okuyucu bazen kendi anılarından birini unutur, derler.",
+      "stamped": {
+        "kind": "magic"
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "npc_yesra",
+        "place_salt_house",
+        "site_blind_lantern",
+        "item_consumed_ledger"
+      ],
+      "dm_only": {
+        "true_rule_tr": "Okuyucu her okumada eş ağırlıkta bir anısını kaybeder; ölünün anısı da yok olur, kandilde birikir."
+      }
+    },
+    "signature_saltbound": {
+      "id": "signature_saltbound",
+      "type": "signature",
+      "name": "Saltbound",
+      "aliases": [
+        "tuza bağlı",
+        "düzlükten gelenler"
+      ],
+      "summary": "Tuz düzlüğünden yürüyerek çıkan boğulmuşlar; kabuk bağlamış, sessiz, ışığa gelirler.",
+      "file": "design/premise.md",
+      "secrecy": "public",
+      "created_phase": "P1",
+      "origin": "birth",
+      "kind": "creature",
+      "rule_tr": "Okunmadan gömülen boğulmuşlar bazen kalkar; kandil görünce durur, karanlıkta yürür.",
+      "stamped": {
+        "kind": "creature"
+      },
+      "refs": [
+        "creature_saltbound",
+        "site_bottomless_well",
+        "site_sunken_pier",
+        "settlement_reedham",
+        "region_saltmere"
+      ],
+      "dm_only": {
+        "true_rule_tr": "Saltbound'lar okunmayan değil, yarım okunan ölülerdir; Court'un erken okumalarının artığıdır."
+      }
+    },
+    "signature_court_of_mourners": {
+      "id": "signature_court_of_mourners",
+      "type": "signature",
+      "name": "Court of Mourners",
+      "aliases": [
+        "Court"
+      ],
+      "summary": "Okumayı ruhsatlayan, defter tutan ve ücret karşılığı yas tutan kurum.",
+      "file": "design/premise.md",
+      "secrecy": "public",
+      "created_phase": "P1",
+      "origin": "birth",
+      "kind": "institution",
+      "rule_tr": "Okuma için aile izni, bir kandil ve Court mührü gerekir.",
+      "stamped": {
+        "kind": "institution"
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "npc_ilme",
+        "npc_yesra",
+        "place_mourners_hall",
+        "god_ormis"
+      ],
+      "dm_only": {
+        "true_rule_tr": "Court yasın değil defterin kurumudur; mühür her okumayı Nerun'un listesine düşürür."
+      }
+    },
+    "break_no_afterlife": {
+      "id": "break_no_afterlife",
+      "type": "break",
+      "name": "Öte yok, herkes biliyor",
+      "aliases": [],
+      "summary": "Ölümden sonra hiçbir şey yoktur ve bunu tapınaklar da inkâr etmez; hatırlanmak tek öte dünyadır.",
+      "file": "design/premise.md",
+      "secrecy": "public",
+      "created_phase": "P1",
+      "origin": "birth",
+      "row": "break_no_afterlife_known",
+      "stamped": {
+        "row": "break_no_afterlife_known"
+      },
+      "refs": [
+        "god_isken",
+        "faction_court_of_mourners",
+        "signature_salt_memory",
+        "settlement_lanternside",
+        "thread_selen",
+        "event_great_flood"
+      ]
+    },
+    "god_velune": {
+      "id": "god_velune",
+      "type": "god",
+      "name": "Velune",
+      "aliases": [
+        "Mother of Waves"
+      ],
+      "summary": "Denizin ve fırtınanın tanrıçası; kıyı halkı her sabah ona tuz döker, o hiç cevap vermez.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "rank": "greater",
+      "domains": [
+        "Tempest",
+        "Nature"
+      ],
+      "alignment": "N",
+      "symbol": "üç dalga üstünde bir tuz kristali",
+      "church": "Temple of Velune (kurum, Lanternside)",
+      "disposition": "kayıtsız; fırtınayla konuşur",
+      "relations": [
+        {
+          "to": "god_ormis",
+          "kind": "rivalry"
+        },
+        {
+          "to": "god_isken",
+          "kind": "silence"
+        }
+      ],
+      "stamped": {
+        "rank": "greater",
+        "domains": [
+          "Tempest",
+          "Nature"
+        ]
+      },
+      "refs": [
+        "place_temple_of_velune",
+        "npc_olmar",
+        "event_great_flood"
+      ],
+      "dm_only": {
+        "secret_tr": "Velune susmuyor; Flood'dan beri kimse dinlemiyor. Fırtınalar Lantern'e doğru dönüyor."
+      }
+    },
+    "god_ormis": {
+      "id": "god_ormis",
+      "type": "god",
+      "name": "Ormis",
+      "aliases": [
+        "Lampbearer"
+      ],
+      "summary": "Bilginin ve ışığın tanrısı; Court onun adına okur, yas tutar, defter tutar.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "rank": "greater",
+      "domains": [
+        "Knowledge",
+        "Light"
+      ],
+      "alignment": "LN",
+      "symbol": "yanan kandil, altında kapalı defter",
+      "church": "faction_court_of_mourners",
+      "disposition": "sessiz; kandil yanınca orada sayılır",
+      "relations": [
+        {
+          "to": "god_velune",
+          "kind": "rivalry"
+        },
+        {
+          "to": "god_isken",
+          "kind": "alliance"
+        }
+      ],
+      "stamped": {
+        "rank": "greater",
+        "domains": [
+          "Knowledge",
+          "Light"
+        ]
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "place_mourners_hall",
+        "npc_ilme",
+        "site_blind_lantern"
+      ],
+      "dm_only": {
+        "secret_tr": "Ormis'in kandili, Nerun'un Lantern'de yakmak istediği kandildir; tanrının 'sessizliği' Court'un işine gelir."
+      }
+    },
+    "god_isken": {
+      "id": "god_isken",
+      "type": "god",
+      "name": "Isken",
+      "aliases": [
+        "Still One",
+        "God of Endings"
+      ],
+      "summary": "Ölümün tanrısı; öte dünya vaat etmez, yalnızca bitirir. Herkes onu sever, kimse ondan bir şey istemez.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "rank": "lesser",
+      "domains": [
+        "Death"
+      ],
+      "alignment": "N",
+      "symbol": "sönmüş kandil",
+      "church": "yok; her evde bir sönmüş kandil",
+      "disposition": "nazik; gelir, bitirir, gider",
+      "relations": [
+        {
+          "to": "god_ormis",
+          "kind": "alliance"
+        },
+        {
+          "to": "god_velune",
+          "kind": "silence"
+        }
+      ],
+      "stamped": {
+        "rank": "lesser",
+        "domains": [
+          "Death"
+        ]
+      },
+      "refs": [
+        "break_no_afterlife",
+        "settlement_lanternside",
+        "creature_saltbound"
+      ],
+      "dm_only": {
+        "secret_tr": "Isken'in tek vaadi 'bitmek'tir; Salt Memory bu vaadi bozar. Saltbound'lar Isken'in bitiremediği ölülerdir."
+      }
+    },
+    "plane_deep": {
+      "id": "plane_deep",
+      "type": "plane",
+      "name": "the Deep",
+      "aliases": [
+        "the Undersea"
+      ],
+      "summary": "Su Düzlemi'nin bu dünyadaki adı; batanların gittiği yer değil, yalnızca su.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "baseline": "Elemental Plane of Water",
+      "touched": false,
+      "deviation": "kıyı halkı orada kimsenin beklemediğini bilir; Banishment oraya gönderir, geri gelen unutmuştur",
+      "time_rate": null,
+      "entry_site": null,
+      "stamped": {
+        "baseline": "Elemental Plane of Water",
+        "touched": false
+      },
+      "refs": [
+        "god_velune",
+        "site_bottomless_well"
+      ]
+    },
+    "era_flood": {
+      "id": "era_flood",
+      "type": "era",
+      "name": "Age of the Flood",
+      "aliases": [],
+      "summary": "Denizin ovayı aldığı ve tuzla geri verdiği çağ; kimse tarih vermez, herkes 'önce' der.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "order": 1,
+      "span_tr": "yaklaşık 1200 yıl önce, süresi bilinmez",
+      "stamped": {
+        "order": 1
+      },
+      "refs": [
+        "event_great_flood"
+      ]
+    },
+    "era_lanterns": {
+      "id": "era_lanterns",
+      "type": "era",
+      "name": "Age of Lanterns",
+      "aliases": [],
+      "summary": "Kıyıya fenerlerin dikildiği, gemilerin geldiği, Court'un kurulduğu çağ.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "order": 2,
+      "span_tr": "yıl 1 - 372",
+      "stamped": {
+        "order": 2
+      },
+      "refs": [
+        "event_court_founding",
+        "event_lantern_dimmed"
+      ]
+    },
+    "era_silence": {
+      "id": "era_silence",
+      "type": "era",
+      "name": "Age of Silence",
+      "aliases": [
+        "şimdi"
+      ],
+      "summary": "Blind Lantern'in söndüğü yıldan bugüne; gemiler azaldı, okumalar arttı.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "order": 3,
+      "span_tr": "yıl 372 - bugün (412)",
+      "stamped": {
+        "order": 3
+      },
+      "refs": [
+        "event_lantern_dimmed",
+        "event_vesper_wreck"
+      ]
+    },
+    "event_great_flood": {
+      "id": "event_great_flood",
+      "type": "event",
+      "name": "Great Flood",
+      "aliases": [],
+      "summary": "Deniz ovayı yuttu; çekildiğinde toprak tuzdu ve ilk Saltbound'lar düzlükten yürüdü.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "day": -432000,
+      "year": -1200,
+      "era": "era_flood",
+      "taught_tr": "Velune öfkelendi, ovayı aldı, tuzla geri verdi. O günden beri ölüler tuzda kalır.",
+      "witnesses": [],
+      "stamped": {
+        "year": -1200
+      },
+      "refs": [
+        "god_velune",
+        "creature_saltbound",
+        "site_bottomless_well"
+      ],
+      "dm_only": {
+        "happened_tr": "Flood'dan önce ovada bir şehir vardı; Bottomless Well onun kuyusudur. Saltbound'lar o şehrin yarım gömülmüş ölüleridir."
+      }
+    },
+    "event_court_founding": {
+      "id": "event_court_founding",
+      "type": "event",
+      "name": "Founding of the Court",
+      "aliases": [],
+      "summary": "Lanternside'da ilk okuma ruhsatı; Court of Mourners Ormis'in adıyla defter açtı.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "day": -43200,
+      "year": 292,
+      "era": "era_lanterns",
+      "taught_tr": "Okuma vahşi ve tehlikeliydi; Court onu düzene soktu, aileleri korudu.",
+      "witnesses": [],
+      "stamped": {
+        "year": 292
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "god_ormis",
+        "place_mourners_hall"
+      ],
+      "dm_only": {
+        "happened_tr": "İlk kâtip, okumanın anıyı tükettiğini ilk yıl anladı ve defteri bunun için açtı. Nerun onun yedinci halefidir."
+      }
+    },
+    "event_lantern_dimmed": {
+      "id": "event_lantern_dimmed",
+      "type": "event",
+      "name": "The Dimming of the Lantern",
+      "aliases": [],
+      "summary": "Kırk yıl önce Blind Lantern bir gece yanmadı; giden bekçi dönmedi, kimse yenisini göndermedi.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "day": -14400,
+      "year": 372,
+      "era": "era_lanterns",
+      "taught_tr": "Bekçi boğuldu, fener yağsız kaldı, Reedmarch yeni bekçi bulamadı.",
+      "witnesses": [
+        "npc_sarven",
+        "npc_tolvan",
+        "npc_ilme"
+      ],
+      "stamped": {
+        "year": 372
+      },
+      "refs": [
+        "site_blind_lantern",
+        "npc_sarven",
+        "npc_tolvan"
+      ],
+      "dm_only": {
+        "happened_tr": "Court bekçiyi okudu; okuma yarım kaldı, bekçi Saltbound oldu ve hâlâ Lantern'dedir. O geceden beri kandil orada birikir."
+      }
+    },
+    "event_vesper_wreck": {
+      "id": "event_vesper_wreck",
+      "type": "event",
+      "name": "The Wreck of the Vesper",
+      "aliases": [
+        "kayıp gemi"
+      ],
+      "summary": "Üç yıl önce Vesper adlı yük gemisi Broken Breakwater'de battı; yükü ve dört yolcusu kayıp.",
+      "file": "design/cosmology.md",
+      "secrecy": "public",
+      "created_phase": "P2",
+      "origin": "birth",
+      "day": -1080,
+      "year": 409,
+      "era": "era_silence",
+      "taught_tr": "Fırtına gemiyi dalgakırana attı; Reedmarch'ın tuz vergisi ve dört can denize gitti.",
+      "witnesses": [
+        "npc_tolvan",
+        "npc_draskun",
+        "npc_sarven"
+      ],
+      "stamped": {
+        "year": 409
+      },
+      "refs": [
+        "site_sunken_pier",
+        "faction_tide_brotherhood",
+        "npc_sarven",
+        "pc_selen",
+        "pc_vorin",
+        "item_consumed_ledger"
+      ],
+      "dm_only": {
+        "happened_tr": "Gemide Court'un kuryesi (Vorin'in babası) ve defterin bir kopyası vardı; Selen'in ağabeyi tayfaydı. Brotherhood enkazı ilk bulan oldu ve sandıkları Sunken Pier'e taşıdı; Reeve manifestoyu onlara sattı."
+      }
+    },
+    "polity_reedmarch": {
+      "id": "polity_reedmarch",
+      "type": "polity",
+      "name": "Reedmarch",
+      "aliases": [
+        "the March"
+      ],
+      "summary": "Saltmere'in tek devleti: kalıtsal bir reeve, bir Salt Council, bir liman.",
+      "file": "design/regions/region_saltmere.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "government": "kalıtsal beylik, Salt Council danışır",
+      "ruler_at_birth": "npc_sarven",
+      "capital": "settlement_lanternside",
+      "law_level": 3,
+      "faction": "faction_reedmarch",
+      "stamped": {
+        "ruler_at_birth": "npc_sarven"
+      },
+      "refs": [
+        "npc_sarven",
+        "settlement_lanternside",
+        "faction_reedmarch",
+        "region_saltmere"
+      ]
+    },
+    "region_saltmere": {
+      "id": "region_saltmere",
+      "type": "region",
+      "name": "Saltmere",
+      "aliases": [
+        "the Mere",
+        "the Flats"
+      ],
+      "summary": "Kıyı, sazlık ve tuz düzlüğü; toprağın tuzdan, tuzun hatıradan olduğu yer.",
+      "file": "design/regions/region_saltmere.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "danger_tier": 2,
+      "biome": "tuz bataklığı ve kıyı",
+      "climate": "ılıman, rüzgârlı, kışı sisli",
+      "polity": "polity_reedmarch",
+      "identity_tr": "Sabahları düzlük gece ölenlerin adlarını fısıldar gibi çıtırdar.",
+      "landmarks": [
+        "Broken Breakwater",
+        "Reed Road",
+        "Salt Flats"
+      ],
+      "travel_table": "design/regions/region_saltmere.md",
+      "stamped": {
+        "danger_tier": 2,
+        "polity": "polity_reedmarch"
+      },
+      "refs": [
+        "polity_reedmarch",
+        "settlement_lanternside",
+        "settlement_reedham",
+        "site_sunken_pier",
+        "site_tide_cave",
+        "site_blind_lantern",
+        "site_bottomless_well",
+        "creature_saltbound",
+        "faction_tide_brotherhood"
+      ],
+      "dm_only": {
+        "secret_tr": "Düzlüğün altında Flood öncesi şehir yatar; Bottomless Well onun kuyusudur."
+      }
+    },
+    "settlement_lanternside": {
+      "id": "settlement_lanternside",
+      "type": "settlement",
+      "name": "Lanternside",
+      "aliases": [],
+      "summary": "Kırık bir dalgakıranın ardındaki tuz limanı; iki mahalle, bir Court, bir Reeve.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "scale": "town",
+      "population": 2400,
+      "wealth": "modest",
+      "law": 3,
+      "polity": "polity_reedmarch",
+      "ruler_at_birth": "npc_sarven",
+      "region": "region_saltmere",
+      "districts": [
+        "district_quayside",
+        "district_upper_lanternside"
+      ],
+      "anchors": [
+        "place_weary_gull",
+        "place_mourners_hall",
+        "place_reeves_manor",
+        "place_salt_market",
+        "place_temple_of_velune",
+        "place_salt_house"
+      ],
+      "small_point_budget": 12,
+      "economy": {
+        "sells": [
+          "tuz",
+          "tuzlu balık"
+        ],
+        "needs": [
+          "kereste",
+          "demir"
+        ],
+        "price_modifier": 1.0
+      },
+      "fear_tr": "Lantern bir daha yanarsa",
+      "problem": "seed_gulls_debt",
+      "stamped": {
+        "scale": "town",
+        "polity": "polity_reedmarch",
+        "ruler_at_birth": "npc_sarven"
+      },
+      "refs": [
+        "npc_sarven",
+        "district_quayside",
+        "district_upper_lanternside",
+        "place_weary_gull",
+        "place_mourners_hall",
+        "place_reeves_manor",
+        "place_salt_market",
+        "place_temple_of_velune",
+        "place_salt_house",
+        "seed_gulls_debt",
+        "faction_court_of_mourners",
+        "faction_reedmarch"
+      ],
+      "dm_only": {
+        "secret_tr": "Kasabayı Reeve değil Court yönetir; Reeve'in borcu Court'tatur ve Court'un defteri Reeve'in adını da taşır."
+      }
+    },
+    "settlement_reedham": {
+      "id": "settlement_reedham",
+      "type": "settlement",
+      "name": "Reedham",
+      "aliases": [],
+      "summary": "Reed Road'un sonunda on dört hane; tuz düzlüğüne bakan tek köy.",
+      "file": "design/settlements/settlement_reedham.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "scale": "village",
+      "population": 140,
+      "wealth": "poor",
+      "law": 2,
+      "polity": "polity_reedmarch",
+      "ruler_at_birth": "npc_sarven",
+      "region": "region_saltmere",
+      "districts": [],
+      "anchors": [],
+      "small_point_budget": 0,
+      "economy": {
+        "sells": [
+          "saz",
+          "yumurta"
+        ],
+        "needs": [
+          "tuz",
+          "her şey"
+        ],
+        "price_modifier": 1.1
+      },
+      "fear_tr": "Düzlükten gelenler",
+      "problem": "seed_reedham_silence",
+      "stamped": {
+        "scale": "village",
+        "polity": "polity_reedmarch",
+        "ruler_at_birth": "npc_sarven"
+      },
+      "refs": [
+        "npc_ameli",
+        "seed_reedham_silence",
+        "site_bottomless_well",
+        "creature_saltbound"
+      ],
+      "dm_only": {
+        "secret_tr": "Köyün ölüleri okunmaz; Court buraya gelmez. Bu yüzden düzlükten gelenler bu köye gelir."
+      }
+    },
+    "district_quayside": {
+      "id": "district_quayside",
+      "type": "district",
+      "name": "Quayside",
+      "aliases": [
+        "aşağı mahalle"
+      ],
+      "summary": "Liman, han, pazar; tuz kokusu ve halat.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "character_tr": "Gündüz hamal, gece Brotherhood.",
+      "stamped": {},
+      "refs": [
+        "settlement_lanternside",
+        "place_weary_gull",
+        "place_salt_market",
+        "faction_tide_brotherhood"
+      ]
+    },
+    "district_upper_lanternside": {
+      "id": "district_upper_lanternside",
+      "type": "district",
+      "name": "Upper Lanternside",
+      "aliases": [
+        "yukarı mahalle"
+      ],
+      "summary": "Reeve konağı, Court evi, tapınak; taş ve sessizlik.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "character_tr": "Kapılar kapalı, kandiller yanık.",
+      "stamped": {},
+      "refs": [
+        "settlement_lanternside",
+        "place_mourners_hall",
+        "place_reeves_manor",
+        "place_temple_of_velune",
+        "place_salt_house"
+      ]
+    },
+    "place_weary_gull": {
+      "id": "place_weary_gull",
+      "type": "place",
+      "name": "Weary Gull",
+      "aliases": [
+        "han"
+      ],
+      "summary": "Quayside'ın tek hanı; Tolvan'ın, borçlu, iki kayığı Brotherhood'a rehin.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "district": "district_quayside",
+      "kind": "inn",
+      "owner": "npc_tolvan",
+      "services": [
+        "oda",
+        "yemek",
+        "söylenti",
+        "kayık"
+      ],
+      "stamped": {},
+      "refs": [
+        "npc_tolvan",
+        "seed_gulls_debt",
+        "faction_tide_brotherhood",
+        "socket_debt"
+      ]
+    },
+    "place_mourners_hall": {
+      "id": "place_mourners_hall",
+      "type": "place",
+      "name": "Mourners' Hall",
+      "aliases": [],
+      "summary": "Court of Mourners'un oturduğu taş ev; kandil hiç sönmez.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "district": "district_upper_lanternside",
+      "kind": "guild_hall",
+      "owner": "npc_ilme",
+      "services": [
+        "okuma ruhsatı",
+        "yas tutma",
+        "defter kaydı"
+      ],
+      "stamped": {},
+      "refs": [
+        "faction_court_of_mourners",
+        "npc_ilme",
+        "npc_s01"
+      ]
+    },
+    "place_reeves_manor": {
+      "id": "place_reeves_manor",
+      "type": "place",
+      "name": "Reeve's Manor",
+      "aliases": [],
+      "summary": "Sarven'in konağı ve tuz meclisinin salonu.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "district": "district_upper_lanternside",
+      "kind": "seat",
+      "owner": "npc_sarven",
+      "services": [
+        "huzur",
+        "hüküm",
+        "vergi"
+      ],
+      "stamped": {},
+      "refs": [
+        "npc_sarven",
+        "faction_reedmarch",
+        "npc_olmar"
+      ]
+    },
+    "place_salt_market": {
+      "id": "place_salt_market",
+      "type": "place",
+      "name": "Salt Market",
+      "aliases": [],
+      "summary": "Rıhtımdaki açık pazar; tuz, balık, halat, söylenti.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "district": "district_quayside",
+      "kind": "market",
+      "owner": null,
+      "services": [
+        "tuz",
+        "balık",
+        "halat",
+        "yağ"
+      ],
+      "stamped": {},
+      "refs": [
+        "settlement_lanternside"
+      ]
+    },
+    "place_temple_of_velune": {
+      "id": "place_temple_of_velune",
+      "type": "place",
+      "name": "Temple of Velune",
+      "aliases": [],
+      "summary": "Denize bakan alçak tapınak; sabah tuzu buradan dökülür.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "district": "district_upper_lanternside",
+      "kind": "temple",
+      "owner": "npc_olmar",
+      "services": [
+        "ayin",
+        "şifa (ücretli)",
+        "cenaze"
+      ],
+      "stamped": {},
+      "refs": [
+        "god_velune",
+        "npc_olmar"
+      ]
+    },
+    "place_salt_house": {
+      "id": "place_salt_house",
+      "type": "place",
+      "name": "Salt House",
+      "aliases": [
+        "okuma evi"
+      ],
+      "summary": "Okumaların yapıldığı tek odalı ev; yalnızca burada ve yalnızca Court mührüyle.",
+      "file": "design/settlements/settlement_lanternside.md",
+      "secrecy": "public",
+      "created_phase": "P3",
+      "origin": "birth",
+      "settlement": "settlement_lanternside",
+      "district": "district_upper_lanternside",
+      "kind": "signature",
+      "owner": "npc_yesra",
+      "services": [
+        "tuz okuması (ruhsatla)"
+      ],
+      "stamped": {},
+      "refs": [
+        "npc_yesra",
+        "signature_salt_memory",
+        "faction_court_of_mourners"
+      ]
+    },
+    "faction_reedmarch": {
+      "id": "faction_reedmarch",
+      "type": "faction",
+      "name": "Reedmarch",
+      "aliases": [
+        "Reeve'in adamları"
+      ],
+      "summary": "Tuz vergisini ve limanı elinde tutmaya çalışan küçük devlet; gücü kâğıtta, borcu Court'ta.",
+      "file": "design/factions/faction_reedmarch.md",
+      "secrecy": "public",
+      "created_phase": "P4",
+      "origin": "birth",
+      "archetype": "state",
+      "objective": "Tuz vergisini ve Lanternside limanını elde tutmak",
+      "power": 3,
+      "intel": 1,
+      "hq": "place_reeves_manor",
+      "leader": "npc_sarven",
+      "heir": "npc_olmar",
+      "controller": "world",
+      "board_id": "faction_reedmarch",
+      "stamped": {
+        "archetype": "state",
+        "objective": "Tuz vergisini ve Lanternside limanını elde tutmak"
+      },
+      "refs": [
+        "npc_sarven",
+        "npc_olmar",
+        "place_reeves_manor",
+        "polity_reedmarch",
+        "faction_court_of_mourners",
+        "faction_tide_brotherhood",
+        "event_vesper_wreck"
+      ],
+      "dm_only": {
+        "secret_tr": "Reeve, Vesper'in manifestosunu Brotherhood'a sattı; gemide kendi borcunun ödemesi vardı.",
+        "fracture_tr": "Salt Council Reeve'in borcunu öğrenirse Olmar'ı öne sürer.",
+        "betrayal_candidate": "npc_olmar",
+        "endgame_tr": "Limanı Court'tan bağımsız tutmak; Lantern'i yeniden yakıp gemileri geri getirmek."
+      }
+    },
+    "faction_court_of_mourners": {
+      "id": "faction_court_of_mourners",
+      "type": "faction",
+      "name": "Court of Mourners",
+      "aliases": [
+        "Court"
+      ],
+      "summary": "Okumayı ruhsatlayan ve yas tutan kurum; Ormis'in adıyla, kendi defteriyle.",
+      "file": "design/factions/faction_court_of_mourners.md",
+      "secrecy": "public",
+      "created_phase": "P4",
+      "origin": "birth",
+      "archetype": "guild",
+      "objective": "Her ölünün son anısını okuyup yasını tutmak",
+      "power": 2,
+      "intel": 3,
+      "hq": "place_mourners_hall",
+      "leader": "npc_ilme",
+      "heir": "npc_yesra",
+      "controller": "world",
+      "board_id": "faction_court_of_mourners",
+      "stamped": {
+        "archetype": "guild",
+        "objective": "Her ölünün son anısını okuyup yasını tutmak"
+      },
+      "refs": [
+        "npc_ilme",
+        "npc_yesra",
+        "npc_s01",
+        "place_mourners_hall",
+        "place_salt_house",
+        "god_ormis",
+        "signature_court_of_mourners",
+        "site_blind_lantern",
+        "item_consumed_ledger"
+      ],
+      "dm_only": {
+        "true_leader": "npc_s01",
+        "secret_objective_tr": "Defteri doldurup doksan altıncı günde Blind Lantern'i tüketilmiş anılarla yakmak",
+        "secret_tr": "Okuma anıyı tüketir; Court bunu kuruluşundan beri bilir.",
+        "fracture_tr": "Ilme okumayı merhamet sanır; Nerun defteri bilir. Aralarındaki çizgi defterin ne için tutulduğudur.",
+        "betrayal_candidate": "npc_ilme",
+        "endgame_tr": "Nerun'un adının kıyıdaki her kafaya yazılması; Court'un tek hatırlanan kurum olması.",
+        "front": "op_court_1",
+        "doom_day": 96
+      }
+    },
+    "faction_tide_brotherhood": {
+      "id": "faction_tide_brotherhood",
+      "type": "faction",
+      "name": "Tide Brotherhood",
+      "aliases": [
+        "Brotherhood",
+        "Knotters"
+      ],
+      "summary": "Enkaz ve tuz kaçakçıları; düğümleriyle tanınır, cezirle çalışır.",
+      "file": "design/factions/faction_tide_brotherhood.md",
+      "secrecy": "public",
+      "created_phase": "P4",
+      "origin": "birth",
+      "archetype": "criminal",
+      "objective": "Vesper enkazının sandıklarını ve tuzunu Lanternside'dan çıkarmak",
+      "power": 2,
+      "intel": 2,
+      "hq": "site_tide_cave",
+      "leader": "npc_draskun",
+      "heir": "npc_kortan",
+      "controller": "world",
+      "board_id": "faction_tide_brotherhood",
+      "stamped": {
+        "archetype": "criminal",
+        "objective": "Vesper enkazının sandıklarını ve tuzunu Lanternside'dan çıkarmak"
+      },
+      "refs": [
+        "npc_draskun",
+        "npc_kortan",
+        "site_tide_cave",
+        "site_sunken_pier",
+        "place_weary_gull",
+        "npc_tolvan",
+        "faction_court_of_mourners",
+        "faction_reedmarch"
+      ],
+      "dm_only": {
+        "secret_tr": "Tuz Court'a gider; Draskun Nerun'un teğmenidir ve bunu Kortan bile bilmez.",
+        "fracture_tr": "Kortan tuzun nereye gittiğini sorar; cevabı alırsa Draskun'u satar.",
+        "betrayal_candidate": "npc_kortan",
+        "endgame_tr": "Lantern yandığında kıyının tek taşıyıcısı olmak."
+      }
+    },
+    "npc_sarven": {
+      "id": "npc_sarven",
+      "type": "npc",
+      "name": "Sarven",
+      "aliases": [
+        "Reeve Sarven",
+        "Reeve"
+      ],
+      "summary": "Lanternside'ın reeve'i; kayıp gemiyi arar gibi yapar, bulunmasından korkar.",
+      "file": "design/npcs/npc_sarven.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": "faction_reedmarch",
+      "role": "ruler",
+      "tier": "supporting",
+      "species": "insan",
+      "gender": "erkek",
+      "alignment": "LN",
+      "stat_anchor": {
+        "block": "knight",
+        "level": null
+      },
+      "cr": 3,
+      "location_at_birth": "place_reeves_manor",
+      "goal_tracked": false,
+      "heir_of": null,
+      "heir": "npc_olmar",
+      "voice_seed": "her cümleye 'meclis der ki' diye başlar",
+      "axes": {
+        "trust": "güvenilir görünür, bir kez sattı",
+        "ambition": "korumacı",
+        "loyalty": "Reedmarch'a, kendine değil",
+        "courage": "mecliste cesur, denizde değil"
+      },
+      "relations": [
+        {
+          "to": "npc_olmar",
+          "kind": "heir",
+          "reason_tr": "yeğeni; oğlu Vesper'de değildi ama meclis öyle sanıyor"
+        },
+        {
+          "to": "npc_ilme",
+          "kind": "owes",
+          "reason_tr": "Court Reeve'in borcunu tutar"
+        },
+        {
+          "to": "npc_draskun",
+          "kind": "fears",
+          "reason_tr": "manifestoyu ona sattı"
+        }
+      ],
+      "stamped": {
+        "faction": "faction_reedmarch"
+      },
+      "refs": [
+        "faction_reedmarch",
+        "npc_olmar",
+        "npc_ilme",
+        "npc_draskun",
+        "place_reeves_manor",
+        "event_vesper_wreck",
+        "socket_lost_ship"
+      ],
+      "dm_only": {
+        "secret_tr": "Vesper'in manifestosunu Brotherhood'a sattı; gemide kendi borcunun ödemesi vardı.",
+        "surfacing_tr": "Manifestonun Reeve mühürlü kopyası Tide Cave'dedir; Vorin'in 1. katmanı.",
+        "weakness_tr": "Meclis önünde küçük düşmekten ölümden çok korkar.",
+        "stamped_fields": [
+          "secret_tr"
+        ]
+      }
+    },
+    "npc_olmar": {
+      "id": "npc_olmar",
+      "type": "npc",
+      "name": "Olmar",
+      "aliases": [],
+      "summary": "Reeve'in yeğeni ve Velune rahibi; amcasının borcunu bilmez, bilse öderdi.",
+      "file": "design/npcs/npc_olmar.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": "faction_reedmarch",
+      "role": "heir",
+      "tier": "minor",
+      "species": "insan",
+      "gender": "erkek",
+      "alignment": "NG",
+      "stat_anchor": {
+        "block": "acolyte",
+        "level": null
+      },
+      "cr": 0.25,
+      "location_at_birth": "place_temple_of_velune",
+      "goal_tracked": false,
+      "heir_of": "npc_sarven",
+      "heir": null,
+      "voice_seed": "denizden söz ederken sesi alçalır",
+      "axes": {
+        "trust": "dürüst",
+        "ambition": "yok",
+        "loyalty": "amcasına",
+        "courage": "denenmemiş"
+      },
+      "relations": [
+        {
+          "to": "npc_sarven",
+          "kind": "heir_of",
+          "reason_tr": "yeğeni"
+        },
+        {
+          "to": "god_velune",
+          "kind": "serves",
+          "reason_tr": "rahibi"
+        }
+      ],
+      "stamped": {
+        "faction": "faction_reedmarch"
+      },
+      "refs": [
+        "npc_sarven",
+        "place_temple_of_velune",
+        "god_velune"
+      ]
+    },
+    "npc_ilme": {
+      "id": "npc_ilme",
+      "type": "npc",
+      "name": "Ilme Lampwright",
+      "aliases": [
+        "Speaker",
+        "Ilme"
+      ],
+      "summary": "Court'un sözcüsü ve yüzü; okumayı merhamet sanır, defteri tutar, ne için tutulduğunu bilmez.",
+      "file": "design/npcs/npc_ilme.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": "faction_court_of_mourners",
+      "role": "leader",
+      "tier": "supporting",
+      "species": "insan",
+      "gender": "kadın",
+      "alignment": "LN",
+      "stat_anchor": {
+        "block": "priest",
+        "level": null
+      },
+      "cr": 2,
+      "location_at_birth": "place_mourners_hall",
+      "goal_tracked": false,
+      "heir_of": "npc_s01",
+      "heir": "npc_yesra",
+      "voice_seed": "'yas hakkıdır' der, her şeye",
+      "axes": {
+        "trust": "inandığına dürüst",
+        "ambition": "Court için",
+        "loyalty": "kuruma; kâtibe değil",
+        "courage": "aileler karşısında cesur, kâtip karşısında sessiz"
+      },
+      "relations": [
+        {
+          "to": "npc_yesra",
+          "kind": "heir",
+          "reason_tr": "son okuyucu; onun boşluklarını sayıyor"
+        },
+        {
+          "to": "npc_sarven",
+          "kind": "knows",
+          "reason_tr": "Reeve'in borcunu defterde tutar"
+        },
+        {
+          "to": "npc_s01",
+          "kind": "heir_of",
+          "reason_tr": "kâtibin yüzü"
+        }
+      ],
+      "stamped": {
+        "faction": "faction_court_of_mourners"
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "npc_yesra",
+        "npc_sarven",
+        "npc_s01",
+        "place_mourners_hall",
+        "god_ormis",
+        "socket_court_trained"
+      ],
+      "dm_only": {
+        "secret_tr": "Okumanın anıyı götürdüğünü bilir ve bunu merhamet sayar; defterin Lantern için tutulduğunu bilmez.",
+        "surfacing_tr": "Yesra'nın boşluklarıyla yüzleştirilirse savunur; defterin aslını görürse (site_blind_lantern) çöker ve konuşur.",
+        "weakness_tr": "Yanıldığını kabul edemez; kabul ederse her şeyi verir.",
+        "stamped_fields": [
+          "secret_tr"
+        ]
+      }
+    },
+    "npc_s01": {
+      "id": "npc_s01",
+      "type": "npc",
+      "name": "Nerun",
+      "aliases": [
+        "Silent Scribe"
+      ],
+      "summary": "(gizli varlık — herkese açık dosyalarda görünmez)",
+      "file": "design/dm-only/npcs/npc_s01.md",
+      "secrecy": "secret",
+      "created_phase": "P4",
+      "origin": "birth",
+      "faction": "faction_court_of_mourners",
+      "role": "bbeg",
+      "tier": "major",
+      "species": "insan",
+      "gender": "erkek",
+      "alignment": "LE",
+      "stat_anchor": {
+        "block": "mage",
+        "level": 9
+      },
+      "cr": 6,
+      "location_at_birth": "place_mourners_hall",
+      "goal_tracked": true,
+      "heir_of": null,
+      "heir": "npc_ilme",
+      "voice_seed": "hiç soru sormaz; her cümlesi bir tespit",
+      "axes": {
+        "trust": "aldatıcı",
+        "ambition": "sınırsız, sessiz",
+        "loyalty": "yalnızca defterine",
+        "courage": "başkalarının eliyle"
+      },
+      "relations": [
+        {
+          "to": "npc_ilme",
+          "kind": "controls",
+          "reason_tr": "Ilme onun yüzü; kendisi sesi"
+        },
+        {
+          "to": "npc_draskun",
+          "kind": "commands",
+          "reason_tr": "tuzu taşıtır"
+        }
+      ],
+      "stamped": {
+        "faction": "faction_court_of_mourners"
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "npc_ilme",
+        "npc_draskun",
+        "item_consumed_ledger",
+        "item_lamp_seal",
+        "site_blind_lantern",
+        "place_mourners_hall",
+        "thread_vorin"
+      ],
+      "dm_only": {
+        "secret_tr": "Salt Memory'nin ölüleri ikinci kez öldürdüğünü bilir ve defteri bunun için tutar.",
+        "surfacing_tr": "Üçüncü ipucu (site_blind_lantern) defterin el yazısını onun eline bağlar.",
+        "weakness_tr": "Kendi adının unutulmasından korkar; adını söyleyen biri karşısında durur.",
+        "visibility_pattern": "behind_visible_front",
+        "truth_of": "pc_vorin",
+        "stamped_fields": [
+          "secret_tr"
+        ]
+      }
+    },
+    "npc_tolvan": {
+      "id": "npc_tolvan",
+      "type": "npc",
+      "name": "Tolvan",
+      "aliases": [
+        "hancı"
+      ],
+      "summary": "Weary Gull'un hancısı; borçlu, konuşkan, Vesper'i batarken gören üç kişiden biri.",
+      "file": "design/npcs/npc_tolvan.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": null,
+      "role": "innkeeper",
+      "tier": "supporting",
+      "species": "insan",
+      "gender": "erkek",
+      "alignment": "NG",
+      "stat_anchor": {
+        "block": "commoner",
+        "level": null
+      },
+      "cr": 0,
+      "location_at_birth": "place_weary_gull",
+      "goal_tracked": false,
+      "heir_of": null,
+      "heir": null,
+      "voice_seed": "her hikâyeyi 'o gece' diye başlatır",
+      "axes": {
+        "trust": "dürüst, borcunu saklar",
+        "ambition": "hanı tutmak",
+        "loyalty": "müşterisine",
+        "courage": "korkak, ama kayıkları için değil"
+      },
+      "relations": [
+        {
+          "to": "npc_yesra",
+          "kind": "knows",
+          "reason_tr": "her akşam aynı masa"
+        },
+        {
+          "to": "npc_draskun",
+          "kind": "owes",
+          "reason_tr": "kayıklar rehin"
+        },
+        {
+          "to": "npc_sarven",
+          "kind": "fears",
+          "reason_tr": "Reeve'in Vesper gecesini gördü"
+        }
+      ],
+      "stamped": {
+        "faction": null
+      },
+      "refs": [
+        "place_weary_gull",
+        "npc_yesra",
+        "npc_draskun",
+        "npc_sarven",
+        "seed_gulls_debt",
+        "socket_debt",
+        "faction_tide_brotherhood",
+        "event_vesper_wreck"
+      ],
+      "dm_only": {
+        "secret_tr": "Vesper batarken Reeve'in adamlarının dalgakıranda fener salladığını gördü; kimseye söylemedi.",
+        "surfacing_tr": "Borcu ödenirse ya da Selen'in ağabeyinden söz edilirse anlatır.",
+        "weakness_tr": "Kayıkları; onları kaybederse han biter.",
+        "stamped_fields": [
+          "secret_tr"
+        ]
+      }
+    },
+    "npc_yesra": {
+      "id": "npc_yesra",
+      "type": "npc",
+      "name": "Yesra Saltreader",
+      "aliases": [
+        "Saltreader Yesra",
+        "Blind Reader"
+      ],
+      "summary": "Lanternside'ın son tuz okuyucusu; kendi anılarının yarısını kaybetmiş, kaybettiğini bilmiyor.",
+      "file": "design/npcs/npc_yesra.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": "faction_court_of_mourners",
+      "role": "salt_reader",
+      "tier": "supporting",
+      "species": "insan",
+      "gender": "kadın",
+      "alignment": "NG",
+      "stat_anchor": {
+        "block": "acolyte",
+        "level": null
+      },
+      "cr": 0.25,
+      "location_at_birth": "place_salt_house",
+      "goal_tracked": false,
+      "heir_of": "npc_ilme",
+      "heir": null,
+      "voice_seed": "cümleyi yarım bırakıp 'neydi...' der",
+      "axes": {
+        "trust": "güvenilir, yalanı hatırlayamaz",
+        "ambition": "hiç kalmadı",
+        "loyalty": "Court'a değil, ölülere sadık",
+        "courage": "suya karşı cesur, Court'a karşı korkak"
+      },
+      "relations": [
+        {
+          "to": "npc_ilme",
+          "kind": "fears",
+          "reason_tr": "Ilme onun okumalarını sayıyor"
+        },
+        {
+          "to": "npc_tolvan",
+          "kind": "knows",
+          "reason_tr": "Weary Gull'da her akşam aynı masa"
+        }
+      ],
+      "stamped": {
+        "faction": "faction_court_of_mourners"
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "npc_ilme",
+        "npc_tolvan",
+        "place_salt_house",
+        "site_sunken_pier",
+        "signature_salt_memory",
+        "socket_witnessed_reading"
+      ],
+      "dm_only": {
+        "secret_tr": "Her okuma bir anısını götürdü; boşlukları Court'un 'tüketilenler' defterinde sayılı.",
+        "surfacing_tr": "Aynı hikâyeyi iki akşam üst üste farklı anlatır; Insight DC 12 boşluğu görür; defter (site_sunken_pier) adını listeler.",
+        "weakness_tr": "Bir anıyı geri almak için her şeyi verir.",
+        "clue": {
+          "secret_clue": 1
+        },
+        "stamped_fields": [
+          "secret_tr"
+        ]
+      }
+    },
+    "npc_draskun": {
+      "id": "npc_draskun",
+      "type": "npc",
+      "name": "Draskun",
+      "aliases": [
+        "Knotter"
+      ],
+      "summary": "Tide Brotherhood'un reisi; enkazı ilk bulan, tuzu taşıyan, kime taşıdığını söylemeyen.",
+      "file": "design/npcs/npc_draskun.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": "faction_tide_brotherhood",
+      "role": "lieutenant",
+      "tier": "major",
+      "species": "yarı-ork",
+      "gender": "erkek",
+      "alignment": "NE",
+      "stat_anchor": {
+        "block": "bandit captain",
+        "level": null
+      },
+      "cr": 2,
+      "location_at_birth": "site_tide_cave",
+      "goal_tracked": true,
+      "heir_of": null,
+      "heir": "npc_kortan",
+      "voice_seed": "konuşurken halat düğümler, cevap düğümde gelir",
+      "axes": {
+        "trust": "sözünü tutar, sebebini söylemez",
+        "ambition": "kıyının tek taşıyıcısı",
+        "loyalty": "kâtibe, korkudan",
+        "courage": "cesur, cezirde daha cesur"
+      },
+      "relations": [
+        {
+          "to": "npc_kortan",
+          "kind": "heir",
+          "reason_tr": "ikinci adamı; soru sormaya başladı"
+        },
+        {
+          "to": "npc_tolvan",
+          "kind": "controls",
+          "reason_tr": "kayıklar rehin"
+        },
+        {
+          "to": "npc_s01",
+          "kind": "serves",
+          "reason_tr": "tuzu ona taşır"
+        }
+      ],
+      "stamped": {
+        "faction": "faction_tide_brotherhood"
+      },
+      "refs": [
+        "faction_tide_brotherhood",
+        "npc_kortan",
+        "npc_tolvan",
+        "npc_s01",
+        "site_tide_cave",
+        "site_sunken_pier",
+        "thread_selen",
+        "event_vesper_wreck"
+      ],
+      "dm_only": {
+        "secret_tr": "Nerun'un teğmenidir; tuz Court'a gider.",
+        "surfacing_tr": "Crate Run'ın üçüncü adımı (gün 40) tuzu Mourners' Hall'a götürür; izlenirse görülür.",
+        "weakness_tr": "Kortan'a güvenmek zorundadır ve bunu bilir.",
+        "stamped_fields": [
+          "secret_tr"
+        ]
+      }
+    },
+    "npc_kortan": {
+      "id": "npc_kortan",
+      "type": "npc",
+      "name": "Kortan",
+      "aliases": [],
+      "summary": "Draskun'un ikinci adamı; Sunken Pier'i tutar, tuzun nereye gittiğini merak eder.",
+      "file": "design/npcs/npc_kortan.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": "faction_tide_brotherhood",
+      "role": "heir",
+      "tier": "minor",
+      "species": "insan",
+      "gender": "erkek",
+      "alignment": "N",
+      "stat_anchor": {
+        "block": "bandit captain",
+        "level": null
+      },
+      "cr": 2,
+      "location_at_birth": "site_sunken_pier",
+      "goal_tracked": false,
+      "heir_of": "npc_draskun",
+      "heir": null,
+      "voice_seed": "soruya soruyla cevap verir",
+      "axes": {
+        "trust": "pazarlıkçı",
+        "ambition": "reislik",
+        "loyalty": "kazanana",
+        "courage": "hesaplı"
+      },
+      "relations": [
+        {
+          "to": "npc_draskun",
+          "kind": "heir_of",
+          "reason_tr": "ikinci adam"
+        }
+      ],
+      "stamped": {
+        "faction": "faction_tide_brotherhood"
+      },
+      "refs": [
+        "npc_draskun",
+        "site_sunken_pier",
+        "faction_tide_brotherhood"
+      ]
+    },
+    "npc_ameli": {
+      "id": "npc_ameli",
+      "type": "npc",
+      "name": "Ameli",
+      "aliases": [],
+      "summary": "Reedham'ın sesi; annesi geçen kış öldü, okunmadı, üç kez kapıyı çaldı.",
+      "file": "design/npcs/npc_ameli.md",
+      "secrecy": "public",
+      "created_phase": "P5",
+      "origin": "birth",
+      "faction": null,
+      "role": "village_voice",
+      "tier": "minor",
+      "species": "insan",
+      "gender": "kadın",
+      "alignment": "NG",
+      "stat_anchor": {
+        "block": "commoner",
+        "level": null
+      },
+      "cr": 0,
+      "location_at_birth": "settlement_reedham",
+      "goal_tracked": false,
+      "heir_of": null,
+      "heir": null,
+      "voice_seed": "sayı sayarak konuşur: 'üç kez, üç gece'",
+      "axes": {
+        "trust": "dürüst",
+        "ambition": "köyü tutmak",
+        "loyalty": "köye",
+        "courage": "kapıyı açmayacak kadar cesur"
+      },
+      "relations": [
+        {
+          "to": "npc_yesra",
+          "kind": "knows",
+          "reason_tr": "annesini okutmak için gitti, vazgeçti"
+        }
+      ],
+      "stamped": {
+        "faction": null
+      },
+      "refs": [
+        "settlement_reedham",
+        "npc_yesra",
+        "seed_reedham_silence",
+        "creature_saltbound"
+      ]
+    },
+    "site_sunken_pier": {
+      "id": "site_sunken_pier",
+      "type": "site",
+      "name": "Sunken Pier",
+      "aliases": [
+        "Old Pier"
+      ],
+      "summary": "Lanternside'ın üç yıl önce çöken eski iskelesi; altında Vesper gemisinin sandıkları ve onları bekleyenler.",
+      "file": "design/sites/site_sunken_pier.md",
+      "secrecy": "public",
+      "created_phase": "P6",
+      "origin": "birth",
+      "kind": "dungeon",
+      "role": "minor",
+      "region": "region_saltmere",
+      "danger_tier": 1,
+      "room_count": 6,
+      "act": 1,
+      "thread": "beat_1a",
+      "key_npcs": [
+        "npc_kortan"
+      ],
+      "payoff": "plot_item",
+      "telegraphs": [
+        {
+          "distance": "far",
+          "text_tr": "Breakwater'ın kırık ucunda gece fener yanar; kimse yakmaz."
+        },
+        {
+          "distance": "near",
+          "text_tr": "Kazıkların dibinde tuz kabuğu bağlamış ayak izleri, hepsi denize doğru."
+        },
+        {
+          "distance": "threshold",
+          "text_tr": "İlk ambarın kapısında taze kesilmiş halat ve bir Brotherhood düğümü."
+        }
+      ],
+      "escape_tr": "Cezirde 4. odadan kumsala; metle 1. odadan geri, ama su bele kadar.",
+      "attitude": "capture",
+      "xp_budget": 450,
+      "min_depth": 3,
+      "intended_path": true,
+      "if_never_visited_tr": "Brotherhood sandıkları on gün içinde taşır; defter parçası Tide Cave'e gider.",
+      "reoccupation": "faction_tide_brotherhood",
+      "stamped": {
+        "danger_tier": 1,
+        "room_count": 6,
+        "act": 1,
+        "thread": "beat_1a",
+        "key_npcs": [
+          "npc_kortan"
+        ]
+      },
+      "refs": [
+        "settlement_lanternside",
+        "npc_kortan",
+        "faction_tide_brotherhood",
+        "item_consumed_ledger",
+        "creature_saltbound",
+        "beat_1a",
+        "event_vesper_wreck",
+        "seed_gulls_debt"
+      ],
+      "dm_only": {
+        "clue": {
+          "secret_clue": 2
+        },
+        "secret_tr": "6. odadaki sandık defter parçasını taşır; Kortan onu neyin olduğunu bilmeden satmaya hazırdır."
+      }
+    },
+    "site_tide_cave": {
+      "id": "site_tide_cave",
+      "type": "site",
+      "name": "Tide Cave",
+      "aliases": [
+        "Brotherhood Den"
+      ],
+      "summary": "Kayalık kıyıda yalnızca cezirde girilen mağara; Brotherhood'un deposu ve Blind Lantern'e giden tünelin ağzı.",
+      "file": "design/sites/site_tide_cave.md",
+      "secrecy": "discoverable",
+      "created_phase": "P6",
+      "origin": "birth",
+      "kind": "stronghold",
+      "role": "standard",
+      "region": "region_saltmere",
+      "danger_tier": 2,
+      "room_count": 11,
+      "act": 1,
+      "thread": "faction_tide_brotherhood",
+      "key_npcs": [
+        "npc_draskun"
+      ],
+      "payoff": "access",
+      "telegraphs": [
+        {
+          "distance": "far",
+          "text_tr": "Cezirde kayalıktan kayık izi çıkar, metle silinir."
+        },
+        {
+          "distance": "near",
+          "text_tr": "Kaya dibinde düğümlü halatlar ve tuz çuvalı artıkları."
+        },
+        {
+          "distance": "threshold",
+          "text_tr": "Mağara ağzında gelgit çizgisinin üstüne kazınmış saat işaretleri: kaç saat güvenli."
+        }
+      ],
+      "escape_tr": "Cezir bitmeden çıkılmazsa altı saat mahsur; 7. odadaki baca kayalığa çıkar, tırmanış DC 12.",
+      "attitude": "negotiate",
+      "xp_budget": 1100,
+      "min_depth": 5,
+      "intended_path": true,
+      "if_never_visited_tr": "Gün 40'ta tuz Court'a gider; gün 60'ta mağara boşalır ve tünel Lantern'e açık kalır.",
+      "reoccupation": "faction_reedmarch",
+      "stamped": {
+        "danger_tier": 2,
+        "room_count": 11,
+        "act": 1,
+        "thread": "faction_tide_brotherhood",
+        "key_npcs": [
+          "npc_draskun"
+        ]
+      },
+      "refs": [
+        "faction_tide_brotherhood",
+        "npc_draskun",
+        "site_blind_lantern",
+        "npc_sarven",
+        "thread_vorin",
+        "beat_1b"
+      ],
+      "dm_only": {
+        "secret_tr": "Reeve mühürlü manifesto ve Court kuryesinin mührü buradadır (Vorin'in 1. ve 2. katmanı); tünel Lantern'in kandil odasına çıkar."
+      }
+    },
+    "site_blind_lantern": {
+      "id": "site_blind_lantern",
+      "type": "site",
+      "name": "Blind Lantern",
+      "aliases": [
+        "Lantern"
+      ],
+      "summary": "Kırk yıldır yanmayan deniz feneri; içinde biriken kandil ve onu bekleyen bekçi.",
+      "file": "design/sites/site_blind_lantern.md",
+      "secrecy": "public",
+      "created_phase": "P6",
+      "origin": "birth",
+      "kind": "dungeon",
+      "role": "standard",
+      "region": "region_saltmere",
+      "danger_tier": 2,
+      "room_count": 14,
+      "act": 1,
+      "thread": "beat_1c",
+      "key_npcs": [
+        "npc_s01"
+      ],
+      "payoff": "plot_item",
+      "telegraphs": [
+        {
+          "distance": "far",
+          "text_tr": "Burundan gece bakınca fener sönük, ama camı buğulu: içeride sıcak bir şey var."
+        },
+        {
+          "distance": "near",
+          "text_tr": "Patikada tuz kabuklu izler yukarı çıkıyor, aşağı inen yok."
+        },
+        {
+          "distance": "threshold",
+          "text_tr": "Kapıda Court mührü, taze balmumu."
+        }
+      ],
+      "escape_tr": "Kule dıştan sarmal; her katın balkonu var, deniz tarafına atlanır (2d6, cezirde 4d6).",
+      "attitude": "test",
+      "xp_budget": 2200,
+      "min_depth": 7,
+      "intended_path": true,
+      "if_never_visited_tr": "Gün 75'te kandil taşınır, gün 96'da Lantern yanar ve kâtibin adı kıyıdaki her kafaya yazılır.",
+      "reoccupation": "faction_court_of_mourners",
+      "stamped": {
+        "danger_tier": 2,
+        "room_count": 14,
+        "act": 1,
+        "thread": "beat_1c",
+        "key_npcs": [
+          "npc_s01"
+        ]
+      },
+      "refs": [
+        "faction_court_of_mourners",
+        "item_lamp_seal",
+        "item_consumed_ledger",
+        "event_lantern_dimmed",
+        "creature_saltbound",
+        "beat_1c",
+        "site_tide_cave",
+        "thread_selen",
+        "thread_vorin"
+      ],
+      "dm_only": {
+        "clue": {
+          "secret_clue": 3
+        },
+        "secret_tr": "Kandil odasında defterin aslı; el yazısı Nerun'un. Bekçi (Saltbound, kırk yıllık) kandili korur. Patron: Nerun, CR 6, referans parti seviye 5."
+      }
+    },
+    "site_bottomless_well": {
+      "id": "site_bottomless_well",
+      "type": "site",
+      "name": "Bottomless Well",
+      "aliases": [
+        "düzlükteki kuyu"
+      ],
+      "summary": "Tuz düzlüğünün ortasında Flood öncesi şehrin kuyusu; oradan gelenler geri dönmez, oraya gidenler de.",
+      "file": "design/sites/site_bottomless_well.md",
+      "secrecy": "public",
+      "created_phase": "P6",
+      "origin": "birth",
+      "kind": "dungeon",
+      "role": "standard",
+      "region": "region_saltmere",
+      "danger_tier": 4,
+      "room_count": 12,
+      "act": 1,
+      "thread": "seed_reedham_silence",
+      "key_npcs": [],
+      "payoff": "lore",
+      "telegraphs": [
+        {
+          "distance": "far",
+          "text_tr": "Reedham'dan kimse o yola çıkmaz; çıkanın adı köyde bir daha söylenmez."
+        },
+        {
+          "distance": "near",
+          "text_tr": "Düzlükte yüzlerce tuz kabuklu iz, hepsi kuyudan dışarı; içeri giden yok."
+        },
+        {
+          "distance": "threshold",
+          "text_tr": "Kuyu ağzından ılık, tuzlu nefes; aşağıda büyük bir şey soluk alıyor."
+        }
+      ],
+      "escape_tr": "Kuyu ipi tek yol; ip kesilirse çıkış yok. Telegraf açıktır: içeri girmemek.",
+      "attitude": "kill",
+      "xp_budget": 0,
+      "min_depth": 6,
+      "intended_path": false,
+      "if_never_visited_tr": "Doom gününde (96) Saltbound'lar kuyudan Reedham'a yürür; Lantern yanmazsa yürümez.",
+      "reoccupation": null,
+      "stamped": {
+        "danger_tier": 4,
+        "room_count": 12,
+        "act": 1,
+        "thread": "seed_reedham_silence",
+        "key_npcs": []
+      },
+      "refs": [
+        "settlement_reedham",
+        "seed_reedham_silence",
+        "creature_saltbound",
+        "event_great_flood",
+        "plane_deep"
+      ],
+      "dm_only": {
+        "secret_tr": "Kuyunun dibinde Salt Mother (fırtına devi, CR 13, tuz kabuklu boğulmuş devanası) Flood öncesi şehrin son anısını taşır; okunursa şehir hatırlanır ve Saltbound'lar durur."
+      }
+    },
+    "item_consumed_ledger": {
+      "id": "item_consumed_ledger",
+      "type": "item",
+      "name": "Ledger of the Consumed (fragment)",
+      "aliases": [
+        "defter parçası"
+      ],
+      "summary": "Court defterinin Vesper'de batan kopyasından kalan on iki yaprak; 'tüketilenler' başlığı altında Lanternside ölülerinin adları.",
+      "file": "design/sites/site_sunken_pier.md",
+      "secrecy": "discoverable",
+      "created_phase": "P6",
+      "origin": "birth",
+      "rarity": "none",
+      "attunement": false,
+      "kind": "plot",
+      "location": "site_sunken_pier",
+      "srd_base": null,
+      "stamped": {
+        "kind": "plot"
+      },
+      "refs": [
+        "site_sunken_pier",
+        "faction_court_of_mourners",
+        "npc_s01",
+        "thread_selen"
+      ],
+      "dm_only": {
+        "secret_tr": "Selen'in ağabeyinin adı listededir; Vorin'in babasının adı 'kurye' olarak."
+      }
+    },
+    "item_lamp_seal": {
+      "id": "item_lamp_seal",
+      "type": "item",
+      "name": "Lamp Seal",
+      "aliases": [],
+      "summary": "Court'un okuma mührü; kandili yakan ve söndüren tek anahtar. Nadir, uyum gerektirir.",
+      "file": "design/sites/site_blind_lantern.md",
+      "secrecy": "public",
+      "created_phase": "P6",
+      "origin": "birth",
+      "rarity": "rare",
+      "attunement": true,
+      "kind": "signature",
+      "location": "npc_s01",
+      "srd_base": "ring of protection (reskin)",
+      "stamped": {
+        "kind": "signature"
+      },
+      "refs": [
+        "site_blind_lantern",
+        "npc_s01",
+        "faction_court_of_mourners"
+      ],
+      "dm_only": {
+        "secret_tr": "Mühür takan, Lantern'in kandilini bir kez söndürebilir; Nerun ölürse mühür Ilme'ye geçer, Ilme söndürür."
+      }
+    },
+    "creature_saltbound": {
+      "id": "creature_saltbound",
+      "type": "creature",
+      "name": "Saltbound",
+      "aliases": [],
+      "summary": "Tuz kabuklu boğulmuş; sessiz, ışığa gelir, karanlıkta yürür. Ghoul çatısı üstünde yeniden giydirilmiş.",
+      "file": "design/sites/site_bottomless_well.md",
+      "secrecy": "public",
+      "created_phase": "P6",
+      "origin": "birth",
+      "srd_base": "ghoul",
+      "cr": 1,
+      "reskin_tr": "Pençe yerine tuz kabuklu el; felç yerine 'unutma': vuruş yiyen bir dakika kendi adını hatırlamaz (CON DC 10). Kandil ışığında hareketsiz kalır.",
+      "habitat": [
+        "tuz düzlüğü",
+        "kıyı",
+        "batık"
+      ],
+      "role": "minion",
+      "stat_block_file": "design/sites/site_bottomless_well.md",
+      "stamped": {
+        "srd_base": "ghoul",
+        "cr": 1
+      },
+      "refs": [
+        "signature_saltbound",
+        "site_bottomless_well",
+        "site_sunken_pier",
+        "site_blind_lantern",
+        "settlement_reedham"
+      ]
+    },
+    "arc_1": {
+      "id": "arc_1",
+      "type": "arc",
+      "name": "For Whom the Lantern Burns",
+      "aliases": [],
+      "summary": "Tek perde, üç beat: sandıklar, okuma, fener. Doksan altıncı günde biter.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "acts": 1,
+      "beats": [
+        "beat_1a",
+        "beat_1b",
+        "beat_1c"
+      ],
+      "chapters": [
+        "chapter_1",
+        "chapter_2"
+      ],
+      "doom_day": 96,
+      "endings": {
+        "win_tr": "Lantern yanmaz ya da Ormis'e yanar; defter yakılır, kıyı okumayı bırakır ya da dürüst okumayı öğrenir.",
+        "loss_tr": "Lantern kâtibe yanar; kıyıdaki herkes onun adını bilir ve kendi ölülerinin adını unutur.",
+        "pyrrhic_tr": "Lantern söndürülür ama defterle birlikte Selen'in ağabeyinin ve Vorin'in babasının son anıları da gider."
+      },
+      "stamped": {
+        "beats": [
+          "beat_1a",
+          "beat_1b",
+          "beat_1c"
+        ],
+        "endings": [
+          "win",
+          "loss",
+          "pyrrhic"
+        ]
+      },
+      "refs": [
+        "beat_1a",
+        "beat_1b",
+        "beat_1c",
+        "chapter_1",
+        "chapter_2",
+        "seed_gulls_debt",
+        "seed_reedham_silence",
+        "site_blind_lantern"
+      ],
+      "dm_only": {
+        "secret_tr": "Nerun'un öncelemesi: 3. adımda (gün 45) Yesra'yı okutmak; parti Yesra'yı koruyorsa adım Ameli'nin annesine kayar."
+      }
+    },
+    "chapter_1": {
+      "id": "chapter_1",
+      "type": "chapter",
+      "name": "Arrival at Lanternside",
+      "aliases": [],
+      "summary": "Bir hancının borcu, çökük bir iskele, okuma yapan bir Court: parti kasabayı ve sorusunu tanır.",
+      "file": "design/chapters/chapter_1.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "act": 1,
+      "level_band": [
+        1,
+        3
+      ],
+      "order": 1,
+      "nodes": [
+        "node_c1_gull",
+        "node_c1_pier",
+        "node_c1_court"
+      ],
+      "intended_sites": [
+        "site_sunken_pier"
+      ],
+      "xp_share": 900,
+      "content_mix": {
+        "site": 1,
+        "social": 2,
+        "exploration": 0
+      },
+      "stamped": {
+        "act": 1,
+        "level_band": [
+          1,
+          3
+        ]
+      },
+      "refs": [
+        "node_c1_gull",
+        "node_c1_pier",
+        "node_c1_court",
+        "site_sunken_pier",
+        "beat_1a",
+        "npc_tolvan",
+        "npc_yesra",
+        "npc_ilme",
+        "settlement_lanternside"
+      ],
+      "dm_only": {
+        "secret_tr": "Ilme partiyi gün 5'ten itibaren izletir; Court'un gözü Weary Gull'daki müdavim bir hamaldır (adı yok, minor stub değil, sahne rengi)."
+      }
+    },
+    "chapter_2": {
+      "id": "chapter_2",
+      "type": "chapter",
+      "name": "Tide and Lantern",
+      "aliases": [],
+      "summary": "Cezirle giren mağara, sönük fener, kapıyı çalan köy: parti soruya cevap vermek zorunda kalır.",
+      "file": "design/chapters/chapter_2.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "act": 1,
+      "level_band": [
+        3,
+        5
+      ],
+      "order": 2,
+      "nodes": [
+        "node_c2_tide_cave",
+        "node_c2_lantern",
+        "node_c2_reedham"
+      ],
+      "intended_sites": [
+        "site_tide_cave",
+        "site_blind_lantern"
+      ],
+      "xp_share": 3300,
+      "content_mix": {
+        "site": 2,
+        "social": 1,
+        "exploration": 1
+      },
+      "stamped": {
+        "act": 1,
+        "level_band": [
+          3,
+          5
+        ]
+      },
+      "refs": [
+        "node_c2_tide_cave",
+        "node_c2_lantern",
+        "node_c2_reedham",
+        "site_tide_cave",
+        "site_blind_lantern",
+        "site_bottomless_well",
+        "beat_1b",
+        "beat_1c",
+        "npc_draskun",
+        "npc_ameli",
+        "settlement_reedham"
+      ],
+      "dm_only": {
+        "secret_tr": "Gün 75'te kandil Lantern'e taşınır; parti mağaradan tünelle girerse Nerun'u kandil odasında bulur, kapıdan girerse bekçiyi."
+      }
+    },
+    "node_c1_gull": {
+      "id": "node_c1_gull",
+      "type": "node",
+      "name": "The Weary Gull and the debt",
+      "aliases": [],
+      "summary": "Han, hancı, rehin kayıklar; partinin ilk masası ve ilk borcu.",
+      "file": "design/chapters/chapter_1.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "chapter": "chapter_1",
+      "location": "place_weary_gull",
+      "stake_tr": "Tolvan kayıkları kaybederse han biter ve Brotherhood limanı tutar.",
+      "ways_in": [
+        "kalacak yer aramak",
+        "news_0001 söylentisi",
+        "socket_debt"
+      ],
+      "if_never_arrives_tr": "Gün 25'te Brotherhood kayıkları alır (op_tide_1.step_2).",
+      "sites": [],
+      "npcs": [
+        "npc_tolvan",
+        "npc_yesra"
+      ],
+      "stamped": {},
+      "refs": [
+        "place_weary_gull",
+        "npc_tolvan",
+        "npc_yesra",
+        "seed_gulls_debt",
+        "socket_debt",
+        "faction_tide_brotherhood"
+      ]
+    },
+    "node_c1_pier": {
+      "id": "node_c1_pier",
+      "type": "node",
+      "name": "Sunken Pier",
+      "aliases": [],
+      "summary": "Çökük iskelenin altında sandıklar ve Brotherhood'un bekçisi.",
+      "file": "design/chapters/chapter_1.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "chapter": "chapter_1",
+      "location": "site_sunken_pier",
+      "stake_tr": "Defter parçası kimin eline geçerse ilk sorunun cevabı ondadır.",
+      "ways_in": [
+        "Tolvan'ın borcu",
+        "gece yanan fener (telegraf)",
+        "Reeve'in sandık ilanı"
+      ],
+      "if_never_arrives_tr": "Gün 10'da sandıklar mağaraya taşınır (op_tide_1.step_1).",
+      "sites": [
+        "site_sunken_pier"
+      ],
+      "npcs": [
+        "npc_kortan"
+      ],
+      "stamped": {},
+      "refs": [
+        "site_sunken_pier",
+        "npc_kortan",
+        "npc_sarven",
+        "item_consumed_ledger",
+        "beat_1a"
+      ]
+    },
+    "node_c1_court": {
+      "id": "node_c1_court",
+      "type": "node",
+      "name": "The Court's readings",
+      "aliases": [],
+      "summary": "Mourners' Hall, Salt House, üç izinsiz okuma; Ilme'nin merhameti ve Yesra'nın boşlukları.",
+      "file": "design/chapters/chapter_1.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "chapter": "chapter_1",
+      "location": "place_mourners_hall",
+      "stake_tr": "Okuma bir gelenek mi, bir tüketim mi; Yesra'nın bir sonraki okuması kime mal olur.",
+      "ways_in": [
+        "news_0002",
+        "Yesra'nın masası",
+        "socket_court_trained"
+      ],
+      "if_never_arrives_tr": "Gün 20'de Reedham'da bir okuma daha (op_court_1.step_2).",
+      "sites": [],
+      "npcs": [
+        "npc_ilme",
+        "npc_yesra"
+      ],
+      "stamped": {},
+      "refs": [
+        "place_mourners_hall",
+        "place_salt_house",
+        "npc_ilme",
+        "npc_yesra",
+        "socket_court_trained",
+        "faction_court_of_mourners"
+      ]
+    },
+    "node_c2_tide_cave": {
+      "id": "node_c2_tide_cave",
+      "type": "node",
+      "name": "Tide Cave",
+      "aliases": [],
+      "summary": "Brotherhood'un deposu; tuzun nereye gittiği ve manifestonun kimde olduğu.",
+      "file": "design/chapters/chapter_2.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "chapter": "chapter_2",
+      "location": "site_tide_cave",
+      "stake_tr": "Tuz Court'a ulaşırsa kandil tamamlanır.",
+      "ways_in": [
+        "Kortan'ın pazarlığı",
+        "cezirdeki kayık izi",
+        "Sarven'in manifestosu"
+      ],
+      "if_never_arrives_tr": "Gün 40'ta tuz Court'a gider (op_tide_1.step_3).",
+      "sites": [
+        "site_tide_cave"
+      ],
+      "npcs": [
+        "npc_draskun"
+      ],
+      "stamped": {},
+      "refs": [
+        "site_tide_cave",
+        "npc_draskun",
+        "npc_sarven",
+        "beat_1b",
+        "thread_vorin"
+      ]
+    },
+    "node_c2_lantern": {
+      "id": "node_c2_lantern",
+      "type": "node",
+      "name": "Blind Lantern",
+      "aliases": [],
+      "summary": "Sönük fener, biriken kandil, bekçi; kimin adına yanacağı.",
+      "file": "design/chapters/chapter_2.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "chapter": "chapter_2",
+      "location": "site_blind_lantern",
+      "stake_tr": "Doksan altıncı günde Lantern yanar; kime yanacağı burada belli olur.",
+      "ways_in": [
+        "mağaradan tünel",
+        "burun patikası",
+        "gün 75'te kandil kervanı"
+      ],
+      "if_never_arrives_tr": "Gün 96'da Lantern kâtibe yanar (op_court_1.step_4 ve doom).",
+      "sites": [
+        "site_blind_lantern"
+      ],
+      "npcs": [
+        "npc_ilme"
+      ],
+      "stamped": {},
+      "refs": [
+        "site_blind_lantern",
+        "npc_ilme",
+        "beat_1c",
+        "item_lamp_seal"
+      ]
+    },
+    "node_c2_reedham": {
+      "id": "node_c2_reedham",
+      "type": "node",
+      "name": "The silence of Reedham",
+      "aliases": [],
+      "summary": "Kapıyı çalanlar, okunmayan ölüler, düzlüğe bakan köy.",
+      "file": "design/chapters/chapter_2.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "chapter": "chapter_2",
+      "location": "settlement_reedham",
+      "stake_tr": "Köy okumayı reddederse Saltbound'lar gelir; kabul ederse Court gelir.",
+      "ways_in": [
+        "news_0003",
+        "Ameli'nin Lanternside'a gelişi",
+        "socket_witnessed_reading"
+      ],
+      "if_never_arrives_tr": "Gün 20'de Ameli'nin annesi okunur (op_court_1.step_2); gün 96'da kuyu yürür.",
+      "sites": [
+        "site_bottomless_well"
+      ],
+      "npcs": [
+        "npc_ameli"
+      ],
+      "stamped": {},
+      "refs": [
+        "settlement_reedham",
+        "npc_ameli",
+        "site_bottomless_well",
+        "seed_reedham_silence",
+        "socket_witnessed_reading"
+      ]
+    },
+    "beat_1a": {
+      "id": "beat_1a",
+      "type": "beat",
+      "name": "The Crates",
+      "aliases": [
+        "inciting"
+      ],
+      "summary": "Vesper'in yükü kayıp değil; bir kısmı Court'un defteridir ve Brotherhood onu taşıyor.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "act": 1,
+      "chapter": "chapter_1",
+      "change_kind": "knowledge",
+      "state_before_tr": "Vesper enkazının yükü denizde kayıp sanılıyor.",
+      "state_after_tr": "Yükün bir kısmı Court'a ait bir defterdir ve Brotherhood onu taşımaktadır.",
+      "world_pressure": "op_tide_1.step_1",
+      "delivery_paths": [
+        "site_sunken_pier",
+        "npc_tolvan",
+        "news_0001"
+      ],
+      "fallbacks": {
+        "cost_tr": "Parti sandıklara geç kalırsa defter parçası mağaraya gider ve Tolvan kayıkları kaybeder.",
+        "secondary_tr": "Kortan defter parçasını Reeve'e satar; Reeve saklar, Olmar bulur.",
+        "deferred_tr": "Defter parçası gün 40'ta tuzla birlikte Mourners' Hall'a taşınır; parti onu orada görür."
+      },
+      "stamped": {
+        "change_kind": "knowledge",
+        "world_pressure": "op_tide_1.step_1"
+      },
+      "refs": [
+        "site_sunken_pier",
+        "npc_tolvan",
+        "npc_kortan",
+        "item_consumed_ledger",
+        "faction_tide_brotherhood",
+        "chapter_1"
+      ]
+    },
+    "beat_1b": {
+      "id": "beat_1b",
+      "type": "beat",
+      "name": "The Reading",
+      "aliases": [
+        "midpoint"
+      ],
+      "summary": "Tuz okuması hayırlı bir gelenek değil; bir okuma bir anıyı yok eder ve Yesra'nın boşlukları bunun kanıtıdır.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "act": 1,
+      "chapter": "chapter_2",
+      "change_kind": "loss",
+      "state_before_tr": "Tuz okuması yas için hayırlı bir gelenek sayılır.",
+      "state_after_tr": "Bir okumanın bir anıyı yok ettiği bilinir; Yesra'nın boşlukları ve defter parçası bunun kanıtıdır.",
+      "world_pressure": "op_court_1.step_3",
+      "delivery_paths": [
+        "npc_yesra",
+        "site_tide_cave",
+        "npc_ilme"
+      ],
+      "fallbacks": {
+        "cost_tr": "Parti Yesra'yı korursa okuma Ameli'nin annesine kayar ve Reedham bedelini öder.",
+        "secondary_tr": "Ilme kendisi bir okuma yapar ve bir anısını kaybettiğini masada gösterir.",
+        "deferred_tr": "Kanıt gün 75'te kandil kervanıyla gelir: taşınan kandil adları fısıldar."
+      },
+      "stamped": {
+        "change_kind": "loss",
+        "world_pressure": "op_court_1.step_3"
+      },
+      "refs": [
+        "npc_yesra",
+        "npc_ilme",
+        "npc_ameli",
+        "site_tide_cave",
+        "faction_court_of_mourners",
+        "chapter_2",
+        "signature_salt_memory"
+      ]
+    },
+    "beat_1c": {
+      "id": "beat_1c",
+      "type": "beat",
+      "name": "The Lantern",
+      "aliases": [
+        "resolution"
+      ],
+      "summary": "Blind Lantern'in kime yandığı belli olur: ya kâtibin adı herkesin kafasına yazılır ya da Lantern bir daha yanmaz.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "act": 1,
+      "chapter": "chapter_2",
+      "change_kind": "control",
+      "state_before_tr": "Blind Lantern sönük; Court'un kandili Lanternside'da birikiyor.",
+      "state_after_tr": "Lantern'in kime yandığı bellidir: Court'un kâtibine, Ormis'e ya da hiç kimseye.",
+      "world_pressure": "op_court_1.step_4",
+      "delivery_paths": [
+        "site_blind_lantern",
+        "npc_s01",
+        "news_0002"
+      ],
+      "fallbacks": {
+        "cost_tr": "Parti Lantern'e geç kalırsa Lantern yanar ve parti adını ilk unutan olur; savaş kandil odasında sürer.",
+        "secondary_tr": "Ilme mührü alır ve Lantern'i kendisi söndürür; Court biter, Ilme de.",
+        "deferred_tr": "Doom bir kez ertelenir (kandil kervanı durdurulursa +14 gün); Lantern bekler, Saltbound'lar yürür."
+      },
+      "stamped": {
+        "change_kind": "control",
+        "world_pressure": "op_court_1.step_4"
+      },
+      "refs": [
+        "site_blind_lantern",
+        "npc_s01",
+        "npc_ilme",
+        "item_lamp_seal",
+        "faction_court_of_mourners",
+        "chapter_2"
+      ]
+    },
+    "seed_gulls_debt": {
+      "id": "seed_gulls_debt",
+      "type": "seed",
+      "name": "The Gull's Debt",
+      "aliases": [],
+      "summary": "Tolvan'ın iki kayığı Brotherhood'a rehin; gün 25'te alınacak.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "hook_tr": "Tolvan odayı bedava verir, karşılığında 'küçük bir iş' ister.",
+      "complication_tr": "Borç para değil, bir sandıktır: Brotherhood Tolvan'dan Sunken Pier'deki bir sandığı istiyor.",
+      "resolution_tr": "Sandık teslim edilir (defter parçası gider) ya da borç başka türlü kapanır (Kortan'la pazarlık, Reeve'in ödemesi, kayıkların zorla alınması).",
+      "reward_tr": "Han üssü olur; Tolvan 'o gece'yi anlatır.",
+      "tied_to": [
+        "npc_tolvan",
+        "faction_tide_brotherhood"
+      ],
+      "site": "site_sunken_pier",
+      "stamped": {},
+      "refs": [
+        "npc_tolvan",
+        "faction_tide_brotherhood",
+        "site_sunken_pier",
+        "place_weary_gull",
+        "npc_kortan"
+      ]
+    },
+    "seed_reedham_silence": {
+      "id": "seed_reedham_silence",
+      "type": "seed",
+      "name": "The Silence of Reedham",
+      "aliases": [],
+      "summary": "Kışın üç kez, düzlükten gelen biri kapıyı çaldı ve girmeden gitti.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "hook_tr": "Ameli Lanternside'a gelir; Court'a değil, hana gider.",
+      "complication_tr": "Kapıyı çalan Ameli'nin annesidir: okunmadan gömüldü, Saltbound oldu, evini hatırlıyor.",
+      "resolution_tr": "Anne yatıştırılır (kandil ışığı, adının söylenmesi) ya da yok edilir; köy okumayı kabul eder ya da reddeder ve sonuç Court'a gider.",
+      "reward_tr": "Reedham partiye kapı açar; kuyunun yolu ve telegrafları anlatılır.",
+      "tied_to": [
+        "npc_ameli",
+        "settlement_reedham"
+      ],
+      "site": "site_bottomless_well",
+      "stamped": {},
+      "refs": [
+        "npc_ameli",
+        "settlement_reedham",
+        "site_bottomless_well",
+        "creature_saltbound",
+        "faction_court_of_mourners"
+      ]
+    },
+    "socket_debt": {
+      "id": "socket_debt",
+      "type": "socket",
+      "name": "Debt to the Brotherhood",
+      "aliases": [],
+      "summary": "Bir PC Brotherhood'a borçlu ya da borçlu birine bağlı.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "kind": "debt",
+      "node": "node_c1_gull",
+      "npc": "npc_tolvan",
+      "question_tr": "Lanternside'da birine borcun var mı, ya da borcu olan birine bağlı mısın?",
+      "bound_to": "pc_selen",
+      "stamped": {},
+      "refs": [
+        "node_c1_gull",
+        "npc_tolvan",
+        "pc_selen",
+        "faction_tide_brotherhood"
+      ]
+    },
+    "socket_lost_ship": {
+      "id": "socket_lost_ship",
+      "type": "socket",
+      "name": "Someone aboard the Vesper",
+      "aliases": [],
+      "summary": "Bir PC'nin ailesinden biri Vesper'deydi.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "kind": "family_at_event",
+      "node": "node_c1_pier",
+      "npc": "npc_sarven",
+      "question_tr": "Üç yıl önce Vesper battığında ailenden biri o gemide miydi?",
+      "bound_to": "pc_vorin",
+      "stamped": {},
+      "refs": [
+        "node_c1_pier",
+        "npc_sarven",
+        "pc_vorin",
+        "event_vesper_wreck"
+      ]
+    },
+    "socket_court_trained": {
+      "id": "socket_court_trained",
+      "type": "socket",
+      "name": "Court-trained",
+      "aliases": [],
+      "summary": "Bir PC Ilme'nin elinde yetişti ya da Court'tan kovuldu.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "kind": "trained_under",
+      "node": "node_c1_court",
+      "npc": "npc_ilme",
+      "question_tr": "Court of Mourners'ta hiç eğitim aldın mı, ya da oradan gönderildin mi?",
+      "bound_to": null,
+      "stamped": {},
+      "refs": [
+        "node_c1_court",
+        "npc_ilme",
+        "faction_court_of_mourners"
+      ]
+    },
+    "socket_witnessed_reading": {
+      "id": "socket_witnessed_reading",
+      "type": "socket",
+      "name": "Witnessed a reading",
+      "aliases": [],
+      "summary": "Bir PC bir okumaya tanık oldu ve o günden bir şeyi hatırlamıyor.",
+      "file": "design/arc.md",
+      "secrecy": "public",
+      "created_phase": "P7",
+      "origin": "birth",
+      "kind": "witnessed",
+      "node": "node_c2_reedham",
+      "npc": "npc_yesra",
+      "question_tr": "Hiç bir tuz okumasında bulundun mu? O günden ne hatırlıyorsun?",
+      "bound_to": null,
+      "stamped": {},
+      "refs": [
+        "node_c2_reedham",
+        "npc_yesra",
+        "signature_salt_memory"
+      ]
+    },
+    "thread_selen": {
+      "id": "thread_selen",
+      "type": "thread",
+      "name": "Selen's Thread — The Knot",
+      "aliases": [],
+      "summary": "Borç ödenince biter mi, yoksa hatırlandıkça sürer mi? Ağabeyi Vesper'deydi; adı bir defterde.",
+      "file": "design/threads/thread_selen.md",
+      "secrecy": "public",
+      "created_phase": "P9",
+      "origin": "birth",
+      "pc": "pc_selen",
+      "question_tr": "Borç ödenince biter mi, yoksa hatırlandıkça sürer mi?",
+      "antagonist": "npc_draskun",
+      "layers": [
+        {
+          "n": 1,
+          "act": 1,
+          "secrecy": "discoverable",
+          "placed_in": "site_sunken_pier"
+        },
+        {
+          "n": 2,
+          "act": 1,
+          "secrecy": "secret",
+          "placed_in": "item_consumed_ledger"
+        },
+        {
+          "n": 3,
+          "act": 1,
+          "secrecy": "secret",
+          "placed_in": "site_blind_lantern"
+        }
+      ],
+      "sites": [
+        "site_sunken_pier"
+      ],
+      "crossings": [
+        {
+          "act": 1,
+          "where": "site_sunken_pier",
+          "with": "pc_vorin"
+        }
+      ],
+      "mission": "pc_selen",
+      "stamped": {
+        "pc": "pc_selen",
+        "antagonist": "npc_draskun",
+        "layers": [
+          "site_sunken_pier",
+          "item_consumed_ledger",
+          "site_blind_lantern"
+        ]
+      },
+      "refs": [
+        "pc_selen",
+        "npc_draskun",
+        "npc_tolvan",
+        "site_sunken_pier",
+        "item_consumed_ledger",
+        "site_blind_lantern",
+        "socket_debt",
+        "event_vesper_wreck",
+        "pc_vorin"
+      ],
+      "dm_only": {
+        "truth_tr": "Ağabeyi Vesper'in tayfasıydı; cesedi Brotherhood buldu, tuzunu Court okudu, adı 'tüketilenler'de. Selen'in hatırladığı son kavgaları, ağabeyinin son saatinde okunmuş ve gitmiştir; Selen o kavgayı hatırlar, ağabeyi artık hiçbir yerde hatırlamaz."
+      }
+    },
+    "thread_vorin": {
+      "id": "thread_vorin",
+      "type": "thread",
+      "name": "Vorin's Thread — The Oath",
+      "aliases": [],
+      "summary": "Unutulan bir yemin hâlâ bağlar mı? Babasının Vesper'de batan yükünü Reeve'e teslim etmek istiyor.",
+      "file": "design/threads/thread_vorin.md",
+      "secrecy": "public",
+      "created_phase": "P9",
+      "origin": "birth",
+      "pc": "pc_vorin",
+      "question_tr": "Unutulan bir yemin hâlâ bağlar mı?",
+      "antagonist": "npc_s01",
+      "layers": [
+        {
+          "n": 1,
+          "act": 1,
+          "secrecy": "discoverable",
+          "placed_in": "npc_sarven"
+        },
+        {
+          "n": 2,
+          "act": 1,
+          "secrecy": "secret",
+          "placed_in": "site_tide_cave"
+        },
+        {
+          "n": 3,
+          "act": 1,
+          "secrecy": "secret",
+          "placed_in": "site_blind_lantern"
+        }
+      ],
+      "sites": [
+        "site_tide_cave"
+      ],
+      "crossings": [
+        {
+          "act": 1,
+          "where": "site_sunken_pier",
+          "with": "pc_selen"
+        }
+      ],
+      "mission": "pc_vorin",
+      "stamped": {
+        "pc": "pc_vorin",
+        "antagonist": "npc_s01",
+        "layers": [
+          "npc_sarven",
+          "site_tide_cave",
+          "site_blind_lantern"
+        ]
+      },
+      "refs": [
+        "pc_vorin",
+        "npc_sarven",
+        "site_tide_cave",
+        "site_blind_lantern",
+        "socket_lost_ship",
+        "event_vesper_wreck",
+        "pc_selen",
+        "faction_reedmarch"
+      ],
+      "dm_only": {
+        "truth_tr": "Babası tuz tüccarı değil Court kuryesiydi; Vesper'de defterin kopyasını taşıyordu ve 'gönüllü' olarak ilk okunanlardan biriydi. Reeve'e verilen yemin bir tuz yemini değil, Court'un Reeve'den aldığı bir senetti."
+      }
+    },
+    "pc_selen": {
+      "id": "pc_selen",
+      "type": "pc",
+      "name": "Selen",
+      "aliases": [],
+      "summary": "Lanternside doğumlu hırsız; ağabeyi Vesper'de battı.",
+      "file": "characters/Selen.md",
+      "secrecy": "public",
+      "created_phase": "P9",
+      "origin": "birth",
+      "player": "oyuncu",
+      "sheet": "characters/Selen.md",
+      "origin_settlement": "settlement_lanternside",
+      "class": "Rogue",
+      "level": 1,
+      "thread": "thread_selen",
+      "stamped": {},
+      "refs": [
+        "thread_selen",
+        "settlement_lanternside",
+        "socket_debt"
+      ]
+    },
+    "pc_vorin": {
+      "id": "pc_vorin",
+      "type": "pc",
+      "name": "Vorin Tegrik",
+      "aliases": [
+        "Vorin"
+      ],
+      "summary": "Yayladan inmiş savaşçı; babası Vesper'le battı.",
+      "file": "characters/Vorin Tegrik.md",
+      "secrecy": "public",
+      "created_phase": "P9",
+      "origin": "birth",
+      "player": "oyuncu",
+      "sheet": "characters/Vorin Tegrik.md",
+      "origin_settlement": "settlement_lanternside",
+      "class": "Fighter",
+      "level": 1,
+      "thread": "thread_vorin",
+      "stamped": {},
+      "refs": [
+        "thread_vorin",
+        "socket_lost_ship",
+        "event_vesper_wreck"
+      ]
+    }
+  }
+}

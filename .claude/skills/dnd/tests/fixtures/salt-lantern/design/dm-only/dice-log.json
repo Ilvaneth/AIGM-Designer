@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "design_dice.py --phase P4",
+    "written_at": "2026-09-24T18:50:00Z"
+  },
+  "rolls": [
+    {"phase": "P1", "table": "secrets.yaml#archetype", "label": "P1.secret_archetype", "notation": "d7", "raw": 2, "row_id": "secret_magic_is_actually", "excluded": [], "ts": "2026-09-24T18:03:05Z"},
+    {"phase": "P1", "table": "secrets.yaml#twist", "label": "P1.secret_twist", "notation": "d6", "raw": 4, "row_id": "twist_institution_knows", "excluded": [], "ts": "2026-09-24T18:03:05Z"},
+    {"phase": "P4", "table": "antagonists.yaml#visibility", "label": "P4.bbeg_visibility", "notation": "d5", "raw": 3, "row_id": "behind_visible_front", "excluded": [], "ts": "2026-09-24T18:50:12Z"}
+  ]
+}

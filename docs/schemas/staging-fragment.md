@@ -11,37 +11,37 @@ Every fan-out agent writes its prose file **first** and its fragment **last**. T
 ```json
 {
   "schema_version": 1,
-  "id": "site_batik_iskele",
+  "id": "site_sunken_pier",
   "type": "site",
   "phase": "P6",
   "attempt": 2,
-  "agent": "P6.site_batik_iskele.a2",
+  "agent": "P6.site_sunken_pier.a2",
   "mode": "birth",
   "written_at": "2026-09-24T19:28:14Z",
   "prose": {
-    "file": "design/sites/site_batik_iskele.md",
+    "file": "design/sites/site_sunken_pier.md",
     "bytes": 7420,
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
   "dm_only_prose": {
-    "file": "design/dm-only/sites/site_batik_iskele.md",
+    "file": "design/dm-only/sites/site_sunken_pier.md",
     "bytes": 1210,
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
-  "notes": "design/_staging/P6/site_batik_iskele.notes.md",
+  "notes": "design/_staging/P6/site_sunken_pier.notes.md",
   "registry": {
-    "id": "site_batik_iskele",
+    "id": "site_sunken_pier",
     "type": "site",
-    "name": "Batık İskele",
-    "aliases": ["Eski İskele"],
-    "summary": "Fenerli'nin üç yıl önce çöken eski iskelesi; altında Kandil gemisinin sandıkları ve onları bekleyenler.",
-    "file": "design/sites/site_batik_iskele.md",
+    "name": "Sunken Pier",
+    "aliases": ["Old Pier"],
+    "summary": "Lanternside'ın üç yıl önce çöken eski iskelesi; altında Vesper gemisinin sandıkları ve onları bekleyenler.",
+    "file": "design/sites/site_sunken_pier.md",
     "secrecy": "public",
     "created_phase": "P6",
     "origin": "birth",
     "kind": "dungeon",
     "role": "minor",
-    "region": "region_tuz_ovasi",
+    "region": "region_saltmere",
     "danger_tier": 1,
     "room_count": 6,
     "act": 1,
@@ -49,27 +49,27 @@ Every fan-out agent writes its prose file **first** and its fragment **last**. T
     "key_npcs": ["npc_draskun"],
     "payoff": "plot_item",
     "telegraphs": [
-      {"distance": "far", "text_tr": "Dalgakıranın kırık ucunda gece fener yanar; kimse yakmaz."},
+      {"distance": "far", "text_tr": "Breakwater'ın kırık ucunda gece fener yanar; kimse yakmaz."},
       {"distance": "near", "text_tr": "Kazıkların dibinde tuz kabuğu bağlamış ayak izleri, hepsi denize doğru."},
-      {"distance": "threshold", "text_tr": "İlk ambarın kapısında taze kesilmiş halat ve bir Kardeşlik düğümü."}
+      {"distance": "threshold", "text_tr": "İlk ambarın kapısında taze kesilmiş halat ve bir Brotherhood düğümü."}
     ],
     "escape_tr": "Cezirde 4. odadan kumsala; metle 1. odadan geri, ama su bele kadar.",
     "attitude": "capture",
     "xp_budget": 450,
     "min_depth": 3,
     "intended_path": true,
-    "if_never_visited_tr": "Kardeşlik sandıkları on gün içinde taşır; defter Gelgit Mağarası'na gider.",
-    "reoccupation": "faction_kacakcilar",
+    "if_never_visited_tr": "Brotherhood sandıkları on gün içinde taşır; defter Tide Cave'e gider.",
+    "reoccupation": "faction_tide_brotherhood",
     "stamped": {"danger_tier": 1, "room_count": 6, "act": 1, "thread": "beat_1a", "key_npcs": ["npc_draskun"]},
-    "refs": ["settlement_fenerli", "npc_draskun", "faction_kacakcilar", "item_tuz_defteri", "creature_tuzbagli", "beat_1a"],
+    "refs": ["settlement_lanternside", "npc_draskun", "faction_tide_brotherhood", "item_consumed_ledger", "creature_saltbound", "beat_1a"],
     "dm_only": {"clue": {"secret_clue": 2}}
   },
   "graph": {
-    "nodes": [{"id": "site_batik_iskele", "type": "place", "name": "Batık İskele", "tags": ["site", "tier1"], "summary": "Çökmüş eski iskele; Kardeşlik deposu."}],
-    "edges": [{"from": "faction_kacakcilar", "to": "site_batik_iskele", "type": "controls", "since_session": 0, "note": "birth"}]
+    "nodes": [{"id": "site_sunken_pier", "type": "place", "name": "Sunken Pier", "tags": ["site", "tier1"], "summary": "Çökmüş eski iskele; Brotherhood deposu."}],
+    "edges": [{"from": "faction_tide_brotherhood", "to": "site_sunken_pier", "type": "controls", "since_session": 0, "note": "birth"}]
   },
   "seeds": [
-    {"store": "site_progress", "op": "open", "args": {"site": "site_batik_iskele", "entrances": ["1", "4"], "payoff_room": "6", "min_depth": 3, "room_count": 6}}
+    {"store": "site_progress", "op": "open", "args": {"site": "site_sunken_pier", "entrances": ["1", "4"], "payoff_room": "6", "min_depth": 3, "room_count": 6}}
   ],
   "counts": {"words": 1180, "rooms": 6, "telegraphs": 3},
   "status": "staged"

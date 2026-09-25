@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "registry.py merge --phase P6",
+    "written_at": "2026-09-24T20:00:00Z",
+    "simulated_to_day": 0,
+    "threat_stage": 1,
+    "doom_day": 96,
+    "doom_moved": []
+  },
+  "entries": {
+    "site_sunken_pier": {
+      "status": {"value": "detailed", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": "P6 birth-detailed site"}
+    },
+    "site_tide_cave": {
+      "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
+    },
+    "site_blind_lantern": {
+      "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
+    },
+    "site_bottomless_well": {
+      "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
+    },
+    "settlement_lanternside": {
+      "status": {"value": "detailed", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": "P3 anchors fixed; small points unfilled"}
+    },
+    "settlement_reedham": {
+      "status": {"value": "detailed", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": "village: one sentence, one problem, one NPC"}
+    }
+  },
+  "pending_scenes": [],
+  "price_modifiers": {}
+}

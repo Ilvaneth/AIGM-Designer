@@ -1,0 +1,29 @@
+{
+  "day": 12,
+  "month": 4,
+  "year": 412,
+  "months": ["Frostmonth", "Mistmonth", "Saltmonth", "Lampmonth", "Reedmonth", "Tidemonth", "Stormmonth", "Drymonth", "Mourningmonth", "Clearmonth", "Galemonth", "Stillmonth"],
+  "month_length": 30,
+  "day_names": ["Saltday", "Reedday", "Waveday", "Lampday", "Mistday", "Stillday"],
+  "time": "morning",
+  "day_counter": 0,
+  "moons": [{"name": "the Lamp", "cycle": 30, "phase_day0": "yeni"}],
+  "festivals": [
+    {"name": "Lamp Night", "month": 4, "day": 30, "god": "god_ormis", "note": "Her evde bir kandil yanar; Court bedava okuma yapar."},
+    {"name": "Salt Pouring", "month": 3, "day": 1, "god": "god_velune", "note": "Sabah tuzu denize dökülür; Flood anılır."},
+    {"name": "Still Day", "month": 12, "day": 15, "god": "god_isken", "note": "Kimse konuşmaz; ölülerin adları söylenmez, yalnızca yazılır."}
+  ],
+  "seasons": {
+    "Frostmonth": "soğuk, gri gökyüzü, tuz kokusu keskin", "Mistmonth": "sis sabahları, ıslak halat kokusu", "Saltmonth": "rüzgâr döner, düzlük parlar",
+    "Lampmonth": "ılık akşamlar, kandil isi kokusu", "Reedmonth": "sazlık yeşerir, sivrisinek", "Tidemonth": "büyük gelgitler, çürük yosun",
+    "Stormmonth": "fırtınalar, tuz serpintisi", "Drymonth": "sıcak, düzlük çatlar, ölü balık", "Mourningmonth": "yas ayı, kandil isi ve gül suyu",
+    "Clearmonth": "berrak geceler, deniz fosforu", "Galemonth": "ilk fırtına, ıslak taş", "Stillmonth": "sessiz kar, kapalı kapılar"
+  },
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "calendar.py init",
+    "written_at": "2026-09-24T18:25:00Z"
+  }
+}

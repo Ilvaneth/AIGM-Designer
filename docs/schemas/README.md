@@ -1,6 +1,6 @@
 # Campaign Designer — shared store schemas (slice 0, item C)
 
-*Documented examples of every JSON store the designer and the living world write. Plan items 3, 6, 7, 9, 13, 14, 16, 19 and the errata in 24.2 are the decisions; this folder is their concrete shape. The plan wins on any conflict. Every example is lifted from the fixture bible under `.claude/skills/dnd/tests/fixtures/tuzlu-fener/`, and `tests/test_schema_docs.py` parses every JSON block here, so an example that drifts from valid JSON fails the suite.*
+*Documented examples of every JSON store the designer and the living world write. Plan items 3, 6, 7, 9, 13, 14, 16, 19 and the errata in 24.2 are the decisions; this folder is their concrete shape. The plan wins on any conflict. Every example is lifted from the fixture bible under `.claude/skills/dnd/tests/fixtures/salt-lantern/`, and `tests/test_schema_docs.py` parses every JSON block here, so an example that drifts from valid JSON fails the suite.*
 
 | Store | Path (under `campaigns/<name>/`) | Doc | Single writer |
 |---|---|---|---|
@@ -30,4 +30,4 @@ Stores the designer only **seeds** and does not own keep their existing shape: `
 
 ## The fixture these examples come from
 
-`tuzlu-fener` ("Tuzlu Fener", the Salt Lantern): a micro `short` campaign on a salt-marsh coast, one polity, one region, a town and a village, three factions, nine named NPCs (one of them secret, under an opaque slug), four sites (one detailed at birth), one act of three beats in two chapters, two PCs. Sixty-nine registry entities in all; `tests/test_fixture.py` checks the bible the way slice 1's validator will. Below the `short` band on purpose (`_meta.fixture: true`); it exists so every schema has a real instance, so prompt and validator tuning in slice 1 never needs a full birth, and so broken-fixture variants can be derived from it by changing one field each (item 22.1).
+`salt-lantern` (the Salt Lantern): a micro `short` campaign on a salt-marsh coast, one polity, one region, a town and a village, three factions, nine named NPCs (one of them secret, under an opaque slug), four sites (one detailed at birth), one act of three beats in two chapters, two PCs. Sixty-nine registry entities in all; `tests/test_fixture.py` checks the bible the way slice 1's validator will. Below the `short` band on purpose (`_meta.fixture: true`); it exists so every schema has a real instance, so prompt and validator tuning in slice 1 never needs a full birth, and so broken-fixture variants can be derived from it by changing one field each (item 22.1).

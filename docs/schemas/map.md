@@ -10,7 +10,7 @@ Written by the P3 skeleton through `registry.py merge` (nodes and edges are merg
 {
   "_meta": {
     "schema_version": 1,
-    "campaign": "tuzlu-fener",
+    "campaign": "salt-lantern",
     "fixture": true,
     "written_by": "registry.py merge --phase P3",
     "written_at": "2026-09-24T18:40:00Z",
@@ -20,27 +20,27 @@ Written by the P3 skeleton through `registry.py merge` (nodes and edges are merg
     "dm_map": "design/dm-only/dm-map.svg"
   },
   "regions": {
-    "region_tuz_ovasi": {"bbox": [10, 20, 90, 85], "danger_tier": 2, "biome": "tuz bataklığı", "polity": "polity_sazlik"}
+    "region_saltmere": {"bbox": [10, 20, 90, 85], "danger_tier": 2, "biome": "tuz bataklığı", "polity": "polity_reedmarch"}
   },
   "nodes": [
-    {"id": "settlement_fenerli", "kind": "settlement", "x": 42, "y": 61, "region": "region_tuz_ovasi", "terrain": "kıyı", "secrecy": "public", "hub": true},
-    {"id": "settlement_kamisli", "kind": "settlement", "x": 68, "y": 44, "region": "region_tuz_ovasi", "terrain": "sazlık", "secrecy": "public", "hub": false},
-    {"id": "site_batik_iskele", "kind": "site", "x": 36, "y": 70, "region": "region_tuz_ovasi", "terrain": "kıyı", "secrecy": "public", "hub": false},
-    {"id": "site_gelgit_magarasi", "kind": "site", "x": 24, "y": 52, "region": "region_tuz_ovasi", "terrain": "kayalık kıyı", "secrecy": "discoverable", "hub": false},
-    {"id": "site_kor_fener", "kind": "site", "x": 14, "y": 78, "region": "region_tuz_ovasi", "terrain": "burun", "secrecy": "public", "hub": false},
-    {"id": "site_dipsiz_kuyu", "kind": "site", "x": 80, "y": 28, "region": "region_tuz_ovasi", "terrain": "tuz düzlüğü", "secrecy": "public", "hub": false},
-    {"id": "landmark_kirik_dalgakiran", "kind": "landmark", "x": 30, "y": 66, "region": "region_tuz_ovasi", "terrain": "kıyı", "secrecy": "public", "hub": false},
-    {"id": "waypoint_sazlik_yolu", "kind": "waypoint", "x": 56, "y": 52, "region": "region_tuz_ovasi", "terrain": "sazlık", "secrecy": "public", "hub": false}
+    {"id": "settlement_lanternside", "kind": "settlement", "x": 42, "y": 61, "region": "region_saltmere", "terrain": "kıyı", "secrecy": "public", "hub": true},
+    {"id": "settlement_reedham", "kind": "settlement", "x": 68, "y": 44, "region": "region_saltmere", "terrain": "sazlık", "secrecy": "public", "hub": false},
+    {"id": "site_sunken_pier", "kind": "site", "x": 36, "y": 70, "region": "region_saltmere", "terrain": "kıyı", "secrecy": "public", "hub": false},
+    {"id": "site_tide_cave", "kind": "site", "x": 24, "y": 52, "region": "region_saltmere", "terrain": "kayalık kıyı", "secrecy": "discoverable", "hub": false},
+    {"id": "site_blind_lantern", "kind": "site", "x": 14, "y": 78, "region": "region_saltmere", "terrain": "burun", "secrecy": "public", "hub": false},
+    {"id": "site_bottomless_well", "kind": "site", "x": 80, "y": 28, "region": "region_saltmere", "terrain": "tuz düzlüğü", "secrecy": "public", "hub": false},
+    {"id": "landmark_broken_breakwater", "kind": "landmark", "x": 30, "y": 66, "region": "region_saltmere", "terrain": "kıyı", "secrecy": "public", "hub": false},
+    {"id": "waypoint_reed_road", "kind": "waypoint", "x": 56, "y": 52, "region": "region_saltmere", "terrain": "sazlık", "secrecy": "public", "hub": false}
   ],
   "edges": [
-    {"id": "r_fenerli_iskele", "from": "settlement_fenerli", "to": "site_batik_iskele", "days": 0.5, "terrain": "kıyı", "road": "track", "region": "region_tuz_ovasi", "note_tr": "Dalgakıranın kırık ucundan görünür."},
-    {"id": "r_fenerli_yol", "from": "settlement_fenerli", "to": "waypoint_sazlik_yolu", "days": 1, "terrain": "sazlık", "road": "road", "region": "region_tuz_ovasi", "note_tr": null},
-    {"id": "r_yol_kamisli", "from": "waypoint_sazlik_yolu", "to": "settlement_kamisli", "days": 1, "terrain": "sazlık", "road": "road", "region": "region_tuz_ovasi", "note_tr": null},
-    {"id": "r_kamisli_kuyu", "from": "settlement_kamisli", "to": "site_dipsiz_kuyu", "days": 1.5, "terrain": "tuz düzlüğü", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Kamışlı'dan kimse bu yola çıkmaz."},
-    {"id": "r_fenerli_gelgit", "from": "settlement_fenerli", "to": "site_gelgit_magarasi", "days": 1, "terrain": "kayalık kıyı", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Yalnızca cezirde geçilir."},
-    {"id": "r_fenerli_fener", "from": "settlement_fenerli", "to": "site_kor_fener", "days": 1.5, "terrain": "burun", "road": "track", "region": "region_tuz_ovasi", "note_tr": null},
-    {"id": "r_gelgit_fener", "from": "site_gelgit_magarasi", "to": "site_kor_fener", "days": 1, "terrain": "kayalık kıyı", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Kıyı boyunca, cezirde."},
-    {"id": "r_iskele_dalgakiran", "from": "site_batik_iskele", "to": "landmark_kirik_dalgakiran", "days": 0.25, "terrain": "kıyı", "road": "none", "region": "region_tuz_ovasi", "note_tr": "Kırık ucuna yürüyerek; gece fener burada yanar."}
+    {"id": "r_lanternside_pier", "from": "settlement_lanternside", "to": "site_sunken_pier", "days": 0.5, "terrain": "kıyı", "road": "track", "region": "region_saltmere", "note_tr": "Breakwater'ın kırık ucundan görünür."},
+    {"id": "r_lanternside_road", "from": "settlement_lanternside", "to": "waypoint_reed_road", "days": 1, "terrain": "sazlık", "road": "road", "region": "region_saltmere", "note_tr": null},
+    {"id": "r_road_reedham", "from": "waypoint_reed_road", "to": "settlement_reedham", "days": 1, "terrain": "sazlık", "road": "road", "region": "region_saltmere", "note_tr": null},
+    {"id": "r_reedham_well", "from": "settlement_reedham", "to": "site_bottomless_well", "days": 1.5, "terrain": "tuz düzlüğü", "road": "none", "region": "region_saltmere", "note_tr": "Reedham'dan kimse bu yola çıkmaz."},
+    {"id": "r_lanternside_cave", "from": "settlement_lanternside", "to": "site_tide_cave", "days": 1, "terrain": "kayalık kıyı", "road": "none", "region": "region_saltmere", "note_tr": "Yalnızca cezirde geçilir."},
+    {"id": "r_lanternside_lantern", "from": "settlement_lanternside", "to": "site_blind_lantern", "days": 1.5, "terrain": "burun", "road": "track", "region": "region_saltmere", "note_tr": null},
+    {"id": "r_cave_lantern", "from": "site_tide_cave", "to": "site_blind_lantern", "days": 1, "terrain": "kayalık kıyı", "road": "none", "region": "region_saltmere", "note_tr": "Kıyı boyunca, cezirde."},
+    {"id": "r_pier_breakwater", "from": "site_sunken_pier", "to": "landmark_broken_breakwater", "days": 0.25, "terrain": "kıyı", "road": "none", "region": "region_saltmere", "note_tr": "Kırık ucuna yürüyerek; gece fener burada yanar."}
   ],
   "insets": []
 }

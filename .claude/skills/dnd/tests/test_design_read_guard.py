@@ -16,7 +16,7 @@ from pathlib import Path
 
 from _layouts import bash_payload, clean_env, make_project, run_hook, skill_of
 
-FIXTURE = Path(__file__).resolve().parent / "fixtures" / "tuzlu-fener"
+FIXTURE = Path(__file__).resolve().parent / "fixtures" / "salt-lantern"
 SESSION = "sess-A"
 
 
@@ -33,7 +33,7 @@ class ReadGuard(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp(prefix="dnd-read-guard-"))
         self.project = make_project(self.tmp, "proj")
-        self.camp = self.project / "campaigns" / "tuzlu-fener"
+        self.camp = self.project / "campaigns" / "salt-lantern"
         shutil.copytree(FIXTURE, self.camp)
         self.skill = skill_of(self.project)
         self.env = clean_env()
@@ -43,7 +43,7 @@ class ReadGuard(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
-    def arm(self, mode="birth", session=SESSION, campaign="tuzlu-fener", **extra):
+    def arm(self, mode="birth", session=SESSION, campaign="salt-lantern", **extra):
         marker = {"campaign": campaign, "mode": mode, "session_id": session, **extra}
         (self.project / ".runtime" / "active-design.json").write_text(json.dumps(marker), encoding="utf-8")
 
@@ -71,12 +71,12 @@ class ReadGuard(unittest.TestCase):
         self.assertEqual(proc.returncode, 2)
         self.assertIn("conductor", proc.stderr)
         self.assertNotIn("Nerun", proc.stderr)
-        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c tuzlu-fener show npc_s01 --dm")), 2)
-        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c tuzlu-fener export")), 2)
-        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c tuzlu-fener export --public")), 0)
-        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c tuzlu-fener show npc_yesra")), 0)
-        self.assertEqual(self.guard(payload("Bash", command="py design_dice.py -c tuzlu-fener log --secret")), 2)
-        self.assertEqual(self.guard(payload("Bash", command="py design_dice.py -c tuzlu-fener log")), 0)
+        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c salt-lantern show npc_s01 --dm")), 2)
+        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c salt-lantern export")), 2)
+        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c salt-lantern export --public")), 0)
+        self.assertEqual(self.guard(payload("Bash", command="py registry.py -c salt-lantern show npc_yesra")), 0)
+        self.assertEqual(self.guard(payload("Bash", command="py design_dice.py -c salt-lantern log --secret")), 2)
+        self.assertEqual(self.guard(payload("Bash", command="py design_dice.py -c salt-lantern log")), 0)
         self.assertEqual(self.guard(payload("Bash", command="ls design/")), 0)
 
     # --- agents --------------------------------------------------------------
@@ -113,7 +113,7 @@ class ReadGuard(unittest.TestCase):
         self.assertEqual(self.guard(payload("Read", agent="player", file_path=sheet)), 0)
         self.assertEqual(self.guard(payload("Read", agent="player", file_path=self.public)), 2)
         self.assertEqual(self.guard(payload("Read", agent="player", file_path=self.dm_only)), 2)
-        self.assertEqual(self.guard(payload("Bash", agent="player", command="py registry.py -c tuzlu-fener export")), 2)
+        self.assertEqual(self.guard(payload("Bash", agent="player", command="py registry.py -c salt-lantern export")), 2)
         self.assertEqual(self.guard(payload("Read", agent="workflow-subagent", file_path=self.dm_only)), 0)
         self.assertEqual(self.guard(payload("Read", agent="general-purpose", file_path=self.dm_only)), 2)
 

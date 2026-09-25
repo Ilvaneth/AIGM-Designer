@@ -64,8 +64,9 @@ class Parsers(unittest.TestCase):
         self.assertEqual(io.wiki_links("[[npc_a]] x [[site_b]] y [[npc_a]]"), ["npc_a", "site_b"])
 
     def test_slug_transliterates_turkish(self):
-        self.assertEqual(io.slug("Kör Fener"), "kor_fener")
-        self.assertEqual(io.slug("İlme Kandilci"), "ilme_kandilci")
+        self.assertEqual(io.slug("Blind Lantern"), "blind_lantern")
+        self.assertEqual(io.slug("Ilme Lampwright"), "ilme_lampwright")
+        self.assertEqual(io.slug("Kör Kandil"), "kor_kandil")
         self.assertEqual(io.slug("Yaşlı Çınar'ın Gölgesi"), "yasli_cinar_in_golgesi")
 
     def test_id_type(self):

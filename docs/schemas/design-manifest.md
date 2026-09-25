@@ -10,7 +10,7 @@ Written only by `design_manifest.py init | reconcile | pending | mark | approve 
 {
   "_meta": {
     "schema_version": 1,
-    "campaign": "tuzlu-fener",
+    "campaign": "salt-lantern",
     "fixture": true,
     "designer_version": "dnd 3.0.0",
     "ruleset": "2014",
@@ -66,25 +66,25 @@ Written only by `design_manifest.py init | reconcile | pending | mark | approve 
            "skeleton": {"status": "merged", "agent": "P6.skeleton.a1"},
            "critique": {"phase_loops": 1, "verdicts": ["fix", "pass"], "entity_loops_total": 2},
            "validator": {"at": "2026-09-24T19:31:00Z", "errors": 0, "warnings": 1},
-           "approval": {"rounds": [{"correction": "Batık İskele'nin ikinci girişi denizden olsun", "scope": "entity", "affected_files": 2, "applied": true, "at": "2026-09-24T19:35:00Z"}],
+           "approval": {"rounds": [{"correction": "Sunken Pier'in ikinci girişi denizden olsun", "scope": "entity", "affected_files": 2, "applied": true, "at": "2026-09-24T19:35:00Z"}],
                         "approved_at": "2026-09-24T19:40:00Z", "card_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "registry_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "commit": "0000000"},
            "directions": ["odaları ıslak ve dar tut"], "tokens": {"in": 0, "out": 61240, "cache_read": 0, "by_model": {"claude-fable-5-1": {"in": 0, "out": 61240}}}, "stale_reason": null}
   },
   "entities": {
     "npc_yesra": {"phase": "P5", "status": "validated", "file": "design/npcs/npc_yesra.md", "stage_file": "design/_staging/P5/npc_yesra.json", "attempt": 1, "critique_loops": 1, "last_error": null, "agent": "P5.npc_yesra.a1"},
-    "site_batik_iskele": {"phase": "P6", "status": "validated", "file": "design/sites/site_batik_iskele.md", "stage_file": "design/_staging/P6/site_batik_iskele.json", "attempt": 2, "critique_loops": 1, "last_error": null, "agent": "P6.site_batik_iskele.a2"}
+    "site_sunken_pier": {"phase": "P6", "status": "validated", "file": "design/sites/site_sunken_pier.md", "stage_file": "design/_staging/P6/site_sunken_pier.json", "attempt": 2, "critique_loops": 1, "last_error": null, "agent": "P6.site_sunken_pier.a2"}
   },
   "seeded": [
     "calendar:init",
-    "factions:faction_beylik", "factions:faction_divan", "factions:faction_kacakcilar",
+    "factions:faction_reedmarch", "factions:faction_court_of_mourners", "factions:faction_tide_brotherhood",
     "goals:npc_s01", "goals:npc_draskun", "goals:pc_selen", "goals:pc_vorin",
     "graph:node:npc_yesra", "graph:edge:e_3",
-    "channels:ch_divan_ic",
-    "names:Yesra Tuzokur"
+    "channels:ch_court_inner",
+    "names:Yesra Saltreader"
   ],
   "detail_log": [],
   "revision_log": [
-    {"at": "2026-09-24T19:35:00Z", "scope": "entity", "phase": "P6", "reason": "Batık İskele'nin ikinci girişi denizden olsun", "affected": 2, "commit": "0000000"}
+    {"at": "2026-09-24T19:35:00Z", "scope": "entity", "phase": "P6", "reason": "Sunken Pier'in ikinci girişi denizden olsun", "affected": 2, "commit": "0000000"}
   ],
   "ask_log": [],
   "totals": {"tokens_in": 0, "tokens_out": 98400, "cache_read": 0, "wall_s": 5400, "agents": 31},

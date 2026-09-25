@@ -10,7 +10,7 @@ CLI:
   design_check.py -c CAMP                         every module
   design_check.py -c CAMP --modules refs,stamps   some modules
   design_check.py -c CAMP --fast                  refs + stamps + secrecy; reports, never fails (save-time)
-  design_check.py -c CAMP --only site_batik_iskele   one entity (after `detail`)
+  design_check.py -c CAMP --only site_sunken_pier   one entity (after `detail`)
   design_check.py -c CAMP --phase P3              accept `status: pending` rows owned by later phases
   design_check.py -c CAMP --fixture               relax scale bands (also read from _meta.fixture)
   design_check.py -c CAMP --json                  findings as JSON

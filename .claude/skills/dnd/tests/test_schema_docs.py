@@ -50,7 +50,7 @@ class SchemaDocs(unittest.TestCase):
                 if isinstance(data, dict) and "_meta" in data:
                     with self.subTest(doc=doc.name, block=i):
                         self.assertEqual(META_KEYS - set(data["_meta"]), set())
-                        self.assertEqual(data["_meta"]["campaign"], "tuzlu-fener")
+                        self.assertEqual(data["_meta"]["campaign"], "salt-lantern")
 
     def test_readme_links_every_doc(self):
         readme = (SCHEMAS / "README.md").read_text(encoding="utf-8")

@@ -126,9 +126,9 @@ class OnTheFixture(unittest.TestCase):
         files = dm.read_budget(self.c.name, canonical, "npc_yesra")
         self.assertTrue(files[0].endswith("npc_yesra.md"))
         self.assertTrue(any(f.endswith(str(Path("dm-only") / "npcs" / "npc_yesra.md")) for f in files))
-        self.assertTrue(any(f.endswith("faction_divan.md") for f in files), "one hop")
-        self.assertTrue(any(f.endswith("site_kor_fener.md") for f in files), "two hops via faction_divan")
-        self.assertFalse(any(f.endswith("settlement_kamisli.md") for f in files), "three hops away")
+        self.assertTrue(any(f.endswith("faction_court_of_mourners.md") for f in files), "one hop")
+        self.assertTrue(any(f.endswith("site_blind_lantern.md") for f in files), "two hops via faction_court_of_mourners")
+        self.assertFalse(any(f.endswith("settlement_reedham.md") for f in files), "three hops away")
 
     def test_mark_running_bumps_the_attempt_and_records_entity_failures(self):
         self.m("mark", "--phase", "P7", "--status", "running", "--roster", "chapter_1,chapter_2", check=True)
@@ -146,7 +146,7 @@ class OnTheFixture(unittest.TestCase):
         card = self.c.path("design/_approval/P8.md")
         card.parent.mkdir(exist_ok=True)
         card.write_text("# P8 card\n", encoding="utf-8")
-        proc = self.m("approve", "--phase", "P8", "--round", "Kamışlı daha küçük olsun", "--scope", "entity",
+        proc = self.m("approve", "--phase", "P8", "--round", "Reedham daha küçük olsun", "--scope", "entity",
                       "--affected", "1", check=True)
         self.assertIn("round 1", proc.stdout)
         proc = self.m("approve", "--phase", "P8", "--card", str(card), "--commit", "deadbee", check=True)
@@ -186,15 +186,15 @@ class OnTheFixture(unittest.TestCase):
         self.assertEqual(data["totals"]["agents"], 33)
 
     def test_logs_ask_detail_and_revision(self):
-        self.assertEqual(self.m("ask", "--question", "Fener yanacak mı?", "--answer", "belki", "--agent", "x").returncode, 2)
-        self.m("ask", "--question", "Fener yanacak mı?", "--answer", "spoiler vermeden cevaplanamaz",
+        self.assertEqual(self.m("ask", "--question", "Lantern yanacak mı?", "--answer", "belki", "--agent", "x").returncode, 2)
+        self.m("ask", "--question", "Lantern yanacak mı?", "--answer", "spoiler vermeden cevaplanamaz",
                "--agent", "ask.a1", check=True)
-        self.m("detail-log", "--id", "site_kor_fener", "--day", "40", "--trigger", "destination", check=True)
-        proc = self.m("revision", "--scope", "fact", "--reason", "Kamışlı nüfusu 120", "--affected", "2", check=True)
+        self.m("detail-log", "--id", "site_blind_lantern", "--day", "40", "--trigger", "destination", check=True)
+        proc = self.m("revision", "--scope", "fact", "--reason", "Reedham nüfusu 120", "--affected", "2", check=True)
         self.assertEqual(proc.stdout.strip(), "rev_0002")
         data = self.c.json("design/design.json")
         self.assertEqual(data["ask_log"][-1]["answer"], "spoiler vermeden cevaplanamaz")
-        self.assertEqual(data["detail_log"][-1]["id"], "site_kor_fener")
+        self.assertEqual(data["detail_log"][-1]["id"], "site_blind_lantern")
         self.assertEqual(data["revision_log"][-1]["id"], "rev_0002")
 
     def test_roll_appends_public_and_secret_records(self):

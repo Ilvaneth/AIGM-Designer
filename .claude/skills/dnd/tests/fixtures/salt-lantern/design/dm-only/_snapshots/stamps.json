@@ -1,0 +1,266 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "registry.py merge --phase P9 (stamp snapshot)",
+    "written_at": "2026-09-24T20:00:00Z"
+  },
+  "stamps": {
+    "premise_salt_lantern": {
+      "question_tr": "Unutmak bir kurtuluş mudur, yoksa ikinci bir ölüm mü?",
+      "signatures": [
+        "signature_salt_memory",
+        "signature_saltbound",
+        "signature_court_of_mourners"
+      ],
+      "trope_breaks": [
+        "break_no_afterlife"
+      ],
+      "secret_archetype": "secret_magic_is_actually",
+      "secret_twist": "twist_institution_knows",
+      "secret_tr": "Salt Memory anıyı okumaz, tüketir: her okuma ölünün son saatini yok eder ve okuyucudan da eş ağırlıkta bir anı alır. Court bunu yüz yirmi yıldır bilir; 'tüketilenler defteri' bunun için tutulur, çünkü tüketilen anılar Blind Lantern'in kandilinde birikir."
+    },
+    "signature_salt_memory": {
+      "kind": "magic"
+    },
+    "signature_saltbound": {
+      "kind": "creature"
+    },
+    "signature_court_of_mourners": {
+      "kind": "institution"
+    },
+    "break_no_afterlife": {
+      "row": "break_no_afterlife_known"
+    },
+    "god_velune": {
+      "rank": "greater",
+      "domains": [
+        "Tempest",
+        "Nature"
+      ]
+    },
+    "god_ormis": {
+      "rank": "greater",
+      "domains": [
+        "Knowledge",
+        "Light"
+      ]
+    },
+    "god_isken": {
+      "rank": "lesser",
+      "domains": [
+        "Death"
+      ]
+    },
+    "plane_deep": {
+      "baseline": "Elemental Plane of Water",
+      "touched": false
+    },
+    "era_flood": {
+      "order": 1
+    },
+    "era_lanterns": {
+      "order": 2
+    },
+    "era_silence": {
+      "order": 3
+    },
+    "event_great_flood": {
+      "year": -1200
+    },
+    "event_court_founding": {
+      "year": 292
+    },
+    "event_lantern_dimmed": {
+      "year": 372
+    },
+    "event_vesper_wreck": {
+      "year": 409
+    },
+    "polity_reedmarch": {
+      "ruler_at_birth": "npc_sarven"
+    },
+    "region_saltmere": {
+      "danger_tier": 2,
+      "polity": "polity_reedmarch"
+    },
+    "settlement_lanternside": {
+      "scale": "town",
+      "polity": "polity_reedmarch",
+      "ruler_at_birth": "npc_sarven"
+    },
+    "settlement_reedham": {
+      "scale": "village",
+      "polity": "polity_reedmarch",
+      "ruler_at_birth": "npc_sarven"
+    },
+    "district_quayside": {},
+    "district_upper_lanternside": {},
+    "place_weary_gull": {},
+    "place_mourners_hall": {},
+    "place_reeves_manor": {},
+    "place_salt_market": {},
+    "place_temple_of_velune": {},
+    "place_salt_house": {},
+    "faction_reedmarch": {
+      "archetype": "state",
+      "objective": "Tuz vergisini ve Lanternside limanını elde tutmak"
+    },
+    "faction_court_of_mourners": {
+      "archetype": "guild",
+      "objective": "Her ölünün son anısını okuyup yasını tutmak"
+    },
+    "faction_tide_brotherhood": {
+      "archetype": "criminal",
+      "objective": "Vesper enkazının sandıklarını ve tuzunu Lanternside'dan çıkarmak"
+    },
+    "npc_sarven": {
+      "faction": "faction_reedmarch",
+      "secret_tr": "Vesper'in manifestosunu Brotherhood'a sattı; gemide kendi borcunun ödemesi vardı."
+    },
+    "npc_olmar": {
+      "faction": "faction_reedmarch"
+    },
+    "npc_ilme": {
+      "faction": "faction_court_of_mourners",
+      "secret_tr": "Okumanın anıyı götürdüğünü bilir ve bunu merhamet sayar; defterin Lantern için tutulduğunu bilmez."
+    },
+    "npc_s01": {
+      "faction": "faction_court_of_mourners",
+      "secret_tr": "Salt Memory'nin ölüleri ikinci kez öldürdüğünü bilir ve defteri bunun için tutar."
+    },
+    "npc_tolvan": {
+      "faction": null,
+      "secret_tr": "Vesper batarken Reeve'in adamlarının dalgakıranda fener salladığını gördü; kimseye söylemedi."
+    },
+    "npc_yesra": {
+      "faction": "faction_court_of_mourners",
+      "secret_tr": "Her okuma bir anısını götürdü; boşlukları Court'un 'tüketilenler' defterinde sayılı."
+    },
+    "npc_draskun": {
+      "faction": "faction_tide_brotherhood",
+      "secret_tr": "Nerun'un teğmenidir; tuz Court'a gider."
+    },
+    "npc_kortan": {
+      "faction": "faction_tide_brotherhood"
+    },
+    "npc_ameli": {
+      "faction": null
+    },
+    "site_sunken_pier": {
+      "danger_tier": 1,
+      "room_count": 6,
+      "act": 1,
+      "thread": "beat_1a",
+      "key_npcs": [
+        "npc_kortan"
+      ]
+    },
+    "site_tide_cave": {
+      "danger_tier": 2,
+      "room_count": 11,
+      "act": 1,
+      "thread": "faction_tide_brotherhood",
+      "key_npcs": [
+        "npc_draskun"
+      ]
+    },
+    "site_blind_lantern": {
+      "danger_tier": 2,
+      "room_count": 14,
+      "act": 1,
+      "thread": "beat_1c",
+      "key_npcs": [
+        "npc_s01"
+      ]
+    },
+    "site_bottomless_well": {
+      "danger_tier": 4,
+      "room_count": 12,
+      "act": 1,
+      "thread": "seed_reedham_silence",
+      "key_npcs": []
+    },
+    "item_consumed_ledger": {
+      "kind": "plot"
+    },
+    "item_lamp_seal": {
+      "kind": "signature"
+    },
+    "creature_saltbound": {
+      "srd_base": "ghoul",
+      "cr": 1
+    },
+    "arc_1": {
+      "beats": [
+        "beat_1a",
+        "beat_1b",
+        "beat_1c"
+      ],
+      "endings": [
+        "win",
+        "loss",
+        "pyrrhic"
+      ]
+    },
+    "chapter_1": {
+      "act": 1,
+      "level_band": [
+        1,
+        3
+      ]
+    },
+    "chapter_2": {
+      "act": 1,
+      "level_band": [
+        3,
+        5
+      ]
+    },
+    "node_c1_gull": {},
+    "node_c1_pier": {},
+    "node_c1_court": {},
+    "node_c2_tide_cave": {},
+    "node_c2_lantern": {},
+    "node_c2_reedham": {},
+    "beat_1a": {
+      "change_kind": "knowledge",
+      "world_pressure": "op_tide_1.step_1"
+    },
+    "beat_1b": {
+      "change_kind": "loss",
+      "world_pressure": "op_court_1.step_3"
+    },
+    "beat_1c": {
+      "change_kind": "control",
+      "world_pressure": "op_court_1.step_4"
+    },
+    "seed_gulls_debt": {},
+    "seed_reedham_silence": {},
+    "socket_debt": {},
+    "socket_lost_ship": {},
+    "socket_court_trained": {},
+    "socket_witnessed_reading": {},
+    "thread_selen": {
+      "pc": "pc_selen",
+      "antagonist": "npc_draskun",
+      "layers": [
+        "site_sunken_pier",
+        "item_consumed_ledger",
+        "site_blind_lantern"
+      ]
+    },
+    "thread_vorin": {
+      "pc": "pc_vorin",
+      "antagonist": "npc_s01",
+      "layers": [
+        "npc_sarven",
+        "site_tide_cave",
+        "site_blind_lantern"
+      ]
+    },
+    "pc_selen": {},
+    "pc_vorin": {}
+  }
+}

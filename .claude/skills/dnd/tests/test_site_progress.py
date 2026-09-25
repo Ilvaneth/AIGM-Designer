@@ -8,7 +8,7 @@ import unittest
 
 from _campaign import TestCampaign
 
-SITE = "site_batik_iskele"
+SITE = "site_sunken_pier"
 
 
 class SiteProgress(unittest.TestCase):
@@ -30,10 +30,10 @@ class SiteProgress(unittest.TestCase):
         self.assertEqual(self.sp("open", SITE, check=False).returncode, 1, "already open without --force")
 
     def test_open_refuses_a_skeleton_without_explicit_rooms(self):
-        proc = self.sp("open", "site_kor_fener", check=False)
+        proc = self.sp("open", "site_blind_lantern", check=False)
         self.assertEqual(proc.returncode, 1)
         self.assertIn("no room table", proc.stderr)
-        proc = self.sp("open", "site_kor_fener", "--entrances", "1,9", "--payoff", "13", "--rooms", "14",
+        proc = self.sp("open", "site_blind_lantern", "--entrances", "1,9", "--payoff", "13", "--rooms", "14",
                        "--min-depth", "7")
         self.assertIn("14 rooms", proc.stdout)
 
@@ -69,12 +69,12 @@ class SiteProgress(unittest.TestCase):
         self.assertEqual(rec["rests"][0]["kind"], "short")
         self.assertEqual(rec["notes"], ["kandil söndü"])
         proc = self.sp("status")
-        self.assertIn("Batık İskele: 3/6 oda, 1 temizlendi, 1 atlandı — şu an oda 5", proc.stdout)
+        self.assertIn("Sunken Pier: 3/6 oda, 1 temizlendi, 1 atlandı — şu an oda 5", proc.stdout)
         self.assertEqual(self.c.temp_files(), [])
 
     def test_unknown_room_and_missing_record_are_refused(self):
         self.assertEqual(self.sp("enter", SITE, "9", "--day", "1", "--session", "1", check=False).returncode, 1)
-        self.assertEqual(self.sp("clear", "site_gelgit_magarasi", "1", "--day", "1", "--session", "1",
+        self.assertEqual(self.sp("clear", "site_tide_cave", "1", "--day", "1", "--session", "1",
                                  check=False).returncode, 1)
 
 

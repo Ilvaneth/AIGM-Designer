@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "design_seed.py --phase P8",
+    "written_at": "2026-09-24T19:55:00Z",
+    "next_id": 4,
+    "last_day": 0
+  },
+  "records": [
+    {
+      "id": "news_0001", "day": 0, "source": "birth", "faction": "faction_tide_brotherhood", "move": null, "outcome": null, "roll": null,
+      "region": "region_saltmere", "settlement": "settlement_lanternside", "visibility": "public", "kind": "rumour",
+      "line_tr": "Üç yıl önce batan Vesper gemisinin bir sandığı gelgitte kıyıya vurmuş; iskele hamalları sandığı kimin aldığını söylemiyor.",
+      "refs": ["event_vesper_wreck", "site_sunken_pier", "faction_tide_brotherhood"], "reach": ["settlement_lanternside", "region_saltmere"],
+      "secrecy": "public", "seen_by_party": false, "parked_as": null, "step": null
+    },
+    {
+      "id": "news_0002", "day": 0, "source": "birth", "faction": "faction_court_of_mourners", "move": null, "outcome": null, "roll": null,
+      "region": "region_saltmere", "settlement": "settlement_lanternside", "visibility": "rumored", "kind": "portent",
+      "line_tr": "Court bu ay üç ölü için okuma yaptı, ama ailelerden ikisi okumayı istememişti.",
+      "refs": ["faction_court_of_mourners", "npc_ilme"], "reach": ["settlement_lanternside"],
+      "secrecy": "discoverable", "seen_by_party": false, "parked_as": null, "step": "op_court_1.step_1"
+    },
+    {
+      "id": "news_0003", "day": 0, "source": "birth", "faction": null, "move": null, "outcome": null, "roll": null,
+      "region": "region_saltmere", "settlement": "settlement_reedham", "visibility": "public", "kind": "rumour",
+      "line_tr": "Reedham'da bu kış üçüncü kez, tuz düzlüğünden gelen birinin kapıyı çalıp içeri girmeden gittiği anlatılıyor.",
+      "refs": ["settlement_reedham", "site_bottomless_well", "creature_saltbound"], "reach": ["settlement_reedham"],
+      "secrecy": "public", "seen_by_party": false, "parked_as": null, "step": null
+    }
+  ]
+}

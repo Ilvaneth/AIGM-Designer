@@ -23,7 +23,7 @@ Any other field on an entity (a stamped field above all) is refused by `design_c
 {
   "_meta": {
     "schema_version": 1,
-    "campaign": "tuzlu-fener",
+    "campaign": "salt-lantern",
     "fixture": true,
     "written_by": "registry.py merge --phase P6",
     "written_at": "2026-09-24T20:00:00Z",
@@ -33,16 +33,16 @@ Any other field on an entity (a stamped field above all) is refused by `design_c
     "doom_moved": []
   },
   "entries": {
-    "site_batik_iskele": {
+    "site_sunken_pier": {
       "status": {"value": "detailed", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": "P6 birth-detailed site"}
     },
-    "site_gelgit_magarasi": {
+    "site_tide_cave": {
       "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
     },
-    "site_kor_fener": {
+    "site_blind_lantern": {
       "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
     },
-    "site_dipsiz_kuyu": {
+    "site_bottomless_well": {
       "status": {"value": "skeleton", "birth": "skeleton", "writer": "registry.py merge", "day": 0, "news": null, "reason": null}
     }
   },
@@ -83,13 +83,13 @@ A simulated move that touches a party asset, or a removing outcome against the `
 {
   "id": "scene_0001",
   "day": 23,
-  "actor": "faction_kacakcilar",
+  "actor": "faction_tide_brotherhood",
   "move": "sabotage",
-  "target": "place_yorgun_marti",
+  "target": "place_weary_gull",
   "why": "party_asset",
   "capped_from": "destroyed",
   "capped_to": "threatened",
-  "line_tr": "Gelgit Kardeşliği Yorgun Martı'nın kayıklarını kesmeye gelir; ne olacağı masada belli olur.",
+  "line_tr": "Tide Brotherhood Weary Gull'un kayıklarını kesmeye gelir; ne olacağı masada belli olur.",
   "status": "pending",
   "resolved_day": null,
   "resolution": null
@@ -104,7 +104,7 @@ Keyed by settlement id; each entry carries `until_day` so the modifier expires w
 
 ```json
 {
-  "settlement_fenerli": [
+  "settlement_lanternside": [
     {"goods": "silah", "modifier": 1.3, "from_day": 30, "until_day": 60, "writer": "factions.py simulate", "news": "news_0009"}
   ]
 }
@@ -112,4 +112,4 @@ Keyed by settlement id; each entry carries `until_day` so the modifier expires w
 
 ## `_meta.doom_day` and `_meta.doom_moved`
 
-The BBEG's doom day is fixed at birth (charter rule 2) and moves only through a party-caused structured block; each move is appended to `doom_moved` as `{"day": 41, "from": 96, "to": 110, "block": "op_divan_1.step_3", "news": "news_0021"}` so the history is auditable.
+The BBEG's doom day is fixed at birth (charter rule 2) and moves only through a party-caused structured block; each move is appended to `doom_moved` as `{"day": 41, "from": 96, "to": 110, "block": "op_court_1.step_3", "news": "news_0021"}` so the history is auditable.

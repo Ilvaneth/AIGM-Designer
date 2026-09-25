@@ -1,0 +1,35 @@
+{
+ "_meta": {
+  "schema_version": 1,
+  "campaign": "salt-lantern",
+  "fixture": true,
+  "written_by": "design_seed.py --phase P8",
+  "written_at": "2026-09-24T19:56:30Z"
+ },
+ "channels": [
+  {
+   "id": "ch_court_inner",
+   "name": "Court inner correspondence",
+   "type": "private",
+   "participants": ["npc_ilme", "npc_s01", "npc_yesra"],
+   "note": "Okuma kayıtları ve mühür dağıtımı; Yesra yalnızca kendi okumalarını görür.",
+   "facts": []
+  },
+  {
+   "id": "ch_salt_council",
+   "name": "Salt Council",
+   "type": "council",
+   "participants": ["npc_sarven", "npc_olmar"],
+   "note": "Vergi, liman, sandık ilanı; Reeve'in borcu burada konuşulmaz.",
+   "facts": []
+  },
+  {
+   "id": "ch_brotherhood_knots",
+   "name": "Brotherhood knots",
+   "type": "private",
+   "participants": ["npc_draskun", "npc_kortan"],
+   "note": "Halat düğümüyle mesaj; Kortan tuzun varış yerini bilmez.",
+   "facts": []
+  }
+ ]
+}

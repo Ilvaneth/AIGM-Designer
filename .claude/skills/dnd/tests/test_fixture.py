@@ -1,5 +1,5 @@
 """
-test_fixture.py — the tuzlu-fener fixture bible is internally consistent.
+test_fixture.py — the salt-lantern fixture bible is internally consistent.
 
 A hand-written micro `short` campaign in the designer's layout (plan 24.3,
 slice 0). These checks are the shape of slice 1's `design_check.py` modules
@@ -21,7 +21,7 @@ from _layouts import bash_payload, clean_env, install_skill, run_hook, skill_of
 
 SKILL = Path(__file__).resolve().parent.parent
 PROJECT = SKILL.parent.parent.parent
-FIX = SKILL / "tests" / "fixtures" / "tuzlu-fener"
+FIX = SKILL / "tests" / "fixtures" / "salt-lantern"
 DESIGN = FIX / "design"
 DM_ONLY = DESIGN / "dm-only"
 
@@ -293,10 +293,10 @@ class DetailedSite(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.ents = load(DM_ONLY / "entities.json")["entities"]
-        cls.site = cls.ents["site_batik_iskele"]
+        cls.site = cls.ents["site_sunken_pier"]
         text = (FIX / cls.site["file"]).read_text(encoding="utf-8")
         cls.rows = ROOM_ROW.findall(text)
-        cls.progress = load(FIX / "site-progress.json")["sites"]["site_batik_iskele"]
+        cls.progress = load(FIX / "site-progress.json")["sites"]["site_sunken_pier"]
 
     def exits(self, cell: str):
         return [EXIT_ID.match(part).group(1) for part in cell.split(",") if EXIT_ID.match(part)]
@@ -346,15 +346,23 @@ class Names(unittest.TestCase):
         registry = load(PROJECT / ".name_registry.json")["entries"]
         used = {e["name"].lower() for e in registry.values()}
         used_first = {n.split()[0] for n in used}
-        banned = load(DESIGN / "naming.json")["banned"]
+        banned = {b.lower() for b in load(DESIGN / "naming.json")["banned"]}
         ents = load(DM_ONLY / "entities.json")["entities"]
         for eid, ent in ents.items():
             if ent["type"] in ("npc", "pc", "god", "faction", "settlement"):
                 name = ent["name"].lower()
                 self.assertNotIn(name, used, eid)
                 self.assertNotIn(name.split()[0], used_first, eid)
-                for stem in banned:
-                    self.assertNotIn(stem, name, f"{eid} uses banned stem {stem}")
+                self.assertNotIn(name, banned, f"{eid} reuses a banned name")
+
+    def test_proper_nouns_are_english_names(self):
+        """Errata 24.2 #17: persons, places, institutions, gods carry English-language names."""
+        turkish = re.compile(r"[çğışöüÇĞİŞÖÜ]")
+        ents = load(DM_ONLY / "entities.json")["entities"]
+        for eid, ent in ents.items():
+            if ent["type"] in ("npc", "pc", "god", "faction", "settlement", "district", "place", "site", "region",
+                               "polity", "item", "creature", "plane", "era", "event", "signature", "chapter"):
+                self.assertIsNone(turkish.search(ent["name"]), f"{eid}: {ent['name']!r} is not an English name")
 
 
 class HooksOnTheFixture(unittest.TestCase):
@@ -364,10 +372,10 @@ class HooksOnTheFixture(unittest.TestCase):
         try:
             project = tmp / "proj"
             install_skill(skill_of(project))
-            shutil.copytree(FIX, project / "campaigns" / "tuzlu-fener")
+            shutil.copytree(FIX, project / "campaigns" / "salt-lantern")
             (project / ".runtime").mkdir()
             (project / ".runtime" / "active-campaign.json").write_text(
-                json.dumps({"name": "tuzlu-fener"}), encoding="utf-8")
+                json.dumps({"name": "salt-lantern"}), encoding="utf-8")
             env = clean_env()
             roll = 'py .claude/skills/dnd/scripts/dice.py d20+3 --owner Selen --label "Stealth"'
             self.assertEqual(run_hook(skill_of(project), "dice_guard.py", bash_payload(roll), env).returncode, 2)

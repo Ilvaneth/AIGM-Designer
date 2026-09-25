@@ -23,7 +23,7 @@ class Registry(unittest.TestCase):
         self.c = TestCampaign("registry")
         # The fixture's fragments sit under merged/ (its birth completed); the merge
         # tests want them back in staging as if an agent had just written them.
-        for phase, name in (("P5", "npc_yesra.json"), ("P6", "site_batik_iskele.json")):
+        for phase, name in (("P5", "npc_yesra.json"), ("P6", "site_sunken_pier.json")):
             src = self.c.path(f"design/_staging/{phase}/merged/{name}")
             shutil.copy(src, self.c.path(f"design/_staging/{phase}/{name}"))
             src.unlink()
@@ -77,8 +77,8 @@ class Registry(unittest.TestCase):
 
     def test_merge_refuses_a_stamped_change_without_revise(self):
         frag = self.c.json(ROLL_FRAGMENT)
-        frag["registry"]["stamped"]["faction"] = "faction_beylik"
-        frag["registry"]["faction"] = "faction_beylik"
+        frag["registry"]["stamped"]["faction"] = "faction_reedmarch"
+        frag["registry"]["faction"] = "faction_reedmarch"
         self.c.write_json(ROLL_FRAGMENT, frag)
         before = self.c.path("design/dm-only/entities.json").read_bytes()
         proc = self.c.run("registry.py", "merge", "--phase", "P5")
@@ -97,16 +97,16 @@ class Registry(unittest.TestCase):
 
     def test_merge_applies_a_stamped_change_with_revise_and_records_it(self):
         frag = self.c.json(ROLL_FRAGMENT)
-        frag["registry"]["stamped"]["faction"] = "faction_beylik"
-        frag["registry"]["faction"] = "faction_beylik"
+        frag["registry"]["stamped"]["faction"] = "faction_reedmarch"
+        frag["registry"]["faction"] = "faction_reedmarch"
         self.c.write_json(ROLL_FRAGMENT, frag)
         proc = self.c.run("registry.py", "merge", "--phase", "P5", "--revise", "rev_0001", check=True)
         self.assertIn("stamps revised: faction", proc.stdout)
         snap = self.c.json("design/dm-only/_snapshots/stamps.json")
-        self.assertEqual(snap["stamps"]["npc_yesra"]["faction"], "faction_beylik")
+        self.assertEqual(snap["stamps"]["npc_yesra"]["faction"], "faction_reedmarch")
         rev = snap["_meta"]["revisions"][-1]
         self.assertEqual((rev["id"], rev["log_id"], rev["fields"]), ("npc_yesra", "rev_0001", ["faction"]))
-        self.assertEqual(rev["before"]["faction"], "faction_divan")
+        self.assertEqual(rev["before"]["faction"], "faction_court_of_mourners")
         self.assertEqual(self.c.run("registry.py", "check-stamps", check=True).returncode, 0)
 
     def test_merge_accepts_a_non_stamped_change(self):
@@ -145,7 +145,7 @@ class Registry(unittest.TestCase):
         self.assertIn("sits in the public stamps", proc.stderr)
 
     def test_merge_writes_overlay_status_for_a_new_site(self):
-        frag = self.c.json("design/_staging/P6/site_batik_iskele.json")
+        frag = self.c.json("design/_staging/P6/site_sunken_pier.json")
         frag["id"] = frag["registry"]["id"] = "site_yeni"
         frag["registry"]["name"] = "Yeni Yer"
         frag["registry"]["file"] = "design/sites/site_yeni.md"
@@ -159,21 +159,21 @@ class Registry(unittest.TestCase):
         ov = self.c.json("design/overlay.json")["entries"]["site_yeni"]["status"]
         self.assertEqual((ov["value"], ov["birth"], ov["writer"], ov["day"]),
                          ("detailed", "skeleton", "registry.py merge", 3))
-        self.assertEqual(self.c.json("design/overlay.json")["entries"]["site_batik_iskele"]["status"]["value"],
+        self.assertEqual(self.c.json("design/overlay.json")["entries"]["site_sunken_pier"]["status"]["value"],
                          "detailed", "existing entries untouched")
 
     # --- play-set ----------------------------------------------------------
 
     def test_play_set_writes_an_overlay_record_with_birth_and_marker(self):
-        proc = self.c.run("registry.py", "play-set", "settlement_fenerli", "ruler", "npc_olmar",
+        proc = self.c.run("registry.py", "play-set", "settlement_lanternside", "ruler", "npc_olmar",
                           "--day", "40", "--reason", "Sarven öldü", "--news", "news_0009", check=True)
         self.assertIn("changed since birth", proc.stdout)
-        rec = self.c.json("design/overlay.json")["entries"]["settlement_fenerli"]["ruler"]
+        rec = self.c.json("design/overlay.json")["entries"]["settlement_lanternside"]["ruler"]
         self.assertEqual(rec, {"value": "npc_olmar", "birth": "npc_sarven", "writer": "registry.py play-set",
                                "day": 40, "news": "news_0009", "reason": "Sarven öldü"})
 
     def test_play_set_refuses_stamped_fields_bad_values_and_unknown_ids(self):
-        r = self.c.run("registry.py", "play-set", "site_kor_fener", "danger_tier", "5", "--day", "1", "--reason", "x")
+        r = self.c.run("registry.py", "play-set", "site_blind_lantern", "danger_tier", "5", "--day", "1", "--reason", "x")
         self.assertEqual(r.returncode, 1)
         self.assertIn("stamped", r.stderr)
         r = self.c.run("registry.py", "play-set", "npc_yesra", "alive", "ghost", "--day", "1", "--reason", "x")
@@ -192,32 +192,32 @@ class Registry(unittest.TestCase):
     # --- add ---------------------------------------------------------------
 
     def test_add_registers_a_play_entity_with_a_transliterated_slug(self):
-        proc = self.c.run("registry.py", "add", "--type", "place", "--name", "Kör Kandil",
+        proc = self.c.run("registry.py", "add", "--type", "place", "--name", "Dim Lamp",
                           "--summary", "Rıhtımda bir meyhane.", check=True)
-        self.assertIn("+ place_kor_kandil", proc.stdout)
-        row = self.c.json("design/dm-only/entities.json")["entities"]["place_kor_kandil"]
+        self.assertIn("+ place_dim_lamp", proc.stdout)
+        row = self.c.json("design/dm-only/entities.json")["entities"]["place_dim_lamp"]
         self.assertEqual((row["origin"], row["created_phase"], row["secrecy"]), ("play", "play", "public"))
-        self.assertIn("place_kor_kandil", self.c.json("design/entities.json")["entities"])
-        self.assertEqual(self.c.json("design/dm-only/_snapshots/stamps.json")["stamps"]["place_kor_kandil"], {})
+        self.assertIn("place_dim_lamp", self.c.json("design/entities.json")["entities"])
+        self.assertEqual(self.c.json("design/dm-only/_snapshots/stamps.json")["stamps"]["place_dim_lamp"], {})
         # a second add with the same name is refused
-        self.assertEqual(self.c.run("registry.py", "add", "--type", "place", "--name", "kör kandil",
+        self.assertEqual(self.c.run("registry.py", "add", "--type", "place", "--name", "dim lamp",
                                     "--summary", "x").returncode, 1)
 
     def test_add_site_from_play_is_marked_played_improvised(self):
-        self.c.run("registry.py", "add", "--type", "site", "--name", "Çürük Kayık",
+        self.c.run("registry.py", "add", "--type", "site", "--name", "Rotten Skiff",
                    "--summary", "Kıyıda küçük bir batık.", check=True)
-        rec = self.c.json("design/overlay.json")["entries"]["site_curuk_kayik"]["status"]
+        rec = self.c.json("design/overlay.json")["entries"]["site_rotten_skiff"]["status"]
         self.assertEqual(rec["value"], "played-improvised")
 
     # --- check-stamps ------------------------------------------------------
 
     def test_check_stamps_detects_drift_in_the_canonical_file(self):
         canon = self.c.json("design/dm-only/entities.json")
-        canon["entities"]["site_kor_fener"]["stamped"]["danger_tier"] = 4
+        canon["entities"]["site_blind_lantern"]["stamped"]["danger_tier"] = 4
         self.c.write_json("design/dm-only/entities.json", canon)
         proc = self.c.run("registry.py", "check-stamps")
         self.assertEqual(proc.returncode, 1)
-        self.assertIn("site_kor_fener", proc.stdout)
+        self.assertIn("site_blind_lantern", proc.stdout)
         self.assertIn("danger_tier", proc.stdout)
 
 

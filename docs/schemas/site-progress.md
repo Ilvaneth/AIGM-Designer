@@ -2,7 +2,7 @@
 
 Plan item 9.5 (play side), 13.3, 16.5, 21.D (`SKILL-combat.md` marks rooms). The site counterpart of `tracker.json`, at the campaign root beside it.
 
-Written only by `site_progress.py` (`open`, `enter`, `clear`, `skip --reason`, `shortcut`, `status`). `save` reports "Batık İskele: 2/6 oda"; a `skipped` room requires a reason; an unreasoned skip shows in the validator. `site_progress.py` is also the writer of the overlay's `status: played` and `seen_in_play` for the site.
+Written only by `site_progress.py` (`open`, `enter`, `clear`, `skip --reason`, `shortcut`, `status`). `save` reports "Sunken Pier: 2/6 oda"; a `skipped` room requires a reason; an unreasoned skip shows in the validator. `site_progress.py` is also the writer of the overlay's `status: played` and `seen_in_play` for the site.
 
 ## Shape
 
@@ -10,13 +10,13 @@ Written only by `site_progress.py` (`open`, `enter`, `clear`, `skip --reason`, `
 {
   "_meta": {
     "schema_version": 1,
-    "campaign": "tuzlu-fener",
+    "campaign": "salt-lantern",
     "fixture": true,
     "written_by": "site_progress.py open",
     "written_at": "2026-09-24T20:00:00Z"
   },
   "sites": {
-    "site_batik_iskele": {
+    "site_sunken_pier": {
       "opened_day": null,
       "opened_session": null,
       "entered_via": null,

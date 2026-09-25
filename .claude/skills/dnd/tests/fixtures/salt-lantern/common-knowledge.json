@@ -1,0 +1,137 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "salt-lantern",
+    "fixture": true,
+    "written_by": "design_seed.py --phase P8",
+    "written_at": "2026-09-24T19:56:00Z"
+  },
+  "facts": [
+    {
+      "id": "ck_001",
+      "keywords": [
+        "court",
+        "okuma",
+        "tuz",
+        "ölü",
+        "anı"
+      ],
+      "text_tr": "Court of Mourners ölülerin son anısını tuzdan okur; okuma için aile izni ve bir kandil gerekir.",
+      "origin": "all",
+      "refs": [
+        "faction_court_of_mourners"
+      ]
+    },
+    {
+      "id": "ck_002",
+      "keywords": [
+        "öte",
+        "ölüm",
+        "ruh",
+        "cennet"
+      ],
+      "text_tr": "Ölümden sonra hiçbir şey yoktur; bunu herkes bilir, tapınaklar da inkâr etmez.",
+      "origin": "all",
+      "refs": [
+        "god_isken"
+      ]
+    },
+    {
+      "id": "ck_003",
+      "keywords": [
+        "lantern",
+        "kör",
+        "burun"
+      ],
+      "text_tr": "Blind Lantern kırk yıldır yanmıyor; oraya giden balıkçı dönmedi.",
+      "origin": [
+        "polity_reedmarch"
+      ],
+      "refs": [
+        "site_blind_lantern",
+        "event_lantern_dimmed"
+      ]
+    },
+    {
+      "id": "ck_004",
+      "keywords": [
+        "reeve",
+        "sarven",
+        "lanternside",
+        "yönetim"
+      ],
+      "text_tr": "Lanternside'ı Reeve Sarven yönetir; Reedmarch vergisini tuzdan alır.",
+      "origin": [
+        "polity_reedmarch"
+      ],
+      "refs": [
+        "npc_sarven",
+        "polity_reedmarch"
+      ]
+    },
+    {
+      "id": "ck_005",
+      "keywords": [
+        "reedham",
+        "tuz düzlüğü",
+        "kuyu"
+      ],
+      "text_tr": "Reedham'ın doğusundaki tuz düzlüğüne kimse girmez; orada bir kuyu olduğu söylenir.",
+      "origin": [
+        "settlement_reedham",
+        "settlement_lanternside"
+      ],
+      "refs": [
+        "site_bottomless_well"
+      ]
+    },
+    {
+      "id": "ck_006",
+      "keywords": [
+        "vesper",
+        "gemi",
+        "battı",
+        "dalgakıran"
+      ],
+      "text_tr": "Üç yıl önce Vesper gemisi Broken Breakwater'de battı; yükü ve dört yolcusu kayıp.",
+      "origin": [
+        "polity_reedmarch"
+      ],
+      "refs": [
+        "event_vesper_wreck",
+        "site_sunken_pier"
+      ]
+    },
+    {
+      "id": "ck_007",
+      "keywords": [
+        "saltbound",
+        "düzlük",
+        "kabuk",
+        "ışık"
+      ],
+      "text_tr": "Okunmadan gömülen boğulmuşlar bazen kalkar; kandil görünce durur, karanlıkta yürür.",
+      "origin": "all",
+      "refs": [
+        "creature_saltbound",
+        "signature_saltbound"
+      ]
+    },
+    {
+      "id": "ck_008",
+      "keywords": [
+        "brotherhood",
+        "düğüm",
+        "kaçakçı",
+        "cezir"
+      ],
+      "text_tr": "Tide Brotherhood düğümüyle tanınır; cezirde çalışır, sorulmayan soruya cevap vermez.",
+      "origin": [
+        "settlement_lanternside"
+      ],
+      "refs": [
+        "faction_tide_brotherhood"
+      ]
+    }
+  ]
+}

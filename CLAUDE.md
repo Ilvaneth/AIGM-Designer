@@ -6,7 +6,7 @@ This folder is the **development project** for the D&D 5e (2014) DM skill and it
 - **The plan:** `docs/campaign-designer-plan.md` — 24 items, all decided on 2026-09-24. Every development session starts by reading item 24 (risk register, errata, build order 24.3, cut list 24.4, strengths to preserve 24.5) and then the slice being built. v3.0 = slices 0-2 (birth pipeline + living world); the user starts the next campaign only after v3.0 is complete.
 - **Ashen Crown is played elsewhere:** `C:\Users\armag\Desktop\Ashen-Crown_New_DM` is a separate project with its own tab and its own copy of the skill. Never read or edit that folder from here, and never copy changes into it by hand; the two skills are synced deliberately, at the user's request, once a slice is done.
 - **History:** this repository was split from the Ashen Crown project on 2026-09-24 (`git clone`, then `campaigns/` and `original-repo/` removed). Older commits still contain campaign files, so never read them for content (a headings-only look already leaked a few Ashen Crown labels into a dev transcript). `origin` is github.com/Ilvaneth/AIGM-Designer; the original repository is github.com/Ilvaneth/AIGM. Push only when the user asks (their rule: one green commit per work item, push when a slice is done).
-- **Status:** slice 0 delivered 2026-09-24 (plan 24.3); next is slice 1a, the core scripts, tuned against the fixture bible `.claude/skills/dnd/tests/fixtures/tuzlu-fener/` and the schemas in `docs/schemas/`.
+- **Status:** slice 0 delivered 2026-09-24 (plan 24.3); next is slice 1a, the core scripts, tuned against the fixture bible `.claude/skills/dnd/tests/fixtures/salt-lantern/` and the schemas in `docs/schemas/`.
 
 ## Data root — project-scoped, never the environment
 
@@ -24,6 +24,7 @@ Tests: `py .claude/skills/dnd/scripts/run_tests.py` (stdlib `unittest`, discover
 
 - Ruleset 2014 (SRD 5.1) only; 2024 support was removed on 2026-09-24 (plan item 21.G). The `**Ruleset:** 2014` state.md header line stays as a harmless stamp.
 - Development artifacts (code, tables, plan, commit messages) in English; conversation with the user in Turkish.
+- **The narration is Turkish, the world is not** (owner ruling 2026-09-25, errata 24.2 #17): every proper noun a campaign produces — persons, places, institutions, gods, ships, signature phenomena and creatures, months — is an English-language fantasy name, carried into Turkish prose with an apostrophe suffix (Emberhold'a). Common nouns stay Turkish. No word-stem blacklist: uniqueness is on full names and table rows (errata #18).
 - The user's stated rules are the spec: a conflicting upstream behaviour is deleted, never kept as a default.
 - `unittest` (stdlib), run by `scripts/run_tests.py` once it exists; keep the existing hook tests green.
 - Commit only when the user asks.

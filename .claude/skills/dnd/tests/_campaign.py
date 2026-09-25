@@ -20,7 +20,7 @@ HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
 SCRIPTS = SKILL / "scripts"
 PROJECT = SKILL.parent.parent.parent
-FIXTURE = HERE / "fixtures" / "tuzlu-fener"
+FIXTURE = HERE / "fixtures" / "salt-lantern"
 CAMPAIGNS = PROJECT / "campaigns"
 
 
