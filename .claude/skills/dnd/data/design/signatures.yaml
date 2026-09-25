@@ -245,7 +245,7 @@ tables:
         hooks:
           - {phase: P2, must: "the calendar marks the sleep; the simulation freezes their faction in it"}
       - id: sig_people_tally_crows
-        label: Corvids that keep accounts
+        label: Crows that keep accounts
         seed: "Crows or ravens who count, remember and testify; a court accepts a crow's tally; the rich feed them and the poor fear them."
         srd_reskin: [raven, swarm of ravens]
         mutations: ["what they count", "who they serve", "what a lie does to one"]

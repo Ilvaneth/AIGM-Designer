@@ -16,7 +16,7 @@ The skill's scripts and hooks resolve campaign data through `paths.py`. Since sl
 py .claude/skills/dnd/scripts/paths.py project-root
 ```
 
-If a script ever reports `ashen-crown` as an active campaign, the project marker is missing; restore `campaigns/` and re-run. Test campaigns generated during development live under `campaigns/_test-*/` (gitignored, plan item 22.6). `.name_registry.json` at the root is kept on purpose: it holds every name Ashen Crown used, so new campaigns never reuse them (plan items 4.6, 8.7).
+If a script ever reports `ashen-crown` as an active campaign, the project marker is missing; restore `campaigns/` and re-run. Test campaigns generated during development live under `campaigns/_test-*/` (gitignored, plan item 22.6). `.name_registry.json` at the root is kept on purpose: it holds the names Ashen Crown registered from session 38 on, so new campaigns never reuse them (plan items 4.6, 8.7); the earlier Ashen Crown names the owner tired of (Cassivar, Corvina and every Corv-/Corw- derivative, Emberhold, Cinder Choir) are banned outright in `data/design/naming.yaml`'s owner blacklist, beside a list of the model's favourite fantasy names.
 
 Tests: `py .claude/skills/dnd/scripts/run_tests.py` (stdlib `unittest`, discovers `.claude/skills/dnd/tests/`).
 
@@ -24,7 +24,7 @@ Tests: `py .claude/skills/dnd/scripts/run_tests.py` (stdlib `unittest`, discover
 
 - Ruleset 2014 (SRD 5.1) only; 2024 support was removed on 2026-09-24 (plan item 21.G). The `**Ruleset:** 2014` state.md header line stays as a harmless stamp.
 - Development artifacts (code, tables, plan, commit messages) in English; conversation with the user in Turkish.
-- **The narration is Turkish, the world is not** (owner ruling 2026-09-25, errata 24.2 #17): every proper noun a campaign produces — persons, places, institutions, gods, ships, signature phenomena and creatures, months — is an English-language fantasy name, carried into Turkish prose with an apostrophe suffix (Emberhold'a). Common nouns stay Turkish. No word-stem blacklist: uniqueness is on full names and table rows (errata #18).
+- **The narration is Turkish, the world is not** (owner ruling 2026-09-25, errata 24.2 #17): every proper noun a campaign produces — persons, places, institutions, gods, ships, signature phenomena and creatures, months — is an English-language fantasy name, carried into Turkish prose with an apostrophe suffix (Lanternside'a). Common nouns stay Turkish. No word-stem blacklist: uniqueness is on full names and table rows (errata #18).
 - The user's stated rules are the spec: a conflicting upstream behaviour is deleted, never kept as a default.
 - `unittest` (stdlib), run by `scripts/run_tests.py` once it exists; keep the existing hook tests green.
 - Commit only when the user asks.

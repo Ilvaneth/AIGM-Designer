@@ -34,12 +34,12 @@ rules:
       - "front vowel sound (e, i, ö, ü) → -e / -i or -ü / -de / -in or -ün"
       - "final silent e is not a vowel: Lanternside'a, Velune'a (pronounced -oon), Saltmere'e (pronounced -meer)"
       - "final voiceless consonant (p, t, k, ch, s, sh, f) → -ta / -te, -tan / -ten: Karsgate'te, Ashwick'te"
-      - "a name that ends in a pronounced vowel takes the buffer y or n: Corvina'ya, Corvina'nın, Umbra'da"
+      - "a name that ends in a pronounced vowel takes the buffer y or n: Ottavia'ya, Ottavia'nın, Umbra'da"
     ending_table:
       - {ending: "-side / -ide / -ine (long i)", harmony: back, example: "Lanternside'a, Lanternside'ın"}
       - {ending: "-ham", harmony: back, example: "Reedham'a, Reedham'da"}
       - {ending: "-mere / -meer", harmony: front, example: "Saltmere'e, Saltmere'in"}
-      - {ending: "-ford / -hold / -ton / -mouth / -moor", harmony: back, example: "Emberhold'a, Emberhold'un"}
+      - {ending: "-ford / -hold / -ton / -mouth / -moor", harmony: back, example: "Thornhold'a, Thornhold'un"}
       - {ending: "-gate / -stead / -wick / -bury / -reach / -fen", harmony: front, example: "Karsgate'e, Ashwick'in"}
       - {ending: "-crag / -march / -fall", harmony: back, example: "Blackcrag'a, Reedmarch'ın"}
     examples:
@@ -48,7 +48,7 @@ rules:
       - {name: Reedham, dative: "Reedham'a", locative: "Reedham'da", genitive: "Reedham'ın"}
       - {name: Karsgate, dative: "Karsgate'e", locative: "Karsgate'te", genitive: "Karsgate'in"}
       - {name: Velune, dative: "Velune'a", locative: "Velune'da", genitive: "Velune'un"}
-      - {name: Corvina, dative: "Corvina'ya", locative: "Corvina'da", genitive: "Corvina'nın"}
+      - {name: Ottavia, dative: "Ottavia'ya", locative: "Ottavia'da", genitive: "Ottavia'nın"}
   tr_suffix_friendly: "a family is suffix-friendly when its names end in a single pronounced consonant or a clear vowel; every family below is, and the mutation step must keep it so (no final -ough, -que, -gh)"
 
 tables:
@@ -135,8 +135,8 @@ tables:
         length: [3, 4]
         forbidden_clusters: [uu, ii, cc]
         best_for: [city, court, banking, scholarly]
-        samples_person: [Aurelan, Cassivar, Valorin, Liesander, Corvina, Ottavien]
-        samples_god: [Aurelan, Cassia]
+        samples_person: [Aurelan, Valorin, Liesander, Ottavien, Sabellin, Solenne]
+        samples_god: [Aurelan, Solenne]
         tr_suffix_friendly: true
         hooks:
           - {phase: P1, must: "mutate by fixing the length to three; roots from law, coin, light, marble domains"}
@@ -319,7 +319,7 @@ lexicon:
 
 patterns:
   place:
-    - {pattern: "{Head}{tail}", examples: [Lanternside, Saltmere, Reedham, Emberhold, Blackcrag, Ashford]}
+    - {pattern: "{Head}{tail}", examples: [Lanternside, Saltmere, Reedham, Thornhold, Blackcrag, Ashford]}
     - {pattern: "{Head} {Noun}", examples: [Salt Market, Salt House, Sunken Pier]}
     - {pattern: "The {Adj} {Noun}", examples: [The Weary Gull, The Blind Lantern, The Bottomless Well]}
     - {pattern: "{Owner}'s {Noun}", examples: ["Reeve's Manor", "Mourners' Hall"]}
@@ -330,11 +330,11 @@ patterns:
     - {pattern: "{Head} Brotherhood / Sisterhood", examples: [Tide Brotherhood, Kiln Sisterhood]}
     - {pattern: "The {Noun} Watch", examples: [The Tide Watch, The Wall Watch]}
     - {pattern: "Guild of {Noun}s", examples: [Guild of Lamplighters, Guild of Weighers]}
-    - {pattern: "House {Head}", examples: [House Ember, House Corvina]}
+    - {pattern: "House {Head}", examples: [House Ember, House Ottavia]}
     - {pattern: "Wardens of the {Noun}", examples: [Wardens of the Road, Wardens of the Deep]}
     - {pattern: "The {Head} Company", examples: [The Salt Company, The Moon Company]}
     - {pattern: "The {Head} Tribunal", examples: [The Ash Tribunal, The Grey Tribunal]}
-    - {pattern: "The {Head} Choir", examples: [The Cinder Choir, The Hush Choir]}
+    - {pattern: "The {Head} Choir", examples: [The Bell Choir, The Hush Choir]}
   people:
     - {pattern: "{Head}bound", examples: [Saltbound, Oathbound]}
     - {pattern: "{Head}folk", examples: [Marshfolk, Cliffolk]}
@@ -350,7 +350,7 @@ patterns:
   ship:
     - {pattern: "the {Noun}", examples: [the Vesper, the Gannet, the Tallow]}
     - {pattern: "the {Adj} {Noun}", examples: [the Kindly Sister, the Grey Hart]}
-    - {pattern: "{Name}'s {Noun}", examples: ["Hild's Promise", "Corvina's Debt"]}
+    - {pattern: "{Name}'s {Noun}", examples: ["Hild's Promise", "Ottavia's Debt"]}
   month:
     - {pattern: "{Head}month", examples: [Lampmonth, Thawmonth]}
     - {pattern: "{Head}tide", examples: [Frosttide, Reedtide]}
@@ -365,5 +365,20 @@ blacklist:
   exact: [Mordor, Gondor, Rohan, Rivendell, Hogwarts, Westeros, Winterfell, Narnia, Waterdeep, Neverwinter, Baldur, Faerun, Eberron, Greyhawk, Krynn, Ravenloft, Barovia, Hyrule, Azeroth, Tamriel, Skyrim, Camelot, Avalon, London, Istanbul, Paris, Rome, Athens, Jerusalem, Gandalf, Drizzt, Elminster, Strahd, Sauron, Aragorn, Legolas, Frodo, Bilbo, Merlin, Arthur, Excalibur]
   # substrings that mark a lift from a known property or read as an insult in Turkish or English
   substrings: [mordor, hogwart, westeros, drizzt, strahd, faerun, azeroth, tamriel, hyrule, sauron, yarak, orospu, pezevenk, amcik, sikik, fuck, shit, cunt]
-  # in-campaign exact bans live in naming.json `banned[]` (name_registry seeds it); never stems
-  stems_are_never_banned: true
+  # the owner's explicit bans (2026-09-25): names that recurred across Ashen Crown until they were hated.
+  # A stem here is banned as a substring of any generated NAME (Corvin, Corwyn, Corren...), never as a
+  # lexicon root; lexicon roots (crown, hollow, ember) are never banned (errata 24.2 #18).
+  owner_banned:
+    exact: [Cassivar, Corvina, Corvin, Corven, Corwyn, Corren, Corvan, Emberhold, Cinder Choir]
+    stems: [corv, corw, corr, cassiv]
+    reason: "recurred across Ashen Crown sessions in ever-similar forms; the owner banned them and every derivative"
+  # the model's favourite fantasy names, the regression-to-the-mean list (risk 24.1 #18): banned as a whole
+  # name or a whole first name, case-insensitive, so no naming language can fall back on them
+  llm_favourites: [Kael, Kaelen, Kaelith, Lyra, Lyric, Seraphina, Seraphine, Elara, Elaria, Aria, Zephyr, Zephyra,
+                   Thorne, Vex, Nyx, Silas, Alaric, Aldric, Elowen, Isolde, Kieran, Marius, Valen, Varis, Draven,
+                   Malachi, Eldrin, Theron, Orin, Torin, Darius, Lucian, Caspian, Cassian, Evander, Lysander,
+                   Rhiannon, Sylvain, Sylvaine, Aurora, Luna, Nova, Ember, Ash, Raven, Sable, Onyx, Obsidian,
+                   Jasper, Ezra, Milo, Finn, Rowan, Wren, Sage, Ivy, Hazel, Mira, Nadia, Zara, Kira, Elias,
+                   Ronan, Soren, Auric, Vaelor, Xander, Zane, Vesperine, Morrigan, Astrid, Freya, Gideon]
+  # in-campaign exact bans live in naming.json `banned[]` (name_registry seeds it)
+  lexicon_stems_are_never_banned: true

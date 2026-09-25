@@ -288,16 +288,52 @@ class Naming(unittest.TestCase):
                 for ex in p["examples"]:
                     self.assertIsNone(TURKISH.search(ex), ex)
 
-    def test_worn_roots_are_allowed_and_only_exact_names_are_banned(self):
-        """Errata 24.2 #18: crown, hollow, ember may recur; the blacklist is exact names plus brand stems."""
+    def test_worn_roots_are_allowed_and_only_names_are_banned(self):
+        """Errata 24.2 #18: crown, hollow, ember may recur as roots; bans are names and name-stems."""
         doc = dt.load("naming.yaml")
         roots = {r["root"] for r in doc["lexicon"]["roots"]}
         self.assertTrue({"crown", "hollow", "ember"} <= roots)
-        self.assertTrue(doc["blacklist"]["stems_are_never_banned"])
-        for sub in doc["blacklist"]["substrings"]:
+        bl = doc["blacklist"]
+        self.assertTrue(bl["lexicon_stems_are_never_banned"])
+        for sub in bl["substrings"] + bl["owner_banned"]["stems"]:
             self.assertEqual(sub, sub.lower())
             self.assertGreaterEqual(len(sub), 4)
-        self.assertIn("Mordor", doc["blacklist"]["exact"])
+        self.assertIn("Mordor", bl["exact"])
+        # the owner's ban of 2026-09-25: the Corv-/Cassiv- family and Ashen Crown's own names
+        for name in ("Cassivar", "Corvina", "Corvin", "Corwyn", "Emberhold", "Cinder Choir"):
+            self.assertIn(name, bl["owner_banned"]["exact"])
+        self.assertTrue({"corv", "corw", "cassiv"} <= set(bl["owner_banned"]["stems"]))
+        self.assertGreaterEqual(len(bl["llm_favourites"]), 40)
+
+    def test_samples_and_examples_pass_the_blacklist_and_the_name_registry(self):
+        """No table may teach a banned name: samples, pattern examples and suffix examples are all checked."""
+        import json
+        from _campaign import PROJECT
+        doc = dt.load("naming.yaml")
+        bl = doc["blacklist"]
+        exact = {n.lower() for n in bl["exact"] + bl["owner_banned"]["exact"] + bl["llm_favourites"]}
+        stems = [s.lower() for s in bl["substrings"] + bl["owner_banned"]["stems"]]
+        registry = PROJECT / ".name_registry.json"
+        registered = set()
+        if registry.is_file():
+            entries = json.loads(registry.read_text(encoding="utf-8")).get("entries", {})
+            registered = {e["name"].lower() for e in entries.values() if e.get("name")}
+        names = []
+        for fam in dt.rows("naming.yaml#family"):
+            names += fam["samples_person"] + fam["samples_god"]
+        for kind, pats in doc["patterns"].items():
+            for p in pats:
+                names += p["examples"]
+        names += [ex["name"] for ex in doc["rules"]["turkish_suffixing"]["examples"]]
+        for sub in ("phenomenon", "people", "institution"):
+            names += [r["label"] for r in dt.rows(f"signatures.yaml#{sub}")]
+        for n in names:
+            low = n.lower()
+            with self.subTest(name=n):
+                self.assertNotIn(low, exact)
+                self.assertNotIn(low.split()[0], exact)
+                self.assertFalse(any(s in low for s in stems), n)
+                self.assertNotIn(low, registered)
 
     def test_turkish_suffix_rules_are_documented_with_examples(self):
         rules = dt.load("naming.yaml")["rules"]["turkish_suffixing"]
