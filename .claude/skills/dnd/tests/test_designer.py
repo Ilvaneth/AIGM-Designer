@@ -98,11 +98,11 @@ class NewBirth(unittest.TestCase):
         self.assertIn("zar: dial.scale", proc.stdout)
 
     def test_given_dials_are_not_rolled_and_a_real_birth_waits_for_onay(self):
-        name = f"real-birth-{os.getpid()}-{uuid.uuid4().hex[:6]}"
+        name = f"_test-real-birth-{os.getpid()}-{uuid.uuid4().hex[:6]}"   # git-ignored: nothing is ever committed
         self.names.append(name)
         proc = run("new", name, "--scale", "short", "--tone", "horror", "--magic", "low", "--era", "nautical",
                    "--danger", "gritty", "--content-mix", "mystery,horror,exploration", "--party-size", "1",
-                   "--seed", "REAL-0001", check=True)
+                   "--seed", "REAL-0001", "--ask-approval", check=True)
         m = self.manifest(name)
         self.assertFalse(m["_meta"]["auto_approve"])
         self.assertEqual(m["dials"]["tone"], "horror")
@@ -112,7 +112,9 @@ class NewBirth(unittest.TestCase):
         refused = run("-c", name, "phase", "P0", "approve")
         self.assertEqual(refused.returncode, 1)
         run("-c", name, "phase", "P0", "approve", "--onay", check=True)
-        self.assertEqual(self.manifest(name)["phases"]["P0"]["status"], "approved")
+        m = self.manifest(name)
+        self.assertEqual(m["phases"]["P0"]["status"], "approved")
+        self.assertIsNone(m["phases"]["P0"]["approval"]["commit"], "an --ask-approval test birth never commits")
 
     def test_preroll_p1_labels_secrets_and_closed_lists(self):
         name, _ = self.birth(scale="short")

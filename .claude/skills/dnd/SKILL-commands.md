@@ -6,47 +6,34 @@ Full step-by-step procedures for all `/dm:dnd` slash commands. Load this file at
 
 ---
 
-## `/dm:dnd new <campaign-name> [theme]`
-1. **Ruleset.** The skill runs D&D 5e 2014 (SRD 5.1) only; do not ask. The state.md header line carries `**Ruleset:** 2014` as a stamp (2024 support removed 2026-09-24, plan item 21.G).
-2. `mkdir -p ~/.claude/dnd/campaigns/<name>/characters`
-3. Copy and populate templates from `${CLAUDE_SKILL_DIR}/templates/` — state.md, world.md, npcs.md, session-log.md. The state.md header keeps the `**Ruleset:** 2014` stamp from the template.
-4. Ask: **party size** and **starting level**
-5. **Tone/Genre Wizard** — present all four in one message:
-   - Tone: `grimdark / dark fantasy / heroic / horror / political / swashbuckling / cosmic`
-   - Magic level: `none / low / medium / high`
-   - Setting type: `medieval / renaissance / ancient / nautical / underground`
-   - Danger level: `lethal / gritty / standard / heroic`
-   *(If `[theme]` supplied, pre-fill Tone and ask remaining three. Randomise any blank via dice.py and log `"d6=N → [result]"` in world.md.)*
-6. **World Foundations** — geography/biome/climate, magic system, pantheon (2–3 active deities), calendar. Write to `## World Foundations` in world.md. Seed `state.md → ## World State → In-world date`.
-7. **Three Truths** — one settlement, one nearby threat, one mystery (with clue trail). Write to respective sections in world.md.
-8. **Threat Escalation Arc** — fill the five-stage table in world.md immediately after threat generation. Set current stage to 1. Write `Threat arc stage: 1 — Now` to `state.md → ## World State`.
-9. **2 Factions** — archetype, all fields including current activity. Write to `## Factions` in world.md. Write one-line faction states to `state.md → ## World State`.
-10. **3 NPCs with relationship web** — full entries (role, stats, demeanor, motivation, secret, speech quirk, faction, current goal, schedule, personality axes). Generate all three first, then fill Relationships (every NPC needs ≥2 links to others). Update index table.
-11. **3–5 Quest Seeds** from threat, factions, mystery, NPC motivations. Write to `## Quest Seed Bank` in world.md.
-12. **Dynamic Campaign Arc** — auto-generate the arc from all world data just created. Use Opus for this step. Ask: *"Generate a committed narrative arc? [y/n — recommended]"*
+## `/dm:dnd new <campaign-name>` — the Campaign Designer
 
-   **If yes:** Drawing from theme, threat arc stages, factions, Three Truths, NPC motivations, and quest seeds, derive:
-   - **`theme`** — one sentence: what is this story ultimately about? Not the threat — its meaning.
-   - **`resolution`** — the committed endpoint shape: if the party succeeds, what's the emotional truth? Keep specific events open; commit to the shape.
-   - **Acts 1–3**, each with 2 beats. Each beat has:
-     - `label` — a dramatic name
-     - `what_changes` — before/after: what's fundamentally different once this lands? **CRITICAL: write this as a CONSEQUENCE, not an event.** A consequence is a state-of-the-world after the beat. An event is one specific thing that happens. Consequences survive when players pre-empt the obvious event delivery; events break and the beat goes stale. Example contrast for a 2b "All Is Lost" beat:
-       - ❌ Event-shaped (fragile): *"Vedra's nomination succeeds and she takes the third seat."* If the party flips the clerk, this can't land — beat goes stale.
-       - ✅ Consequence-shaped (robust): *"The party experiences a concrete cost from the Kept's escalation that they cannot reverse — a cover blown, an ally compromised, or a position they relied on no longer available."* This survives multiple delivery paths.
-     - `world_pressure` — the specific faction or NPC move (naming actual entities from this world) that makes the beat feel inevitable. This MAY be event-shaped — but if the players pre-empt it, you're expected to revise per SKILL.md rule 8 (pre-emption is a revision trigger).
-   - **`steering_notes`** — how to reach the first beat without forcing it
+The 14-step world wizard is retired (plan item 21.C, 2026-09-25); `new` is the designer. Read `${CLAUDE_SKILL_DIR}/SKILL-design.md` first and follow its phase loop. In short:
 
-   Beat layout:
-   - Act 1: **1a Inciting Incident** (the threat becomes personal for the party), **1b Complication** (the problem is bigger or stranger than it first appeared)
-   - Act 2: **2a Midpoint Shift** (what the party *thought* they were doing changes), **2b All Is Lost** (a genuine setback — something fails, is lost, or collapses)
-   - Act 3: **3a Final Confrontation** (the decisive moment the campaign turns on), **3b Resolution** (what's different about the world and the characters after)
+1. **Ruleset.** 2014 (SRD 5.1) only; do not ask. Warn if this is not an Opus-tier session.
+2. **Phase 0 — the dials**, in one message: scale, tone, magic, era, danger, party size and starting level, the content mix (top three in order), one to three wishes each way, the narration language. `?` rolls a dial live.
+3. `python3 ${CLAUDE_SKILL_DIR}/scripts/designer.py new <name> --scale … --tone … --magic … --era … --danger … --party-size N --start-level N --content-mix a,b,c [--must …] [--must-not …] [--lang tr] [--seed S]` — the manifest, the arc skeleton, the Phase 0 card; the read guard arms for `birth`. Show the card; wait for `onay`; `designer.py -c <name> phase P0 approve --onay`.
+4. **P1 through P8**, each: `preroll` → `phase PN begin --json` → the Workflow the JSON names (`design-skeleton`, then after `merge` and a second `begin`, `design-fanout`) → `merge` → `check` → `card` → show the card → `onay` (or a one-sentence correction through `design_revise.py`, at most three rounds) → `approve --onay` → wait for `devam`. Every Workflow return is followed by `merge` and `designer.py commit` before any text to the player.
+5. **P8 close:** `render_player.py primer`, `facts`, `news`; `world.md`, `npcs.md`, `index.md` and a lean `state.md` regenerated; `design_check.py` in full; the report. Final approval = the report's public part plus the primer.
+6. Confirm creation with the primer's path; offer `/dm:dnd character new` (×party), then `/dm:dnd design integrate`, then `/dm:dnd load`.
 
-   Write to `state.md → ## Campaign Arc` with `type: dynamic`. Deliver a one-paragraph arc summary to the DM.
+The conductor never reads `design/dm-only/**` or `design/_staging/**` and never writes bible prose; agents do, and return ids and counts only. A `--fixture` or `_test-*` campaign auto-approves every card (`--ask-approval` on `new` keeps the wait for a test birth that should exercise the loop).
 
-   **If no:** Write `type: sandbox` to `## Campaign Arc`. The story remains open-ended with no arc tracking.
+---
 
-13. Write state.md with session count 0, starting location, and `session_status: open` in `## Session Flags` (see `/dm:dnd load` step 0.5 and `/dm:dnd end` — session-count increments are driven only by an explicit `/dm:dnd end`, not by the calendar).
-14. Confirm creation, offer `/dm:dnd character new`.
+## `/dm:dnd design <status | phase <n> | detail <id> | check | integrate | primer | revise "<change>" | ask "<question>" | abandon>`
+
+The designer's command family; every procedure is in `${CLAUDE_SKILL_DIR}/SKILL-design.md` ("`design` commands"). One-line map:
+
+- `status` → `designer.py -c CAMP status` (plus the "detail needed" list in play).
+- `phase <n> [--reseed]` → `designer.py phase PN rerun --reason …`, then the loop from `preroll`.
+- `detail <id>` → the birth machinery on one entity (`arm --mode detail`, the `detail.<kind>` prompt, `registry.py merge --phase detail`, `design_check.py --only`, `disarm`); the DM calls it on approach or in the prep step at `end`, never inside a scene.
+- `check` → `design_check.py -c CAMP` (`--fast` at `save`).
+- `integrate` → P9 after every `character new`; then `render_player.py thread-face`.
+- `primer` → `render_player.py primer`.
+- `revise "<change>"` → player-only canon change: a correction round during birth (`design_revise.py round`); post-session-1 rules in slice 3.
+- `ask "<question>"` → one fresh agent with the `ask` prompt; `evet` / `hayır` / `spoiler vermeden cevaplanamaz`, logged.
+- `abandon` → `designer.py abandon --reason …`.
 
 ---
 
@@ -244,7 +231,7 @@ After writing files, identify anything the source left ambiguous:
 - If starting level not specified → ask
 - If party size not specified → ask
 - If calendar/in-world date absent → offer to generate or leave blank
-- If tone not clear from source → offer Tone/Genre Wizard
+- If tone not clear from source → ask for the `tone` dial (the designer's Phase 0 list in `SKILL-design.md`) and record it in state.md's tone line
 
 ### Step 7 — Confirm and offer next step
 Print summary of files written. Offer:

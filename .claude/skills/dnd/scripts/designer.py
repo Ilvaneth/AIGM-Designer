@@ -11,7 +11,7 @@ guard so that stays true while a run is live.
 CLI:
   designer.py new NAME --scale S --tone T --magic M --era E --danger D --party-size N
               [--start-level 1] --content-mix a,b,c [--must ..] [--must-not ..] [--lang tr]
-              [--seed S] [--concurrency 8] [--economy] [--fixture] [--session-id ID]
+              [--seed S] [--concurrency 8] [--economy] [--fixture] [--ask-approval] [--session-id ID]
         a dial given as `?` is rolled live (dials.yaml weights, logged); then design_manifest init,
         the arc skeleton, the P0 card, and the guard is armed for `birth`
   designer.py -c CAMP arm --mode birth|detail|playtest [--session-id ID] | disarm
@@ -29,6 +29,8 @@ CLI:
 
 Auto-approve (owner decision 2026-09-25): a campaign initialised with --fixture or named
 `_test-*` carries `_meta.auto_approve: true`; `approve` then needs no `onay` and no `devam`.
+`--ask-approval` turns that off for one test birth that should exercise the approval loop
+(the campaign stays git-ignored, so nothing is committed).
 A real birth requires `--onay` on `approve` (the conductor passes it only after the player
 typed the word) and the conductor waits for `devam` before the next `phase begin`.
 
@@ -582,7 +584,7 @@ def new(a) -> int:
     if rc != 0:
         return rc
     data = dm.load(name)
-    data["_meta"]["auto_approve"] = bool(a.fixture or name.startswith("_test-"))
+    data["_meta"]["auto_approve"] = bool((a.fixture or name.startswith("_test-")) and not a.ask_approval)
     data["dice_log"].extend(records)
     data["phases"]["P0"]["status"] = "awaiting_approval"
     data["phases"]["P0"]["started"] = data["phases"]["P0"].get("started") or now_iso()
@@ -957,6 +959,7 @@ def main(argv=None) -> int:
     n.add_argument("--concurrency", type=int, default=8)
     n.add_argument("--economy", action="store_true")
     n.add_argument("--fixture", action="store_true")
+    n.add_argument("--ask-approval", action="store_true", help="a test birth that still waits for onay / devam")
     n.add_argument("--session-id")
 
     ar = sub.add_parser("arm")
