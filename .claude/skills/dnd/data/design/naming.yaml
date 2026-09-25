@@ -380,5 +380,8 @@ blacklist:
                    Rhiannon, Sylvain, Sylvaine, Aurora, Luna, Nova, Ember, Ash, Raven, Sable, Onyx, Obsidian,
                    Jasper, Ezra, Milo, Finn, Rowan, Wren, Sage, Ivy, Hazel, Mira, Nadia, Zara, Kira, Elias,
                    Ronan, Soren, Auric, Vaelor, Xander, Zane, Vesperine, Morrigan, Astrid, Freya, Gideon]
+  # real-world mythology deities (owner ruling 2026-09-25, errata 24.2 #19): the SRD's four historical
+  # pantheons and the other traditions the model reaches for; banned as a whole name or a whole first name
+  mythology: [Aegir, Ahura Mazda, Amaterasu, Anahita, Anu, Anubis, Apep, Aphrodite, Apollo, Arawn, Ares, Artemis, Astarte, Athena, Baal, Balder, Bast, Belenus, Bes, Brahma, Brigantia, Daghdha, Demeter, Diana, Diancecht, Dionysus, Dunatis, Enki, Enlil, Erlik, Forseti, Frey, Freya, Frigga, Goibhniu, Hades, Hathor, Hecate, Heimdall, Hel, Hephaestus, Hera, Hercules, Hermes, Hermod, Hestia, Huitzilopochtli, Imhotep, Inanna, Indra, Ishtar, Isis, Izanagi, Izanami, Janus, Juno, Jupiter, Kali, Loki, Lugh, Manannan mac Lir, Marduk, Mars, Math Mathonwy, Mercury, Minerva, Mithra, Mokosh, Moloch, Morrigan, Nephthys, Neptune, Nike, Njord, Nuada, Odin, Odur, Oghma, Osiris, Pan, Perun, Pluto, Poseidon, Ptah, Quetzalcoatl, Re-Horakhty, Saturn, Set, Shiva, Sif, Silvanus, Skadi, Sobek, Surtur, Susanoo, Svarog, Tengri, Tezcatlipoca, Thor, Thoth, Thrym, Tyche, Tyr, Uller, Umay, Veles, Venus, Vishnu, Vulcan, Zeus]
   # in-campaign exact bans live in naming.json `banned[]` (name_registry seeds it)
   lexicon_stems_are_never_banned: true

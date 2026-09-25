@@ -16,6 +16,7 @@ from _campaign import SCRIPTS
 
 sys.path.insert(0, str(SCRIPTS))
 import design_tables as dt  # noqa: E402
+from paths import data_dir  # noqa: E402
 
 TABLES = dt.tables_dir()
 TURKISH = re.compile(r"[çğışöüÇĞİŞÖÜ]")
@@ -260,8 +261,11 @@ class Floors(unittest.TestCase):
         base = dt.rows("planes.yaml#baseline")
         labels = {r["label"] for r in base}
         for name in ("The Material Plane", "The Ethereal Plane", "The Astral Plane", "The Elemental Chaos",
-                     "The Nine Hells", "Elysium", "Hades"):
+                     "The Nine Hells"):
             self.assertIn(name, labels)
+        by_id = {r["id"]: r for r in base}
+        self.assertIn("Elysium", by_id["baseline_elysium"]["srd"])   # the SRD name stays a note, never a label
+        self.assertIn("Hades", by_id["baseline_hades"]["srd"])
         for r in base:
             self.assertIn(r["group"], ("material", "transitive", "inner", "outer", "demiplane"), r["id"])
             self.assertTrue(r["srd"], r["id"])
@@ -279,26 +283,32 @@ class Floors(unittest.TestCase):
               "gehenna", "acheron", "mechanus", "arcadia", "outlands", "sigil")
         for r in outer:
             self.assertFalse(any(p in r["label"].lower() for p in pi), r["label"])
-        # the SRD's historical deities sit on the plane of their alignment
-        deities = {d["id"]: d for d in dt.rows("pantheon.yaml#srd_deities")}
-        self.assertGreaterEqual(len(deities), 60)
-        outer_ids = {r["id"]: r for r in outer}
-        domains = set(dt.load("pantheon.yaml")["rules"]["domains"])
-        for d in deities.values():
-            self.assertIn(d["home_plane"], outer_ids, d["id"])
-            self.assertEqual(outer_ids[d["home_plane"]]["alignment"], d["alignment"], d["id"])
-            self.assertTrue(set(d["domains"]) <= domains, d["id"])
-            self.assertIn(d["pantheon"], ("celtic", "greek", "egyptian", "norse"))
-            self.assertTrue(d["symbol"] and d["epithet"], d["id"])
-        for r in outer:
-            for did in r["srd_deities"]:
-                self.assertEqual(deities[did]["alignment"], r["alignment"], (r["id"], did))
-        self.assertGreaterEqual(len(dt.rows("planes.yaml#deviation")), 6)
-        rates = {r["id"]: r for r in dt.rows("planes.yaml#time_rate")}
-        self.assertGreaterEqual(len(rates), 5)
-        self.assertEqual(rates["rate_same"]["rate"], 1)
-        self.assertGreaterEqual(len(dt.rows("planes.yaml#way_in")), 6)
-        self.assertGreaterEqual(len(dt.rows("planes.yaml#cost")), 6)
+        # no real-world mythology deities anywhere (errata 24.2 #19): the scaffold is gone and the names are banned
+        self.assertNotIn("srd_deities", dt.load("pantheon.yaml").get("tables", {}))
+        for r in base:
+            self.assertNotIn("srd_deities", r, r["id"])
+
+    def test_no_real_world_mythology_deity_names(self):
+        """Errata 24.2 #19: the SRD's historical deities are blacklisted and appear in no table."""
+        import yaml as _yaml
+        srd = _yaml.safe_load((data_dir() / "srd-5.1-yaml" / "13-gods.yaml").read_text(encoding="utf-8"))
+        app = srd["Appendix PH-B: Fantasy-Historical Pantheons"]
+        srd_names = set()
+        for title in ("The Celtic Pantheon", "The Greek Pantheon", "The Egyptian Pantheon", "The Norse Pantheon"):
+            sub = [k for k in app[title] if k != "content"][0]
+            for line in app[title][sub]["table"]["Deity"]:
+                srd_names.add(re.sub(r"^The\s+", "", str(line).partition(", ")[0].strip()).lower())
+        banned = {n.lower() for n in dt.load("naming.yaml")["blacklist"]["mythology"]}
+        self.assertTrue(srd_names <= banned, srd_names - banned)
+        self.assertIn("thor", banned)
+        for name, sub, r in every_row():
+            # a label is a phrase ("Set by the keeper"), so only a whole-label match counts; a `name` field
+            # is a name, so its first word counts too
+            self.assertNotIn(str(r.get("label", "")).lower(), banned, (name, sub, r["id"]))
+            val = str(r.get("name", "")).lower()
+            if val:
+                self.assertNotIn(val, banned, (name, sub, r["id"]))
+                self.assertNotIn(val.split()[0], banned, (name, sub, r["id"]))
 
     def test_magic_tables_and_the_wild_gate(self):
         for sub, floor in (("source", 10), ("constraint", 8), ("visibility", 5), ("taboo", 10), ("regulator", 8), ("wild", 6)):
@@ -422,7 +432,7 @@ class Naming(unittest.TestCase):
         from _campaign import PROJECT
         doc = dt.load("naming.yaml")
         bl = doc["blacklist"]
-        exact = {n.lower() for n in bl["exact"] + bl["owner_banned"]["exact"] + bl["llm_favourites"]}
+        exact = {n.lower() for n in bl["exact"] + bl["owner_banned"]["exact"] + bl["llm_favourites"] + bl["mythology"]}
         stems = [s.lower() for s in bl["substrings"] + bl["owner_banned"]["stems"]]
         registry = PROJECT / ".name_registry.json"
         registered = set()
