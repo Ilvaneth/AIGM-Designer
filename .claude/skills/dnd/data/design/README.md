@@ -27,4 +27,15 @@ Every row carries:
 
 `design_tables.py` is the one reader (`rows("dials.yaml#tone")`); `design_dice.py roll --table` draws through it and `--avoid-used` skips rows `used.json` already lists for another campaign. `used.json` (item 17 #26) is not a table: it lives per user at the data root, written only at phase approval.
 
+## The tables (item 17)
+
+| Batch | Files | Read by |
+|---|---|---|
+| A premise | `dials`, `scale`, `tensions`, `secrets`, `trope-breaks`, `forbidden`, `signatures`, `naming` | P0, P1 |
+| B cosmos | `pantheon`, `planes`, `magic`, `history`, `calendar` | P2 |
+| C lands | `regions`, `settlements` | P3 |
+| D powers | `factions`, `antagonists`, `simulation` | P4, the slice-2 engine |
+| E people and sites | `npcs`, `monster-ecology` (generated + curated), `loot-budget`, `sites`; `srd-index-2014.json` (generated) | P5, P6 |
+| F arc | `arc`, `threads`, `rubrics` | P7, P9, every critic |
+
 `tests/test_design_tables.py` enforces the convention, the plan's numbers in `scale.yaml`, the size floors of risk 24.1 #18 and the closed lists `design_manifest.py` validates dials against.

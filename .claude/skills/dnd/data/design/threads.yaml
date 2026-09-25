@@ -1,0 +1,115 @@
+# threads.yaml — the character integration pass (item 12, run by P9 after every PC exists): socket
+# types the primer rephrases as spoiler-free questions (item 11.6), the truth-kind closed list
+# (forbidden.yaml names `chosen`, `destined`, `amnesia`), the three layers and where they surface,
+# personal-antagonist binding rules, mission verbs (active, never "find out who"), crossing
+# templates (one per act, skipped for a solo party: errata 24.2 #12), the personal mechanical track
+# template (only when the signature mechanic was rolled) and the equal-weight metrics (≤ 35%).
+schema_version: 1
+table: threads
+consumed_by: [P8, P9, validator, play]
+plan: "item 12, 10.7, 11.6, 17 #24, errata 24.2 #12 #14, risk 24.1 #20"
+roll: {labels: [P7.socket.<n>, P9.truth.<pc>, P9.antagonist.<pc>, P9.crossing.<act>], avoid_used: false, note: "sockets are rolled in P7 (party size × scale.yaml sockets_per_pc); the rest in P9 per PC"}
+rules:
+  when: "after all PCs are created; input is each sheet (Pillar sentence, backstory, origin, class, alignment, socket answers) plus the bible"
+  thread_fields: [personal_question, truth (kind, event, faction_or_npc, socket), layers (3), antagonist, own_sites (≥1 per act), mission (verb, object, goals.py pc record), crossings (1 per act), track (only with the mechanic)]
+  layers: "layer 1 in Act 1 (discoverable); layer 2 at the Act 1 climax or in Act 2; layer 3 in Act 2-3 (secret); each tied to a real site or NPC"
+  antagonist: "an existing or new NPC tied to the hierarchy: a lieutenant, the BBEG's agent, a regional villain, or the institution itself; never a sideshow"
+  mission: "an active goal with a mission_verb, a goals.py record of kind pc, thresholds that fire"
+  sockets: "bound to a PC or marked unused; an unused socket lives on as an NPC-driven seed; the socket NPC is drawn from the roster"
+  equal_weight: "per PC: sites, NPCs, layers, beats touched, XP share of personal content; > 35% imbalance is flagged; skipped for one PC"
+  engine: "each thread has ≥ 1 faction whose target list names the PC and ≥ 2 NPCs with a reason to seek the PC in Act 1 (risk 24.1 #20)"
+  death: "a dead PC's thread becomes a world thread: its antagonist stays, its open layers become seeds; integrate reruns for the new PC only"
+  player_sees: "the thread's public face: mission, the people and places they know; the truth stays dm-only"
+hooks_common:
+  - {phase: P9, must: "every thread field is filled; the critic asks whether the mission can be played independently of the main road and why the other PC would want to be at this thread's finale"}
+  - {phase: validator, must: "the threads module checks three placed layers, an antagonist in the hierarchy, a site and a crossing per act, the imbalance cap and the Act 1 engine"}
+
+tables:
+
+  socket_type:
+    note: "`question` is rendered into the narration language in the primer without spoilers; `binds` names the entity kinds the socket points at"
+    rows:
+      - {id: socket_debt_to_faction, label: In debt to a faction, question: "Do you owe anyone in this land money, a favour or a life?", binds: [faction, npc], hooks: [{phase: P4, must: "the creditor faction's target list names the PC"}]}
+      - {id: socket_family_at_event, label: Family at a dated event, question: "Where was your family during the great disaster everyone here remembers?", binds: [event, npc], hooks: [{phase: P2, must: "the event's witness list gains the family"}]}
+      - {id: socket_trained_under, label: Trained under an NPC, question: "Who taught you what you are best at, and how did you part?", binds: [npc, faction], hooks: [{phase: P5, must: "the teacher is a supporting NPC with a `knows` edge to the PC"}]}
+      - {id: socket_raised_by_institution, label: Raised by an institution, question: "Were you raised by a house, an order or a guild rather than a family?", binds: [faction, place], hooks: [{phase: P1, must: "sig_inst_foundling_house or the signature institution"}]}
+      - {id: socket_owes_a_life, label: Owes a life, question: "Has anyone ever saved your life, and did you thank them?", binds: [npc], hooks: [{phase: P5, must: "an `owes` edge"}]}
+      - {id: socket_witnessed, label: Witnessed something, question: "What did you see once that you have never told anyone?", binds: [event, npc], hooks: [{phase: P2, must: "a divergence's as-happened layer; the PC holds a Known Fact"}]}
+      - {id: socket_bound_by_oath, label: Bound by an oath, question: "Have you sworn anything you have not yet kept?", binds: [god, faction], hooks: [{phase: P2, must: "the oath's god or festival"}]}
+      - {id: socket_heir_to, label: Heir to something, question: "Is there anything that should have been yours?", binds: [faction, place, item], hooks: [{phase: P4, must: "a faction asset or a seat"}]}
+      - {id: socket_marked, label: Marked by the phenomenon, question: "Has the strange thing this land is known for ever touched you?", binds: [signature], hooks: [{phase: P1, must: "the phenomenon's mark; a stage if it has stages"}]}
+      - {id: socket_exiled_from, label: Exiled from somewhere, question: "Is there a place you cannot go back to?", binds: [settlement, polity], hooks: [{phase: P3, must: "the place is on the map; its ruler knows the name"}]}
+      - {id: socket_loved_someone, label: Loved someone here, question: "Did you leave anyone behind who might still be waiting?", binds: [npc], hooks: [{phase: P5, must: "a `loves` edge; the NPC is in the roster"}]}
+      - {id: socket_carries_item, label: Carries an item that matters, question: "Do you carry anything you were told never to sell?", binds: [item], hooks: [{phase: P6, must: "an item_ with a stamped act; a site wants it"}]}
+
+  truth_kind:
+    note: "closed list for `truth_kind`: something about their past or nature they do not know, pinned to an event and a faction or NPC; the forbidden values exist for the validator"
+    rows:
+      - {id: truth_parents_deed, value: parents_deed, label: A parent's deed, hooks: [{phase: P2, must: "the deed is an event's as-happened layer"}]}
+      - {id: truth_debt_inherited, value: debt_inherited, label: A debt inherited, hooks: [{phase: P4, must: "the creditor faction holds the paper"}]}
+      - {id: truth_name_not_theirs, value: name_not_theirs, label: A name that is not theirs, hooks: [{phase: P1, must: "naming.json's rite or the name-trade break"}]}
+      - {id: truth_survivor, value: survivor, label: A survivor of an event they do not remember as it was, hooks: [{phase: P2, must: "a divergence row; not amnesia: they remember the taught version"}]}
+      - {id: truth_made_by_institution, value: made_by_institution, label: Made by the institution, hooks: [{phase: P1, must: "the signature institution shaped them"}]}
+      - {id: truth_bargain_in_their_name, value: bargain_in_their_name, label: A bargain struck in their name, hooks: [{phase: P2, must: "a power or a plane's keeper holds the terms"}]}
+      - {id: truth_villains_kin, value: villains_kin, label: Kin to the villain, hooks: [{phase: P4, must: "the BBEG or a lieutenant; dm-only"}]}
+      - {id: truth_chose_not_to_know, value: chose_not_to_know, label: They chose not to know, hooks: [{phase: P5, must: "someone they trust kept it from them at their own request"}]}
+      - {id: truth_sibling_other_side, value: sibling_other_side, label: A sibling on the other side, hooks: [{phase: P5, must: "the sibling is a roster NPC in an enemy faction"}]}
+      - {id: truth_oath_broken_for_them, value: oath_broken_for_them, label: An oath broken for their sake, hooks: [{phase: P2, must: "the oath's god or festival"}]}
+      - {id: truth_chosen, value: chosen, label: The chosen one (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_chosen_one)"}]}
+      - {id: truth_destined, value: destined, label: Destined (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_chosen_one)"}]}
+      - {id: truth_amnesia, value: amnesia, label: Amnesia (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_amnesiac_hero)"}]}
+
+  layer:
+    rows:
+      - {id: layer_1, label: Layer 1, act: 1, tier: discoverable, placed_in: [site, npc], hooks: [{phase: P9, must: "a chapter-1 or chapter-2 site or NPC; the PC can reach it without the main road"}]}
+      - {id: layer_2, label: Layer 2, act: [1, 2], tier: discoverable_or_secret, placed_in: [site, npc], hooks: [{phase: P9, must: "the Act 1 climax or an Act 2 node"}]}
+      - {id: layer_3, label: Layer 3, act: [2, 3], tier: secret, placed_in: [site, npc], hooks: [{phase: P9, must: "on or beside the intended path of the last act"}]}
+
+  antagonist_binding:
+    rows:
+      - {id: bind_lieutenant, label: The lieutenant who did it, hooks: [{phase: P4, must: "lt_hunter or another lieutenant role; the personal antagonist is the campaign's"}]}
+      - {id: bind_bbeg_agent, label: The BBEG's agent, hooks: [{phase: P5, must: "a secret NPC with an opaque id"}]}
+      - {id: bind_regional_villain, label: A regional villain, hooks: [{phase: P6, must: "a site boss; the PC's own site"}]}
+      - {id: bind_rival_in_faction, label: A rival inside the PC's own faction, hooks: [{phase: P4, must: "the faction's betrayal candidate"}]}
+      - {id: bind_institution, label: The institution itself, hooks: [{phase: P1, must: "the signature institution; its officers are the faces"}]}
+      - {id: bind_former_ally, label: A former ally, now a convert, hooks: [{phase: P5, must: "lt_convert or a roster NPC's turn"}]}
+
+  mission_verb:
+    note: "closed list; a mission is active; `find_out_who` is the forbidden passive form"
+    rows:
+      - {id: verb_take_back, value: take_back, label: Take back, hooks: [{phase: P9, must: "the object is an asset or a place"}]}
+      - {id: verb_prove, value: prove, label: Prove, hooks: [{phase: P9, must: "the proof is an item_ or a testimony"}]}
+      - {id: verb_destroy, value: destroy, label: Destroy, hooks: [{phase: P9, must: "the target is an entity with a defence"}]}
+      - {id: verb_free, value: free, label: Free, hooks: [{phase: P9, must: "the freed is an NPC or a people"}]}
+      - {id: verb_deliver, value: deliver, label: Deliver, hooks: [{phase: P9, must: "the delivery is a route and a recipient"}]}
+      - {id: verb_claim, value: claim, label: Claim, hooks: [{phase: P9, must: "a seat or a title with an access chain"}]}
+      - {id: verb_end, value: end, label: End, hooks: [{phase: P9, must: "a rite, a debt, a war or a life"}]}
+      - {id: verb_expose, value: expose, label: Expose, hooks: [{phase: P9, must: "a secret with a path; exposure is a faction trigger"}]}
+      - {id: verb_find_out_who, value: find_out_who, label: Find out who (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error: a mission is never a question"}]}
+
+  crossing:
+    note: "one per act where two threads meet; skipped for a solo party"
+    rows:
+      - {id: cross_site_both_need, label: A site both threads need, hooks: [{phase: P6, must: "one site with two payoffs, one per thread"}]}
+      - {id: cross_npc_matters_to_both, label: An NPC who matters to both, hooks: [{phase: P5, must: "two relationship edges, one per PC"}]}
+      - {id: cross_choice_costs_one, label: A choice that costs one thread, hooks: [{phase: P7, must: "a beat whose fallbacks differ per thread"}]}
+      - {id: cross_shared_enemy, label: A shared enemy, hooks: [{phase: P4, must: "one antagonist on two lists"}]}
+      - {id: cross_festival, label: A festival where both must be, hooks: [{phase: P2, must: "a calendar date"}]}
+      - {id: cross_debt_between, label: A debt between the PCs, hooks: [{phase: P9, must: "written into both threads' public faces"}]}
+
+  track_stage:
+    note: "the personal mechanical track, only when the signature mechanic was rolled; all PCs' tracks in one file; a stage gate is a plot item plus a level floor; every stage has a cost"
+    rows:
+      - {id: stage_awakening, label: Awakening, order: 1, gate: "a plot item of Act 1 + level floor start+1", cost: "a small permanent mark", hooks: [{phase: P9, must: "a layer-1 site holds the item"}]}
+      - {id: stage_price, label: The price, order: 2, gate: "a plot item + level floor start+3", cost: "something named in the tension's terms", hooks: [{phase: P7, must: "the midpoint beat touches it"}]}
+      - {id: stage_threshold, label: The threshold, order: 3, gate: "a plot item + level floor start+5", cost: "a relationship or a place", hooks: [{phase: P9, must: "a crossing point"}]}
+      - {id: stage_apex, label: The apex, order: 4, gate: "the last act's plot item + level floor start+8", cost: "the question answered for this PC", hooks: [{phase: P7, must: "the resolution beat's delivery path"}]}
+
+  weight_metric:
+    note: "what the equal-weight check counts per PC; the ledger counts initiated scenes in play"
+    rows:
+      - {id: metric_sites, label: Own sites, hooks: [{phase: validator, must: "≥1 per act"}]}
+      - {id: metric_npcs, label: NPCs tied to the thread, hooks: [{phase: validator, must: "≥2 with a reason to seek the PC in Act 1"}]}
+      - {id: metric_layers, label: Layers placed, hooks: [{phase: validator, must: "3, in act order"}]}
+      - {id: metric_beats, label: Beats touched, hooks: [{phase: validator, must: "≥1 delivery path per thread"}]}
+      - {id: metric_xp, label: XP share of personal content, hooks: [{phase: validator, must: "within 35% of the other PC's"}]}

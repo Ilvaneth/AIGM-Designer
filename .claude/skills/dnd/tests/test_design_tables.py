@@ -819,11 +819,89 @@ class Naming(unittest.TestCase):
 class Rubrics(unittest.TestCase):
 
     def test_rubrics_cover_every_generative_phase(self):
-        if not (TABLES / "rubrics.yaml").is_file():
-            self.skipTest("rubrics.yaml lands in the last 1b batch")
-        covered = {r.get("phase") for r in dt.rows("rubrics.yaml")}
+        rows = dt.rows("rubrics.yaml#phase_rubric")
+        covered = {r.get("phase") for r in rows}
         for phase in dt.PHASES[1:]:
             self.assertIn(phase, covered)
+        self.assertIn("detail", covered, "item 13.5: the detail-time critique")
+        for r in rows + dt.rows("rubrics.yaml#special"):
+            with self.subTest(rubric=r["id"]):
+                self.assertIn(r["scope"], ("phase", "entity", "dm-only"))
+                self.assertIn(r["effort"], ("high", "medium"))
+                self.assertIn(r["critics"], (1, 2))
+                self.assertTrue(r["question"].endswith(("?", ".")), r["question"])
+                self.assertTrue(r["fails_when"])
+        two = {r["id"] for r in rows if r["critics"] == 2}
+        self.assertTrue({"rubric_p1_secret_trail", "rubric_p4_bbeg_answer", "rubric_p5_lieutenant"} <= two, "24.6 #6: two critics")
+        specials = {r["id"] for r in dt.rows("rubrics.yaml#special")}
+        self.assertTrue({"rubric_wishes", "rubric_leak", "rubric_cliche", "rubric_distinctness"} <= specials)
+        self.assertEqual({v["value"] for v in dt.rows("rubrics.yaml#verdict")}, {"pass", "fix", "rerun"})
+
+    # --- batch F: arc and threads ---------------------------------------------------
+
+    def test_arc_beats_changes_phrasings_nodes_and_seeds(self):
+        beats = dt.rows("arc.yaml#beat_template")
+        short = [b for b in beats if "short" in b["scales"]]
+        long_ = [b for b in beats if "standard" in b["scales"]]
+        self.assertEqual(len(short), 3)
+        self.assertEqual(len(long_), 6)
+        self.assertEqual([b["act"] for b in long_], [1, 1, 2, 2, 3, 3])
+        changes = {c["id"] for c in dt.rows("arc.yaml#change_kind")}
+        self.assertGreaterEqual(len(changes), 8)
+        for b in beats:
+            self.assertTrue(set(b["change_bias"]) <= changes, b["id"])
+            self.assertTrue(b["portent"] == -1 or b["portent"] >= 1, b["id"])
+        for c in dt.rows("arc.yaml#change_kind"):
+            self.assertTrue(c["before"] and c["after"], c["id"])
+        pats = [re.compile(p, re.IGNORECASE) for r in dt.rows("arc.yaml#forbidden_phrasing") for p in r["en"]]
+        for r in dt.rows("arc.yaml#forbidden_phrasing"):
+            for p in r["tr"]:
+                re.compile(p, re.IGNORECASE)
+        self.assertTrue(any(p.search("The festival happens and the party finds the ledger") for p in pats))
+        self.assertFalse(any(p.search("The Court's reading licence is revoked and Yesra reads only in secret") for p in pats))
+        self.assertEqual({f["id"] for f in dt.rows("arc.yaml#fallback")}, {"fallback_cost", "fallback_secondary", "fallback_deferred"})
+        nodes = {n["id"] for n in dt.rows("arc.yaml#node")}
+        seeds = {s["id"] for s in dt.rows("arc.yaml#seed_shape")}
+        for mix in dt.rows("dials.yaml#content_mix"):
+            for kind in mix["effects"]["node_kinds"]:
+                self.assertIn(f"node_{kind}", nodes, (mix["id"], kind))
+            for kind in mix["effects"]["seed_kinds"]:
+                self.assertIn(f"seed_{kind}", seeds, (mix["id"], kind))
+        for n in dt.rows("arc.yaml#node"):
+            for key in ("here", "stake", "ways_in", "never"):
+                self.assertTrue(n[key], (n["id"], key))
+        self.assertEqual({e["id"] for e in dt.rows("arc.yaml#ending")}, {"ending_win", "ending_loss", "ending_pyrrhic"})
+        self.assertGreaterEqual(len(dt.rows("arc.yaml#planted_hook_kind")), 5)
+        opens = {o["value"]: o for o in dt.rows("arc.yaml#opening_scene_type")}
+        self.assertTrue(opens["tavern"]["forbidden"] and opens["stranger_with_a_job"]["forbidden"])
+        self.assertGreaterEqual(len([o for o in opens.values() if not o.get("forbidden")]), 6)
+        engines = {e["value"]: e for e in dt.rows("arc.yaml#plot_engine")}
+        self.assertTrue(engines["prophecy"]["forbidden"] and engines["collect_pieces"]["forbidden"])
+
+    def test_threads_sockets_truths_missions_and_crossings(self):
+        sockets = dt.rows("threads.yaml#socket_type")
+        self.assertGreaterEqual(len(sockets), 10)
+        for s in sockets:
+            self.assertTrue(s["question"].endswith("?"), s["id"])
+            self.assertTrue(s["binds"], s["id"])
+        truths = {t["value"]: t for t in dt.rows("threads.yaml#truth_kind")}
+        for v in ("chosen", "destined", "amnesia"):
+            self.assertTrue(truths[v]["forbidden"], v)
+        self.assertGreaterEqual(len([t for t in truths.values() if not t.get("forbidden")]), 8)
+        layers = dt.rows("threads.yaml#layer")
+        self.assertEqual([l["id"] for l in layers], ["layer_1", "layer_2", "layer_3"])
+        self.assertEqual(layers[2]["tier"], "secret")
+        verbs = {v["value"]: v for v in dt.rows("threads.yaml#mission_verb")}
+        self.assertTrue(verbs["find_out_who"]["forbidden"])
+        self.assertTrue({"take_back", "prove", "destroy"} <= set(verbs))
+        self.assertGreaterEqual(len(dt.rows("threads.yaml#crossing")), 5)
+        self.assertGreaterEqual(len(dt.rows("threads.yaml#antagonist_binding")), 5)
+        stages = dt.rows("threads.yaml#track_stage")
+        self.assertEqual([s["order"] for s in stages], list(range(1, len(stages) + 1)))
+        for s in stages:
+            self.assertTrue(s["gate"] and s["cost"], s["id"])
+        self.assertEqual(len(dt.rows("threads.yaml#weight_metric")), 5)
+        self.assertEqual(dt.load("threads.yaml")["rules"]["equal_weight"][:7], "per PC:")
 
 
 if __name__ == "__main__":

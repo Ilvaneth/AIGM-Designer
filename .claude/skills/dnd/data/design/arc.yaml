@@ -1,0 +1,163 @@
+# arc.yaml — the story arc (item 10): the spine of consequence-shaped beats (3 in short, 6 in
+# standard and epic; the spine never lengthens), the change-kind closed list with state_before /
+# state_after (risk 24.1 #10), the forbidden phrasings the critic and the validator reject, the
+# three pre-written fallbacks every beat carries (`arc fallback` picks one in play, errata 24.2 #7),
+# chapter node templates (hub-and-spoke situations entered in any order), the three endings, planted
+# hook kinds, quest seed shapes, and the opening-scene and plot-engine closed lists forbidden.yaml
+# names. World pressure is always a front step from antagonists.yaml; the threat stage advances on
+# steps, never on DM feel.
+schema_version: 1
+table: arc
+consumed_by: [P0, P7, P9, validator, play]
+plan: "item 10, 13.4, 17 #23, errata 24.2 #7 #9, risk 24.1 #10 #20"
+roll: {labels: [P7.beat_change.<id>, P7.node.<chapter>.<n>, P7.hook.<act>.<n>, P7.seed.<n>, P7.opening], avoid_used: false, note: "beat positions come from scale.yaml; change kinds, nodes, hooks and seeds roll per slot; the opening is rolled from opening_scene_type"}
+rules:
+  spine: "beats are mandatory consequences, never events; chapters are situations with 3-5 nodes entered in any order; scale.yaml beats and chapters"
+  beat_fields: [id, label, position, change_kind, state_before, state_after, what_changes, world_pressure (a step id), telegraph_scene, delivery_paths (2-3), fallbacks (cost, secondary, deferred), status]
+  arc_fallback: "when a beat is pre-empted the DM picks one designed fallback with `arc fallback` and logs it; the bible is not rewritten; `revise` is canon change only"
+  chapter_fields: [id, title, act, locations, level_band, drive, intended_path_sites, key_npcs, nodes (3-5), ab_scenario, content_mix_check, xp_share]
+  node_fields: [what_is_here, what_is_at_stake, ways_in, if_never_arrives (a step or a news record)]
+  escalation: "the threat stage is an overlay value advanced when a BBEG front step completes"
+  seeds: "scale.yaml quest_seeds; hook + complication + resolution + reward; ≥1 NPC or faction; about half tied to sites; every seed has a concrete written outcome"
+  planted_hooks: "3-5 per act: an object, a line, a signpost, a person, a place or a date with a payoff hint and a status; unresolved for 25+ days is flagged"
+  clues: "the big secret's three clues sit in sites or NPCs stamped to Acts 1, 2, 3, in order"
+  endings: "win, loss, pyrrhic, each consequence-shaped, each with a world_after (epilogue seeds, the seed of a next arc); each is an answer to the tension's question"
+hooks_common:
+  - {phase: P7, must: "every beat carries every field; the critic asks for three routes to trigger it and what the world does if the party never enters the act"}
+  - {phase: validator, must: "the arc module checks consequence shape, 2-3 delivery paths, three fallbacks, world_pressure as a step id, 3-5 nodes with if-never-arrives, three endings, hooks per act, clue order"}
+
+tables:
+
+  beat_template:
+    note: "positions by scale; `portent` is which portent (by order) of the BBEG front the beat's world_pressure binds to"
+    rows:
+      - {id: beat_inciting, label: Inciting, scales: [short], act: 1, portent: 1, change_bias: [change_loss, change_exposure, change_opening], hooks: [{phase: P7, must: "lands within the first two sessions; a socket or the opening scene delivers it"}]}
+      - {id: beat_midpoint_shift, label: Midpoint shift, scales: [short], act: 1, portent: 2, change_bias: [change_reversal, change_cost, change_control_flip], hooks: [{phase: P7, must: "the world is different after it; a route or an ally is gone"}]}
+      - {id: beat_resolution, label: Resolution, scales: [short], act: 1, portent: -1, change_bias: [change_closure, change_revelation_public, change_control_flip], hooks: [{phase: P7, must: "decided by the party's answer to the question; the three endings hang here"}]}
+      - {id: beat_a1_inciting, label: Act 1 inciting, scales: [standard, epic], act: 1, portent: 1, change_bias: [change_loss, change_exposure, change_opening], hooks: [{phase: P7, must: "the first portent is public by its end"}]}
+      - {id: beat_a1_turn, label: Act 1 turn, scales: [standard, epic], act: 1, portent: 2, change_bias: [change_reversal, change_cost, change_alliance_shift], hooks: [{phase: P7, must: "the Act 1 clue is found or lost by it; a chapter's hub closes"}]}
+      - {id: beat_a2_reversal, label: Act 2 reversal, scales: [standard, epic], act: 2, portent: 3, change_bias: [change_reversal, change_control_flip, change_exposure], hooks: [{phase: P7, must: "an ally, a place or a belief turns; the Act 2 clue is here"}]}
+      - {id: beat_a2_no_return, label: Act 2 point of no return, scales: [standard, epic], act: 2, portent: 4, change_bias: [change_cost, change_loss, change_closure], hooks: [{phase: P7, must: "something is spent that cannot be recovered; the party-only portent is its telegraph"}]}
+      - {id: beat_a3_convergence, label: Act 3 convergence, scales: [standard, epic], act: 3, portent: 5, change_bias: [change_revelation_public, change_alliance_shift, change_opening], hooks: [{phase: P7, must: "the threads cross here; the Act 3 clue is on the intended path"}]}
+      - {id: beat_a3_resolution, label: Act 3 resolution, scales: [standard, epic], act: 3, portent: -1, change_bias: [change_closure, change_control_flip, change_revelation_public], hooks: [{phase: P7, must: "the doom's date or its prevention; decided by the party's answer"}]}
+
+  change_kind:
+    note: "closed list for the beat field `change_kind`; `state_before` / `state_after` are one-line facts about the world the validator can compare"
+    rows:
+      - {id: change_loss, value: loss, label: Something is lost, before: "who or what the party could rely on", after: "it is gone, and what fills the gap", hooks: [{phase: P7, must: "the lost thing is an entity; the overlay records it"}]}
+      - {id: change_gain, value: gain, label: Something is gained at a price, before: "what the party lacked", after: "what they hold and what it cost", hooks: [{phase: P7, must: "the price is named in state_after"}]}
+      - {id: change_exposure, value: exposure, label: Something hidden is now known by someone, before: "who knew", after: "who knows now and what they do first", hooks: [{phase: P4, must: "the exposure trigger fires in the faction that hid it"}]}
+      - {id: change_reversal, value: reversal, label: An ally, place or belief turns, before: "the party's assumption", after: "the world as it is", hooks: [{phase: P5, must: "the turned NPC's dossier holds the reason from birth"}]}
+      - {id: change_closure, value: closure, label: A road, a door or a choice closes, before: "the options", after: "the option that remains", hooks: [{phase: P3, must: "a map edge's note or a site's status changes"}]}
+      - {id: change_opening, value: opening, label: A road, a plane or a faction opens, before: "what was shut", after: "what is reachable now", hooks: [{phase: P3, must: "travel-times regenerate"}]}
+      - {id: change_cost, value: cost, label: A cost the party cannot reverse, before: "what they had", after: "what they live with", hooks: [{phase: P7, must: "SKILL-commands' example: a cover blown, an ally compromised, a position gone"}]}
+      - {id: change_alliance_shift, value: alliance_shift, label: The board's alliances move, before: "the stance matrix", after: "the stance matrix, changed", hooks: [{phase: P4, must: "large stance shifts count against the volatility budget"}]}
+      - {id: change_control_flip, value: control_flip, label: A place changes hands, before: "who holds it", after: "who holds it now", hooks: [{phase: P4, must: "only as an operation's last step"}]}
+      - {id: change_revelation_public, value: revelation_public, label: A truth becomes common knowledge, before: "the taught layer", after: "the true layer, public", hooks: [{phase: P8, must: "common-knowledge.json gains a fact"}]}
+
+  forbidden_phrasing:
+    note: "what_changes must be a consequence; these shapes are events and are rejected by the critic and warned by the validator"
+    rows:
+      - {id: phr_x_happens, label: "X happens", en: ["\\bhappens\\b", "\\boccurs\\b", "\\btakes place\\b"], tr: ["gerçekleşir", "olur\\b", "meydana gelir"], hooks: [{phase: P7, must: "rewrite as what is different afterwards"}]}
+      - {id: phr_party_finds, label: "The party finds X", en: ["\\bthe party (finds|discovers|learns|realises|realizes)\\b"], tr: ["parti (bulur|keşfeder|öğrenir|fark eder)"], hooks: [{phase: P7, must: "a discovery is a delivery path, not a change"}]}
+      - {id: phr_party_arrives, label: "The party arrives at / meets X", en: ["\\bthe party (arrives|reaches|meets|enters)\\b"], tr: ["parti (varır|ulaşır|karşılaşır|girer)"], hooks: [{phase: P7, must: "arrival is a node's ways_in, not a beat"}]}
+      - {id: phr_npc_reveals, label: "NPC reveals / tells", en: ["\\b(reveals|tells the party|explains)\\b"], tr: ["açıklar", "partiye anlatır"], hooks: [{phase: P7, must: "a revelation beat is change_revelation_public with who-knows before and after"}]}
+      - {id: phr_fight, label: "The party fights / defeats X", en: ["\\bthe party (fights|defeats|kills|battles)\\b"], tr: ["parti (savaşır|yener|öldürür)"], hooks: [{phase: P7, must: "a fight is a delivery path; the change is what the death or the defeat costs"}]}
+
+  fallback:
+    note: "all three written at birth for every beat; `arc fallback` picks one when the beat is pre-empted"
+    rows:
+      - {id: fallback_cost, label: Cost, rule: "the change still lands, but the party pays a different price the pre-emption made necessary", hooks: [{phase: P7, must: "names the price in advance"}]}
+      - {id: fallback_secondary, label: Secondary consequence, rule: "the world responds to being pre-empted in a way the party did not anticipate; the antagonist reads the disruption as a signal and does something worse", hooks: [{phase: P4, must: "names the front step that fires early"}]}
+      - {id: fallback_deferred, label: Deferred, rule: "the change lands later, through another delivery path, with the delay's own cost", hooks: [{phase: P7, must: "names the later path and the day range"}]}
+
+  node:
+    note: "situation nodes for chapters; ids match dials.yaml content_mix node_kinds by suffix"
+    rows:
+      - {id: node_expedition, label: An expedition, here: "a route with stages and a goal at the end", stake: "supplies, a season, who comes back", ways_in: [a guide, a map, a rival's trail], never: "someone else goes and does not return", hooks: [{phase: P3, must: "the route is map edges with days"}]}
+      - {id: node_lost_place, label: A lost place, here: "a site everyone has a story about", stake: "its payoff and who else wants it", ways_in: [a telegraph, a survivor, a document], never: "the never-visited row of its site", hooks: [{phase: P6, must: "an intended-path or over-tier site"}]}
+      - {id: node_crossing, label: A crossing, here: "a border, a ford, a pass with a keeper", stake: "passage and its price", ways_in: [pay, sneak, bargain, fight], never: "the crossing closes on a date", hooks: [{phase: P3, must: "a landmark_crossing"}]}
+      - {id: node_survey, label: A survey, here: "something being measured, mapped or counted", stake: "what the measurement will change", ways_in: [join it, obstruct it, read its results], never: "the survey finishes and its owner acts", hooks: [{phase: P4, must: "a faction's operation step"}]}
+      - {id: node_court, label: A court, here: "a seat, its access chain and its rivals", stake: "a favour, a verdict, a marriage", ways_in: [a sponsor, a service, a fee, a rite], never: "the court decides without the party", hooks: [{phase: P4, must: "the access chain's links are NPCs"}]}
+      - {id: node_negotiation, label: A negotiation, here: "two parties and a table", stake: "the terms and who is not at the table", ways_in: [represent one side, mediate, sabotage], never: "the treaty is signed or broken on a date", hooks: [{phase: P4, must: "a negotiate move as an operation step"}]}
+      - {id: node_succession, label: A succession, here: "an empty seat and its claimants", stake: "who rules, and what the loser does", ways_in: [back a claimant, find the heir, contest], never: "simulation.yaml succession runs", hooks: [{phase: P5, must: "the claimants are the heir and the betrayal candidate"}]}
+      - {id: node_election, label: An election or a vote, here: "a body that will decide something", stake: "the decision and the bought votes", ways_in: [a vote, a voter, a scandal], never: "the vote passes as the faction planned", hooks: [{phase: P4, must: "bought votes are npcsecret_a_bought_vote"}]}
+      - {id: node_trial, label: A trial, here: "an accused, a judge, a witness", stake: "a verdict and what it makes true", ways_in: [testify, defend, prosecute, free the accused], never: "the verdict lands on the festival date", hooks: [{phase: P2, must: "fest_trial or a tribunal church"}]}
+      - {id: node_siege, label: A siege, here: "walls, a besieger, a clock", stake: "the settlement and its food", ways_in: [inside, outside, the supply line], never: "the besiege step resolves", hooks: [{phase: P4, must: "econ_siege applies"}]}
+      - {id: node_muster, label: A muster, here: "an army gathering", stake: "who marches and against whom", ways_in: [enlist, desert, spy, delay], never: "the muster marches on its date", hooks: [{phase: P2, must: "fest_muster or a front portent"}]}
+      - {id: node_raid, label: A raid, here: "a target and a raiding party", stake: "the target's asset and the raiders' pay", ways_in: [warn, defend, join, ambush], never: "a seize move resolves", hooks: [{phase: P4, must: "a criminal or martial faction's step"}]}
+      - {id: node_supply_line, label: A supply line, here: "a road that feeds something", stake: "what starves if it is cut", ways_in: [escort, cut, redirect], never: "lever_supply is or is not pulled", hooks: [{phase: P3, must: "a map route"}]}
+      - {id: node_parley, label: A parley, here: "enemies under a flag", stake: "a truce and its terms", ways_in: [attend, guard, break it], never: "the truce fails on its date", hooks: [{phase: P4, must: "two −3 factions"}]}
+      - {id: node_haunting, label: A haunting, here: "a place the dead will not leave", stake: "who they were and what they want", ways_in: [the house, the grave, the family], never: "the haunting spreads to the district", hooks: [{phase: P6, must: "a minor site with a lore payoff"}]}
+      - {id: node_disappearance, label: A disappearance, here: "someone gone and the people who noticed", stake: "where they are and who took them", ways_in: [the last place, the last person, the pattern], never: "another disappears", hooks: [{phase: P5, must: "a roster NPC is the missing one"}]}
+      - {id: node_contagion, label: A contagion, here: "a sickness with a source", stake: "who is next and what the cure costs", ways_in: [the sick, the source, the healer], never: "econ_plague applies; a demographic row shrinks", hooks: [{phase: P2, must: "the sickness has a dated event or the phenomenon"}]}
+      - {id: node_vigil, label: A vigil, here: "a night that must be kept", stake: "what comes if it is not", ways_in: [keep it, break it, learn why], never: "the vigil fails and the thing comes", hooks: [{phase: P2, must: "a festival or a god's presence row"}]}
+      - {id: node_investigation, label: An investigation, here: "a crime and its traces", stake: "the culprit and the person blamed", ways_in: [the body, the witness, the ledger], never: "the wrong person is punished", hooks: [{phase: P1, must: "a clue of the big secret may sit here"}]}
+      - {id: node_missing_person, label: A missing person, here: "a person and the people who want them found", stake: "why they left and who is lying", ways_in: [the family, the route, the enemy], never: "they are found dead or gone for good", hooks: [{phase: P5, must: "the person is an NPC with a secret"}]}
+      - {id: node_forgery, label: A forgery, here: "a document, a seal, a lineage that is false", stake: "who made it and what it bought", ways_in: [the scribe, the buyer, the original], never: "the forgery is accepted as true", hooks: [{phase: P4, must: "a faction asset or a betrayal candidate"}]}
+      - {id: node_witness, label: A witness, here: "someone who saw and is hunted, bought or silent", stake: "the testimony and the witness's life", ways_in: [find them, protect them, hear them], never: "lever_witness is lost", hooks: [{phase: P5, must: "a load-bearing NPC"}]}
+
+  ending:
+    rows:
+      - {id: ending_win, label: Win, rule: "the villain's answer is refused and the world keeps the party's; the cost is named at birth", hooks: [{phase: P7, must: "world_after seeds a next arc; the doom day passes without the doom"}]}
+      - {id: ending_loss, label: Loss, rule: "the doom lands; the world after is the villain's answer made law", hooks: [{phase: P7, must: "world_after is the doom shape's stage5 line; the party's survival is a separate question"}]}
+      - {id: ending_pyrrhic, label: Pyrrhic, rule: "the doom is stopped and something the party loved is spent; the question stays open", hooks: [{phase: P7, must: "world_after names what was spent and who remembers"}]}
+
+  planted_hook_kind:
+    rows:
+      - {id: hook_object, label: An object, hooks: [{phase: P6, must: "an item_ or a room's contents with a payoff hint"}]}
+      - {id: hook_line, label: A line someone says, hooks: [{phase: P5, must: "in an NPC's voice samples"}]}
+      - {id: hook_signpost, label: A signpost or a mark, hooks: [{phase: P3, must: "a landmark or a route note"}]}
+      - {id: hook_person, label: A person out of place, hooks: [{phase: P5, must: "a minor NPC with a want"}]}
+      - {id: hook_place, label: A place mentioned and not yet reachable, hooks: [{phase: P3, must: "a map node with no route yet"}]}
+      - {id: hook_date, label: A date on the calendar, hooks: [{phase: P2, must: "a festival or a due day"}]}
+
+  seed_shape:
+    note: "quest seed kinds; ids match dials.yaml content_mix seed_kinds by suffix; every seed is hook + complication + resolution + reward with a written outcome"
+    rows:
+      - {id: seed_expedition, label: An expedition, hooks: [{phase: P3, must: "a route and a goal; reward from the loot table"}]}
+      - {id: seed_lost_place, label: A lost place, hooks: [{phase: P6, must: "a site; half the seeds are this kind or tied to a site"}]}
+      - {id: seed_escort, label: An escort, hooks: [{phase: P3, must: "a route with a travel table; the escorted is an NPC"}]}
+      - {id: seed_map_fragment, label: A map fragment, hooks: [{phase: P6, must: "leads to a site's second entrance"}]}
+      - {id: seed_intrigue, label: An intrigue, hooks: [{phase: P4, must: "two factions and a letter"}]}
+      - {id: seed_negotiation, label: A negotiation, hooks: [{phase: P4, must: "a service or an access link is the reward"}]}
+      - {id: seed_succession, label: A succession, hooks: [{phase: P5, must: "an heir and a claimant"}]}
+      - {id: seed_blackmail, label: A blackmail, hooks: [{phase: P5, must: "an NPC's secret and its path"}]}
+      - {id: seed_raid, label: A raid, hooks: [{phase: P4, must: "a seize step the party can join or stop"}]}
+      - {id: seed_defence, label: A defence, hooks: [{phase: P3, must: "a settlement's fear made real for a night"}]}
+      - {id: seed_supply, label: A supply run, hooks: [{phase: P3, must: "goods from the economy table; a route"}]}
+      - {id: seed_deserter, label: A deserter, hooks: [{phase: P4, must: "a martial faction's step and a person who left it"}]}
+      - {id: seed_haunting, label: A haunting, hooks: [{phase: P6, must: "a minor site; lore payoff"}]}
+      - {id: seed_disappearance, label: A disappearance, hooks: [{phase: P5, must: "a roster NPC"}]}
+      - {id: seed_contagion, label: A contagion, hooks: [{phase: P2, must: "a disease from the hazards table"}]}
+      - {id: seed_a_house_shuttered, label: A house shuttered, hooks: [{phase: P3, must: "a district's fear seed"}]}
+      - {id: seed_investigation, label: An investigation, hooks: [{phase: P1, must: "may carry a clue"}]}
+      - {id: seed_missing_person, label: A missing person, hooks: [{phase: P5, must: "an NPC with a secret"}]}
+      - {id: seed_forgery, label: A forgery, hooks: [{phase: P4, must: "a faction asset"}]}
+      - {id: seed_a_second_body, label: A second body, hooks: [{phase: P6, must: "an urban site"}]}
+
+  opening_scene_type:
+    note: "closed list for `opening_scene_type` (chapter 1; the session-1 pack offers two candidates); the two forbidden values exist for the validator"
+    rows:
+      - {id: open_socket_bang, value: socket_bang, label: A bang at a socket, weight: 3, hooks: [{phase: P9, must: "a PC's socket NPC arrives with the problem in the first ten minutes"}]}
+      - {id: open_death, value: death_in_first_hour, label: A death in the first hour, hooks: [{phase: P5, must: "a named minor NPC; the first news record"}]}
+      - {id: open_festival_wrong, value: festival_goes_wrong, label: The festival goes wrong, hooks: [{phase: P2, must: "anchor_festival_eve start date"}]}
+      - {id: open_arrest, value: arrival_under_arrest, label: Arrival under arrest or suspicion, hooks: [{phase: P4, must: "the state's law level ≥ 3"}]}
+      - {id: open_debt_called, value: debt_called_in, label: A debt called in, hooks: [{phase: P9, must: "socket_debt_to_faction"}]}
+      - {id: open_road_closes, value: road_closes_behind, label: The road closes behind them, hooks: [{phase: P3, must: "a map edge's season flag or a portent"}]}
+      - {id: open_summons, value: summons, label: A summons, hooks: [{phase: P4, must: "a faction's access chain opens one link"}]}
+      - {id: open_washed_ashore, value: thing_washes_ashore, label: The thing washes ashore, hooks: [{phase: P6, must: "a telegraph of the first site"}]}
+      - {id: open_tavern, value: tavern, label: The tavern (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_tavern_opening)"}]}
+      - {id: open_stranger_job, value: stranger_with_a_job, label: A stranger with a job (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_tavern_opening)"}]}
+
+  plot_engine:
+    note: "closed list for `plot_engine`; the consequence spine is the default and the others are shapes it may take"
+    rows:
+      - {id: engine_consequence_spine, value: consequence_spine, label: The consequence spine, weight: 4, hooks: [{phase: P7, must: "the default; beats are consequences"}]}
+      - {id: engine_countdown, value: countdown, label: A countdown, hooks: [{phase: P7, must: "the doom day is public knowledge from Act 1"}]}
+      - {id: engine_investigation, value: investigation, label: An investigation, hooks: [{phase: P1, must: "the clue trail is the spine's delivery paths"}]}
+      - {id: engine_contest, value: contest, label: A contest between two factions, hooks: [{phase: P4, must: "the party's stance with both is the arc"}]}
+      - {id: engine_pilgrimage, value: pilgrimage, label: A pilgrimage with stations, hooks: [{phase: P3, must: "chapters are stations on a route"}]}
+      - {id: engine_siege, value: siege, label: A siege, hooks: [{phase: P4, must: "the settlement is the party's asset by Act 2"}]}
+      - {id: engine_prophecy, value: prophecy, label: Prophecy (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_prophecy)"}]}
+      - {id: engine_collect_pieces, value: collect_pieces, label: Collect the pieces (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_collect_the_pieces)"}]}
