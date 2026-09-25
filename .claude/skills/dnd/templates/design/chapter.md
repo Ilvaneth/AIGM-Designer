@@ -41,7 +41,21 @@ mirror: design/dm-only/chapters/chapter_<n>.md
 
 - <what the party learns by living in this chapter for a week: which node is hot, who is watching them>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/chapters/chapter_<n>.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: chapter_<n>
+type: chapter
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/chapters/chapter_<n>.md`)*
 
 - <which node carries a clue, which NPC is the villain's eye here, the pre-emption the villain will try>

@@ -57,8 +57,22 @@ mirror: design/dm-only/settlements/settlement_<slug>.md
 |---|---|---|
 | <a local good> | <gp> | <from the economy line and the current modifier> |
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/settlements/settlement_<slug>.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: settlement_<slug>
+type: settlement
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/settlements/settlement_<slug>.md`)*
 
 - **Secret truth:** <the third truth>
 - **Who really holds power here:** <if not the ruler>

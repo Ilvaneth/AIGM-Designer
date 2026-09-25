@@ -49,8 +49,22 @@ mirror: design/dm-only/npcs/npc_<slug>.md
 - **What changes if they die:** <who succeeds, which thread breaks, in one or two lines>
 - **Goal tracker** *(major only; mirrored from `goals.json`)*: goal <…>; metric <…>; threatened → <move>; blocked → <move>; permanent loss → <move>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/npcs/npc_<slug>.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: npc_<slug>
+type: npc
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/npcs/npc_<slug>.md`)*
 
 - **Secret:** <the stamped secret>
 - **Surfacing path:** <how it can come out — a check, a witness, a document, a slip>

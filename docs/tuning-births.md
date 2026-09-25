@@ -8,6 +8,7 @@
 2. Every script is `py .claude/skills/dnd/scripts/<name>.py`. Check the data root first: `py .claude/skills/dnd/scripts/paths.py project-root` must print this project, never Ashen Crown.
 3. The Workflow tool needs the user's opt-in in this tab ("workflow kullan"); it is given in the message that starts the birth.
 4. Tab discipline: while a birth is running nobody edits the working tree from another tab; the development tab starts only after the report is written and the guard is disarmed.
+5. Never put a `design/dm-only/…` path into a Bash command, not even inside a note you write to your scratchpad: the read guard matches the token and blocks the command (birth 1, 3.7). Notes name ids, never dm-only paths.
 
 ## Birth 1 — straight through (`_test-tune-1`)
 
@@ -26,11 +27,11 @@ py .claude/skills/dnd/scripts/designer.py -c _test-tune-1 phase P1 begin --json
 
 - If the JSON says `"workflow": "design-skeleton"`: call the Workflow tool with `name: "design-skeleton"` and `args` = that JSON object (as a real JSON value, not a string). Then `phase P1 merge`, `commit --message "P1 skeleton"`, and `phase P1 begin --json` again — it now prints the pending entities with `"workflow": "design-fanout"`.
 - Call the Workflow tool with `name: "design-fanout"` and `args` = that JSON object.
-- After **every** Workflow return, before any text to the user: `phase P1 merge`, then `commit --message "P1 fan-out"`.
+- After **every** Workflow return, before any text to the user: `phase P1 merge --tokens <the output tokens the Workflow result reported> --seconds <its duration in seconds>`, then `commit --message "P1 fan-out"`. The merge is per unit: a line `refused N: …` means those units are now `failed` with their reason, and the next `phase P1 begin --json` lists exactly them (one attempt later, the reason in their prompt) — run `design-fanout` again with that JSON. Never hand-filter the JSON and never re-run a staged entity.
 - `phase P1 check`, `phase P1 card` (show the card in the chat as the player would see it), `phase P1 approve` (auto; no `--onay`, no `devam` wait).
 - Note the wall-clock time of the phase, the number of agents the Workflow launched, how many returned null, how many fix loops ran, the critics' verdict counts, the validator's error and warning counts with rubric ids, and the exact text of anything that failed.
 
-**Failures.** A null agent return: `phase PN begin --json` after the merge lists only what is still pending; run `design-fanout` again with that JSON (once). An entity still failing after that stays `failed`; record it and move on to the next phase only if `approve` allows it; if approve refuses, drop the entity with `design_revise.py -c _test-tune-1 round --phase PN --scope entity --entity ID --action remove --text "tuning: failed twice"`, merge, check, card, approve. A script error (traceback) ends the phase: record the traceback in the report and stop the birth there; do not patch the script.
+**Failures.** A null agent return or a refused unit: `phase PN begin --json` after the merge lists only what is still pending or failed; run `design-fanout` again with that JSON (once more). A unit still failing after the second run stays `failed`; `approve` refuses an incomplete roster, so retire it: a batch or document that never reached the registry with `designer.py -c _test-tune-1 phase PN drop --id ID --reason "tuning: failed twice"`, a registry entity with `design_revise.py -c _test-tune-1 round --phase PN --scope entity --entity ID --action remove --text "tuning: failed twice"`; then check, card, approve. Never `approve --force` in a tuning birth: record the refusal instead. An approved phase cannot `begin` again (that was birth 1's 3.5 regression; `rerun --reason` is the only way back). A script error (traceback) ends the phase: record the traceback in the report and stop the birth there; do not patch the script.
 
 **After P8:**
 
@@ -63,7 +64,7 @@ After the development tab has applied its fixes, one more straight birth (`_test
 English, written by the Opus tab at the end of the birth (or where it stopped), ids and codes only, never bible prose:
 
 1. **Run** — campaign name, seed, the rolled dials, model, session effort, start and end time, total wall-clock, the Workflow run ids and their persisted script paths, the transcript directory if the tool result named one.
-2. **Per phase** — a table: phase, workflow(s), agents launched, null returns, fix loops, second-critic count, critic verdicts (pass / fix / rerun), validator errors and warnings (rubric ids), wall-clock.
+2. **Per phase** — a table: phase, workflow(s), agents launched, null returns, fix loops, second-critic count, critic verdicts (pass / fix / rerun, the skeleton's and the phase critic's too), merge units merged / refused (from `_staging/PN/merge.report.json`), validator errors and warnings (the grouped `phase PN check` output), wall-clock.
 3. **Failures** — every traceback, refusal, blocked read and failed entity, verbatim in a code block, with the command that produced it.
 4. **Leak test** and, for birth 2, **resume test** — pass or fail, with the counts.
 5. **Observations** — anything the conductor had to guess, a prompt or command that read ambiguously, a card that was hard to read as the player, a Workflow that idled. One line each, with the phase and entity id.

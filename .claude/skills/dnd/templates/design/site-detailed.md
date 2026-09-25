@@ -77,8 +77,22 @@ mirror: design/dm-only/sites/site_<slug>.md
 
 - <what a survivor, a map or a local can tell: a second entrance, the guardian's habit, the tide>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/sites/site_<slug>.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: site_<slug>
+type: site
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/sites/site_<slug>.md`)*
 
 - **Clue placement:** <which clue, in which room, how it surfaces>
 - <the true occupant, the thread payoff, what the villain wants from this place>

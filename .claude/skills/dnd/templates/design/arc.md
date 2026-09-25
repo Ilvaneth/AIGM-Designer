@@ -56,8 +56,22 @@ mirror: design/dm-only/arc.md
 
 - <what an attentive party can see of the spine before it lands: the portents, the names that keep recurring>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/arc.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: arc_1
+type: arc
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/arc.md`)*
 
 - **The villain's pre-emptions:** <how the BBEG tries to land its own beats first>
 - **Clue-to-beat map:** <which beat surfaces which clue>

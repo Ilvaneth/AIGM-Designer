@@ -39,6 +39,8 @@ A file that holds several entities (cosmology, arc, a settlement with its distri
 
 **Three headings, one split.** Prose is organised under `## Public`, `## Discoverable` and `## Secret` (item 11.1). The public file carries the first two; the `## Secret` section is written to the **dm-only mirror** at the same path under `design/dm-only/` (item 11.2). No `## Secret` heading and no secret-tier sentence may exist outside `dm-only/`; the `secrecy` validator checks headings, front matter and sentence overlap. A `secret` entity (opaque slug) has no public file at all.
 
+**The mirror's front matter** repeats the id and type, says `secrecy: secret`, lists the public and the secret stamps, and names `mirror_of: <the public file>`; the public file names `mirror: <the mirror>`. A public file that carries a `## Secret` heading, a mirror that says `secrecy: public`, or a mirror without `mirror_of` is refused by `registry.py merge` before it can leak (tuning birth 1, 2026-09-25). Every template below ends with a delimited `MIRROR FILE` block that shows this.
+
 **Ids inline.** Every reference to another entity is a wiki-link, `[[npc_ilme]]`, never a bare name. The DM translates id → name when narrating; the validator resolves every link; a rename touches the registry and regenerates the files the link scan lists (item 3).
 
 **Stamped fields are repeated, not redefined.** A site's danger tier or an NPC's faction appears in the file exactly as the registry holds it; `detail` may add anything else.

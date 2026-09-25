@@ -38,10 +38,10 @@ Phases P1-P9 in order, each the same loop. `designer.py` does the deterministic 
 designer.py -c CAMP preroll --phase PN            every labelled roll of the phase, from the tables
 designer.py -c CAMP phase PN begin --json         reconcile, arm, the roster with read budgets and prompts
    → Workflow {name: "design-skeleton", args: <that JSON>}      when the JSON says workflow: design-skeleton
-designer.py -c CAMP phase PN merge                absorb skeleton.json, merge fragments, seed the stores
+designer.py -c CAMP phase PN merge [--tokens N --seconds S]   absorb skeleton.json, merge per unit, seed the stores
 designer.py -c CAMP phase PN begin --json         now the pending entities with their prompts
    → Workflow {name: "design-fanout", args: <that JSON>}        write → critique → fix (≤2) → second critic; phase + wishes critics
-designer.py -c CAMP phase PN merge                record the critics' returns, merge, seed
+designer.py -c CAMP phase PN merge [--tokens N --seconds S]   record the critics' returns, merge, seed
 designer.py -c CAMP phase PN check                the validator for this phase, redacted
 designer.py -c CAMP phase PN card                 the Turkish phase card (design_approval.py)
    → show the card; wait for `onay` (or a one-sentence correction)
@@ -63,7 +63,7 @@ designer.py -c CAMP phase PN approve --onay       records the approval, commits 
 
 **Corrections.** A correction is one sentence. Classify it and run `design_revise.py -c CAMP round --phase PN --scope direction|fact|entity|phase --text "…"` (with `--entity`, `--field --value`, `--action remove|replace`, `--world`, `--reseed` as the scope needs); it records the round, marks the affected entities for a rerun and lists them. Rerun ≤3 entities with the Agent tool (each agent runs the render command `begin --json` printed for it) or the fan-out Workflow for more; then merge, check, a new card with its diff. Three rounds per phase, then approve as-is or `--scope phase`. A one-word correction gets one clarifying question first.
 
-**Failures.** A null agent return retries once with the attempt in the prompt, then the entity is `failed`; a phase with failed ids is shown but cannot be approved (rerun the pending list, or drop the entity with an entity round). A missing critique is shown on the card as a count. Validator errors go to targeted fix agents inside the two loops, then to the player as "did not pass, because…" with the rubric ids.
+**Failures.** A null agent return retries once with the attempt in the prompt, then the entity is `failed`. The registry merges per unit: a refused fragment (bad shape, stamp drift, a secret name that is public, a `## Secret` heading in a public file, a mirror without `secrecy: secret` / `mirror_of`) is marked `failed` with its reason, and the next `begin --json` renders it one attempt later with the reason in its prompt. A phase whose roster is not complete cannot be approved (`approve --force` overrides; `phase PN drop --id ID --reason` retires a batch or document that never reached the registry, an entity round removes a registry entity); an approved phase is frozen and only `rerun` reopens it. A missing critique is shown on the card as a count. Validator errors go to targeted fix agents inside the two loops, then to the player as "did not pass, because…" with the rubric ids.
 
 **After every Workflow return**, before any text to the player: `designer.py phase PN merge` and `designer.py commit --message …` (compaction safety, item 19.5). `design.json` is the index; disk is the truth; `reconcile` runs inside `begin` and `merge`.
 

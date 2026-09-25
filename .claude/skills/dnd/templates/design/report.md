@@ -62,8 +62,22 @@ mirror: design/dm-only/report.md
 
 *(nothing)*
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/report.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: none
+type: report
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/report.md`)*
 
 - **Secret-layer abstract for the DM:** archetype class <…>, novelty vs `used.json` <yes / no>, clue count per act <n / n / n>, critic agreement <…>
 - **dm-only criteria that failed, if any:** <count and module names>

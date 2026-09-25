@@ -34,7 +34,21 @@ mirror: design/dm-only/consequence-calculus.md
 - **B — <the other way>:** <…>
 - **Actors are this act's own:** [[faction_<id>]], [[npc_<id>]] *(not last act's)*
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/consequence-calculus.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: none
+type: calculus
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/consequence-calculus.md`)*
 
 - <the rung an actor will skip, the ally who defects at rung 3, the BBEG's answer to each A/B>

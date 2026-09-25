@@ -92,7 +92,21 @@ mirror: design/dm-only/regions/region_<slug>.md
 
 - <what a local guide, a map or a season in the region teaches: safe passages, the real reason behind a landmark, which faction actually holds the road>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/regions/region_<slug>.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: region_<slug>
+type: region
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/regions/region_<slug>.md`)*
 
 - <what the region hides: a clue placement, an over-tier site's true occupant, a faction's hidden asset>

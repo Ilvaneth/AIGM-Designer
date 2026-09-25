@@ -37,8 +37,22 @@ mirror: design/dm-only/threads/thread_<pc slug>.md
 
 - **Layer 1 (Act 1):** <what the character can learn first — placed in [[<id>]]; how it surfaces>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/threads/thread_<pc slug>.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: thread_<pc slug>
+type: thread
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/threads/thread_<pc slug>.md`)*
 
 - **The truth:** <something about their past or nature they do not know — pinned to [[event_<id>]] and [[<faction / npc id>]]; fills [[socket_<id>]]>
 - **Layer 2 (Act 1 climax / Act 2):** <…> — placed in [[<id>]]

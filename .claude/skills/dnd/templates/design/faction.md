@@ -66,8 +66,22 @@ mirror: design/dm-only/factions/faction_<slug>.md
 - **Provocation ladder:** *(see `consequence-calculus.md`)* rung 1 <…> → rung 2 <…> → rung 3 <…>
 - **What it wants independent of the party, and what it will have done in 60 days if the party never appears:** <the critique-pass answer, in two sentences>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/factions/faction_<slug>.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: faction_<slug>
+type: faction
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/factions/faction_<slug>.md`)*
 
 - **Secret:** <the thing that would break it if known>
 - **Internal fracture:** <who wants what, and the line it splits along>

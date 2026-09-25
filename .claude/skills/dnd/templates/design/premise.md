@@ -45,8 +45,22 @@ mirror: design/dm-only/premise-secret.md
 
 - <one or two things a curious native could learn about the world's question in Act 1 — the surface of the secret, never the secret>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/premise-secret.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: premise_<campaign slug>
+type: premise
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/premise-secret.md`; the public file stops above)*
 
 ### The big secret
 - **Archetype:** `<secrets.yaml row id>` + twist `<twist id>`

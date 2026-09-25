@@ -65,8 +65,22 @@ mirror: design/dm-only/cosmology.md
 
 - <what a scholar, priest or elder could tell: the ages' true lengths, a god's older name, an event's second version that is not yet the secret>
 
+---
+
+<!-- MIRROR FILE. Everything from here on is written to `design/dm-only/cosmology.md`, never to this public file; the public file ends above this line. The mirror starts with its own front matter: -->
+
+<!--
+---
+entity: none
+type: cosmology
+secrecy: secret
+phase: <PN>
+stamped: [<the public stamps>, <the secret stamps>]
+mirror_of: <this public file's path>
+---
+-->
+
 ## Secret
-*(written to `design/dm-only/cosmology.md`)*
 
 - **The god behind the villain's answer:** [[god_<id>]] — <how>
 - **The silenced / erased / lying god, if any:** <the truth>
