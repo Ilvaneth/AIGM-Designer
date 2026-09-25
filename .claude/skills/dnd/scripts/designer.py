@@ -41,6 +41,7 @@ import argparse
 import json
 import os
 import random
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -707,12 +708,37 @@ def pending_with_prompts(campaign: str, phase: str) -> dict:
     if sk_name and skeleton.get("status") in (None, "pending"):
         skeleton.update(prompt_bundle(campaign, phase, sk_name, None, attempt))
     phase_critic = {"prompt": "phase_critic", "prompt_cmd": render_cmd(campaign, "phase_critic", None, attempt)}
+    wishes_critic = {"prompt": "wishes_critic", "prompt_cmd": render_cmd(campaign, "wishes_critic", None, attempt)}
     return {"campaign": campaign, "phase": phase, "attempt": attempt, "auto_approve": auto_approve(data),
             "skeleton": skeleton, "directions": ph.get("directions", []), "seed": data["seed"]["master"],
-            "entities": rows, "phase_critic": phase_critic}
+            "entities": rows, "phase_critic": phase_critic, "wishes_critic": wishes_critic,
+            "workflow": "design-skeleton" if (skeleton.get("prompt") and skeleton.get("status") in (None, "pending")) else "design-fanout"}
+
+
+def record_critics(campaign: str, phase: str) -> int:
+    """Critic returns saved as <id>.critic<N>[.loopK].json in staging go to the manifest, ids and codes only."""
+    staging = design_dir(campaign) / "_staging" / phase
+    if not staging.is_dir():
+        return 0
+    merged = staging / "merged"
+    n = 0
+    for path in sorted(staging.glob("*.critic*.json")):
+        m = re.match(r"^(?P<stem>.+?)\.critic(?P<order>\d)(?:\.loop\d+)?\.json$", path.name)
+        order = int(m.group("order")) if m else 1
+        proc = run_script("design_approval.py", campaign, "critique", "--phase", phase, "--file", str(path), "--critic", str(order))
+        if proc.returncode == 0:
+            merged.mkdir(exist_ok=True)
+            path.replace(merged / path.name)
+            n += 1
+        else:
+            print(f"designer: critic return {path.name} refused: {proc.stderr.strip()}", file=sys.stderr)
+    if n:
+        print(f"designer: {phase} {n} critic return(s) recorded")
+    return n
 
 
 def phase_merge(campaign: str, phase: str, day: int) -> int:
+    record_critics(campaign, phase)
     proc = run_script("registry.py", campaign, "merge", "--phase", phase, "--day", str(day))
     print(proc.stdout.strip())
     if proc.returncode != 0:
