@@ -279,5 +279,86 @@ class Preroll(unittest.TestCase):
         self.assertTrue(all(k.startswith("npcsecret_") for k in kinds))
 
 
+class Cards(unittest.TestCase):
+    """Report section 5, cards: time and tokens, the critics' verdicts, the incomplete warning, the language column,
+    grouped validator output; section 3.6 and 4: validator scope and the player-file check."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.c = TestCampaign("tune1c")
+        self.c.run("design_manifest.py", "set-mode", "birth", check=True)
+
+    def tearDown(self):
+        self.c.remove()
+        self.guard.__exit__(None, None, None)
+
+    def test_card_shows_time_tokens_verdict_chains_and_the_incomplete_warning(self):
+        from datetime import datetime, timedelta, timezone
+        started = (datetime.now(timezone.utc) - timedelta(seconds=185)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        records = [
+            {"entity_id": "site_sunken_pier", "critic": 1, "verdict": "fix", "findings": []},
+            {"entity_id": "site_sunken_pier", "critic": 1, "verdict": "pass", "findings": []},
+            {"entity_id": "P6", "critic": 1, "verdict": "fix", "findings": [
+                {"rubric_id": "rubric_p6_only_here", "entity_id": "site_sunken_pier", "verdict": "fix", "reason_code": "same_room"}]},
+            {"entity_id": "P6", "critic": 1, "verdict": "pass", "findings": [
+                {"rubric_id": "rubric_wishes", "entity_id": "wish:must:1", "verdict": "pass"}]},
+        ]
+        self.c.reopen("P6", "partial", roster=["site_sunken_pier", "site_never_written"], started=started, finished=None, wall_s=0,
+                      tokens={"in": 0, "out": 0, "cache_read": 0, "by_model": {}},
+                      critique={"phase_loops": 1, "verdicts": ["fix", "pass"], "entity_loops_total": 1, "records": records,
+                                "skeleton_verdicts": ["fix", "pass"]})
+        self.c.run("design_approval.py", "card", "--phase", "P6", check=True)
+        text = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
+        self.assertIn("**Süre:** 3 dk", text, "minutes come from the phase's start when no Workflow seconds were recorded")
+        self.assertIn("**Çıktı:** —", text, "unknown tokens are a dash, never 0")
+        self.assertIn("faz eleştirmeni fix", text)
+        self.assertIn("dilek eleştirmeni pass", text)
+        self.assertIn("iskelet fix → pass", text)
+        self.assertIn("rubric_p6_only_here → site_sunken_pier (fix, same_room)", text)
+        self.assertIn("| c1:fix → c1:pass |", text, "the entity row carries its own verdict chain")
+        self.assertIn("⚠ **Eksik:** site_never_written", text)
+        self.assertIn("onaylanamaz", text)
+
+    def test_language_column_inherits_through_settlement_and_falls_back_to_the_only_language(self):
+        import design_approval as da
+        assignments = {"polity_reedmarch": "marshtongue"}
+        proj = {"settlement_x": {"polity": "polity_reedmarch"}}
+        self.assertEqual(da.language_of("npc_a", {"settlement": "settlement_x"}, assignments, proj), "marshtongue")
+        self.assertEqual(da.language_of("npc_b", {"lang": "cragspeak"}, assignments, proj), "cragspeak")
+        self.assertEqual(da.language_of("signature_c", {}, assignments, proj, default="marshtongue"), "marshtongue")
+        self.assertEqual(da.language_of("signature_c", {}, assignments, proj), "—")
+
+    def test_check_output_is_grouped_with_examples_and_full_lists_every_line(self):
+        import designer
+        findings = [{"severity": "error", "module": "refs", "code": "dangling_ref", "entity": f"npc_{i}", "message": f"refs names x{i}"} for i in range(6)]
+        findings.append({"severity": "warning", "module": "map", "code": "no_map", "entity": None, "message": "design/map.json missing"})
+        findings.append({"severity": "error", "module": "secrecy", "code": "secret_name_leak", "entity": "npc_s01", "message": "appears in design/dm-only/x.md"})
+        grouped = designer.summarise_findings(findings)
+        self.assertEqual(len(grouped), 3)
+        self.assertIn("dangling_ref", grouped[0])
+        self.assertIn("×6", grouped[0])
+        self.assertIn("(+2 more)", grouped[0])
+        self.assertIn("npc_s01", "".join(grouped))
+        self.assertNotIn("dm-only/x.md", "".join(grouped), "a dm-only path never reaches the conductor")
+        full = designer.summarise_findings(findings, full=True)
+        self.assertEqual(len(full), 8)
+        self.assertIn("design/map.json missing", full[6])
+
+    def test_validator_ignores_cards_rendered_prompts_and_revised_copies(self):
+        for rel in ("design/_approval/zz_card.md", "design/_prompts/P1/zz_prompt.md", "design/_revised/zz_old.md"):
+            f = self.c.path(rel)
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_text("# no front matter at all\n\n## Secret\n\nnot bible prose\n", encoding="utf-8")
+        proc = self.c.run("design_check.py", "--modules", "secrecy", "--json", check=True)
+        findings = json.loads(proc.stdout)
+        self.assertFalse([f for f in findings if "zz_" in str(f.get("message"))], "scratch folders are not scanned")
+
+    def test_player_check_on_a_missing_file_is_a_message_not_a_traceback(self):
+        proc = self.c.run("render_player.py", "check", str(self.c.path("design/player-primer-missing.md")))
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("does not exist", proc.stderr)
+        self.assertNotIn("Traceback", proc.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

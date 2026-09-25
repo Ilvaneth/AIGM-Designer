@@ -35,7 +35,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from design_io import (ENTITY_TYPES, OVERLAY_FIELDS, OVERLAY_WRITERS, SECRECY, campaign_dir,  # noqa: E402
+from design_io import (ENTITY_TYPES, OVERLAY_FIELDS, OVERLAY_WRITERS, SCRATCH_DIRS, SECRECY, campaign_dir,  # noqa: E402
                        design_dir, dm_only_dir, front_matter, id_type, read_json, wiki_links)
 from paths import _root as data_root  # noqa: E402
 
@@ -115,8 +115,8 @@ def load_bible(campaign: str, phase: str | None, fixture: bool) -> Bible:
         fixture=fixture or bool(canonical.get("_meta", {}).get("fixture")),
     )
     for p in sorted(design_dir(campaign).rglob("*.md")):
-        if "_staging" in p.parts:
-            continue
+        if any(s in p.parts for s in SCRATCH_DIRS):
+            continue        # cards, rendered prompts, staging and revised copies are not bible prose (tuning birth 1)
         text = p.read_text(encoding="utf-8")
         b.prose[p] = text
         b.fm[p] = front_matter(p)

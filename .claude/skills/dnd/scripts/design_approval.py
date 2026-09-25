@@ -58,18 +58,60 @@ def dig(obj, dotted: str):
     return obj
 
 
-def language_of(eid: str, ent: dict, assignments: dict, proj: dict) -> str:
+def language_of(eid: str, ent: dict, assignments: dict, proj: dict, default: str = "—") -> str:
+    """The naming language of an entity: its own field, its assignment, or the assignment of the polity /
+    faction / region / settlement it belongs to (two hops); else the campaign's only language, else —."""
+    for key in ("lang", "naming_language", "language"):
+        if isinstance(ent.get(key), str) and ent[key]:
+            return ent[key]
     if eid in assignments:
         return assignments[eid]
-    for key in ("polity", "faction", "region"):
+    for key in ("polity", "faction", "region", "settlement", "location_at_birth"):
         ref = ent.get(key)
         if isinstance(ref, str) and ref in assignments:
             return assignments[ref]
         if isinstance(ref, str) and ref in proj:
-            for k2 in ("polity", "region"):
+            for k2 in ("polity", "region", "settlement"):
                 r2 = proj[ref].get(k2)
                 if isinstance(r2, str) and r2 in assignments:
                     return assignments[r2]
+    return default
+
+
+def critique_chains(ph: dict) -> tuple[dict, str, list, str, list]:
+    """(entity -> ['c1:fix', 'c1:pass', 'c2:pass'], phase verdict, phase finding lines, wishes verdict, skeleton verdicts)."""
+    crit = ph.get("critique") or {}
+    chains: dict = {}
+    phase_verdict, wishes_verdict = "—", "—"
+    phase_lines: list = []
+    for rec in crit.get("records") or []:
+        eid = rec.get("entity_id") or ""
+        findings = rec.get("findings") or []
+        if eid.startswith("skeleton"):
+            continue
+        if eid == ph.get("id") or eid.startswith("P") and len(eid) == 2:
+            if any(f.get("rubric_id") == "rubric_wishes" for f in findings):
+                wishes_verdict = rec.get("verdict") or "—"
+            else:
+                phase_verdict = rec.get("verdict") or "—"
+                phase_lines = [f"{f.get('rubric_id')} → {f.get('entity_id')} ({f.get('verdict')}{', ' + f['reason_code'] if f.get('reason_code') else ''})"
+                               for f in findings if f.get("verdict") in ("fix", "rerun")]
+            continue
+        chains.setdefault(eid, []).append(f"c{rec.get('critic', 1)}:{rec.get('verdict')}")
+    return chains, phase_verdict, phase_lines, wishes_verdict, list(crit.get("skeleton_verdicts") or [])
+
+
+def elapsed_minutes(ph: dict) -> str:
+    if ph.get("wall_s"):
+        return str(round(int(ph["wall_s"]) / 60))
+    if ph.get("started"):
+        try:
+            from datetime import datetime, timezone
+            t0 = datetime.fromisoformat(str(ph["started"]).replace("Z", "+00:00"))
+            t1 = datetime.fromisoformat(str(ph.get("finished") or now_iso()).replace("Z", "+00:00"))
+            return str(max(0, round((t1 - t0).total_seconds() / 60)))
+        except ValueError:
+            return "—"
     return "—"
 
 
@@ -204,12 +246,22 @@ def build_card(campaign: str, phase: str) -> str:
     val = ph.get("validator") or {}
     crit = ph.get("critique") or {}
     failed = [e for e in roster if m["entities"].get(e, {}).get("status") == "failed"]
+    incomplete = [e for e in roster if dm.ENTITY_RANK.get(m["entities"].get(e, {}).get("status", "pending"), 0) < dm.ENTITY_RANK["merged"]]
     missing = sum(1 for v in crit.get("verdicts") or [] if v == "critique_missing")
-    minutes = round((ph.get("wall_s") or 0) / 60)
+    chains, phase_verdict, phase_lines, wishes_verdict, skeleton_verdicts = critique_chains(dict(ph, id=phase))
+    tokens_out = int((ph.get("tokens") or {}).get("out") or 0)
     lines.append(f"- **Durum:** {ph['status']} · **Doğrulayıcı:** {val.get('errors', '—')} hata, {val.get('warnings', '—')} uyarı · "
-                 f"**Eleştiri turu:** {crit.get('phase_loops', 0)} ({' → '.join(crit.get('verdicts') or []) or '—'})"
-                 + (f" · **eleştiri eksik:** {missing}" if missing else "")
-                 + f" · **Başarısız:** {', '.join(failed) or '—'} · **Süre:** {minutes} dk · **Çıktı:** {(ph.get('tokens') or {}).get('out', 0)} token")
+                 f"**Başarısız:** {', '.join(failed) or '—'} · **Süre:** {elapsed_minutes(ph)} dk · "
+                 f"**Çıktı:** {f'{tokens_out:,}'.replace(',', '.') + ' token' if tokens_out else '—'}")
+    lines.append(f"- **Eleştiri:** faz eleştirmeni {phase_verdict} · dilek eleştirmeni {wishes_verdict}"
+                 + (f" · iskelet {' → '.join(skeleton_verdicts)}" if skeleton_verdicts else "")
+                 + f" · varlık düzeltme döngüsü {crit.get('entity_loops_total', 0)}"
+                 + (f" · eleştiri eksik {missing}" if missing else ""))
+    for pl in phase_lines[:8]:
+        lines.append(f"  - faz eleştirmeni: {pl}")
+    if incomplete:
+        lines.append(f"- ⚠ **Eksik:** {', '.join(incomplete)} — faz tamamlanmadı; kayıt defterine girmeyen varlık var, bu kart onaylanamaz "
+                     "(`phase begin --json` + fan-out, ya da `drop`).")
     # scale band, script-side with the full count; the card prints the public count and a tick
     band_lines = []
     for etype, key in BAND_KEYS.get(phase, []):
@@ -229,13 +281,16 @@ def build_card(campaign: str, phase: str) -> str:
         lines.append("- **Yönler (önceki turlardan):** " + " · ".join(ph["directions"]))
     lines.append("")
 
+    languages = list((naming.get("languages") or {}).keys())
+    default_lang = languages[0] if len(languages) == 1 else "—"
     lines.append("## Bu fazda doğanlar (herkese açık)")
-    lines.append("| id | ad | tür | dil | bir satır |")
-    lines.append("|---|---|---|---|---|")
+    lines.append("| id | ad | tür | dil | eleştiri | bir satır |")
+    lines.append("|---|---|---|---|---|---|")
     for eid, e in sorted(mine.items()):
-        lines.append(f"| {eid} | {e.get('name', '')} | {e.get('type', '')} | {language_of(eid, e, assignments, proj)} | {(e.get('summary') or '').replace('|', '/')} |")
+        lines.append(f"| {eid} | {e.get('name', '')} | {e.get('type', '')} | {language_of(eid, e, assignments, proj, default_lang)} | "
+                     f"{' → '.join(chains.get(eid) or []) or '—'} | {(e.get('summary') or '').replace('|', '/')} |")
     if not mine:
-        lines.append("| — | — | — | — | (bu faz henüz varlık üretmedi) |")
+        lines.append("| — | — | — | — | — | (bu faz henüz varlık üretmedi) |")
     lines.append("")
 
     if phase == "P3":
@@ -260,7 +315,9 @@ def build_card(campaign: str, phase: str) -> str:
         for mod, c in sorted(per_module.items()):
             lines.append(f"- {mod}: {c['error']} hata, {c['warning']} uyarı")
         for f in findings[:30]:
-            lines.append(f"  - {f.get('severity', '?')} · {f.get('entity') or '—'} · `{f.get('code', '')}`")
+            msg = str(f.get("message") or "")
+            tail = "" if ("dm-only" in msg or not msg) else f" — {msg[:90]}"
+            lines.append(f"  - {f.get('severity', '?')} · {f.get('entity') or '—'} · `{f.get('code', '')}`{tail}")
     else:
         lines.append("- temiz")
     lines.append("")

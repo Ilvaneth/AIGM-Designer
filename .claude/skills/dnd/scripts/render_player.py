@@ -346,6 +346,9 @@ def cmd_resolve(campaign: str, file: str) -> int:
 
 
 def cmd_check(campaign: str, file: str) -> int:
+    if not Path(file).is_file():
+        print(f"render_player: {file} does not exist (the primer is written by `render_player.py primer` after P8)", file=sys.stderr)
+        return 2
     pub = public(campaign)
     problems = check_text(campaign, Path(file).read_text(encoding="utf-8"), pub)
     print("render_player: " + ("clean" if not problems else "PROBLEMS: " + "; ".join(problems)))

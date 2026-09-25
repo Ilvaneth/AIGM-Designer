@@ -846,7 +846,31 @@ def absorb_skeleton(campaign: str, phase: str) -> bool:
     return True
 
 
-def phase_check(campaign: str, phase: str) -> int:
+def summarise_findings(findings: list, full: bool = False) -> list[str]:
+    """Grouped by module and code with counts and up to four examples; `full` lists every line (tuning birth 1: the
+    conductor saw 40 truncated lines without entity or file, and could not say what failed)."""
+    if full:
+        out = []
+        for f in findings:
+            msg = str(f.get("message") or "")
+            where = "" if ("dm-only" in msg or not msg) else f"  {msg[:110]}"
+            out.append(f"  {f.get('severity', '?'):<8} {f.get('module', ''):<9} {f.get('entity', '') or '-':<30} {f.get('code', '')}{where}")
+        return out
+    groups: dict = {}
+    for f in findings:
+        key = (f.get("severity", "?"), f.get("module", ""), f.get("code", ""))
+        msg = str(f.get("message") or "")
+        example = f.get("entity") or ("" if "dm-only" in msg else msg[:70]) or "-"
+        groups.setdefault(key, []).append(example)
+    out = []
+    for (sev, mod, code), examples in sorted(groups.items(), key=lambda kv: (kv[0][0] != "error", kv[0][1], -len(kv[1]))):
+        shown = list(dict.fromkeys(examples))[:4]
+        more = f" (+{len(examples) - len(shown)} more)" if len(examples) > len(shown) else ""
+        out.append(f"  {sev:<8} {mod:<9} {code:<28} ×{len(examples):<3} {', '.join(shown)}{more}")
+    return out
+
+
+def phase_check(campaign: str, phase: str, full: bool = False) -> int:
     proc = run_script("design_check.py", campaign, "--phase", phase, "--redact", "--json")
     try:
         findings = json.loads(proc.stdout or "[]")
@@ -865,9 +889,9 @@ def phase_check(campaign: str, phase: str) -> int:
     if ph["status"] in ("merged", "partial") and errors == 0:
         ph["status"] = "validated"
     dm.save(campaign, data, f"designer.py phase {phase} check")
-    print(f"designer: {phase} validator — {errors} errors, {warnings} warnings")
-    for f in (result.get("findings") or [])[:40]:
-        print(f"  {f.get('severity', '?'):<8} {f.get('module', ''):<9} {f.get('entity', '') or '':<30} {f.get('code', '')}")
+    print(f"designer: {phase} validator — {errors} errors, {warnings} warnings" + ("" if full or not findings else " (grouped; --full for every line)"))
+    for line in summarise_findings(result.get("findings") or [], full):
+        print(line)
     return 0 if errors == 0 else 1
 
 
@@ -1044,6 +1068,7 @@ def main(argv=None) -> int:
     ph.add_argument("--tokens", type=int, help="merge: output tokens the Workflow reported, added to the phase")
     ph.add_argument("--seconds", type=int, help="merge: wall-clock seconds the Workflow reported, added to the phase")
     ph.add_argument("--force", action="store_true", help="approve: accept an incomplete roster")
+    ph.add_argument("--full", action="store_true", help="check: every validator line instead of the grouped summary")
     ph.add_argument("--id", help="drop: the roster item")
     ph.add_argument("--card")
     ph.add_argument("--onay", action="store_true")
@@ -1090,7 +1115,7 @@ def main(argv=None) -> int:
                 return 2
             return phase_drop(c, a.phase, a.id, a.reason)
         if a.step == "check":
-            return phase_check(c, a.phase)
+            return phase_check(c, a.phase, a.full)
         if a.step == "card":
             return phase_card(c, a.phase)
         if a.step == "approve":
