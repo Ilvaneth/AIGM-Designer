@@ -1,0 +1,479 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "campaign": "real-birth-3936-6c17da",
+    "fixture": false,
+    "designer_version": "dnd 3.0.0-dev",
+    "ruleset": "2014",
+    "lang": "tr",
+    "mode": "birth",
+    "git_root": "C:/Users/armag/Desktop/Campaign-Designer",
+    "created": "2026-09-25T12:42:28Z",
+    "written_by": "designer.py new",
+    "written_at": "2026-09-25T12:42:28Z",
+    "auto_approve": false
+  },
+  "dials": {
+    "scale": "short",
+    "tone": "horror",
+    "magic": "low",
+    "era": "nautical",
+    "danger": "gritty",
+    "party_size": 1,
+    "start_level": 1,
+    "level_band": [
+      1,
+      5
+    ],
+    "content_mix": [
+      "mystery",
+      "horror",
+      "exploration"
+    ],
+    "wishes": {
+      "must": [],
+      "must_not": []
+    },
+    "lang": "tr",
+    "concurrency": 8,
+    "economy": false
+  },
+  "seed": {
+    "master": "REAL-0001",
+    "derivation": "random.Random(f'{master}:{phase}:{table}:{label}')"
+  },
+  "arc_skeleton": [
+    {
+      "chapter": "chapter_1",
+      "act": 1,
+      "level_band": [
+        1,
+        2
+      ],
+      "beats": []
+    },
+    {
+      "chapter": "chapter_2",
+      "act": 1,
+      "level_band": [
+        2,
+        4
+      ],
+      "beats": []
+    },
+    {
+      "chapter": "chapter_3",
+      "act": 1,
+      "level_band": [
+        4,
+        5
+      ],
+      "beats": []
+    }
+  ],
+  "dice_log": [],
+  "dice_log_secret": {
+    "file": "dm-only/dice-log.json",
+    "count": 0,
+    "labels": []
+  },
+  "phases": {
+    "P0": {
+      "status": "awaiting_approval",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": "2026-09-25T12:42:28Z",
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P1": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P2": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P3": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P4": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P5": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P6": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P7": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P8": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    },
+    "P9": {
+      "status": "pending",
+      "attempt": 0,
+      "workflow_run_id": null,
+      "started": null,
+      "finished": null,
+      "wall_s": 0,
+      "roster": [],
+      "skeleton": {
+        "status": "pending",
+        "agent": null
+      },
+      "critique": {
+        "phase_loops": 0,
+        "verdicts": [],
+        "entity_loops_total": 0
+      },
+      "validator": {
+        "at": null,
+        "errors": null,
+        "warnings": null
+      },
+      "approval": {
+        "rounds": [],
+        "approved_at": null,
+        "card_sha256": null,
+        "registry_sha256": null,
+        "commit": null
+      },
+      "directions": [],
+      "tokens": {
+        "in": 0,
+        "out": 0,
+        "cache_read": 0,
+        "by_model": {}
+      },
+      "stale_reason": null
+    }
+  },
+  "entities": {},
+  "seeded": [],
+  "detail_log": [],
+  "revision_log": [],
+  "ask_log": [],
+  "totals": {
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "cache_read": 0,
+    "wall_s": 0,
+    "agents": 0
+  },
+  "validator_last": {
+    "at": null,
+    "errors": null,
+    "warnings": null
+  }
+}
