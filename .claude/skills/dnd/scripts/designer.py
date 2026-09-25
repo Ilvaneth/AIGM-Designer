@@ -204,12 +204,17 @@ class Roller:
         return rec["row_id"] if rec else None
 
     def count(self, label: str, value) -> int:
-        """A band → an exact count rolled once (d(hi-lo+1)); an exact number → itself."""
+        """A band → an exact count rolled once (d(hi-lo+1)); an exact number → itself. The record carries
+        `value`, the count produced: the die face alone misled the conductor and the P3 skeleton (tuning birth 1)."""
         lo, hi = band(value)
         if lo == hi:
+            rec = self._record(label, None)
+            rec.update({"notation": "fixed", "raw": None, "value": lo})
+            self._keep(rec, False)
             return lo
         rec = self.notation(label, f"d{hi - lo + 1}")
-        return lo + int(rec["raw"]) - 1
+        rec["value"] = lo + int(rec["raw"]) - 1
+        return rec["value"]
 
     def flush(self) -> tuple[int, int]:
         data = dm.load(self.campaign)
@@ -421,10 +426,17 @@ def preroll_p5(R: Roller, m: dict) -> None:
     sc = scale_of(m)
     n_npcs = R.count("npcs_count", sc["named_npcs"])
     tic_uses: dict[str, int] = {}
+    secret_uses: dict[str, int] = {}
+    secret_rows = len(dt.rows("npcs.yaml#secret"))
     for n in range(1, n_npcs + 1):
         for axis in ("trust", "ambition", "loyalty", "courage"):
             R.notation(f"npc.{n}.axis.{axis}", "d5")
-        R.table(f"npc.{n}.secret", "npcs.yaml#secret", avoid=False)
+        # the secret kind is dm-only (tuning birth 1: P5 printed all 14 to the conductor as public);
+        # no kind twice while the table still has unused rows, never more than twice
+        cap = 1 if len(secret_uses) < secret_rows else 2
+        spent_secrets = {s for s, c in secret_uses.items() if c >= cap}
+        srec = R.table(f"npc.{n}.secret", "npcs.yaml#secret", secret=True, avoid=False, exclude=spent_secrets)
+        secret_uses[srec["row_id"]] = secret_uses.get(srec["row_id"], 0) + 1
         spent = {t for t, c in tic_uses.items() if c >= 2}
         rec = R.table(f"npc.{n}.tic", "npcs.yaml#speech_tic", avoid=False, exclude=spent)
         tic_uses[rec["row_id"]] = tic_uses.get(rec["row_id"], 0) + 1
@@ -519,7 +531,7 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         dm.save(campaign, data, f"designer.py preroll --phase {phase}")
     print(f"designer: {phase} prerolled — {n_pub} public rolls, {n_sec} secret (labels only in design.json)")
     for rec in R.public:
-        what = rec.get("row_id") or rec.get("raw")
+        what = rec.get("row_id") or (f"{rec.get('raw')} → count {rec['value']}" if "value" in rec else rec.get("raw"))
         print(f"  {rec['label']:<32} {rec['table']:<32} {rec['notation'] or '':<7} → {what}")
     return 0
 

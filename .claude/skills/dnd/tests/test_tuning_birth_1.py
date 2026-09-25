@@ -10,11 +10,14 @@ merge records tokens and seconds.
 """
 
 import json
+import os
 import shutil
+import subprocess
 import sys
 import unittest
+import uuid
 
-from _campaign import TestCampaign, MarkerGuard, SCRIPTS
+from _campaign import TestCampaign, MarkerGuard, SCRIPTS, PROJECT, CAMPAIGNS
 
 sys.path.insert(0, str(SCRIPTS))
 
@@ -219,6 +222,61 @@ class PhaseState(unittest.TestCase):
         ph = self.c.json("design/design.json")["phases"]["P6"]
         self.assertEqual(ph["tokens"]["out"], tokens0 + 406000)
         self.assertEqual(ph["wall_s"], wall0 + 700)
+
+
+USED = PROJECT / "used.json"
+
+
+class Preroll(unittest.TestCase):
+    """Observations, preroll: count rolls say the count, P5 secret kinds are secret and distinct."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.used_backup = USED.read_bytes() if USED.is_file() else None
+        self.name = f"_test-tune-pre-{os.getpid()}-{uuid.uuid4().hex[:6]}"
+        env = {k: v for k, v in os.environ.items() if not k.startswith(("DND_", "CLAUDE_"))}
+        self.env = env
+        self.run_designer("new", self.name, "--scale", "short", "--party-size", "1", "--seed", "TUNE-T1", "--lang", "tr")
+
+    def tearDown(self):
+        shutil.rmtree(CAMPAIGNS / self.name, ignore_errors=True)
+        if self.used_backup is not None:
+            USED.write_bytes(self.used_backup)
+        elif USED.is_file():
+            USED.unlink()
+        self.guard.__exit__(None, None, None)
+
+    def run_designer(self, *args, script="designer.py"):
+        proc = subprocess.run([sys.executable, "-X", "utf8", str(SCRIPTS / script), *args], capture_output=True, text=True,
+                              env=self.env, encoding="utf-8")
+        if proc.returncode != 0:
+            raise AssertionError(f"{script} {' '.join(args)} failed ({proc.returncode}): {proc.stdout} {proc.stderr}")
+        return proc
+
+    def manifest(self):
+        return json.loads((CAMPAIGNS / self.name / "design" / "design.json").read_text(encoding="utf-8"))
+
+    def test_count_rolls_carry_the_count_they_produced(self):
+        proc = self.run_designer("-c", self.name, "preroll", "--phase", "P2")
+        recs = {r["label"]: r for r in self.manifest()["dice_log"] if r["phase"] == "P2"}
+        ages = recs["ages_count"]
+        self.assertIn("value", ages)
+        drawn = sorted(l for l in recs if l.startswith("age."))
+        self.assertEqual(len(drawn), ages["value"], "the count roll bounds the rows drawn")
+        self.assertIn("→ count", proc.stdout)
+        rendered = self.run_designer("-c", self.name, "render", "P2.cosmos", script="design_prompts.py").stdout
+        self.assertIn(f"`ages_count` = **{ages['value']}** — produce exactly this many", rendered)
+
+    def test_p5_secret_kinds_are_secret_and_distinct(self):
+        self.run_designer("-c", self.name, "preroll", "--phase", "P5")
+        m = self.manifest()
+        public = [r["label"] for r in m["dice_log"] if r["phase"] == "P5"]
+        self.assertFalse([l for l in public if l.endswith(".secret")], "npc secret kinds never enter design.json")
+        self.assertIn("npc.1.secret", m["dice_log_secret"]["labels"])
+        secret = json.loads((CAMPAIGNS / self.name / "design" / "dm-only" / "dice-log.json").read_text(encoding="utf-8"))
+        kinds = [r["row_id"] for r in secret["rolls"] if r["phase"] == "P5" and r["label"].endswith(".secret")]
+        self.assertEqual(len(kinds), len(set(kinds)), f"{len(kinds)} npcs, 21 secret kinds: no kind twice")
+        self.assertTrue(all(k.startswith("npcsecret_") for k in kinds))
 
 
 if __name__ == "__main__":

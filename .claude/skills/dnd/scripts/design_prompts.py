@@ -147,6 +147,10 @@ def rolls_for(manifest: dict, phase: str, entity_id: str | None) -> tuple[str, s
     prefixes = [k for k, v in assignments.items() if v == entity_id] if entity_id else []
 
     def line(r: dict) -> str:
+        if "value" in r and not r.get("row_id"):
+            # a count roll: the number to produce is `value`; the die face is only how it was rolled
+            how = f" ({r.get('notation')} → {r.get('raw')})" if r.get("raw") is not None else ""
+            return f"- `{r['label']}` = **{r['value']}** — produce exactly this many{how}"
         what = r.get("row_id") or r.get("raw")
         extra = f" (forced: {r['forced_by']})" if r.get("forced_by") else ""
         return f"- `{r['label']}` → **{what}**{extra}"
