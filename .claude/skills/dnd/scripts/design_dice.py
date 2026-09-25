@@ -95,23 +95,9 @@ def roll(campaign: str, phase: str, label: str, table: str | None, notation: str
 
     rows = load_table(table) if table else []
     if rows:
-        if avoid_used:
-            gone = rows_used_elsewhere(campaign, table)
-            excluded.extend(sorted(r["id"] for r in rows if r["id"] in gone))
-            pool = [r for r in rows if r["id"] not in gone] or rows
-        else:
-            pool = rows
-        weights = [float(r.get("weight", 1)) for r in pool]
-        total = sum(weights)
-        raw = rng.uniform(0, total)
-        acc, chosen = 0.0, pool[-1]
-        for r, w in zip(pool, weights):
-            acc += w
-            if raw <= acc:
-                chosen = r
-                break
-        record.update({"notation": f"d{len(pool)}", "raw": pool.index(chosen) + 1, "row_id": chosen["id"],
-                       "row_label": chosen.get("label")})
+        gone = rows_used_elsewhere(campaign, table) if avoid_used else set()
+        record.update(draw(rng, rows, gone))
+        excluded.extend(record.pop("excluded_rows"))
     else:
         if not notation:
             raise SystemExit(f"design_dice: no table rows for {table!r} and no --notation given")
@@ -119,6 +105,26 @@ def roll(campaign: str, phase: str, label: str, table: str | None, notation: str
         record.update({"notation": notation, "raw": result})
     append_roll(campaign, record, secret=secret)
     return record
+
+
+def draw(rng: random.Random, rows: list[dict], gone: set | None = None, exclude: set | None = None) -> dict:
+    """One weighted draw from `rows`, skipping ids in `gone` (used elsewhere, logged) and `exclude`
+    (a caller's own constraint, not logged); the pool falls back to every row when nothing is left."""
+    gone = gone or set()
+    exclude = exclude or set()
+    excluded_rows = sorted(r["id"] for r in rows if r["id"] in gone)
+    pool = [r for r in rows if r["id"] not in gone and r["id"] not in exclude] or            [r for r in rows if r["id"] not in exclude] or rows
+    weights = [float(r.get("weight", 1)) for r in pool]
+    total = sum(weights)
+    raw = rng.uniform(0, total)
+    acc, chosen = 0.0, pool[-1]
+    for r, w in zip(pool, weights):
+        acc += w
+        if raw <= acc:
+            chosen = r
+            break
+    return {"notation": f"d{len(pool)}", "raw": pool.index(chosen) + 1, "row_id": chosen["id"],
+            "row_label": chosen.get("label"), "excluded_rows": excluded_rows}
 
 
 def show_log(campaign: str, secret: bool) -> int:
