@@ -1,0 +1,369 @@
+# naming.yaml — sound families and the root lexicon that campaign naming languages are rolled from.
+#
+# The world speaks English, the narration is Turkish (errata 24.2 #17): every family produces
+# English-language fantasy names. Two modes per language (risk 24.1 #18): `phonetic` for persons
+# and gods (onset / nucleus / coda banks below), `compound` for places and institutions (the root
+# lexicon and the patterns below). P1 rolls 2-3 families with --avoid-used, mutates each into a
+# campaign language (design/naming.json), assigns it to polities and peoples; every later phase
+# names through that file, and name_registry check runs across campaigns on full names only
+# (errata 24.2 #18: no stem soft-ban — crown, hollow, ember may recur).
+schema_version: 1
+table: naming
+consumed_by: [P1, P2, P3, P4, P5, P8]
+plan: "item 4.6, 8.7, 17 #8, errata 24.2 #17 #18, risk 24.1 #18"
+roll: {notation: d10, count_by_scale: {short: 2, standard: 3, epic: 3}, avoid_used: true, labels: [P1.naming_family.1, P1.naming_family.2, P1.naming_family.3]}
+hooks_common:
+  - {phase: P1, must: "each rolled family is mutated (one bank changed, one cluster forbidden, one root set chosen) and written to naming.json with a `label_tr`"}
+  - {phase: P5, must: "person names come from the NPC's culture's family; no first-name collision inside a campaign"}
+  - {phase: validator, must: "every registry name passes the blacklist and carries no Turkish letters"}
+
+rules:
+  world_language: "Names are English-language fantasy names, spelled in ASCII letters, never transliterated Turkish. Common nouns in prose stay Turkish (kandil, han, hancı)."
+  modes:
+    person: "phonetic: 1-3 syllables from the family's banks; an optional byname from the lexicon (Ilme Lampwright, Yesra Saltreader)"
+    god: "phonetic like a person, plus an epithet from `patterns.god_epithet` (Ormis, Lampbearer)"
+    place: "compound from the lexicon: `patterns.place` (Lanternside, Saltmere, Reedham, Mourners' Hall)"
+    institution: "`patterns.institution` (Court of Mourners, Tide Brotherhood)"
+    people: "`patterns.people` (Saltbound, Marshfolk)"
+    ship: "`patterns.ship` (the Vesper)"
+    month_day: "`patterns.month` and `patterns.day` from the calendar's roots (Lampmonth, Saltday); months are 30 days"
+  turkish_suffixing:
+    principle: "The name keeps its English spelling; a Turkish suffix attaches after an apostrophe and harmonises with the LAST PRONOUNCED vowel, not the last letter."
+    rules:
+      - "back vowel sound (a, o, u, and English long i as in -side) → -a / -ı or -u / -da / -ın or -un"
+      - "front vowel sound (e, i, ö, ü) → -e / -i or -ü / -de / -in or -ün"
+      - "final silent e is not a vowel: Lanternside'a, Velune'a (pronounced -oon), Saltmere'e (pronounced -meer)"
+      - "final voiceless consonant (p, t, k, ch, s, sh, f) → -ta / -te, -tan / -ten: Karsgate'te, Ashwick'te"
+      - "a name that ends in a pronounced vowel takes the buffer y or n: Corvina'ya, Corvina'nın, Umbra'da"
+    ending_table:
+      - {ending: "-side / -ide / -ine (long i)", harmony: back, example: "Lanternside'a, Lanternside'ın"}
+      - {ending: "-ham", harmony: back, example: "Reedham'a, Reedham'da"}
+      - {ending: "-mere / -meer", harmony: front, example: "Saltmere'e, Saltmere'in"}
+      - {ending: "-ford / -hold / -ton / -mouth / -moor", harmony: back, example: "Emberhold'a, Emberhold'un"}
+      - {ending: "-gate / -stead / -wick / -bury / -reach / -fen", harmony: front, example: "Karsgate'e, Ashwick'in"}
+      - {ending: "-crag / -march / -fall", harmony: back, example: "Blackcrag'a, Reedmarch'ın"}
+    examples:
+      - {name: Lanternside, dative: "Lanternside'a", locative: "Lanternside'da", genitive: "Lanternside'ın"}
+      - {name: Saltmere, dative: "Saltmere'e", locative: "Saltmere'de", genitive: "Saltmere'in"}
+      - {name: Reedham, dative: "Reedham'a", locative: "Reedham'da", genitive: "Reedham'ın"}
+      - {name: Karsgate, dative: "Karsgate'e", locative: "Karsgate'te", genitive: "Karsgate'in"}
+      - {name: Velune, dative: "Velune'a", locative: "Velune'da", genitive: "Velune'un"}
+      - {name: Corvina, dative: "Corvina'ya", locative: "Corvina'da", genitive: "Corvina'nın"}
+  tr_suffix_friendly: "a family is suffix-friendly when its names end in a single pronounced consonant or a clear vowel; every family below is, and the mutation step must keep it so (no final -ough, -que, -gh)"
+
+tables:
+
+  family:
+    notation: d10
+    rows:
+      - id: family_liquid_vowel
+        label: Liquid vowel-heavy
+        feel: "soft, open, coastal; easy on a Turkish tongue"
+        onsets: [v, m, r, l, s, n, y, ""]
+        nuclei: [a, e, i, o, u]
+        codas: [n, r, l, s, m, ""]
+        length: [2, 3]
+        forbidden_clusters: [rr, ll, sr, ii, uu]
+        best_for: [coastal, river, lowland]
+        samples_person: [Velune, Ormis, Sarven, Ilme, Yesra, Tolvan, Olmar, Ameli]
+        samples_god: [Velune, Ormis, Isken]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by replacing one onset and one coda; pick 12-20 roots from the lexicon's water, plant or light domains"}
+      - id: family_harsh_consonantal
+        label: Harsh consonantal
+        feel: "clipped, stony, upland; two syllables that end hard"
+        onsets: [d, t, k, v, g, dr, kr, gr, br]
+        nuclei: [a, o, u, e]
+        codas: [k, n, sk, rt, r, g, d]
+        length: [2, 2]
+        forbidden_clusters: [kk, tt, gg, dd]
+        best_for: [upland, mining, martial]
+        samples_person: [Draskun, Tegrik, Kortan, Vardek, Brogar, Torvask]
+        samples_god: [Draskun, Vurgan]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by adding one cluster onset; roots from stone, iron, oath, war domains"}
+      - id: family_sibilant_soft
+        label: Sibilant and soft
+        feel: "hissing, secretive, sacred; s and th everywhere"
+        onsets: [s, sh, th, z, ss, ""]
+        nuclei: [a, e, i, y, ai]
+        codas: [s, th, sh, n, l, ""]
+        length: [2, 3]
+        forbidden_clusters: [shsh, thth, zz, ss-s]
+        best_for: [priesthood, desert, secret_society]
+        samples_person: [Sethis, Ashael, Zisra, Sylith, Isseth, Shaal]
+        samples_god: [Sethis, Ythasa]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by forbidding one of s / sh / th; roots from holy, dark, smoke, silence domains"}
+      - id: family_nasal_round
+        label: Nasal and round
+        feel: "humming, warm, agricultural; m and n with round vowels"
+        onsets: [m, n, b, w, ""]
+        nuclei: [o, u, a, oo]
+        codas: [m, n, mb, nd, ""]
+        length: [2, 3]
+        forbidden_clusters: [nn, ww, oooo]
+        best_for: [farmland, river_delta, herding]
+        samples_person: [Ummon, Nemra, Bowan, Mondu, Onnam, Bumor]
+        samples_god: [Moonda, Ummon]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by adding one nucleus; roots from grain, cattle, hearth, earth domains"}
+      - id: family_northern_clipped
+        label: Northern clipped
+        feel: "cold, short, hard-won; one or two syllables with heavy codas"
+        onsets: [h, hr, sk, st, sv, ul, ""]
+        nuclei: [a, o, e, i]
+        codas: [lf, rd, rn, ik, ald, ""]
+        length: [1, 2]
+        forbidden_clusters: [hh, skst, rdrd]
+        best_for: [cold, seafaring, raiders]
+        samples_person: [Hrolf, Skarde, Ulvik, Stennard, Svala, Hild]
+        samples_god: [Skarde, Ulvard]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by dropping one onset cluster; roots from frost, sea, wolf, oath domains"}
+      - id: family_courtly_latinate
+        label: Courtly Latinate
+        feel: "long, formal, urban; three or four syllables, vowel endings common"
+        onsets: [c, v, l, aur, cass, ott, ""]
+        nuclei: [a, e, i, o]
+        codas: [n, r, l, us, ia, an, ""]
+        length: [3, 4]
+        forbidden_clusters: [uu, ii, cc]
+        best_for: [city, court, banking, scholarly]
+        samples_person: [Aurelan, Cassivar, Valorin, Liesander, Corvina, Ottavien]
+        samples_god: [Aurelan, Cassia]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by fixing the length to three; roots from law, coin, light, marble domains"}
+      - id: family_deep_guttural
+        label: Deep guttural
+        feel: "throat-deep, heavy; for giants, deep-dwellers, a made people"
+        onsets: [gh, uz, kr, zh, m, ""]
+        nuclei: [o, u, a]
+        codas: [k, g, rr, gh, sh, m]
+        length: [2, 2]
+        forbidden_clusters: [ghgh, zhzh, rrr]
+        best_for: [underground, giants, made_people]
+        samples_person: [Ghorrak, Uzhmog, Krugam, Zhurog, Moghra, Ukrash]
+        samples_god: [Ghorrak, Zhumma]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by softening one onset; roots from deep, stone, hunger, ash domains"}
+      - id: family_aspirate_airy
+        label: Aspirate and airy
+        feel: "breathy, light, high places; h and th with open vowels"
+        onsets: [h, th, wh, sh, ""]
+        nuclei: [a, e, i, ea, ei]
+        codas: [n, th, l, r, ""]
+        length: [2, 3]
+        forbidden_clusters: [thth, hh, whwh]
+        best_for: [mountain, sky, nomad, fey]
+        samples_person: [Hathen, Ishara, Thewa, Whelan, Eirath, Sheanor]
+        samples_god: [Hathen, Eirath]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by adding one nucleus diphthong; roots from wind, sky, mist, bird domains"}
+      - id: family_rustic_anglic
+        label: Rustic Anglic
+        feel: "short, homely, English-village; names that sound like tools and weather"
+        onsets: [w, b, t, h, d, p, ""]
+        nuclei: [a, o, i, e, u]
+        codas: [ck, nd, bb, tt, mm, ll]
+        length: [1, 2]
+        forbidden_clusters: [ckck, bbbb]
+        best_for: [village, farmland, guild, common_folk]
+        samples_person: [Wick, Brand, Tamsin, Hobb, Dunstan, Peck, Mabbot]
+        samples_god: [Old Brand, Mother Tallow]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by forbidding one coda; this family names places best: roots from any domain with the place tails"}
+      - id: family_sung_polysyllabic
+        label: Sung polysyllabic
+        feel: "long, vowel-rich, liquid; an old or long-lived people"
+        onsets: [l, s, r, th, el, il, ae, ""]
+        nuclei: [a, e, i, ae, ia, ie]
+        codas: [l, n, r, th, ""]
+        length: [3, 5]
+        forbidden_clusters: [rr, thth, aeae]
+        best_for: [ancient_people, forest, planar]
+        samples_person: [Ilathiel, Saeravan, Elarianel, Thiriel, Lorasithe, Aerenith]
+        samples_god: [Ilathiel, Saerava]
+        tr_suffix_friendly: true
+        hooks:
+          - {phase: P1, must: "mutate by capping the length at four; roots from star, song, leaf, age domains"}
+
+lexicon:
+  # roots for compound mode; `pos` head (first element) / tail (second element) / either
+  roots:
+    - {root: ash, meaning: "burnt, grey, remembrance", pos: head, domains: [fire, death]}
+    - {root: ember, meaning: "a fire not yet out", pos: head, domains: [fire, light]}
+    - {root: cinder, meaning: "what fire leaves", pos: head, domains: [fire]}
+    - {root: crown, meaning: "rule, a hilltop", pos: either, domains: [law, sky]}
+    - {root: hollow, meaning: "a low place, an emptiness", pos: either, domains: [earth, dark]}
+    - {root: mere, meaning: "a shallow lake", pos: tail, domains: [water]}
+    - {root: fen, meaning: "wet ground", pos: either, domains: [water, plant]}
+    - {root: moor, meaning: "open high ground", pos: either, domains: [earth, weather]}
+    - {root: marsh, meaning: "reed water", pos: head, domains: [water, plant]}
+    - {root: reed, meaning: "the marsh plant; hiding", pos: head, domains: [plant, water]}
+    - {root: salt, meaning: "preservation, memory, the sea", pos: head, domains: [water, death, trade]}
+    - {root: tide, meaning: "return, debt, the sea's schedule", pos: head, domains: [water, time]}
+    - {root: lantern, meaning: "a carried light, a warning", pos: head, domains: [light]}
+    - {root: lamp, meaning: "a kept light, mourning", pos: head, domains: [light, death]}
+    - {root: gate, meaning: "an entry, a control", pos: tail, domains: [law, craft]}
+    - {root: hold, meaning: "a fortified place", pos: tail, domains: [war, law]}
+    - {root: keep, meaning: "the inner fort", pos: tail, domains: [war]}
+    - {root: wick, meaning: "a dwelling, a dairy", pos: tail, domains: [craft]}
+    - {root: ham, meaning: "a village", pos: tail, domains: [home]}
+    - {root: stead, meaning: "a farm, a place", pos: tail, domains: [home]}
+    - {root: ford, meaning: "a river crossing", pos: tail, domains: [water, road]}
+    - {root: bridge, meaning: "a crossing, a bond", pos: either, domains: [road, craft]}
+    - {root: cross, meaning: "a meeting of roads", pos: either, domains: [road, holy]}
+    - {root: well, meaning: "a source", pos: either, domains: [water, holy]}
+    - {root: spring, meaning: "new water, the season", pos: head, domains: [water, time]}
+    - {root: brook, meaning: "a small stream", pos: tail, domains: [water]}
+    - {root: deep, meaning: "the far down, the sea floor", pos: either, domains: [water, dark]}
+    - {root: black, meaning: "dark, burnt, forbidden", pos: head, domains: [dark, colour]}
+    - {root: grey, meaning: "old, ash, uncertain", pos: head, domains: [colour, death]}
+    - {root: white, meaning: "bone, snow, purity", pos: head, domains: [colour, holy]}
+    - {root: red, meaning: "blood, iron, war", pos: head, domains: [colour, war]}
+    - {root: gold, meaning: "wealth, the sun", pos: head, domains: [trade, light]}
+    - {root: silver, meaning: "the moon, coin", pos: head, domains: [trade, sky]}
+    - {root: iron, meaning: "strength, law, the sacred metal", pos: head, domains: [craft, war, law]}
+    - {root: bone, meaning: "the dead, structure", pos: head, domains: [death, body]}
+    - {root: thorn, meaning: "defence, a border", pos: head, domains: [plant, war]}
+    - {root: briar, meaning: "a tangle", pos: head, domains: [plant]}
+    - {root: oak, meaning: "endurance, law", pos: head, domains: [plant, law]}
+    - {root: elm, meaning: "grief, a lane", pos: head, domains: [plant]}
+    - {root: yew, meaning: "death, the bow", pos: head, domains: [plant, death]}
+    - {root: willow, meaning: "water, sorrow", pos: head, domains: [plant, water]}
+    - {root: rowan, meaning: "warding", pos: head, domains: [plant, holy]}
+    - {root: crag, meaning: "a rock face", pos: either, domains: [earth]}
+    - {root: tor, meaning: "a rocky hill", pos: tail, domains: [earth]}
+    - {root: cliff, meaning: "the edge", pos: either, domains: [earth, sky]}
+    - {root: fell, meaning: "a bare hill", pos: tail, domains: [earth, weather]}
+    - {root: dale, meaning: "a valley", pos: tail, domains: [earth, home]}
+    - {root: vale, meaning: "a gentle valley", pos: tail, domains: [earth, home]}
+    - {root: glen, meaning: "a narrow valley", pos: tail, domains: [earth]}
+    - {root: ridge, meaning: "a spine of land", pos: tail, domains: [earth]}
+    - {root: barrow, meaning: "a burial mound", pos: either, domains: [death, earth]}
+    - {root: cairn, meaning: "a marker of stones", pos: either, domains: [death, road]}
+    - {root: grave, meaning: "the dead's place", pos: head, domains: [death]}
+    - {root: hallow, meaning: "holy ground", pos: either, domains: [holy]}
+    - {root: bell, meaning: "a summons, a warning", pos: head, domains: [holy, craft]}
+    - {root: choir, meaning: "voices together, law sung", pos: tail, domains: [holy, song]}
+    - {root: song, meaning: "memory, law", pos: either, domains: [song]}
+    - {root: hush, meaning: "silence, a ban", pos: head, domains: [silence]}
+    - {root: still, meaning: "unmoving, dead calm", pos: head, domains: [silence, water]}
+    - {root: wake, meaning: "the trail behind, the vigil", pos: tail, domains: [water, death]}
+    - {root: watch, meaning: "a guard, a vigil", pos: tail, domains: [war, law]}
+    - {root: ward, meaning: "protection", pos: tail, domains: [law, holy]}
+    - {root: march, meaning: "a border land", pos: tail, domains: [war, law]}
+    - {root: reach, meaning: "a stretch of river or land", pos: tail, domains: [water, road]}
+    - {root: end, meaning: "the last of something", pos: tail, domains: [road, death]}
+    - {root: edge, meaning: "a limit", pos: tail, domains: [road]}
+    - {root: high, meaning: "upper", pos: head, domains: [sky]}
+    - {root: low, meaning: "lower, humble", pos: head, domains: [earth]}
+    - {root: north, meaning: "cold quarter", pos: head, domains: [direction]}
+    - {root: south, meaning: "warm quarter", pos: head, domains: [direction]}
+    - {root: east, meaning: "dawn quarter", pos: head, domains: [direction]}
+    - {root: west, meaning: "dusk quarter", pos: head, domains: [direction]}
+    - {root: old, meaning: "before", pos: head, domains: [time]}
+    - {root: new, meaning: "after", pos: head, domains: [time]}
+    - {root: cold, meaning: "winter, unkind", pos: head, domains: [weather]}
+    - {root: frost, meaning: "the killing cold", pos: head, domains: [weather, death]}
+    - {root: thaw, meaning: "release, spring", pos: head, domains: [weather, time]}
+    - {root: storm, meaning: "violence from the sky", pos: head, domains: [weather, war]}
+    - {root: wind, meaning: "change, breath", pos: head, domains: [weather, sky]}
+    - {root: rain, meaning: "grief, growth", pos: head, domains: [weather, water]}
+    - {root: mist, meaning: "hiding, the fey", pos: head, domains: [weather, dark]}
+    - {root: fog, meaning: "the lost", pos: head, domains: [weather, dark]}
+    - {root: smoke, meaning: "offering, industry", pos: head, domains: [fire, craft]}
+    - {root: gull, meaning: "the coast, a scavenger", pos: head, domains: [animal, water]}
+    - {root: crow, meaning: "witness, the dead", pos: head, domains: [animal, death]}
+    - {root: raven, meaning: "memory, omen", pos: head, domains: [animal, sky]}
+    - {root: wolf, meaning: "the pack, winter", pos: head, domains: [animal, war]}
+    - {root: hart, meaning: "the hunt, nobility", pos: head, domains: [animal, law]}
+    - {root: boar, meaning: "stubborn, the forest", pos: head, domains: [animal]}
+    - {root: hound, meaning: "loyalty, pursuit", pos: head, domains: [animal, law]}
+    - {root: hawk, meaning: "sight, war", pos: head, domains: [animal, sky]}
+    - {root: eel, meaning: "the marsh, slipperiness", pos: head, domains: [animal, water]}
+    - {root: pike, meaning: "the river hunter; a spear", pos: head, domains: [animal, war]}
+    - {root: mill, meaning: "grain, industry", pos: either, domains: [craft]}
+    - {root: forge, meaning: "making, iron", pos: either, domains: [craft, fire]}
+    - {root: kiln, meaning: "firing, pottery", pos: either, domains: [craft, fire]}
+    - {root: tallow, meaning: "cheap light, the poor", pos: head, domains: [light, craft]}
+    - {root: wax, meaning: "seals, candles, the rich dead", pos: head, domains: [light, death]}
+    - {root: candle, meaning: "a vigil", pos: head, domains: [light, holy]}
+    - {root: coin, meaning: "money", pos: head, domains: [trade]}
+    - {root: mint, meaning: "where money is made", pos: either, domains: [trade, craft]}
+    - {root: tithe, meaning: "what is owed to the gods", pos: head, domains: [trade, holy]}
+    - {root: toll, meaning: "what is owed for passage", pos: head, domains: [trade, road]}
+    - {root: debt, meaning: "what is owed", pos: head, domains: [trade, law]}
+    - {root: oath, meaning: "a binding word", pos: head, domains: [law, holy]}
+    - {root: vow, meaning: "a promise to a god", pos: head, domains: [holy]}
+    - {root: mourn, meaning: "grief kept", pos: head, domains: [death]}
+    - {root: hearth, meaning: "home, hospitality", pos: head, domains: [home, fire]}
+    - {root: grain, meaning: "bread, survival", pos: head, domains: [plant, trade]}
+    - {root: star, meaning: "navigation, fate", pos: head, domains: [sky]}
+    - {root: moon, meaning: "cycle, the night", pos: head, domains: [sky, time]}
+    - {root: sun, meaning: "day, rule", pos: head, domains: [sky, light]}
+    - {root: night, meaning: "the dark half", pos: head, domains: [dark, time]}
+    - {root: dawn, meaning: "beginning", pos: head, domains: [light, time]}
+    - {root: dusk, meaning: "ending", pos: head, domains: [dark, time]}
+  place_tails: [side, ham, mere, ford, wick, stead, hold, gate, mouth, bury, ton, by, thorpe, moor, fen, crag, reach, march, cross, well, bridge, bourne, combe, den, field, ley, worth, minster, haven, stow, wold, hithe, ness, tor, fell, dale, vale, garth, hurst, end]
+
+patterns:
+  place:
+    - {pattern: "{Head}{tail}", examples: [Lanternside, Saltmere, Reedham, Emberhold, Blackcrag, Ashford]}
+    - {pattern: "{Head} {Noun}", examples: [Salt Market, Salt House, Sunken Pier]}
+    - {pattern: "The {Adj} {Noun}", examples: [The Weary Gull, The Blind Lantern, The Bottomless Well]}
+    - {pattern: "{Owner}'s {Noun}", examples: ["Reeve's Manor", "Mourners' Hall"]}
+    - {pattern: "{Noun} of {Name}", examples: [Temple of Velune, Tomb of Skarde]}
+  institution:
+    - {pattern: "Court of {Noun}s", examples: [Court of Mourners, Court of Tallies]}
+    - {pattern: "Order of the {Noun}", examples: [Order of the Lamp, Order of the Still Bell]}
+    - {pattern: "{Head} Brotherhood / Sisterhood", examples: [Tide Brotherhood, Kiln Sisterhood]}
+    - {pattern: "The {Noun} Watch", examples: [The Tide Watch, The Wall Watch]}
+    - {pattern: "Guild of {Noun}s", examples: [Guild of Lamplighters, Guild of Weighers]}
+    - {pattern: "House {Head}", examples: [House Ember, House Corvina]}
+    - {pattern: "Wardens of the {Noun}", examples: [Wardens of the Road, Wardens of the Deep]}
+    - {pattern: "The {Head} Company", examples: [The Salt Company, The Moon Company]}
+    - {pattern: "The {Head} Tribunal", examples: [The Ash Tribunal, The Grey Tribunal]}
+    - {pattern: "The {Head} Choir", examples: [The Cinder Choir, The Hush Choir]}
+  people:
+    - {pattern: "{Head}bound", examples: [Saltbound, Oathbound]}
+    - {pattern: "{Head}folk", examples: [Marshfolk, Cliffolk]}
+    - {pattern: "{Head}kin", examples: [Stonekin, Wolfkin]}
+    - {pattern: "{Head}born", examples: [Mistborn, Ashborn]}
+    - {pattern: "the {Adj} Ones", examples: [the Hollow Ones, the Unnamed]}
+  god_epithet:
+    - {pattern: "the {Adj} One", examples: [the Still One, the Patient One]}
+    - {pattern: "{Noun}bearer", examples: [Lampbearer, Oathbearer]}
+    - {pattern: "Mother / Father of {Noun}s", examples: [Mother of Waves, Father of Kilns]}
+    - {pattern: "{God} of {Noun}s", examples: [God of Endings, Lady of Tallies]}
+    - {pattern: "the {Noun} Who {Verb}s", examples: [the Bell Who Waits, the Crow Who Counts]}
+  ship:
+    - {pattern: "the {Noun}", examples: [the Vesper, the Gannet, the Tallow]}
+    - {pattern: "the {Adj} {Noun}", examples: [the Kindly Sister, the Grey Hart]}
+    - {pattern: "{Name}'s {Noun}", examples: ["Hild's Promise", "Corvina's Debt"]}
+  month:
+    - {pattern: "{Head}month", examples: [Lampmonth, Thawmonth]}
+    - {pattern: "{Head}tide", examples: [Frosttide, Reedtide]}
+    - {pattern: "{Head}moon", examples: [Wolfmoon, Grainmoon]}
+    - {pattern: "{Head}fall", examples: [Reedfall, Ashfall]}
+    - {pattern: "High / First / Last {Head}", examples: [High Salt, First Thaw, Last Ember]}
+  day:
+    - {pattern: "{Head}day", examples: [Saltday, Bellday, Hushday]}
+
+blacklist:
+  # brand and real-world names a generated name may never equal (whole name, case-insensitive)
+  exact: [Mordor, Gondor, Rohan, Rivendell, Hogwarts, Westeros, Winterfell, Narnia, Waterdeep, Neverwinter, Baldur, Faerun, Eberron, Greyhawk, Krynn, Ravenloft, Barovia, Hyrule, Azeroth, Tamriel, Skyrim, Camelot, Avalon, London, Istanbul, Paris, Rome, Athens, Jerusalem, Gandalf, Drizzt, Elminster, Strahd, Sauron, Aragorn, Legolas, Frodo, Bilbo, Merlin, Arthur, Excalibur]
+  # substrings that mark a lift from a known property or read as an insult in Turkish or English
+  substrings: [mordor, hogwart, westeros, drizzt, strahd, faerun, azeroth, tamriel, hyrule, sauron, yarak, orospu, pezevenk, amcik, sikik, fuck, shit, cunt]
+  # in-campaign exact bans live in naming.json `banned[]` (name_registry seeds it); never stems
+  stems_are_never_banned: true

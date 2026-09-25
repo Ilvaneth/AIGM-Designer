@@ -1,0 +1,368 @@
+# tensions.yaml — thematic tensions. Tone is an adjective; theme is the one question the campaign
+# tries to answer. P1 rolls one row (a second on d2=2, both logged), the LLM writes the question.
+# The villain embodies one answer, the world's default the other, and the finale turns on the
+# party's answer (item 4.1). `villain_answer` names the pole the villain usually embodies; the
+# premise writer may swap the poles and must say so in the DM pitch.
+schema_version: 1
+table: tensions
+consumed_by: [P1, P2, P4, P7]
+plan: "item 4.1, 17 #3"
+roll: {notation: d30, count: [1, 2], second_on: "d2=2", avoid_used: true}
+hooks_common:
+  - {phase: P1, must: "the theme question is written from this row; the player pitch carries the question, never the answer"}
+  - {phase: P2, must: "one god embodies each pole"}
+  - {phase: P4, must: "the BBEG's objective is the villain's answer made policy"}
+  - {phase: P7, must: "the resolution beat is decided by the party's answer; all three endings are answers to the question"}
+
+rows:
+  - id: tension_legacy_freedom
+    label: Legacy vs freedom
+    poles: [legacy, freedom]
+    question_seeds:
+      - "What do you owe the dead who built the place you stand in?"
+      - "Is a house worth keeping if it keeps you?"
+    villain_answer: {pole: legacy, line: "keeps the old order standing at any price, because without it nothing means anything"}
+    world_default: {pole: freedom, line: "the young are quietly walking away from the old houses and nobody stops them"}
+    finale_turns_on: "whether the party keeps, burns or rewrites the inheritance"
+    hooks:
+      - {phase: P3, must: "one settlement is visibly older than its people can maintain"}
+      - {phase: P9, must: "one socket asks what a PC inherited and did not want"}
+  - id: tension_order_mercy
+    label: Order vs mercy
+    poles: [order, mercy]
+    question_seeds:
+      - "Which crime can a city not afford to forgive?"
+      - "Is the law still just when the judge is tired?"
+    villain_answer: {pole: order, line: "purges the unruly so that the rest may sleep"}
+    world_default: {pole: mercy, line: "a soft, bought leniency that everyone calls kindness"}
+    finale_turns_on: "what the party does with the one prisoner everyone wants hanged"
+    hooks:
+      - {phase: P4, must: "the state faction's doctrine on exposure is punishment, not negotiation"}
+      - {phase: P7, must: "a planted hook is a pardon or a warrant with a name left blank"}
+  - id: tension_knowledge_sanity
+    label: Knowledge vs sanity
+    poles: [knowledge, sanity]
+    question_seeds:
+      - "What is worth knowing if knowing it unmakes you?"
+      - "Who decides which books burn?"
+    villain_answer: {pole: knowledge, line: "will read the last page whatever it costs the reader"}
+    world_default: {pole: sanity, line: "the institutions keep the archive shut and call it care"}
+    finale_turns_on: "whether the party reads, burns or hides the last page"
+    hooks:
+      - {phase: P2, must: "the big secret is a written thing somewhere; the scholarly or religious faction guards it"}
+      - {phase: P6, must: "a library, archive or reliquary is a site"}
+  - id: tension_faith_proof
+    label: Faith vs proof
+    poles: [faith, proof]
+    question_seeds:
+      - "Does a god need to exist to be worth serving?"
+      - "What would you do to make the silent one speak?"
+    villain_answer: {pole: proof, line: "will force the god to appear, or prove the absence"}
+    world_default: {pole: faith, line: "worship continues exactly as before the silence"}
+    finale_turns_on: "what the party says when the god answers, or does not"
+    hooks:
+      - {phase: P2, must: "the pantheon type is silent or dead gods unless a break overrides; one god's status is discoverable"}
+  - id: tension_power_self
+    label: Power vs self
+    poles: [power, self]
+    question_seeds:
+      - "What happens to the one who finishes the power?"
+      - "How much of yourself is the price of being able to help?"
+    villain_answer: {pole: power, line: "has paid the price already and wants the party to see it was worth it"}
+    world_default: {pole: self, line: "the world distrusts anyone who has changed"}
+    finale_turns_on: "the party's own hand on the lever the villain built"
+    hooks:
+      - {phase: P1, must: "if the signature mechanic is rolled it is a track with a cost per stage"}
+      - {phase: P9, must: "each PC mission includes a gain that costs something of the self"}
+  - id: tension_memory_salvation
+    label: Memory vs salvation
+    poles: [memory, salvation]
+    question_seeds:
+      - "Can a people be saved if they have to forget why?"
+      - "Is a lie that keeps the peace still a lie?"
+    villain_answer: {pole: salvation, line: "will erase what must be erased so that the living may go on"}
+    world_default: {pole: memory, line: "a culture that records everything and forgives nothing"}
+    finale_turns_on: "what the party lets be forgotten"
+    hooks:
+      - {phase: P2, must: "the taught history and the true history differ on the founding event"}
+      - {phase: P5, must: "at least one major NPC is the last witness of something"}
+  - id: tension_loyalty_truth
+    label: Loyalty vs truth
+    poles: [loyalty, truth]
+    question_seeds:
+      - "Whom do you betray when the truth would ruin them?"
+      - "Is a friend who lies for you still a friend?"
+    villain_answer: {pole: loyalty, line: "protects their own against every fact"}
+    world_default: {pole: truth, line: "a culture of testimony where everything must be said aloud"}
+    finale_turns_on: "whom the party tells"
+    hooks:
+      - {phase: P4, must: "one faction's fracture is a member who knows the secret and has not spoken"}
+  - id: tension_progress_cost
+    label: Progress vs its cost
+    poles: [progress, cost]
+    question_seeds:
+      - "Who pays for the new road?"
+      - "Is a better world worth the people it was built over?"
+    villain_answer: {pole: progress, line: "builds the future and bills the present"}
+    world_default: {pole: cost, line: "everything is counted, so nothing changes"}
+    finale_turns_on: "whether the party opens the thing that will change everything"
+    hooks:
+      - {phase: P3, must: "one landmark is a half-built work with a named cost"}
+      - {phase: P4, must: "a trade or guild faction's endgame is the work completed"}
+  - id: tension_survival_honour
+    label: Survival vs honour
+    poles: [survival, honour]
+    question_seeds:
+      - "What is a promise worth in a famine?"
+      - "Can the living be blamed for what the winter made them do?"
+    villain_answer: {pole: survival, line: "will feed their own with whatever is left of everyone else"}
+    world_default: {pole: honour, line: "oaths are kept even when they kill"}
+    finale_turns_on: "the oath kept or broken at the walls"
+    hooks:
+      - {phase: P2, must: "the calendar's hard season is a mechanical pressure the simulation feels"}
+      - {phase: P4, must: "one faction's first operation is about food or fuel"}
+  - id: tension_justice_peace
+    label: Justice vs peace
+    poles: [justice, peace]
+    question_seeds:
+      - "Can there be peace while the guilty still rule?"
+      - "Is a treaty that buries a crime a treaty or a grave?"
+    villain_answer: {pole: peace, line: "the peacemaker who buried the crime and will bury anyone who digs"}
+    world_default: {pole: justice, line: "old feuds are pursued to the last cousin"}
+    finale_turns_on: "the tribunal or the treaty"
+    hooks:
+      - {phase: P2, must: "a dated event is a treaty whose as-happened layer is a crime"}
+      - {phase: P7, must: "the pyrrhic ending is the peace kept at the truth's expense"}
+  - id: tension_belonging_becoming
+    label: Belonging vs becoming
+    poles: [belonging, becoming]
+    question_seeds:
+      - "Do you stay what your people made you?"
+      - "What does the group owe the one who left it?"
+    villain_answer: {pole: belonging, line: "keeps the group pure and calls it love"}
+    world_default: {pole: becoming, line: "everyone is from somewhere else and pretends not to be"}
+    finale_turns_on: "whether the party's outsider is let in, or lets themselves out"
+    hooks:
+      - {phase: P5, must: "the demographic table gives every settlement one minority with a named place"}
+      - {phase: P9, must: "one socket asks which people a PC does not belong to any more"}
+  - id: tension_duty_desire
+    label: Duty vs desire
+    poles: [duty, desire]
+    question_seeds:
+      - "Whose life is it once you have taken the oath?"
+      - "Is wanting something for yourself a betrayal of the post?"
+    villain_answer: {pole: desire, line: "took what they wanted and made a philosophy of it"}
+    world_default: {pole: duty, line: "posts are inherited, and so are the people who fill them"}
+    finale_turns_on: "the party's own oath, kept or laid down"
+    hooks:
+      - {phase: P4, must: "the martial or religious faction has a rite of release someone has been denied"}
+  - id: tension_nature_dominion
+    label: Nature vs dominion
+    poles: [nature, dominion]
+    question_seeds:
+      - "Does the land owe you a harvest?"
+      - "What lives under the field you cleared?"
+    villain_answer: {pole: dominion, line: "will break the thing under the land so the fields are safe"}
+    world_default: {pole: nature, line: "a stagnant reverence: nothing is cleared, nothing is built"}
+    finale_turns_on: "whether the party tames, frees or bargains with the thing under the land"
+    hooks:
+      - {phase: P3, must: "one region's danger comes from what the land does, not who lives there"}
+      - {phase: P6, must: "the signature creature's lair is a natural site"}
+  - id: tension_debt_grace
+    label: Debt vs grace
+    poles: [debt, grace]
+    question_seeds:
+      - "What is owed, and who gets to cancel it?"
+      - "Is a gift with no ledger possible?"
+    villain_answer: {pole: debt, line: "the collector who believes every account must close"}
+    world_default: {pole: grace, line: "a jubilee tradition that forgives debts and creditors alike"}
+    finale_turns_on: "the ledger burned or enforced"
+    hooks:
+      - {phase: P1, must: "the signature institution keeps a ledger of something other than money"}
+      - {phase: P9, must: "one socket is a debt a PC did not incur"}
+  - id: tension_secrecy_openness
+    label: Secrecy vs openness
+    poles: [secrecy, openness]
+    question_seeds:
+      - "Who is protected by what nobody says?"
+      - "Can a city survive knowing everything about itself?"
+    villain_answer: {pole: secrecy, line: "keeps the one fact that would end the peace, and kills to keep it"}
+    world_default: {pole: openness, line: "public records, public trials, public everything"}
+    finale_turns_on: "whether the party publishes the truth"
+    hooks:
+      - {phase: P5, must: "standing private channels exist from day one; one is the villain's"}
+  - id: tension_vengeance_release
+    label: Vengeance vs release
+    poles: [vengeance, release]
+    question_seeds:
+      - "When is a debt of blood paid?"
+      - "Who is allowed to stop a feud?"
+    villain_answer: {pole: vengeance, line: "has a list and is working down it"}
+    world_default: {pole: release, line: "a rite of release exists and is used to bury crimes"}
+    finale_turns_on: "the party's own enemy at their mercy"
+    hooks:
+      - {phase: P4, must: "two factions' stances are −3 for a reason dated in the history"}
+      - {phase: P9, must: "one PC's personal antagonist is on the villain's list"}
+  - id: tension_purity_mixture
+    label: Purity vs mixture
+    poles: [purity, mixture]
+    question_seeds:
+      - "Can a thing stay itself when it touches another?"
+      - "Who decides what is unmixed?"
+    villain_answer: {pole: purity, line: "will separate what has grown together, by force"}
+    world_default: {pole: mixture, line: "the port, the market, the marriages nobody asks about"}
+    finale_turns_on: "what the party lets mix"
+    hooks:
+      - {phase: P3, must: "one settlement is a border town of two cultures with one market"}
+      - {phase: P5, must: "two naming languages appear in one family"}
+  - id: tension_permanence_change
+    label: Permanence vs change
+    poles: [permanence, change]
+    question_seeds:
+      - "Should anything be built to last forever?"
+      - "What happens to the people who live inside an eternal thing?"
+    villain_answer: {pole: permanence, line: "will make one thing last, whatever must die around it"}
+    world_default: {pole: change, line: "everything is rebuilt every generation and nothing is remembered"}
+    finale_turns_on: "whether the party breaks the eternal thing"
+    hooks:
+      - {phase: P2, must: "one plane or artifact is the eternal thing; the big secret touches it"}
+  - id: tension_one_many
+    label: The one vs the many
+    poles: [the_one, the_many]
+    question_seeds:
+      - "How many is one life worth?"
+      - "Is the arithmetic of saving people a sin?"
+    villain_answer: {pole: the_many, line: "counts lives and spends the few"}
+    world_default: {pole: the_one, line: "heroes are honoured for saving one child while the town burned"}
+    finale_turns_on: "the trade the villain offers the party"
+    hooks:
+      - {phase: P7, must: "the midpoint beat is an offer with named numbers on both sides"}
+  - id: tension_ambition_contentment
+    label: Ambition vs contentment
+    poles: [ambition, contentment]
+    question_seeds:
+      - "Is wanting more a sin or a duty?"
+      - "What does a person owe the place that was enough for their parents?"
+    villain_answer: {pole: ambition, line: "climbed and kicked the ladder away"}
+    world_default: {pole: contentment, line: "a settled land where rising is rude"}
+    finale_turns_on: "the seat offered to the party"
+    hooks:
+      - {phase: P4, must: "one faction's access chain ends in a seat that is vacant at birth"}
+  - id: tension_hospitality_suspicion
+    label: Hospitality vs suspicion
+    poles: [hospitality, suspicion]
+    question_seeds:
+      - "What does a stranger owe the house that feeds them?"
+      - "When is it right to close the door?"
+    villain_answer: {pole: suspicion, line: "closed the gates and is right often enough to be believed"}
+    world_default: {pole: hospitality, line: "guest-law binds everyone and is exploited by everyone"}
+    finale_turns_on: "the party as guests, and then as hosts"
+    hooks:
+      - {phase: P8, must: "the primer states the guest-law and its one exception"}
+      - {phase: P6, must: "one social site is a hall where guest-law is tested"}
+  - id: tension_sacrifice_worth
+    label: Sacrifice vs worth
+    poles: [sacrifice, worth]
+    question_seeds:
+      - "Who decides who is worth saving?"
+      - "Is everyone giving a little better than someone giving everything?"
+    villain_answer: {pole: worth, line: "ranks people and saves from the top"}
+    world_default: {pole: sacrifice, line: "a custom of shared loss that hides a lottery"}
+    finale_turns_on: "whom the party saves from the flood, fire or siege"
+    hooks:
+      - {phase: P2, must: "a dated event is a disaster with a recorded list of who was saved"}
+      - {phase: P7, must: "the doom is a second such disaster on the calendar"}
+  - id: tension_law_conscience
+    label: Law vs conscience
+    poles: [law, conscience]
+    question_seeds:
+      - "What do you do when the law is wrong and everyone knows it?"
+      - "Is a judge who bends the law still a judge?"
+    villain_answer: {pole: law, line: "enforces the letter because the letter is all that holds"}
+    world_default: {pole: conscience, line: "every official quietly decides for themselves"}
+    finale_turns_on: "the party breaks or keeps the unjust law in public"
+    hooks:
+      - {phase: P4, must: "the state faction's law level is 4-5 and one law in the primer is plainly unjust"}
+  - id: tension_inheritance_merit
+    label: Inheritance vs merit
+    poles: [inheritance, merit]
+    question_seeds:
+      - "Does blood or deed make a ruler?"
+      - "What is owed to the heir who did nothing?"
+    villain_answer: {pole: merit, line: "the usurper who earned it and knows it"}
+    world_default: {pole: inheritance, line: "titles pass by blood and nobody remembers why"}
+    finale_turns_on: "whom the party crowns, or refuses to"
+    hooks:
+      - {phase: P4, must: "one polity's succession is contested at birth; both claimants are NPCs"}
+      - {phase: P5, must: "every leader's heir field is filled; one heir is a child or a stranger"}
+  - id: tension_silence_witness
+    label: Silence vs witness
+    poles: [silence, witness]
+    question_seeds:
+      - "Is it a crime to have seen and said nothing?"
+      - "What does a witness owe the dead?"
+    villain_answer: {pole: silence, line: "buys, frightens or buries every witness"}
+    world_default: {pole: witness, line: "testimony is sacred and everyone is a little afraid of it"}
+    finale_turns_on: "whether the party testifies"
+    hooks:
+      - {phase: P5, must: "Known Facts ledgers name who witnessed the crime event"}
+      - {phase: P6, must: "one clue site is a place where a witness died"}
+  - id: tension_mastery_wonder
+    label: Mastery vs wonder
+    poles: [mastery, wonder]
+    question_seeds:
+      - "Does understanding a thing kill it?"
+      - "Should the last unmapped place stay unmapped?"
+    villain_answer: {pole: mastery, line: "will name, map and own the last wild thing"}
+    world_default: {pole: wonder, line: "a reverent ignorance that leaves people to die of the unknown"}
+    finale_turns_on: "whether the party maps the last unmapped place"
+    hooks:
+      - {phase: P3, must: "one region is blank on the player map for a stated reason"}
+      - {phase: P4, must: "a scholarly faction's endgame is the map completed"}
+  - id: tension_home_horizon
+    label: Home vs horizon
+    poles: [home, horizon]
+    question_seeds:
+      - "What do you owe the place you left?"
+      - "Is there a distance at which you stop being from somewhere?"
+    villain_answer: {pole: horizon, line: "spends homes to reach the next one"}
+    world_default: {pole: home, line: "nobody leaves, and the ones who did are not spoken of"}
+    finale_turns_on: "whether the party returns"
+    hooks:
+      - {phase: P3, must: "the start settlement is a place people leave; a road out is a landmark"}
+      - {phase: P9, must: "one socket asks what a PC left behind and who is still there"}
+  - id: tension_forgiveness_accountability
+    label: Forgiveness vs accountability
+    poles: [forgiveness, accountability]
+    question_seeds:
+      - "Can a people move on before the guilty have paid?"
+      - "Who is allowed to forgive on behalf of the dead?"
+    villain_answer: {pole: forgiveness, line: "declared the amnesty and stands to gain most from it"}
+    world_default: {pole: accountability, line: "lists are kept; children inherit their parents' crimes"}
+    finale_turns_on: "what the party does with the amnesty"
+    hooks:
+      - {phase: P2, must: "a dated event is an amnesty; its as-happened layer names who was spared"}
+  - id: tension_flesh_spirit
+    label: Flesh vs spirit
+    poles: [flesh, spirit]
+    question_seeds:
+      - "Is the body a cage or the only home?"
+      - "What survives a person, and should it?"
+    villain_answer: {pole: spirit, line: "will free everyone from the body, starting with the unwilling"}
+    world_default: {pole: flesh, line: "the dead are simply gone and the living are simply meat; nobody likes to say it"}
+    finale_turns_on: "the party's own transformation, offered"
+    hooks:
+      - {phase: P1, must: "the signature phenomenon touches bodies, memory or the dead"}
+      - {phase: P2, must: "the afterlife's truth is discoverable or secret, never public"}
+  - id: tension_ending_continuation
+    label: Ending vs continuation
+    poles: [ending, continuation]
+    question_seeds:
+      - "What deserves to end?"
+      - "Is keeping something alive the same as loving it?"
+    villain_answer: {pole: continuation, line: "will not let the thing die, whatever it has become"}
+    world_default: {pole: ending, line: "a culture of good deaths that has stopped asking whether a death is good"}
+    finale_turns_on: "whether the party lets it die"
+    hooks:
+      - {phase: P2, must: "one god's domain is Death and that god is not the villain's"}
+      - {phase: P6, must: "the capstone or major site holds the thing that will not die"}

@@ -1,0 +1,372 @@
+# signatures.yaml — the three signatures unique to a campaign (item 4.3): a magic phenomenon
+# (a unique rule), a culture or creature (SRD reskin allowed), an institution. One row per type
+# is rolled in P1 with --avoid-used, then MUTATED by the premise writer along the row's
+# `mutations` prompts so the same seed never yields the same signature twice. Each becomes a
+# `signature_` registry entity whose `refs` must reach ≥3 entities (validator `signatures`).
+# Every name a signature gets is an English-language fantasy name (errata 24.2 #17).
+schema_version: 1
+table: signatures
+consumed_by: [P1, P2, P3, P4, P5, P6, P8]
+plan: "item 4.3, 17 #7, risk 24.1 #10 #18"
+roll: {count: 1 per sub-table, avoid_used: true, labels: [P1.sig_phenomenon, P1.sig_people, P1.sig_institution]}
+hooks_common:
+  - {phase: P1, must: "the signature is named, defined in one paragraph and given a mutation the seed does not contain"}
+  - {phase: P8, must: "the primer states the signature as a native knows it"}
+  - {phase: validator, must: "the signature_ entity's refs reach at least three entities"}
+
+tables:
+
+  phenomenon:
+    notation: d18
+    rows:
+      - id: sig_phen_memory_in_matter
+        label: Memory persists in a substance
+        seed: "A common substance (salt, ash, wax, ice) keeps the memories of the dead who touched it; someone has learned to read it."
+        mutations: ["what the reading costs the reader", "which substance, and who owns the supply", "whether the dead consent"]
+        hooks:
+          - {phase: P2, must: "the magic system defines the reading as a rule with a cost and a regulator"}
+          - {phase: P6, must: "one site's payoff is a reading"}
+      - id: sig_phen_tidal_magic
+        label: Magic ebbs and flows on a cycle
+        seed: "All magic waxes and wanes with a visible cycle (tide, moon, a great breath); at the low, nothing casts."
+        mutations: ["the cycle's length and what marks it", "who profits at the low", "what the high does to the unready"]
+        hooks:
+          - {phase: P2, must: "the calendar carries the cycle; the simulation reads it"}
+      - id: sig_phen_spoken_price
+        label: Spells cost a spoken confession
+        seed: "A spell works only if the caster says aloud something true they have never said; the words linger."
+        mutations: ["who can hear the confessions", "what a lie does", "whether confessions can be bought"]
+        hooks:
+          - {phase: P5, must: "every caster NPC's dossier carries one confession as a Known Fact somebody heard"}
+      - id: sig_phen_echo_casting
+        label: Every spell leaves an echo
+        seed: "A cast spell leaves a trace (a smell, a sound, a colour) for days; magic is forensic and nobody casts unseen."
+        mutations: ["how long the echo lasts by spell level", "who is trained to read it", "what erases it"]
+        hooks:
+          - {phase: P4, must: "the regulator's intel derives from echoes; a criminal faction sells erasure"}
+      - id: sig_phen_borrowed_years
+        label: Magic ages someone
+        seed: "Each spell takes time from a life: the caster's, or the nearest other's if the caster is protected."
+        mutations: ["how much per level", "who is used as a shield", "what the taken years become"]
+        hooks:
+          - {phase: P5, must: "at least two NPCs are visibly older than their years"}
+      - id: sig_phen_ley_roads
+        label: Magic runs along visible roads
+        seed: "Power flows along lines you can see (a glow, a growth, a wear in the stone); off the line, magic is weak."
+        mutations: ["what the lines look like", "who owns the crossings", "whether the lines move"]
+        hooks:
+          - {phase: P3, must: "the ley roads are map edges with a flag; settlements sit on crossings"}
+      - id: sig_phen_dream_bleed
+        label: Dreams leak near sleepers
+        seed: "Near enough sleepers, dreams take physical form for an hour; cities have rules about where people sleep."
+        mutations: ["what makes a dream strong", "whether the dreamer is blamed", "what a nightmare leaves behind"]
+        hooks:
+          - {phase: P3, must: "every settlement has a sleeping law and a district for the dangerous dreamers"}
+      - id: sig_phen_listening_stone
+        label: Stone records sound
+        seed: "Worked stone keeps what was said near it and replays it under a condition (rain, moonlight, a struck note)."
+        mutations: ["the condition", "how far back stone remembers", "who may listen"]
+        hooks:
+          - {phase: P6, must: "one site's rooms replay; a clue is a replay"}
+      - id: sig_phen_blood_ledger
+        label: Spells are debts written on the body
+        seed: "Every spell writes a line on the caster's skin; the ledger is legible to anyone who can read the script."
+        mutations: ["what pays a line off", "what a full ledger does", "who collects"]
+        hooks:
+          - {phase: P4, must: "the collectors are a faction with a service menu"}
+      - id: sig_phen_weather_sympathy
+        label: Strong feeling moves the weather
+        seed: "Grief, rage and joy in numbers change the local sky; a riot is a storm and a festival is a warm week."
+        mutations: ["the scale at which it works", "who manages public mood and why", "what a single person can do"]
+        hooks:
+          - {phase: P2, must: "the calendar's sensory tone lists the festivals' weather"}
+      - id: sig_phen_true_names
+        label: Names bind
+        seed: "A creature's true name compels it; names are given at a rite, kept by an institution and stolen by the desperate."
+        mutations: ["how a name is learned", "what a nameless thing is", "whether a name can be changed"]
+        hooks:
+          - {phase: P1, must: "naming.json marks the binding language"}
+      - id: sig_phen_the_hush
+        label: Zones where magic fails
+        seed: "There are places (moving or fixed) where no magic works and no god hears; people build inside them on purpose."
+        mutations: ["whether the hush moves", "what lives there", "who maps it"]
+        hooks:
+          - {phase: P3, must: "the hush is a map region or a landmark with a fixed tier"}
+      - id: sig_phen_iron_stops_it
+        label: Magic cannot pass iron
+        seed: "No spell crosses iron; iron is the wall, the law and the price of safety."
+        mutations: ["what the poor use instead", "who mines", "what iron does to the touched"]
+        hooks:
+          - {phase: P3, must: "the price table marks iron; wards are iron and cost accordingly"}
+      - id: sig_phen_ghostlight
+        label: The dead are visible at an hour
+        seed: "At one hour of the day the dead of the last year are visible as light; families keep the hour."
+        mutations: ["which hour and where", "what the dead can do", "who is not seen, and why"]
+        hooks:
+          - {phase: P5, must: "Known Facts ledgers include what a dead relative showed"}
+      - id: sig_phen_growth_burst
+        label: Magic makes things grow
+        seed: "Every spell accelerates growth around it; casters leave thickets, old battlefields are forests, and a mage's house is a wood."
+        mutations: ["what grows from a curse", "whether the growth is edible", "who harvests casters"]
+        hooks:
+          - {phase: P3, must: "one region's biome is a spell-forest; a landmark is a battle's wood"}
+      - id: sig_phen_mirror_doors
+        label: Mirrors are doors under conditions
+        seed: "A mirror is a door to the place it reflected at a certain moment; the rich have theirs shrouded."
+        mutations: ["the condition", "what can come the other way", "who keeps the mirror law"]
+        hooks:
+          - {phase: P6, must: "one site's entrance is a mirror; its escape geometry includes the mirror's other side"}
+      - id: sig_phen_cold_fire
+        label: Fire freezes here
+        seed: "In this land fire is cold and ice burns; the hearth is a block of ice and the foundry pours frost."
+        mutations: ["whether it holds everywhere", "what a stranger's fire does", "what the phenomenon does to fire creatures"]
+        hooks:
+          - {phase: P6, must: "monster-ecology's fire and cold rows are swapped for sites in the region"}
+      - id: sig_phen_shared_wounds
+        label: A community shares its wounds
+        seed: "Within a bound community, a wound is divided among all members; nobody dies of one blow and everyone bleeds a little."
+        mutations: ["how a community binds", "what an outsider's wound does", "who abuses it"]
+        hooks:
+          - {phase: P4, must: "the bound communities are factions with a `shared_pool` doctrine field"}
+
+  people:
+    notation: d18
+    rows:
+      - id: sig_people_the_touched
+        label: People changed by the phenomenon
+        seed: "Humans altered by the signature phenomenon into something else, slowly; a people with a stage system."
+        srd_reskin: [ghoul, wight, "any humanoid NPC block"]
+        mutations: ["what the last stage is", "whether it is a choice", "how the untouched treat them"]
+        hooks:
+          - {phase: P5, must: "the demographic table lists them; one NPC is between stages"}
+      - id: sig_people_hollow_folk
+        label: People without shadows
+        seed: "A people born without shadows or reflections, so the law cannot witness them; they are the couriers and the thieves."
+        srd_reskin: [doppelganger, "any humanoid NPC block"]
+        mutations: ["what they lost with the shadow", "whether a shadow can be bought", "their own law"]
+        hooks:
+          - {phase: P4, must: "a criminal faction is mostly hollow folk"}
+      - id: sig_people_bone_singers
+        label: A culture that plays its dead
+        seed: "A people who keep their dead's bones as instruments; the music is their archive and their law."
+        srd_reskin: ["any humanoid NPC block", skeleton (as instruments)]
+        mutations: ["what a stolen bone means", "what the music does", "who is not played"]
+        hooks:
+          - {phase: P2, must: "the history's living memory includes what the music remembers"}
+      - id: sig_people_river_nomads
+        label: A boat people with a floating law
+        seed: "A people who never sleep on land; their courts float, their dead are set adrift, their treaties are moorings."
+        srd_reskin: ["any humanoid NPC block", merfolk (as a caste)]
+        mutations: ["what land does to them", "who they trade with", "their one fixed place"]
+        hooks:
+          - {phase: P3, must: "their moorings are map nodes; a travel result is their passage"}
+      - id: sig_people_stone_kin
+        label: A people who petrify with age
+        seed: "A people whose bodies turn to stone as they age; their elders are statues who still think, and the young carry them."
+        srd_reskin: [gargoyle, earth elemental, "any humanoid NPC block"]
+        mutations: ["what wakes an elder", "what breaks one", "how they vote"]
+        hooks:
+          - {phase: P6, must: "a site's statues are elders; the attitude to intruders is theirs"}
+      - id: sig_people_cliff_dwellers
+        label: A vertical people
+        seed: "A people who live on cliffs and towers, moving by ropes and gliders; the ground is the underworld to them."
+        srd_reskin: [harpy (as a caste), griffon (as mounts), "any humanoid NPC block"]
+        mutations: ["what they fear below", "who climbs to them", "their mounts"]
+        hooks:
+          - {phase: P3, must: "their settlement is a node with vertical travel; its inset is a cross-section"}
+      - id: sig_people_moth_court
+        label: Creatures drawn to magic light
+        seed: "Soft, numerous creatures that gather wherever magic glows; harmless singly, a swarm at a casting."
+        srd_reskin: [swarm of insects, stirge, will-o'-wisp]
+        mutations: ["what they take from the light", "whether they can be farmed", "what a queen is"]
+        hooks:
+          - {phase: P6, must: "every site with a caster occupant has a moth presence in its ecology"}
+      - id: sig_people_ash_hounds
+        label: Hunters that track spells
+        seed: "Dogs bred or born to hunt by the trace of magic; the regulator's tool, the caster's terror."
+        srd_reskin: [blink dog, hell hound, wolf]
+        mutations: ["who breeds them", "what they do to what they catch", "whether they turn"]
+        hooks:
+          - {phase: P4, must: "the regulator's typical forces include hounds"}
+      - id: sig_people_gilded_dead
+        label: Undead civil servants
+        seed: "The dead are raised, gilded and set to work: the clerks, the lamplighters, the tax collectors."
+        srd_reskin: [skeleton, zombie, mummy]
+        mutations: ["who decides who is raised", "what they remember", "what a rebellion looks like"]
+        hooks:
+          - {phase: P3, must: "every town's anchor list includes the gilded office"}
+      - id: sig_people_tithe_giants
+        label: Giants who collect tribute
+        seed: "A giant clan that takes a tithe from the valley by treaty, in kind and in people, and keeps its side of the bargain."
+        srd_reskin: [hill giant, stone giant, ogre]
+        mutations: ["what the tithe buys", "what the giants owe", "who wants the treaty broken"]
+        hooks:
+          - {phase: P4, must: "the clan is a faction with a stance row and an asset"}
+      - id: sig_people_lantern_fish
+        label: Sea creatures that light the deep
+        seed: "Great fish whose light is the only light below; fishers follow them, and something follows the fishers."
+        srd_reskin: [giant shark, plesiosaurus, hunter shark]
+        mutations: ["what the light does to a mind", "who owns the fishery", "what hunts them"]
+        hooks:
+          - {phase: P6, must: "one site is lit by them; without them the site is dark"}
+      - id: sig_people_the_unnamed
+        label: A people who give up their names
+        seed: "At adulthood they surrender their name to the institution and are known by deeds; a named adult is a scandal."
+        srd_reskin: ["any humanoid NPC block"]
+        mutations: ["who keeps the names", "what a name buys back", "how they mourn"]
+        hooks:
+          - {phase: P5, must: "their NPCs have deed-names in the registry and a secret birth name in dm-only"}
+      - id: sig_people_wax_children
+        label: Constructs that were children
+        seed: "Constructs made from the dead children of the rich, in wax and brass; obedient, remembering, wrong."
+        srd_reskin: [animated armor, homunculus, flying sword]
+        mutations: ["who makes them", "what they want", "whether they grow"]
+        hooks:
+          - {phase: P5, must: "one supporting NPC is one, and one major NPC is a maker or a parent"}
+      - id: sig_people_horn_singers
+        label: A herding people with horns
+        seed: "A horned, hoofed people who herd and sing; their war is a stampede and their law is the herd's."
+        srd_reskin: [minotaur, "any humanoid NPC block"]
+        mutations: ["what the horns are for", "their relation to the settled", "their one city"]
+        hooks:
+          - {phase: P3, must: "one region is their range with a travel table of herds"}
+      - id: sig_people_mist_ones
+        label: Fey of the fog
+        seed: "Things that live in fog and take shapes from what the lost expect; the fog is theirs and the roads are borrowed."
+        srd_reskin: [will-o'-wisp, dryad, shadow]
+        mutations: ["what they want from the lost", "whether they bargain", "what the fog hides"]
+        hooks:
+          - {phase: P3, must: "fog is a travel result with a `[KANCA]` hook in at least one region"}
+      - id: sig_people_long_sleepers
+        label: People who sleep a season
+        seed: "A people who hibernate for a season each year; their towns close, their enemies wait, their dreams are the year's law."
+        srd_reskin: ["any humanoid NPC block"]
+        mutations: ["what guards them", "who wakes early", "what the sleep dreams"]
+        hooks:
+          - {phase: P2, must: "the calendar marks the sleep; the simulation freezes their faction in it"}
+      - id: sig_people_tally_crows
+        label: Corvids that keep accounts
+        seed: "Crows or ravens who count, remember and testify; a court accepts a crow's tally; the rich feed them and the poor fear them."
+        srd_reskin: [raven, swarm of ravens]
+        mutations: ["what they count", "who they serve", "what a lie does to one"]
+        hooks:
+          - {phase: P4, must: "a faction's intel is crows; a stance edge is a crow's grudge"}
+      - id: sig_people_salt_walkers
+        label: Things that come from the flats
+        seed: "Shapes that walk in from the dead flats at dusk, salt-crusted, wanting something they cannot say; once they were people."
+        srd_reskin: [ghoul, zombie, ghast]
+        mutations: ["what they want", "what turns a person", "who goes out to them"]
+        hooks:
+          - {phase: P6, must: "their origin site is over-tier and telegraphed"}
+
+  institution:
+    notation: d18
+    rows:
+      - id: sig_inst_readers_of_the_dead
+        label: An order that reads the dead
+        seed: "An institution that extracts something from the dead (memory, testimony, debt) and sells or enforces it; a court with a rite."
+        mutations: ["what is read and what is kept", "who may commission a reading", "the order's one forbidden reading"]
+        hooks:
+          - {phase: P4, must: "it is a faction with a service menu, an access chain and a fracture about consent"}
+      - id: sig_inst_the_toll
+        label: The toll on passage
+        seed: "An institution that taxes movement (of people, goods, spells or the dead); its stations are on every road and its ledgers are the map."
+        mutations: ["what is tolled", "what exemption exists", "who evades"]
+        hooks:
+          - {phase: P3, must: "toll stations are map nodes; the travel table has a toll result"}
+      - id: sig_inst_debt_court
+        label: The bonded court
+        seed: "A court that binds people to debts with a mark; the bonded are a class, the court a faction, the mark a magic."
+        mutations: ["what the mark does", "how a bond ends", "who holds the most bonds"]
+        hooks:
+          - {phase: P9, must: "one socket is a bond a PC carries"}
+      - id: sig_inst_lamplighters
+        label: The wardens of the wards
+        seed: "A guild that maintains the wards, lamps or bells that keep something out; when they strike, the thing comes in."
+        mutations: ["what the wards keep out", "what the guild demands", "the one lamp that is never lit"]
+        hooks:
+          - {phase: P6, must: "a site is a failed ward; one telegraph is a dark lamp"}
+      - id: sig_inst_the_census
+        label: The office that counts and names
+        seed: "An office that counts everyone and everything and issues names; to be uncounted is to be nothing under the law."
+        mutations: ["what is counted that should not be", "who is uncounted", "what the count is for"]
+        hooks:
+          - {phase: P5, must: "one NPC is uncounted and one is a counter"}
+      - id: sig_inst_the_quiet
+        label: An order of silence that mediates
+        seed: "Mediators sworn to silence who settle disputes by ritual; a judgement is a gesture; a word from one ends a career."
+        mutations: ["what breaks the silence", "how they are paid", "what they know"]
+        hooks:
+          - {phase: P4, must: "every provocation ladder's mediation rung names the order"}
+      - id: sig_inst_tide_watch
+        label: The watch that predicts the phenomenon
+        seed: "A watch whose only work is to predict the signature phenomenon's turns; its bells run the calendar and its errors run the news."
+        mutations: ["what a wrong prediction costs", "who owns the towers", "the watch's secret method"]
+        hooks:
+          - {phase: P2, must: "the calendar's festivals are the watch's dates"}
+      - id: sig_inst_the_exchange
+        label: A market for something that is not money
+        seed: "An exchange where years, memories, names, shadows or debts are traded on a floor with a price."
+        mutations: ["the commodity", "who is barred", "what a crash looks like"]
+        hooks:
+          - {phase: P4, must: "the exchange's price is an overlay economy modifier the simulation moves"}
+      - id: sig_inst_the_mummers
+        label: A theatre that carries the law
+        seed: "A players' guild that performs the law and the news; a verdict is a play; a rumour is a scene."
+        mutations: ["what they may not perform", "who writes", "the play everyone fears"]
+        hooks:
+          - {phase: P8, must: "the primer's rumours are the season's plays"}
+      - id: sig_inst_hearth_law
+        label: The enforcers of guest-law
+        seed: "An order that enforces hospitality; a host who fails a guest, or a guest who betrays a host, answers to them."
+        mutations: ["the one exception", "how they know", "what the penalty is"]
+        hooks:
+          - {phase: P6, must: "one social site is a hall under hearth-law"}
+      - id: sig_inst_grave_wardens
+        label: The keepers of the dead's rights
+        seed: "An institution that represents the dead in law: their wills, their votes, their grudges."
+        mutations: ["what the dead may own", "how the dead speak", "who is barred from dying properly"]
+        hooks:
+          - {phase: P5, must: "at least two NPCs' motivations are a dead person's instruction"}
+      - id: sig_inst_the_weighers
+        label: The assessors of truth
+        seed: "An office that weighs claims by the signature phenomenon and stamps them true or false; the stamp is the law."
+        mutations: ["what cannot be weighed", "who bribes the scale", "the false stamp everyone believes"]
+        hooks:
+          - {phase: P1, must: "the big secret's Act 2 clue is a stamped falsehood"}
+      - id: sig_inst_road_wardens
+        label: The keepers of the one road
+        seed: "An order that holds the road, the bridges and the fords; they do not rule, but nothing moves without them."
+        mutations: ["what they take", "their one closed bridge", "who wants the road"]
+        hooks:
+          - {phase: P3, must: "map edges carry a warden flag; the travel table has a warden result"}
+      - id: sig_inst_seed_vault
+        label: The order that keeps what is dying
+        seed: "An institution that preserves the last of things: seeds, species, languages, gods; it decides what is worth keeping."
+        mutations: ["what it refused to keep", "its price", "what it keeps that should have died"]
+        hooks:
+          - {phase: P2, must: "one god or one people exists only because the vault keeps it"}
+      - id: sig_inst_the_choir
+        label: The choir that holds the law
+        seed: "A singing order whose songs are the statutes; a new law is a new verse; a heresy is a wrong note."
+        mutations: ["who may sing", "the lost verse", "what silence means"]
+        hooks:
+          - {phase: P8, must: "the primer quotes one verse as the law a native knows"}
+      - id: sig_inst_ledger_house
+        label: The bank that lends against the phenomenon
+        seed: "A house that lends money against something magical (years, names, luck, memory) and forecloses on it."
+        mutations: ["what is foreclosed", "who owns the house", "the account that cannot be closed"]
+        hooks:
+          - {phase: P4, must: "its assets are NPCs' collateral; a front step is a foreclosure"}
+      - id: sig_inst_wall_builders
+        label: The builders of the wall
+        seed: "An order that has been building one wall for centuries; nobody living knows what it keeps out, and the order will not say."
+        mutations: ["what is on the other side", "who pays", "the gap"]
+        hooks:
+          - {phase: P3, must: "the wall is a map landmark spanning at least two regions"}
+      - id: sig_inst_foundling_house
+        label: The house that raises the phenomenon's orphans
+        seed: "An institution that takes the children the phenomenon leaves (the touched, the unnamed, the dreamers) and raises them into its own ranks."
+        mutations: ["what it raises them to be", "who leaves", "what it hides in the nursery"]
+        hooks:
+          - {phase: P9, must: "one socket is a PC raised there"}

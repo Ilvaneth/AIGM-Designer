@@ -1,0 +1,122 @@
+# scale.yaml — the numbers every count derives from: item 2's scale table with the re-derived
+# NPC caps (errata 24.2 #3, 24.6 #4), the level-band span (errata 24.2 #8), site role bands
+# (item 9.5, errata 24.2 #6), the arc spine (item 10.1), seeds, sockets and hooks (10.6-10.8),
+# the volatility budget (24.6 #3) and the stacking rules (8.1).
+#
+# Ranges are [lo, hi]; a single number is exact. design_manifest.py derives the arc skeleton
+# from `acts`, `chapters.default` and `level_span`; design_check.py's scale module reads the bands.
+schema_version: 1
+table: scale
+consumed_by: [P0, P1, P2, P3, P4, P5, P6, P7, P9, validator]
+plan: "item 2, 8.1-8.2, 9.5-9.6, 10.1, 10.6-10.8, errata 24.2 #3 #6 #8, 24.6 #3 #4"
+
+shared:
+  room_bands: {minor: [5, 10], standard: [11, 19], major: [20, 25], capstone: [30, 30]}
+  detailed_room_tolerance: 0.10              # detailed room table vs the stamp (item 9.5)
+  xp: {intended_path_share: 0.7}             # item 9.6; the rest from social / exploration / travel
+  doom: {days_per_session_default: 5, slack_min: 0.3}   # item 7.5, risk 24.1 #16
+  headroom: {npcs_per_pc_per_act: 1, sites_per_pc_per_act: 1}   # P9 headroom (24.6 #4)
+  planted_hooks_per_act: [3, 5]
+  crossings_per_act: 1                       # skipped for a solo party (errata 24.2 #12)
+  thread_imbalance_max: 0.35                 # item 12.3
+  demographic_drift_max: 0.65                # item 8.4
+  stacking_rules:                            # item 8.1, 24.6 #4 — keep the role quota inside the cap
+    - "at most two roles per person"
+    - "a polity's ruler is its state faction's leader"
+    - "a lieutenant is a faction leader"
+    - "heir, betrayal candidate and anchor-location owner default to minor tier or a registry stub"
+    - "socket NPCs are drawn from the roster, never added to it"
+    - "regional villains are supporting tier: dossier, no goals.py record; their front lives on the faction's operation"
+    - "only the BBEG and the lieutenants carry goals.py records"
+
+rows:
+  - id: counts_short
+    value: short
+    label: Short
+    level_span: 4
+    target_sessions: [8, 12]
+    acts: 1
+    chapters: {min: 3, max: 3, default: 3}
+    beats: 3
+    polities: 1
+    regions: [1, 2]
+    settlements: {metropolis: 0, city: 0, town: 1, village: [2, 3]}
+    factions: {count: [3, 4], quota: {state: 1, guild: 1, criminal: 1, religious: [0, 1]}, signature_institution_counts: true}
+    named_npcs: [14, 18]
+    npc_tiers: {major: 3, supporting: 5, minor: [6, 10]}
+    sites: {count: [6, 8], roles: {minor: 4, standard: 3, major: 1, capstone: 0}, detailed_at_birth: 2}
+    gods: [3, 5]
+    planes_touched: [0, 1]
+    antagonists: {bbeg: 1, lieutenants: 1, regional: 0}
+    quest_seeds: [6, 8]
+    sockets_per_pc: 2
+    tensions: [1, 2]
+    trope_breaks: 1
+    signature_mechanic_chance: 0
+    history: {ages: [3, 5], dated_events: [8, 12], years_covered: 200, deep_past_events: [3, 5]}
+    churches_as_factions: false
+    volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 1}
+    hooks:
+      - {phase: P0, must: "arc skeleton: 1 act, 3 chapters, level band start..start+4"}
+      - {phase: P4, must: "the quota fills the count; a religious faction is optional"}
+      - {phase: P6, must: "8 sites at most: 4 minor, 3 standard, 1 major; the first 2 on the intended path are detailed at birth"}
+  - id: counts_standard
+    value: standard
+    label: Standard
+    level_span: 11
+    target_sessions: [20, 30]
+    acts: 3
+    chapters: {min: 6, max: 8, default: 7}
+    beats: 6
+    polities: [2, 3]
+    regions: [4, 6]
+    settlements: {metropolis: 0, city: 1, town: 2, village: [5, 8]}
+    factions: {count: [6, 10], quota: {state: 1, religious: 1, guild: 1, criminal: 1}, pool: [martial, scholarly, resistance, cult, trade], signature_institution_counts: true}
+    named_npcs: [30, 40]
+    npc_tiers: {major: 6, supporting: 11, minor: [13, 23]}
+    sites: {count: [15, 25], roles: {minor: 8, standard: 9, major: 5, capstone: 1}, detailed_at_birth: 3}
+    gods: [6, 9]
+    planes_touched: [1, 2]
+    antagonists: {bbeg: 1, lieutenants: [2, 3], regional: 2}
+    quest_seeds: [15, 20]
+    sockets_per_pc: 3
+    tensions: [1, 2]
+    trope_breaks: 2
+    signature_mechanic_chance: 50
+    history: {ages: [3, 5], dated_events: [8, 12], years_covered: 200, deep_past_events: [3, 5]}
+    churches_as_factions: false
+    volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 2}
+    hooks:
+      - {phase: P0, must: "arc skeleton: 3 acts, 7 chapters by default, level band start..start+11"}
+      - {phase: P4, must: "the quota's four archetypes plus rolls from the pool up to the count"}
+      - {phase: P7, must: "six beats, two per act; the doom day ≈ 25 sessions × 5 days with ≥30% slack"}
+  - id: counts_epic
+    value: epic
+    label: Epic
+    level_span: 19
+    target_sessions: [40, 60]
+    acts: 3
+    chapters: {min: 9, max: 12, default: 10}
+    beats: 6
+    polities: [3, 5]
+    regions: [8, 12]
+    settlements: {metropolis: 1, city: 3, town: 6, village: [10, 14]}
+    factions: {count: [12, 16], quota: {state: 1, religious: 1, guild: 1, criminal: 1}, pool: [martial, scholarly, resistance, cult, trade], signature_institution_counts: true}
+    named_npcs: [60, 80]
+    npc_tiers: {major: 10, supporting: 20, minor: [30, 50]}
+    sites: {count: [30, 40], roles: {minor: 12, standard: 14, major: 10, capstone: 2}, detailed_at_birth: [3, 4]}
+    gods: [9, 14]
+    planes_touched: [3, 6]
+    antagonists: {bbeg: 1, lieutenants: [3, 4], regional: [4, 6]}
+    quest_seeds: [30, 40]
+    sockets_per_pc: 3
+    tensions: [1, 2]
+    trope_breaks: 2
+    signature_mechanic_chance: 100
+    history: {ages: [3, 5], dated_events: [8, 12], years_covered: 500, deep_past_events: [3, 5]}
+    churches_as_factions: true
+    volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 3}
+    hooks:
+      - {phase: P0, must: "arc skeleton: 3 acts, 10 chapters by default, level band start..start+19"}
+      - {phase: P2, must: "a church faction per god (errata 24.2 #11); history covers 500 years"}
+      - {phase: P7, must: "still six beats: the spine does not lengthen, the chapters widen"}

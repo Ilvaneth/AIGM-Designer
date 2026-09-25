@@ -13,7 +13,7 @@ BBEG's visibility) go to design/dm-only/dice-log.json, and design.json keeps
 only their labels and count. Agents never roll: the conductor pre-rolls a
 phase, and the results travel in the agents' inputs.
 
-Table rolls read data/design/<table>.yaml when it exists (slice 1b) and roll
+Table rolls read data/design/<table>.yaml (or <table>.yaml#subtable) through design_tables.py and roll
 one row by weight; until then, or for a plain notation, --notation rolls dice.
 `--avoid-used` excludes rows that earlier campaigns in this root drew, as
 recorded in <root>/used.json; the exclusions are logged on the record.
@@ -39,12 +39,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dice as dice_mod  # noqa: E402
 from design_io import dm_only_dir, now_iso, read_json, stamp_meta, write_json_atomic  # noqa: E402
 from design_manifest import append_roll, load as load_manifest  # noqa: E402
-from paths import _root as data_root, data_dir  # noqa: E402
+from design_tables import rows as table_rows  # noqa: E402
+from paths import _root as data_root  # noqa: E402
 
-try:
-    import yaml  # type: ignore
-except ImportError:  # pragma: no cover
-    yaml = None
 
 
 def used_path() -> Path:
@@ -77,13 +74,8 @@ def rows_used_elsewhere(campaign: str, table: str) -> set:
 
 
 def load_table(table: str) -> list[dict]:
-    """Rows of data/design/<table> (a YAML list, or a mapping with a `rows` list)."""
-    path = data_dir() / "design" / table
-    if not path.is_file() or yaml is None:
-        return []
-    doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    rows = doc.get("rows") if isinstance(doc, dict) else doc
-    return [r for r in (rows or []) if isinstance(r, dict) and r.get("id")]
+    """Rows of data/design/<table> (`file.yaml` or `file.yaml#subtable`), [] when the file is missing."""
+    return table_rows(table)
 
 
 def derive(master: str, phase: str, table: str, label: str, attempt: int) -> random.Random:

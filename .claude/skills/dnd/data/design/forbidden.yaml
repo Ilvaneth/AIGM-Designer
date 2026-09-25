@@ -1,0 +1,120 @@
+# forbidden.yaml — the forbidden defaults (item 4.5) and how the validator detects them (item 15.1,
+# risk 24.1 #10). Detection is STRUCTURAL first: a closed-list registry field whose forbidden values
+# are named here, checked by design_check.py's `signatures` module. The lexical patterns are a
+# warning-only scan (English and Turkish stems) because a Turkish bible defeats sentence-shape greps.
+# A forbidden default may return only as a conscious trope break or big secret named in
+# `allowed_via`, recorded in the DM pitch.
+schema_version: 1
+table: forbidden
+consumed_by: [P1, P4, P5, P7, validator]
+plan: "item 4.5, 15.1, 17 #6, risk 24.1 #10"
+hooks_common:
+  - {phase: P1, must: "the premise prompt carries every row's label as a hard exclusion"}
+  - {phase: validator, must: "structural checks are errors; lexical hits are warnings with the entity id"}
+
+rows:
+  - id: forbidden_awakening_ancient_evil
+    label: Awakening ancient evil
+    why: "the threat has no relation to anyone living; nothing in the world chose it"
+    structural: {field: bbeg_origin, table: antagonists.yaml#origin, forbidden_values: [awakened_ancient]}
+    lexical: {en: ["ancient evil", "awaken(s|ed|ing)? (from|after) (its|their|a) (slumber|sleep)", "sealed away for (a thousand|centuries|millennia)"], tr: ["kadim kötülük", "uykusundan uyan", "bin yıl(dır)? mühürl"]}
+    allowed_via: [secret_history_looping, secret_artifact_is_seal]
+    hooks:
+      - {phase: P4, must: "the BBEG's origin is a choice made by a living person within the history's span"}
+  - id: forbidden_chosen_one
+    label: The chosen one
+    why: "a PC or NPC whose importance is granted, not earned; it removes the party's answer from the finale"
+    structural: {field: truth_kind, table: threads.yaml#truth_kind, forbidden_values: [chosen, destined]}
+    lexical: {en: ["chosen one", "the one foretold", "only (you|he|she|they) can"], tr: ["seçilmiş kişi", "kehanetteki", "yalnızca (sen|o) yapabil"]}
+    allowed_via: [secret_prophecy_is_engineered]
+    hooks:
+      - {phase: P9, must: "every PC truth is something done or owed, never something granted"}
+  - id: forbidden_prophecy
+    label: Prophecy as plot engine
+    why: "the future known in advance replaces consequence with schedule"
+    structural: {field: plot_engine, table: arc.yaml#plot_engine, forbidden_values: [prophecy]}
+    lexical: {en: ["prophecy", "prophesied", "it was foretold"], tr: ["kehanet", "önceden bildiril"]}
+    allowed_via: [secret_prophecy_is_engineered]
+    hooks:
+      - {phase: P7, must: "no beat's telegraph is a prediction; telegraphs are signs of what is already moving"}
+  - id: forbidden_dark_lord_black_tower
+    label: Dark lord in a black tower
+    why: "a villain with no position in society; nothing he takes is taken from anyone"
+    structural: {field: villain_shape, table: antagonists.yaml#villain_shape, forbidden_values: [dark_lord]}
+    lexical: {en: ["dark lord", "black tower", "fortress of (darkness|shadow)"], tr: ["karanlık lord", "kara kule", "gölge kalesi"]}
+    allowed_via: []
+    hooks:
+      - {phase: P4, must: "the BBEG holds a seat, a charter, a congregation or a market; their HQ is a place people go"}
+  - id: forbidden_generic_evil_cult
+    label: The generic evil cult
+    why: "a faction that wants harm for its own sake has no doctrine, no fracture and no reason to exist"
+    structural: {field: cult_doctrine, table: factions.yaml#cult_doctrine, forbidden_values: [evil_for_its_own_sake, unspecified]}
+    lexical: {en: ["cult of (darkness|chaos|evil)", "worship(s|ped)? (evil|darkness|the void)"], tr: ["karanlık tarikat", "kötülüğe tap"]}
+    allowed_via: []
+    hooks:
+      - {phase: P4, must: "a cult faction has a true belief a reasonable person could hold, a service to its members and a fracture"}
+  - id: forbidden_corrupt_church_default_villain
+    label: The corrupt church as default villain
+    why: "the religious faction as villain by reflex; it spends the pantheon on a cliché"
+    structural: {field: bbeg_faction_archetype, table: antagonists.yaml#bbeg_faction_archetype, forbidden_values: [religious]}
+    lexical: {en: ["corrupt (church|priesthood|clergy)"], tr: ["yozlaşmış (kilise|tapınak|rahip)"]}
+    allowed_via: [secret_cure_is_the_cause, secret_gods_are_prisoners, break_gods_on_trial]
+    hooks:
+      - {phase: P4, must: "the BBEG's faction is religious only through an allowed secret or break, stated in the DM pitch"}
+  - id: forbidden_amnesiac_hero
+    label: The amnesiac hero
+    why: "a past that can be anything is no past"
+    structural: {field: truth_kind, table: threads.yaml#truth_kind, forbidden_values: [amnesia]}
+    lexical: {en: ["lost (his|her|their) memory", "cannot remember who (he|she|they) (is|are|was|were)", "amnesia"], tr: ["hafızasını kaybet", "kim olduğunu hatırlam"]}
+    allowed_via: [break_memory_is_sold]
+    hooks:
+      - {phase: P9, must: "a PC's truth is something they do not know about a past they remember"}
+  - id: forbidden_tavern_opening
+    label: The tavern opening
+    why: "the party meets by accident and nothing is at stake in the first scene"
+    structural: {field: opening_scene_type, table: arc.yaml#opening_scene_type, forbidden_values: [tavern, stranger_with_a_job]}
+    lexical: {en: ["you (all )?(meet|find yourselves) in (a|the) tavern", "a hooded (stranger|figure) in the corner"], tr: ["hanın köşesinde kapüşonlu", "hepiniz bir han(da|ın)"]}
+    allowed_via: []
+    hooks:
+      - {phase: P7, must: "chapter 1 opens on a bang tied to a socket or a beat; the session-1 pack offers two candidates, neither in an inn"}
+  - id: forbidden_monolithic_empire
+    label: The monolithic Empire
+    why: "a polity without fractures cannot lose anything piecemeal, so the simulation has nothing to move"
+    structural: {field: fracture, table: factions.yaml#fracture, forbidden_values: [none]}
+    lexical: {en: ["the Empire", "imperial (legions|might)"], tr: ["İmparatorluk", "imparatorluk lejyon"]}
+    allowed_via: [break_the_enemy_won]
+    hooks:
+      - {phase: P4, must: "every state faction has a fracture and a betrayal candidate; an empire is at least two state factions"}
+  - id: forbidden_inherently_evil_races
+    label: Inherently evil races
+    why: "a people whose alignment is fixed by birth cannot be negotiated with, so a site cannot have an attitude"
+    structural: {field: alignment_fixed, table: npcs.yaml#demographic, forbidden_values: [true]}
+    lexical: {en: ["(orcs|goblins|drow|kobolds) are (always|inherently|by nature) evil"], tr: ["doğuştan kötü", "(orklar|goblinler) her zaman kötü"]}
+    allowed_via: [secret_monsters_were_made]
+    hooks:
+      - {phase: P5, must: "no demographic row fixes an alignment; for any species with ≥3 NPCs the alignments differ"}
+      - {phase: P6, must: "every site's attitude to intruders is a choice its occupants made"}
+  - id: forbidden_collect_the_pieces
+    label: Collect the N pieces
+    why: "a fetch structure that turns sites into a checklist"
+    structural: {field: plot_engine, table: arc.yaml#plot_engine, forbidden_values: [collect_pieces]}
+    lexical: {en: ["(the )?(five|seven|nine|three) (shards|fragments|pieces|keys) of"], tr: ["(beş|yedi|dokuz|üç) parça(sı|sını)"]}
+    allowed_via: [secret_artifact_is_seal]
+    hooks:
+      - {phase: P7, must: "beats are consequences, never acquisitions; a plot item is a payoff, not a counter"}
+  - id: forbidden_evil_advisor
+    label: The whispering advisor
+    why: "a villain who acts through a puppet ruler by whispering; nothing he does is his own move"
+    structural: {field: villain_shape, table: antagonists.yaml#villain_shape, forbidden_values: [whispering_advisor]}
+    lexical: {en: ["whisper(s|ed|ing)? in the (king|queen|ruler)'s ear", "the (king|queen)'s (trusted )?advisor is secretly"], tr: ["kralın kulağına fısılda", "vezir aslında"]}
+    allowed_via: [secret_king_is_a_copy, secret_the_dead_rule]
+    hooks:
+      - {phase: P4, must: "a lieutenant at court holds their own seat and their own operation"}
+  - id: forbidden_secretly_evil_ruler
+    label: The ruler who is secretly evil
+    why: "a reveal that explains nothing and costs the polity its only interesting move"
+    structural: {field: villain_shape, table: antagonists.yaml#villain_shape, forbidden_values: [secretly_evil_ruler]}
+    lexical: {en: ["the (king|queen|duke|baron) (is|was) secretly (the|a) (villain|cultist|lich)"], tr: ["kral aslında (kötü|tarikat)"]}
+    allowed_via: [secret_king_is_a_copy, secret_the_dead_rule]
+    hooks:
+      - {phase: P4, must: "a ruler who is an antagonist is a known antagonist with a public position"}

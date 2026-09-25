@@ -1,0 +1,340 @@
+# trope-breaks.yaml — ~40 mandatory, pervasive breaks with the genre default (item 4.4).
+# Count by scale: short 1, standard 2, epic 2 (scale.yaml `trope_breaks`). Rolled in P1 with
+# --avoid-used; each becomes a `break_` registry entity whose `refs` must reach ≥5 entities
+# (risk 24.1 #10: "pervasive" is a count). `hooks` are the phases the break MUST touch;
+# `overrides` are closed-list values the break forces in later tables; `conflicts_with` names
+# rows of any table that cannot be rolled beside it (the roller re-draws).
+schema_version: 1
+table: trope-breaks
+consumed_by: [P1, P2, P3, P4, P5, P6, P8]
+plan: "item 4.4, 17 #5, risk 24.1 #10"
+roll: {notation: d40, count_by_scale: {short: 1, standard: 2, epic: 2}, avoid_used: true}
+hooks_common:
+  - {phase: P1, must: "the break is stated in one sentence in the player pitch; it is public knowledge unless the row says otherwise"}
+  - {phase: P8, must: "the primer states the break as a native would: plainly, without wonder"}
+  - {phase: validator, must: "the break_ entity's refs reach at least five entities of at least three types"}
+
+rows:
+  - id: break_undead_civilised
+    label: The undead are the civilised ones
+    statement: "The dead who stayed are the lawful, literate, taxed citizens; the living are the frontier."
+    tags: [death, society]
+    overrides: {pantheon_type_bias: [pantheon_ancestor_gods, pantheon_dead_gods]}
+    conflicts_with: [break_no_afterlife_known, break_nobody_dies_of_age]
+    hooks:
+      - {phase: P2, must: "the afterlife is staying; the god of death is a magistrate"}
+      - {phase: P3, must: "the largest settlement is governed by the dead; a living district is the poor one"}
+      - {phase: P5, must: "at least three NPCs are undead with jobs, and the demographic table lists them as a people"}
+      - {phase: P6, must: "monster-ecology's undead rows are citizens here, not monsters; a site's undead attitude is `negotiate`"}
+  - id: break_dragons_extinct_bones_currency
+    label: Dragons are extinct and their bones are money
+    statement: "No dragon has been seen in living memory; their bones are the coinage and the mines are graveyards."
+    tags: [economy, creature]
+    hooks:
+      - {phase: P2, must: "a deep-past event is the last dragon's death; the taught and true layers differ on who killed it"}
+      - {phase: P3, must: "one region's economy is bone; a landmark is a skeleton"}
+      - {phase: P4, must: "the mint or the bone guild is a faction; its endgame concerns the last hoard"}
+      - {phase: P6, must: "a major site is a dragon's grave; monster-ecology excludes living dragons"}
+  - id: break_no_afterlife_known
+    label: There is no afterlife and everyone knows it
+    statement: "Nothing follows death; the temples say so; the rites are for the living."
+    tags: [death, faith]
+    conflicts_with: [break_undead_civilised, secret_afterlife_is_a_place]
+    hooks:
+      - {phase: P2, must: "the god of Death's domain is endings, not judgement; no plane of the dead is touched"}
+      - {phase: P5, must: "NPC motivations never invoke reward after death; funerary customs are about memory"}
+      - {phase: P6, must: "undead are a violation of the known order and telegraph as wrongness"}
+  - id: break_city_states_one_road
+    label: No kingdoms, only city-states and one road
+    statement: "There is no crown over the cities; one road joins them and whoever holds the road holds everything."
+    tags: [polity, geography]
+    conflicts_with: [break_capital_is_mobile]
+    hooks:
+      - {phase: P3, must: "polities are city-states; the road is a landmark with a keeper; travel times are road-first"}
+      - {phase: P4, must: "one faction's assets are stretches of the road; control flips are road segments"}
+  - id: break_gods_are_ancestors_known
+    label: The gods are the souls of mortal ancestors
+    statement: "Everyone knows the gods were once people of this land; godhood is a career the dead can have."
+    tags: [faith, death]
+    overrides: {pantheon_type: pantheon_ancestor_gods}
+    conflicts_with: [secret_gods_are_mortal_ancestors]
+    hooks:
+      - {phase: P2, must: "every god has a mortal biography in the history; rank is earned; one candidate is pending"}
+      - {phase: P4, must: "a religious faction's endgame is raising its founder"}
+  - id: break_magic_is_municipal
+    label: Magic is a public utility
+    statement: "Lamps, sewers, wards and the lift are cast, metered and billed; a spell is a civic act."
+    tags: [magic, society]
+    overrides: {magic_min: medium}
+    hooks:
+      - {phase: P2, must: "the regulator is the city; the phenomenon is what happens when the bill is not paid"}
+      - {phase: P3, must: "every town has a utility anchor; the price table lists magic"}
+      - {phase: P4, must: "a guild faction runs the utility; its fracture is who pays"}
+  - id: break_elves_are_new
+    label: The elves arrived last century
+    statement: "Humans are the ancient people with the old ruins; elves, dwarves or another people are recent arrivals with no past here."
+    tags: [people, history]
+    hooks:
+      - {phase: P2, must: "a dated event is the arrival; taught and true layers differ on why they came"}
+      - {phase: P5, must: "the demographic table gives the new people a district or a camp and no roots older than one generation"}
+  - id: break_monsters_have_treaties
+    label: The monsters hold treaties
+    statement: "Goblins, giants or another 'monster' people hold sealed treaties; breaking one is the crime, not meeting them."
+    tags: [creature, law]
+    hooks:
+      - {phase: P4, must: "the treaty people are a faction with a stance row and an operation"}
+      - {phase: P6, must: "their lairs are sites with attitude `negotiate`; monster-ecology marks the species as a people"}
+      - {phase: P8, must: "the primer lists the treaty terms a native knows"}
+  - id: break_night_is_safe
+    label: Night is safe and day is dangerous
+    statement: "Whatever hunts does so under the sun; people travel and work by night and shutter at dawn."
+    tags: [ecology, calendar]
+    hooks:
+      - {phase: P2, must: "the calendar's sensory tone is written for night; the moon is the working light"}
+      - {phase: P3, must: "travel tables roll by day-hours; a daylight crossing is a hazard"}
+      - {phase: P6, must: "the signature creature or the ecology's apex hunts by day"}
+  - id: break_writing_is_a_monopoly
+    label: Writing belongs to one order
+    statement: "Only one order may write; everyone else remembers, and memory is the law."
+    tags: [knowledge, law]
+    hooks:
+      - {phase: P1, must: "the signature institution is the order, or its rival"}
+      - {phase: P4, must: "the order is a faction; its assets are archives; its fracture is a literate outsider"}
+      - {phase: P8, must: "the primer is what a native remembers, stated as recited"}
+  - id: break_ring_of_land
+    label: The land is a ring around a sea with no far shore
+    statement: "The world is a ring; sail inward and you never arrive; sail outward and you fall off the edge of what is mapped."
+    tags: [geography, cosmology]
+    hooks:
+      - {phase: P2, must: "the cosmology states what the inner sea is; the big secret may touch it"}
+      - {phase: P3, must: "the map is a ring; the inner coast is a region with a fixed high tier"}
+  - id: break_debts_paid_in_years
+    label: Debts are paid in years of life
+    statement: "Money exists, but the serious currency is years; a contract can take a decade off you."
+    tags: [economy, death]
+    hooks:
+      - {phase: P1, must: "the signature phenomenon or institution is the transfer of years"}
+      - {phase: P4, must: "a criminal or guild faction trades years; its endgame is a monopoly"}
+      - {phase: P5, must: "at least two NPCs are visibly older than their age"}
+  - id: break_healing_moves_wounds
+    label: Healing moves wounds, never removes them
+    statement: "A cure wound spell puts the wound on someone or something else; healers keep a stock of the willing."
+    tags: [magic, ethics]
+    hooks:
+      - {phase: P2, must: "the magic system's constraint field is transfer; the primer says who receives"}
+      - {phase: P5, must: "one NPC is a receiver by trade"}
+  - id: break_the_dead_vote
+    label: The dead keep a vote
+    statement: "Every household's dead hold a political voice through tokens; the living govern with the dead's consent."
+    tags: [death, polity]
+    conflicts_with: [break_no_afterlife_known]
+    hooks:
+      - {phase: P4, must: "the polity's succession and stance changes need the dead's vote; an asset is a token hoard"}
+      - {phase: P6, must: "an ossuary or token vault is a site"}
+  - id: break_weather_is_owned
+    label: Weather is a controlled resource
+    statement: "Rain is scheduled and sold; drought is a policy, not an act of the gods."
+    tags: [magic, economy]
+    hooks:
+      - {phase: P2, must: "the god of Tempest is either the utility's patron or its dispossessed"}
+      - {phase: P4, must: "the weather office is a faction with assets per region"}
+      - {phase: P3, must: "each region's climate lists who owns its weather"}
+  - id: break_iron_is_sacred
+    label: Iron is sacred and rare
+    statement: "Iron may be worked only by a priesthood; the world runs on bronze, bone and wood."
+    tags: [economy, faith]
+    hooks:
+      - {phase: P3, must: "the price table marks iron goods ×5 and licensed"}
+      - {phase: P4, must: "the iron priesthood is a faction; its fracture is a smuggler"}
+      - {phase: P6, must: "a loot rule: iron weapons are a payoff, never filler"}
+  - id: break_rule_by_lottery
+    label: Rulers are drawn by lot
+    statement: "Every office is filled by lottery for a fixed term; ambition is shameful and secretly universal."
+    tags: [polity, society]
+    conflicts_with: [tension_inheritance_merit]
+    hooks:
+      - {phase: P4, must: "the state faction's succession rule is the lottery; an operation is rigging it"}
+      - {phase: P5, must: "the ruler NPC is an ordinary person; the heir field is `next draw`"}
+  - id: break_names_are_property
+    label: Names are bought and sold
+    statement: "A name is a title deed; the poor go unnamed; a famous name is worth a house."
+    tags: [society, economy]
+    hooks:
+      - {phase: P1, must: "naming.json marks one language's person names as tradeable"}
+      - {phase: P5, must: "at least two NPCs have bought or lost their name; one minor NPC is unnamed"}
+  - id: break_beasts_own_land
+    label: Beasts speak and hold land
+    statement: "Some animals speak and hold title; a wood may have a lord who is a stag."
+    tags: [creature, law]
+    hooks:
+      - {phase: P3, must: "one region is held by a beast lord; its travel table is negotiated passage"}
+      - {phase: P4, must: "the beast lord is a faction with a stance row"}
+  - id: break_resurrection_routine
+    label: Resurrection is routine, so murder is theft of time
+    statement: "The dead come back for a fee; the crime is what was stolen between death and return."
+    tags: [death, law]
+    conflicts_with: [break_no_afterlife_known, break_nobody_dies_of_age]
+    hooks:
+      - {phase: P2, must: "the magic system says who performs the return and what it costs"}
+      - {phase: P4, must: "the returners are a religious or guild faction; the state taxes returns"}
+      - {phase: P5, must: "one NPC has died more than once and it shows"}
+  - id: break_gods_on_trial
+    label: The gods are on trial
+    statement: "A public tribunal is trying the pantheon for the founding disaster; verdicts change worship."
+    tags: [faith, law]
+    hooks:
+      - {phase: P1, must: "the signature institution is the tribunal"}
+      - {phase: P2, must: "each god's public layer includes the charge; one verdict is due on the calendar"}
+      - {phase: P4, must: "the tribunal is a faction; its operation steps are hearings"}
+  - id: break_no_kings_only_guilds
+    label: Guilds rule; there are no lords
+    statement: "There is no nobility; the guild charters are the constitution and the masters are the court."
+    tags: [polity, economy]
+    hooks:
+      - {phase: P4, must: "the state faction has archetype guild; the access chain runs through masters"}
+      - {phase: P3, must: "the seat of rule anchor is a guild hall"}
+  - id: break_the_sun_is_new
+    label: The sun was lit in living memory
+    statement: "Before the Lighting the world was lit by something else; the old people remember the dark and miss it."
+    tags: [cosmology, history]
+    hooks:
+      - {phase: P2, must: "a dated event within 60 years is the Lighting; taught and true layers differ on who lit it"}
+      - {phase: P5, must: "at least one elder NPC's Known Facts include the dark"}
+  - id: break_giants_are_peasants
+    label: The large folk are the peasantry
+    statement: "Giants, ogres or trolls are the tenant farmers and labourers; the small are the landlords."
+    tags: [people, society]
+    hooks:
+      - {phase: P5, must: "the demographic table lists the large folk with a settlement share; one supporting NPC is one"}
+      - {phase: P6, must: "monster-ecology marks the species as a people; their homes are not lairs"}
+  - id: break_fiends_keep_the_banks
+    label: The banks are run by fiends under contract
+    statement: "Devils hold the banking charters by ancient treaty; their contracts are the only ones that always pay."
+    tags: [economy, planes]
+    hooks:
+      - {phase: P2, must: "the fiends' plane is touched; the treaty is a deep-past event"}
+      - {phase: P4, must: "the bank is a faction; its doctrine on betrayal is contractual"}
+  - id: break_war_is_ritual
+    label: War is fought by champions
+    statement: "Mass war is unthinkable; disputes are settled by a small number of named fighters under rules everyone knows."
+    tags: [war, law]
+    hooks:
+      - {phase: P4, must: "martial factions' assets are champions (NPCs); a seize move is a challenge"}
+      - {phase: P8, must: "the primer states the rules of challenge"}
+  - id: break_the_forest_moves
+    label: The forest moves with the seasons
+    statement: "The great wood is somewhere else each season; roads are dated; a village may be inside it by autumn."
+    tags: [geography, calendar]
+    hooks:
+      - {phase: P3, must: "map edges through the wood carry a season flag; travel-times list both states"}
+      - {phase: P2, must: "the calendar's per-month tone includes where the wood is"}
+  - id: break_memory_is_sold
+    label: Memory is bought and sold
+    statement: "Memories can be drawn and traded; the rich buy childhoods; the poor sell the war."
+    tags: [magic, economy]
+    hooks:
+      - {phase: P1, must: "the signature phenomenon is the drawing of memory"}
+      - {phase: P4, must: "a guild or criminal faction is the exchange"}
+  - id: break_capital_is_mobile
+    label: The capital moves
+    statement: "The seat of rule is a caravan, a fleet or a walking city; where the capital is today is the political question."
+    tags: [polity, geography]
+    conflicts_with: [break_city_states_one_road]
+    hooks:
+      - {phase: P3, must: "the capital is a map node with a schedule; travel-times are computed from its current position"}
+      - {phase: P4, must: "the state faction's HQ asset is the mobile seat"}
+  - id: break_maps_are_illegal
+    label: Maps are forbidden
+    statement: "To draw the land is treason; guides are licensed and the routes are memorised songs."
+    tags: [knowledge, law]
+    hooks:
+      - {phase: P3, must: "the player map shows only the primer's named places; travel-times exist for the DM only"}
+      - {phase: P4, must: "the guides are a guild faction; a map fragment is an item_ everyone wants"}
+  - id: break_moon_trades
+    label: The moon is inhabited and trades
+    statement: "Ships go to the moon on the spring tide; the moon folk sell what nothing here can make."
+    tags: [cosmology, economy]
+    overrides: {era_bias: [era_nautical]}
+    hooks:
+      - {phase: P2, must: "the moon is a touched plane with a way in, a cost and a time rate"}
+      - {phase: P4, must: "a trade faction holds the moon charter"}
+  - id: break_plague_grants_power
+    label: The sick are the mages
+    statement: "Magic is a symptom; the strongest casters are the dying; the healthy fear and need them."
+    tags: [magic, society]
+    conflicts_with: [secret_magic_is_a_disease]
+    hooks:
+      - {phase: P2, must: "the magic system's source is the illness; the regulator is a hospice"}
+      - {phase: P5, must: "every caster NPC has a stage; the BBEG or a lieutenant is far gone"}
+  - id: break_gods_need_witnesses
+    label: The gods need witnesses, not worship
+    statement: "A god exists only while someone is watching; the temples are watch-houses and the rite is attention."
+    tags: [faith, cosmology]
+    hooks:
+      - {phase: P2, must: "each god's church is a watch; one god is fading for lack of witnesses"}
+      - {phase: P6, must: "one site is a watch that failed"}
+  - id: break_reincarnation_remembered
+    label: Everyone comes back and half remembers
+    statement: "Souls return within a generation and remember fragments; old grudges walk around in children."
+    tags: [death, society]
+    conflicts_with: [break_no_afterlife_known]
+    hooks:
+      - {phase: P5, must: "at least two NPCs carry a previous life's Known Fact; one is a child"}
+      - {phase: P4, must: "one faction's fracture is a returned enemy"}
+  - id: break_dead_month
+    label: One month a year magic does not work
+    statement: "In the dead month nothing casts; wards fail, the sick die, and everyone who depends on magic hides."
+    tags: [magic, calendar]
+    hooks:
+      - {phase: P2, must: "the calendar names the month; the simulation's volatility doubles in it"}
+      - {phase: P7, must: "one beat or the doom sits in the dead month"}
+  - id: break_children_are_rare
+    label: Births are rare and public
+    statement: "A child is born perhaps once a year in a town; each birth is a civic event and every child is watched."
+    tags: [society, cosmology]
+    hooks:
+      - {phase: P5, must: "the demographic table has almost no children; a child NPC is major or supporting"}
+      - {phase: P2, must: "the big secret or a god's secret concerns why"}
+  - id: break_world_is_young
+    label: Recorded history is three hundred years
+    statement: "Nothing is known before the Beginning; there are ruins older than the world and nobody discusses it."
+    tags: [history, cosmology]
+    hooks:
+      - {phase: P2, must: "the deep-past events are the ruins' dates, all secret or discoverable"}
+      - {phase: P6, must: "one major site predates the Beginning"}
+  - id: break_the_enemy_won
+    label: The enemy won and everyone is fine
+    statement: "The taught war was lost; the party's people live under the victors, and life is better than the songs admit."
+    tags: [history, polity]
+    hooks:
+      - {phase: P2, must: "the founding event is the defeat; taught and true layers differ on how bad the victors are"}
+      - {phase: P4, must: "the resistance faction's true belief is nostalgia; the state faction is the victors"}
+  - id: break_money_is_faith
+    label: Coins are minted by temples and lose value when the god is displeased
+    statement: "Every coin bears a god; when the god is angry the coin is worth less; the exchange rate is a theological argument."
+    tags: [economy, faith]
+    hooks:
+      - {phase: P2, must: "each god's church mints; the price modifier moves with the god's public standing"}
+      - {phase: P4, must: "a religious faction's operation targets the exchange rate"}
+  - id: break_nobody_dies_of_age
+    label: Nobody dies of age
+    statement: "Death comes only by violence or accident; the old are many and the land is full."
+    tags: [death, society]
+    conflicts_with: [break_undead_civilised, break_resurrection_routine]
+    hooks:
+      - {phase: P4, must: "the state faction's fracture is the young against the ancient; land is the asset"}
+      - {phase: P5, must: "at least two NPCs are over two hundred years old and remember the founding"}
+  - id: break_law_is_sung
+    label: The law is a song
+    statement: "The legal code is oral and musical; advocates are singers; a verdict must rhyme."
+    tags: [law, knowledge]
+    hooks:
+      - {phase: P1, must: "the signature institution is the choir or the court that sings"}
+      - {phase: P6, must: "a social site is a trial; its rooms are verses"}
+  - id: break_stars_are_missing
+    label: The stars are gone
+    statement: "The sky is empty at night; the old charts show stars; something took them within the recorded past."
+    tags: [cosmology, history]
+    hooks:
+      - {phase: P2, must: "a dated event is the night the stars went; taught and true layers differ on the cause; navigation is by other means"}
+      - {phase: P3, must: "sea or desert travel is harder; the travel table has a lost-at-night result"}

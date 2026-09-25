@@ -46,6 +46,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from design_io import (campaign_dir, design_dir, dm_only_dir, now_iso, read_json, sha256_file,  # noqa: E402
                        stamp_meta, write_json_atomic)
+from design_tables import DIAL_NAMES, arc_shape, dial_values  # noqa: E402
 
 PHASES = tuple(f"P{i}" for i in range(10))
 PHASE_STATUSES = ("pending", "prerolled", "running", "generated", "merged", "validated", "critiqued",
@@ -55,17 +56,9 @@ ENTITY_RANK = {s: i for i, s in enumerate(("pending", "failed", "staged", "merge
 SCOPES = ("fact", "entity", "phase", "direction")
 ANSWERS = ("evet", "hayır", "spoiler vermeden cevaplanamaz")
 
-# Item 2's dial values; scale.yaml (slice 1b) will carry the numbers, these stay the closed lists.
-DIALS = {
-    "scale": ("short", "standard", "epic"),
-    "tone": ("grimdark", "dark fantasy", "heroic", "horror", "political", "swashbuckling", "cosmic"),
-    "magic": ("none", "low", "medium", "high"),
-    "era": ("medieval", "renaissance", "ancient", "nautical", "underground"),
-    "danger": ("lethal", "gritty", "standard", "heroic"),
-    "content_mix": ("exploration", "politics", "war", "horror", "mystery"),
-}
-# acts, chapters, level-band span by scale (plan item 2 / errata 24.2 #8); scale.yaml replaces this in 1b
-ARC_SHAPE = {"short": (1, 3, 4), "standard": (3, 7, 11), "epic": (3, 10, 19)}
+# Item 2's dial values and the arc shape come from data/design/dials.yaml and scale.yaml (slice 1b).
+DIALS = {dial: dial_values(dial) for dial in DIAL_NAMES}
+ARC_SHAPE = {scale: arc_shape(scale) for scale in DIALS["scale"]}   # acts, chapters, level-band span
 DESIGNER_VERSION = "dnd 3.0.0-dev"
 
 
