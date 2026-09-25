@@ -20,6 +20,7 @@ rules:
   church_field: "filled for every god at every scale; a separate faction_ church per god only in epic (errata 24.2 #11); in short and standard the field points at the religious faction or a named institution"
   premise_binding: "one god embodies the villain's answer to the tension, one the world's default; both are named in the dm-only cosmology (the critique question of item 5)"
   naming: "phonetic mode of the culture's language plus an epithet from naming.yaml patterns.god_epithet; powers get their epithet first and their name second"
+  srd_deities: "the SRD's four historical pantheons (Celtic, Greek, Egyptian, Norse: open content) as a full scaffold in `srd_deities`, each with alignment, suggested domains, symbol and the Outer Plane of its alignment; a campaign copies shapes (a sun god with Life and Light and a disk-and-serpent symbol), never a name, unless the owner asks for a historical pantheon"
 hooks_common:
   - {phase: P2, must: "every god has all the fields in rules.each_god_carries; relations form one connected web"}
   - {phase: P4, must: "the religious faction (optional in short) is a church of a god here; its true belief may differ from the god's public face"}
@@ -454,3 +455,677 @@ tables:
         tier: secret
         hooks:
           - {phase: P3, must: "the region's fixed danger tier is the god's mood"}
+
+  srd_deities:
+    note: "the SRD appendix's deity tables, verbatim fields; scaffold only"
+    rows:
+      - id: srddeity_celtic_daghdha
+        label: "The Daghdha"
+        pantheon: celtic
+        epithet: "god of weather and crops"
+        alignment: CG
+        domains: [Nature, Trickery]
+        symbol: "Bubbling cauldron or shield"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_arawn
+        label: "Arawn"
+        pantheon: celtic
+        epithet: "god of life and death"
+        alignment: NE
+        domains: [Life, Death]
+        symbol: "Black star on gray background"
+        home_plane: baseline_hades
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_belenus
+        label: "Belenus"
+        pantheon: celtic
+        epithet: "god of sun, light, and warmth"
+        alignment: NG
+        domains: [Light]
+        symbol: "Solar disk and standing stones"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_brigantia
+        label: "Brigantia"
+        pantheon: celtic
+        epithet: "goddess of rivers and livestock"
+        alignment: NG
+        domains: [Life]
+        symbol: "Footbridge"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_diancecht
+        label: "Diancecht"
+        pantheon: celtic
+        epithet: "god of medicine and healing"
+        alignment: LG
+        domains: [Life]
+        symbol: "Crossed oak and mistletoe branches"
+        home_plane: baseline_lg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_dunatis
+        label: "Dunatis"
+        pantheon: celtic
+        epithet: "god of mountains and peaks"
+        alignment: N
+        domains: [Nature]
+        symbol: "Red sun-capped mountain peak"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_goibhniu
+        label: "Goibhniu"
+        pantheon: celtic
+        epithet: "god of smiths and healing"
+        alignment: NG
+        domains: [Knowledge, Life]
+        symbol: "Giant mallet over sword"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_lugh
+        label: "Lugh"
+        pantheon: celtic
+        epithet: "god of arts, travel, and commerce"
+        alignment: CN
+        domains: [Knowledge, Life]
+        symbol: "Pair of long hands"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_manannan_mac_lir
+        label: "Manannan mac Lir"
+        pantheon: celtic
+        epithet: "god of oceans and sea creatures"
+        alignment: LN
+        domains: [Nature, Tempest]
+        symbol: "Wave of white water on green"
+        home_plane: baseline_ln
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_math_mathonwy
+        label: "Math Mathonwy"
+        pantheon: celtic
+        epithet: "god of magic"
+        alignment: NE
+        domains: [Knowledge]
+        symbol: "Staff"
+        home_plane: baseline_hades
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_morrigan
+        label: "Morrigan"
+        pantheon: celtic
+        epithet: "goddess of battle"
+        alignment: CE
+        domains: [War]
+        symbol: "Two crossed spears"
+        home_plane: baseline_ce
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_nuada
+        label: "Nuada"
+        pantheon: celtic
+        epithet: "god of war and warriors"
+        alignment: N
+        domains: [War]
+        symbol: "Silver hand on black background"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_oghma
+        label: "Oghma"
+        pantheon: celtic
+        epithet: "god of speech and writing"
+        alignment: NG
+        domains: [Knowledge]
+        symbol: "Unfurled scroll"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_celtic_silvanus
+        label: "Silvanus"
+        pantheon: celtic
+        epithet: "god of nature and forests"
+        alignment: N
+        domains: [Nature]
+        symbol: "Summer oak tree"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_zeus
+        label: "Zeus"
+        pantheon: greek
+        epithet: "god of the sky, ruler of the gods"
+        alignment: N
+        domains: [Tempest]
+        symbol: "Fist full of lightning bolts"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_aphrodite
+        label: "Aphrodite"
+        pantheon: greek
+        epithet: "goddess of love and beauty"
+        alignment: CG
+        domains: [Light]
+        symbol: "Sea shell"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_apollo
+        label: "Apollo"
+        pantheon: greek
+        epithet: "god of light, music, and healing"
+        alignment: CG
+        domains: [Knowledge, Life, Light]
+        symbol: "Lyre"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_ares
+        label: "Ares"
+        pantheon: greek
+        epithet: "god of war and strife"
+        alignment: CE
+        domains: [War]
+        symbol: "Spear"
+        home_plane: baseline_ce
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_artemis
+        label: "Artemis"
+        pantheon: greek
+        epithet: "goddess of hunting and childbirth"
+        alignment: NG
+        domains: [Life, Nature]
+        symbol: "Bow and arrow on lunar disk"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_athena
+        label: "Athena"
+        pantheon: greek
+        epithet: "goddess of wisdom and civilization"
+        alignment: LG
+        domains: [Knowledge, War]
+        symbol: "Owl"
+        home_plane: baseline_lg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_demeter
+        label: "Demeter"
+        pantheon: greek
+        epithet: "goddess of agriculture"
+        alignment: NG
+        domains: [Life]
+        symbol: "Mare’s head"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_dionysus
+        label: "Dionysus"
+        pantheon: greek
+        epithet: "god of mirth and wine"
+        alignment: CN
+        domains: [Life]
+        symbol: "Thyrsus (staff tipped with pine cone)"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_hades
+        label: "Hades"
+        pantheon: greek
+        epithet: "god of the underworld"
+        alignment: LE
+        domains: [Death]
+        symbol: "Black ram"
+        home_plane: baseline_nine_hells
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_hecate
+        label: "Hecate"
+        pantheon: greek
+        epithet: "goddess of magic and the moon"
+        alignment: CE
+        domains: [Knowledge, Trickery]
+        symbol: "Setting moon"
+        home_plane: baseline_ce
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_hephaestus
+        label: "Hephaestus"
+        pantheon: greek
+        epithet: "god of smithing and craft"
+        alignment: NG
+        domains: [Knowledge]
+        symbol: "Hammer and anvil"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_hera
+        label: "Hera"
+        pantheon: greek
+        epithet: "goddess of marriage and intrigue"
+        alignment: CN
+        domains: [Trickery]
+        symbol: "Fan of peacock feathers"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_hercules
+        label: "Hercules"
+        pantheon: greek
+        epithet: "god of strength and adventure"
+        alignment: CG
+        domains: [Tempest, War]
+        symbol: "Lion’s head"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_hermes
+        label: "Hermes"
+        pantheon: greek
+        epithet: "god of travel and commerce"
+        alignment: CG
+        domains: [Trickery]
+        symbol: "Caduceus (winged staff and serpents)"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_hestia
+        label: "Hestia"
+        pantheon: greek
+        epithet: "goddess of home and family"
+        alignment: NG
+        domains: [Life]
+        symbol: "Hearth"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_nike
+        label: "Nike"
+        pantheon: greek
+        epithet: "goddess of victory"
+        alignment: LN
+        domains: [War]
+        symbol: "Winged woman"
+        home_plane: baseline_ln
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_pan
+        label: "Pan"
+        pantheon: greek
+        epithet: "god of nature"
+        alignment: CN
+        domains: [Nature]
+        symbol: "Syrinx (pan pipes)"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_poseidon
+        label: "Poseidon"
+        pantheon: greek
+        epithet: "god of the sea and earthquakes"
+        alignment: CN
+        domains: [Tempest]
+        symbol: "Trident"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_greek_tyche
+        label: "Tyche"
+        pantheon: greek
+        epithet: "goddess of good fortune"
+        alignment: N
+        domains: [Trickery]
+        symbol: "Red pentagram"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_re_horakhty
+        label: "Re-Horakhty"
+        pantheon: egyptian
+        epithet: "god of the sun, ruler of the gods"
+        alignment: LG
+        domains: [Life, Light]
+        symbol: "Solar disk encircled by serpent"
+        home_plane: baseline_lg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_anubis
+        label: "Anubis"
+        pantheon: egyptian
+        epithet: "god of judgment and death"
+        alignment: LN
+        domains: [Death]
+        symbol: "Black jackal"
+        home_plane: baseline_ln
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_apep
+        label: "Apep"
+        pantheon: egyptian
+        epithet: "god of evil, fire, and serpents"
+        alignment: NE
+        domains: [Trickery]
+        symbol: "Flaming snake"
+        home_plane: baseline_hades
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_bast
+        label: "Bast"
+        pantheon: egyptian
+        epithet: "goddess of cats and vengeance"
+        alignment: CG
+        domains: [War]
+        symbol: "Cat"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_bes
+        label: "Bes"
+        pantheon: egyptian
+        epithet: "god of luck and music"
+        alignment: CN
+        domains: [Trickery]
+        symbol: "Image of the misshapen deity"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_hathor
+        label: "Hathor"
+        pantheon: egyptian
+        epithet: "goddess of love, music, and motherhood"
+        alignment: NG
+        domains: [Life, Light]
+        symbol: "Horned cowʼs head with lunar disk"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_imhotep
+        label: "Imhotep"
+        pantheon: egyptian
+        epithet: "god of crafts and medicine"
+        alignment: NG
+        domains: [Knowledge]
+        symbol: "Step pyramid"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_isis
+        label: "Isis"
+        pantheon: egyptian
+        epithet: "goddess of fertility and magic"
+        alignment: NG
+        domains: [Knowledge, Life]
+        symbol: "Ankh and star"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_nephthys
+        label: "Nephthys"
+        pantheon: egyptian
+        epithet: "goddess of death and grief"
+        alignment: CG
+        domains: [Death]
+        symbol: "Horns around a lunar disk"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_osiris
+        label: "Osiris"
+        pantheon: egyptian
+        epithet: "god of nature and the underworld"
+        alignment: LG
+        domains: [Life, Nature]
+        symbol: "Crook and flail"
+        home_plane: baseline_lg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_ptah
+        label: "Ptah"
+        pantheon: egyptian
+        epithet: "god of crafts, knowledge, and secrets"
+        alignment: LN
+        domains: [Knowledge]
+        symbol: "Bull"
+        home_plane: baseline_ln
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_set
+        label: "Set"
+        pantheon: egyptian
+        epithet: "god of darkness and desert storms"
+        alignment: CE
+        domains: [Death, Tempest, Trickery]
+        symbol: "Coiled cobra"
+        home_plane: baseline_ce
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_sobek
+        label: "Sobek"
+        pantheon: egyptian
+        epithet: "god of water and crocodiles"
+        alignment: LE
+        domains: [Nature, Tempest]
+        symbol: "Crocodile head with horns and plumes"
+        home_plane: baseline_nine_hells
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_egyptian_thoth
+        label: "Thoth"
+        pantheon: egyptian
+        epithet: "god of knowledge and wisdom"
+        alignment: N
+        domains: [Knowledge]
+        symbol: "Ibis"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_odin
+        label: "Odin"
+        pantheon: norse
+        epithet: "god of knowledge and war"
+        alignment: NG
+        domains: [Knowledge, War]
+        symbol: "Watching blue eye"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_aegir
+        label: "Aegir"
+        pantheon: norse
+        epithet: "god of the sea and storms"
+        alignment: NE
+        domains: [Tempest]
+        symbol: "Rough ocean waves"
+        home_plane: baseline_hades
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_balder
+        label: "Balder"
+        pantheon: norse
+        epithet: "god of beauty and poetry"
+        alignment: NG
+        domains: [Life, Light]
+        symbol: "Gem-encrusted silver chalice"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_forseti
+        label: "Forseti"
+        pantheon: norse
+        epithet: "god of justice and law"
+        alignment: N
+        domains: [Light]
+        symbol: "Head of a bearded man"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_frey
+        label: "Frey"
+        pantheon: norse
+        epithet: "god of fertility and the sun"
+        alignment: NG
+        domains: [Life, Light]
+        symbol: "Ice-blue greatsword"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_freya
+        label: "Freya"
+        pantheon: norse
+        epithet: "goddess of fertility and love"
+        alignment: NG
+        domains: [Life]
+        symbol: "Falcon"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_frigga
+        label: "Frigga"
+        pantheon: norse
+        epithet: "goddess of birth and fertility"
+        alignment: N
+        domains: [Life, Light]
+        symbol: "Cat"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_heimdall
+        label: "Heimdall"
+        pantheon: norse
+        epithet: "god of watchfulness and loyalty"
+        alignment: LG
+        domains: [Light, War]
+        symbol: "Curling musical horn"
+        home_plane: baseline_lg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_hel
+        label: "Hel"
+        pantheon: norse
+        epithet: "goddess of the underworld"
+        alignment: NE
+        domains: [Death]
+        symbol: "Woman’s face, rotting on one side"
+        home_plane: baseline_hades
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_hermod
+        label: "Hermod"
+        pantheon: norse
+        epithet: "god of luck"
+        alignment: CN
+        domains: [Trickery]
+        symbol: "Winged scroll"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_loki
+        label: "Loki"
+        pantheon: norse
+        epithet: "god of thieves and trickery"
+        alignment: CE
+        domains: [Trickery]
+        symbol: "Flame"
+        home_plane: baseline_ce
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_njord
+        label: "Njord"
+        pantheon: norse
+        epithet: "god of sea and wind"
+        alignment: NG
+        domains: [Nature, Tempest]
+        symbol: "Gold coin"
+        home_plane: baseline_elysium
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_odur
+        label: "Odur"
+        pantheon: norse
+        epithet: "god of light and the sun"
+        alignment: CG
+        domains: [Light]
+        symbol: "Solar disk"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_sif
+        label: "Sif"
+        pantheon: norse
+        epithet: "goddess of war"
+        alignment: CG
+        domains: [War]
+        symbol: "Upraised sword"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_skadi
+        label: "Skadi"
+        pantheon: norse
+        epithet: "god of earth and mountains"
+        alignment: N
+        domains: [Nature]
+        symbol: "Mountain peak"
+        home_plane: baseline_hub
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_surtur
+        label: "Surtur"
+        pantheon: norse
+        epithet: "god of fire giants and war"
+        alignment: LE
+        domains: [War]
+        symbol: "Flaming sword"
+        home_plane: baseline_nine_hells
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_thor
+        label: "Thor"
+        pantheon: norse
+        epithet: "god of storms and thunder"
+        alignment: CG
+        domains: [Tempest, War]
+        symbol: "Hammer"
+        home_plane: baseline_cg
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_thrym
+        label: "Thrym"
+        pantheon: norse
+        epithet: "god of frost giants and cold"
+        alignment: CE
+        domains: [War]
+        symbol: "White double-bladed axe"
+        home_plane: baseline_ce
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_tyr
+        label: "Tyr"
+        pantheon: norse
+        epithet: "god of courage and strategy"
+        alignment: LN
+        domains: [Knowledge, War]
+        symbol: "Sword"
+        home_plane: baseline_ln
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}
+      - id: srddeity_norse_uller
+        label: "Uller"
+        pantheon: norse
+        epithet: "god of hunting and winter"
+        alignment: CN
+        domains: [Nature]
+        symbol: "Longbow"
+        home_plane: baseline_cn
+        hooks:
+          - {phase: P2, must: "scaffold row: alignment, domains and symbol shape may be copied into a god_ entity; the name and epithet are used only when the owner asks for a historical pantheon"}

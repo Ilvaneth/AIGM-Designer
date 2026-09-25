@@ -265,6 +265,34 @@ class Floors(unittest.TestCase):
         for r in base:
             self.assertIn(r["group"], ("material", "transitive", "inner", "outer", "demiplane"), r["id"])
             self.assertTrue(r["srd"], r["id"])
+        # the sixteen Outer Planes by alignment (the SRD's rule), plus the neutral hub
+        outer = [r for r in base if r["group"] == "outer"]
+        self.assertEqual(len(outer), 17)
+        self.assertEqual({r["alignment"] for r in outer},
+                         {"LG", "LG/NG", "NG", "NG/CG", "CG", "CG/CN", "CN", "CN/CE", "CE", "CE/NE", "NE", "NE/LE",
+                          "LE", "LE/LN", "LN", "LN/LG", "N"})
+        for r in outer:
+            self.assertIn(r["tier"], ("upper", "lower", "neutral"), r["id"])
+            self.assertTrue(r["shape"], r["id"])
+        # no Product Identity plane name in the labels (the SRD's legal notice); the SRD text's own three stay
+        pi = ("celestia", "bytopia", "beastlands", "arborea", "ysgard", "limbo", "pandemonium", "abyss", "carceri",
+              "gehenna", "acheron", "mechanus", "arcadia", "outlands", "sigil")
+        for r in outer:
+            self.assertFalse(any(p in r["label"].lower() for p in pi), r["label"])
+        # the SRD's historical deities sit on the plane of their alignment
+        deities = {d["id"]: d for d in dt.rows("pantheon.yaml#srd_deities")}
+        self.assertGreaterEqual(len(deities), 60)
+        outer_ids = {r["id"]: r for r in outer}
+        domains = set(dt.load("pantheon.yaml")["rules"]["domains"])
+        for d in deities.values():
+            self.assertIn(d["home_plane"], outer_ids, d["id"])
+            self.assertEqual(outer_ids[d["home_plane"]]["alignment"], d["alignment"], d["id"])
+            self.assertTrue(set(d["domains"]) <= domains, d["id"])
+            self.assertIn(d["pantheon"], ("celtic", "greek", "egyptian", "norse"))
+            self.assertTrue(d["symbol"] and d["epithet"], d["id"])
+        for r in outer:
+            for did in r["srd_deities"]:
+                self.assertEqual(deities[did]["alignment"], r["alignment"], (r["id"], did))
         self.assertGreaterEqual(len(dt.rows("planes.yaml#deviation")), 6)
         rates = {r["id"]: r for r in dt.rows("planes.yaml#time_rate")}
         self.assertGreaterEqual(len(rates), 5)

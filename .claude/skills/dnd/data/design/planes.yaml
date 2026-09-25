@@ -1,7 +1,10 @@
 # planes.yaml — the cosmology's planes (item 5, planes). The baseline is the SRD 5.1 appendix
 # "The Planes of Existence": the Material Plane, the two Transitive Planes (Ethereal, Astral), the
-# four Elemental Planes inside the Elemental Chaos, the Outer Planes (sixteen by alignment, of which
-# the SRD names Elysium, Hades and the Nine Hells) and demiplanes. The designer decides per plane
+# four Elemental Planes inside the Elemental Chaos, the sixteen Outer Planes by alignment (the SRD
+# text names only Elysium, Hades and the Nine Hells; the other thirteen are described under labels of
+# this table's own, because their well-known names are Product Identity in the SRD's legal notice, and
+# the campaign names them anyway), a true-neutral hub if the world has one, and demiplanes. Every
+# Outer Plane row lists the SRD's historical deities of its alignment (pantheon.yaml#srd_deities). The designer decides per plane
 # whether it exists unchanged, is renamed / altered / merged / removed by a trope break, and which
 # planes are TOUCHED (scale.yaml `planes_touched`): a touched plane is a `plane_` entity with a
 # way in, a cost, a site and a time rate (`calendar.py plane enter --rate`). Untouched planes still
@@ -25,7 +28,7 @@ hooks_common:
 tables:
 
   baseline:
-    note: "the SRD appendix; `srd` is the appendix's own description in one line; ids are table rows, not registry ids"
+    note: "the SRD appendix; `srd` says what the appendix itself provides; `alignment` and `srd_deities` on Outer Plane rows follow the appendix's sixteen-by-alignment rule; ids are table rows, not registry ids"
     rows:
       - id: baseline_material
         label: The Material Plane
@@ -90,43 +93,193 @@ tables:
         touch_bias: [tone_cosmic]
         hooks:
           - {phase: P2, must: "if touched, wild magic's shape is planar bleed from it"}
-      - id: baseline_upper
-        label: The Upper Planes
+      - id: baseline_lg
+        label: "The Lawful Good Plane (the Ascending Mountain)"
         group: outer
-        srd: "the Outer Planes with some element of good; celestials dwell there"
+        alignment: "LG"
+        tier: upper
+        shape: "a mountain of ascending terraces; the lawful good dead climb it"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_diancecht, srddeity_greek_athena, srddeity_egyptian_re_horakhty, srddeity_egyptian_osiris, srddeity_norse_heimdall]
         hooks:
-          - {phase: P2, must: "the cosmology says whether any Upper Plane has a local name; a silent-gods pantheon usually removes or seals them"}
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_lg_ng
+        label: "The Lawful-Neutral Good Plane (the Twin Lands)"
+        group: outer
+        alignment: "LG/NG"
+        tier: upper
+        shape: "two lands facing each other across a sky; industry and peace"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
       - id: baseline_elysium
-        label: Elysium
+        label: "Elysium"
         group: outer
-        srd: "a neutral good Upper Plane; the appendix's example of alignment dissonance"
-        spells: [plane shift, gate]
-        hooks:
-          - {phase: P2, must: "if the afterlife is a place, this row or a renamed form of it is where the taught history sends the good dead"}
-      - id: baseline_lower
-        label: The Lower Planes
-        group: outer
-        srd: "the Outer Planes with some element of evil; fiends dwell there"
+        alignment: "NG"
+        tier: upper
+        shape: "a neutral good Upper Plane; the appendix's example of alignment dissonance"
+        srd: "named in the SRD appendix"
         spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_belenus, srddeity_celtic_brigantia, srddeity_celtic_goibhniu, srddeity_celtic_oghma, srddeity_greek_artemis, srddeity_greek_demeter, srddeity_greek_hephaestus, srddeity_greek_hestia, srddeity_egyptian_hathor, srddeity_egyptian_imhotep, srddeity_egyptian_isis, srddeity_norse_odin, srddeity_norse_balder, srddeity_norse_frey, srddeity_norse_freya, srddeity_norse_njord]
         hooks:
-          - {phase: P2, must: "the cosmology says which Lower Plane the fiends of this world come from, if any"}
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_ng_cg
+        label: "The Neutral-Chaotic Good Plane (the Beast Wilds)"
+        group: outer
+        alignment: "NG/CG"
+        tier: upper
+        shape: "an endless wilderness where every animal is a lord"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_cg
+        label: "The Chaotic Good Plane (the Revels)"
+        group: outer
+        alignment: "CG"
+        tier: upper
+        shape: "forests and halls of unending feast and song"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_daghdha, srddeity_greek_aphrodite, srddeity_greek_apollo, srddeity_greek_hercules, srddeity_greek_hermes, srddeity_egyptian_bast, srddeity_egyptian_nephthys, srddeity_norse_odur, srddeity_norse_sif, srddeity_norse_thor]
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_cg_cn
+        label: "The Chaotic Good-Neutral Plane (the Fields of Contest)"
+        group: outer
+        alignment: "CG/CN"
+        tier: upper
+        shape: "floating lands of endless battle where the fallen rise at dusk"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_cn
+        label: "The Chaotic Neutral Plane (the Formless Sea)"
+        group: outer
+        alignment: "CN"
+        tier: neutral
+        shape: "raw possibility; matter obeys whoever wills hardest"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_lugh, srddeity_greek_dionysus, srddeity_greek_hera, srddeity_greek_pan, srddeity_greek_poseidon, srddeity_egyptian_bes, srddeity_norse_hermod, srddeity_norse_uller]
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_cn_ce
+        label: "The Chaotic Neutral-Evil Plane (the Howling Caverns)"
+        group: outer
+        alignment: "CN/CE"
+        tier: lower
+        shape: "tunnels of wind that drives visitors mad"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_ce
+        label: "The Chaotic Evil Plane (the Bottomless Pits)"
+        group: outer
+        alignment: "CE"
+        tier: lower
+        shape: "layers without end, each a demon lord's country"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_morrigan, srddeity_greek_ares, srddeity_greek_hecate, srddeity_egyptian_set, srddeity_norse_loki, srddeity_norse_thrym]
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_ce_ne
+        label: "The Chaotic-Neutral Evil Plane (the Prison Orbs)"
+        group: outer
+        alignment: "CE/NE"
+        tier: lower
+        shape: "nested spheres of prison; nothing that enters is meant to leave"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
       - id: baseline_hades
-        label: Hades
+        label: "Hades"
         group: outer
-        srd: "an Outer Plane named by the appendix among the realms of the dead"
-        spells: [plane shift, gate]
-        touch_bias: [tone_grimdark]
+        alignment: "NE"
+        tier: lower
+        shape: "an Outer Plane named by the appendix; the grey country of the hopeless dead"
+        srd: "named in the SRD appendix"
+        spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_arawn, srddeity_celtic_math_mathonwy, srddeity_egyptian_apep, srddeity_norse_aegir, srddeity_norse_hel]
         hooks:
-          - {phase: P2, must: "if touched, it is the realm of the dead the folk fear, under a local name"}
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_ne_le
+        label: "The Neutral-Lawful Evil Plane (the Furnace Mountains)"
+        group: outer
+        alignment: "NE/LE"
+        tier: lower
+        shape: "volcanic slopes where everything is for sale"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
       - id: baseline_nine_hells
-        label: The Nine Hells
+        label: "The Nine Hells"
         group: outer
-        srd: "an Outer Plane of nine layers; the appendix's example of distance meaning nothing"
-        spells: [plane shift, gate]
-        touch_bias: [tone_political]
+        alignment: "LE"
+        tier: lower
+        shape: "an Outer Plane of nine layers; the appendix's example of distance meaning nothing"
+        srd: "named in the SRD appendix"
+        spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_greek_hades, srddeity_egyptian_sobek, srddeity_norse_surtur]
         hooks:
-          - {phase: P2, must: "if touched, its contracts are the way in and the cost; break_fiends_keep_the_banks fits here"}
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_le_ln
+        label: "The Lawful Evil-Neutral Plane (the Colliding Iron)"
+        group: outer
+        alignment: "LE/LN"
+        tier: lower
+        shape: "iron cubes grinding against each other, armies on every face"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_ln
+        label: "The Lawful Neutral Plane (the Plane of Gears)"
+        group: outer
+        alignment: "LN"
+        tier: neutral
+        shape: "a machine the size of a world; law without mercy or malice"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_manannan_mac_lir, srddeity_greek_nike, srddeity_egyptian_anubis, srddeity_egyptian_ptah, srddeity_norse_tyr]
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_ln_lg
+        label: "The Lawful Neutral-Good Plane (the Ordered Orchards)"
+        group: outer
+        alignment: "LN/LG"
+        tier: upper
+        shape: "fields in perfect rows; the harvest is a law"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: []
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+      - id: baseline_hub
+        label: "The True Neutral Plane (the Hub)"
+        group: outer
+        alignment: "N"
+        tier: neutral
+        shape: "a plane between the sixteen, if this world has one; the appendix's sixteen exclude neutrality"
+        srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
+        spells: [plane shift, gate, banishment]
+        srd_deities: [srddeity_celtic_dunatis, srddeity_celtic_nuada, srddeity_celtic_silvanus, srddeity_greek_zeus, srddeity_greek_tyche, srddeity_egyptian_thoth, srddeity_norse_forseti, srddeity_norse_frigga, srddeity_norse_skadi]
+        hooks:
+          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
       - id: baseline_demiplane
         label: Demiplanes
         group: demiplane
