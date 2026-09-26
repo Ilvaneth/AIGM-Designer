@@ -255,5 +255,59 @@ class PlayPack(unittest.TestCase):
         self.assertEqual(self.c.json("design/design.json")["prep"]["note_tr"], "Tolvan'ın işi sürüyor")
 
 
+class ReferenceParty(unittest.TestCase):
+    """Item 9.9: a boss is sized against the tier's reference party, never the actual party."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.c = TestCampaign("burst")
+
+    def tearDown(self):
+        self.c.remove()
+        self.guard.__exit__(None, None, None)
+
+    def burst(self, *args):
+        proc = subprocess.run([sys.executable, "-X", "utf8", str(SCRIPTS / "burst_check.py"), "--campaign", self.c.name, *args],
+                              capture_output=True, text=True, env=self.c.env, encoding="utf-8")
+        return proc
+
+    def test_reference_mode_sizes_by_tier_and_party_dial(self):
+        proc = self.burst("--reference", "--tier", "3", "--target-hp", "100")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("Party: 2 PC(s) at level 12 (tier 3's intended level)", proc.stdout, "the fixture's party dial is 2")
+        self.assertIn("combined one round: 148 avg", proc.stdout)
+        self.assertIn("HP floor for 3 rounds before resistances: 444", proc.stdout)
+        self.assertIn("DIES TO THE OPENING ROUND", proc.stdout)
+        ok = self.burst("--reference", "--tier", "1", "--size", "4", "--target-hp", "300")
+        self.assertIn("Party: 4 PC(s) at level 3", ok.stdout)
+        self.assertIn("Passes the multi-round bar", ok.stdout)
+        bad = self.burst("--reference")
+        self.assertEqual(bad.returncode, 2)
+
+
+class PlayRegistration(unittest.TestCase):
+    """Item 21.C `npc`: an entity that appears in play must register; the validator and the index see it."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.c = TestCampaign("register")
+
+    def tearDown(self):
+        self.c.remove()
+        self.guard.__exit__(None, None, None)
+
+    def test_a_play_registered_npc_passes_the_validator_and_reaches_the_index(self):
+        self.c.run("registry.py", "add", "--type", "npc", "--name", "Bram Kestrel", "--summary", "Rıhtımda kayık kiralayan asık suratlı adam.",
+                   "--origin", "play", check=True)
+        pub = self.c.json("design/entities.json")["entities"]
+        self.assertEqual(pub["npc_bram_kestrel"]["origin"], "play")
+        findings = json.loads(self.c.run("design_check.py", "--modules", "refs", "--json", check=True).stdout)
+        self.assertFalse([f for f in findings if f.get("entity") == "npc_bram_kestrel"], "no file yet is not an error for a play-registered row")
+        self.c.run("render_dm.py", "npcs", check=True)
+        self.assertIn("| Bram Kestrel | npc_bram_kestrel |", self.c.path("npcs.md").read_text(encoding="utf-8"))
+        dup = self.c.run("registry.py", "add", "--type", "npc", "--name", "Sarven", "--summary", "x", "--origin", "play")
+        self.assertEqual(dup.returncode, 1, "a name the registry holds is refused")
+
+
 if __name__ == "__main__":
     unittest.main()

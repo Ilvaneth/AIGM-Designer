@@ -36,7 +36,14 @@ Usage:
 
     python3 burst_check.py --campaign ashen-crown --characters "Kriv Shestendeliath,Ilvaneth Duskmere"
         Restrict to named characters instead of every sheet in characters/.
+
+    python3 burst_check.py --campaign salt-lantern --reference --tier 3 [--size 4] [--level 12] --target-hp 240
+        The designer's mode (plan item 9.9, 13.3; slice 1d): the world does not scale, so a boss is
+        sized against a REFERENCE party at the tier's intended level, never the actual party. No
+        sheets are read; a per-level nova table stands in for them. Prints the rounds the boss
+        survives against that party and the HP floor the checklist wants (three rounds).
 """
+
 
 from __future__ import annotations
 
@@ -50,6 +57,15 @@ import os
 import re
 
 from paths import find_campaign as _find_campaign
+
+
+# Slice 1d: a reference PC's worst-case single-target burst by level (average damage, an optimised but
+# not degenerate build: extra attacks, smites / sneak attack / action surge, the highest slot), used
+# when no real sheets may be consulted. Tier → the level the tier is intended for.
+REFERENCE_BURST = {1: 10, 2: 14, 3: 20, 4: 24, 5: 34, 6: 38, 7: 42, 8: 48, 9: 54, 10: 58,
+                   11: 70, 12: 74, 13: 80, 14: 84, 15: 92, 16: 96, 17: 106, 18: 110, 19: 116, 20: 122}
+TIER_LEVEL = {1: 3, 2: 7, 3: 12, 4: 16, 5: 19}
+CHECKLIST_ROUNDS = 3
 
 
 def _characters_dir(campaign: str) -> str:
@@ -198,9 +214,52 @@ def cmd_check(campaign: str, characters: list[str] | None, vs: str | None,
     print()
 
 
+def cmd_reference(campaign: str, tier: int | None, level: int | None, size: int | None, target_hp: float | None) -> int:
+    if level is None:
+        if tier not in TIER_LEVEL:
+            print("  ! --reference needs --tier 1-5 or --level 1-20")
+            return 2
+        level = TIER_LEVEL[tier]
+    level = max(1, min(20, int(level)))
+    if size is None:
+        size = 4
+        try:
+            import json
+            from paths import find_campaign
+            manifest = json.loads((find_campaign(campaign) / "design" / "design.json").read_text(encoding="utf-8"))
+            size = int((manifest.get("dials") or {}).get("party_size") or 4)
+        except Exception:
+            pass
+    per_pc = REFERENCE_BURST[level]
+    party = per_pc * size
+    print(f"\n{'='*68}")
+    print(f"  REFERENCE-PARTY NOVA CHECK — {campaign}")
+    print(f"  Party: {size} PC(s) at level {level}" + (f" (tier {tier}'s intended level)" if tier and level == TIER_LEVEL.get(tier) else ""))
+    print(f"  Per PC worst-case single-target burst: {per_pc} avg · combined one round: {party} avg")
+    print(f"  The world does not scale: this party, never the actual one, sizes the boss (plan 9.9).")
+    print(f"{'='*68}")
+    floor = party * CHECKLIST_ROUNDS
+    print(f"  HP floor for {CHECKLIST_ROUNDS} rounds before resistances: {floor}  (with resistance to the party's main damage type the effective floor halves)")
+    if target_hp is not None:
+        rounds = target_hp / party if party else 0
+        print(f"  Target HP: {target_hp:.0f} → survives about {rounds:.1f} round(s) of nova")
+        if rounds < 1:
+            print("  ⚠ DIES TO THE OPENING ROUND against the reference party — raise HP, add a resistance profile or a phase trigger.")
+        elif rounds < CHECKLIST_ROUNDS:
+            print(f"  ⚠ Under the checklist's {CHECKLIST_ROUNDS} rounds — terrain, attrition before the room or Legendary Resistance must carry the rest.")
+        else:
+            print("  Passes the multi-round bar against the reference party.")
+    print()
+    return 0
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description="Solo boss nova-ceiling check from party Burst Reference tables.")
     p.add_argument("--campaign", required=True)
+    p.add_argument("--reference", action="store_true", help="size against the tier's reference party, not the sheets")
+    p.add_argument("--tier", type=int, help="--reference: the site's danger tier (1-5)")
+    p.add_argument("--level", type=int, help="--reference: override the tier's intended level")
+    p.add_argument("--size", type=int, help="--reference: party size (default: the campaign's dial, else 4)")
     p.add_argument("--characters", help="Comma-separated character names (default: everyone in characters/)")
     p.add_argument("--vs", help="Only count scenarios whose Scenario/Target text matches this (e.g. 'undead')")
     p.add_argument("--target-hp", type=float, help="Boss HP to check the margin against")
@@ -209,6 +268,8 @@ def main() -> None:
                         "but AoE rows are included by default since a boss can still stand in one)")
     args = p.parse_args()
 
+    if args.reference:
+        raise SystemExit(cmd_reference(args.campaign, args.tier, args.level, args.size, args.target_hp))
     characters = [c.strip() for c in args.characters.split(",")] if args.characters else None
     cmd_check(args.campaign, characters, args.vs, args.target_hp, args.single_target_only)
 

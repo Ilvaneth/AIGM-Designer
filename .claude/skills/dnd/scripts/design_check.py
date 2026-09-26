@@ -175,8 +175,8 @@ def check_refs(b: Bible, only: str | None) -> list[Finding]:
             continue
         f = ent.get("file")
         if not f:
-            if b.is_pending(ent):
-                continue
+            if b.is_pending(ent) or ent.get("origin") == "play":
+                continue        # a play-registered entity (registry.py add --origin play) lives in the index and state.md until detail writes its file
             E(eid, "no_file", "no prose file and not pending")
             continue
         p = b.root / f
