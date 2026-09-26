@@ -92,6 +92,12 @@ class Docs(unittest.TestCase):
         for name in ("player", "judge_playtest", "judge_readability", "judge_uniqueness"):
             self.assertTrue((SKILL / "prompts" / "play" / f"{name}.md").is_file(), name)
 
+    def test_critique_analysis_is_documented(self):
+        self.assertIn("design_critique_stats.py", read("SKILL-scripts.md"))
+        self.assertIn("The registry door", read("SKILL-scripts.md"))
+        self.assertIn("at the registry door", read("SKILL-design.md"))
+        self.assertTrue((PROJECT / "docs" / "reports" / "critique-analysis-1.md").is_file())
+
     def test_guard_cites_a_heading_that_exists(self):
         guard = (SCRIPTS / "hooks" / "design_read_guard.py").read_text(encoding="utf-8")
         m = re.search(r'RULE_REF = \'SKILL\.md, "([^"]+)"\'', guard)
