@@ -9,6 +9,7 @@ import json
 import subprocess
 import sys
 import unittest
+from pathlib import Path
 
 from _campaign import TestCampaign, MarkerGuard, SCRIPTS
 
@@ -133,6 +134,125 @@ class RenderDm(unittest.TestCase):
         self.assertIn("| site |", text)
         self.assertIn("| P6 | approved |", text)
         self.assertNotIn("Nerun", text)
+
+
+class PlayPack(unittest.TestCase):
+    """The designer in play (items 13.1-13.6, 12.3, 16.3): the load pack, the scene pack, prep, detail through the
+    birth machinery, the spotlight ledger, the end pack's fixed order."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.c = TestCampaign("play")
+        from paths import runtime_dir
+        self.marker = runtime_dir() / "active-design.json"
+
+    def tearDown(self):
+        self.c.remove()
+        self.guard.__exit__(None, None, None)
+
+    def pub(self):
+        return self.c.json("design/entities.json")["entities"]
+
+    def test_load_pack_lists_what_load_must_not_miss(self):
+        proc = self.c.run("designer.py", "load-pack", "--json", check=True)
+        p = json.loads(proc.stdout)
+        self.assertEqual(p["location"], "settlement_lanternside")
+        ids = [r["id"] for r in p["detail_needed"]]
+        self.assertEqual(ids[0], "site_tide_cave", "a skeleton one day away is the first detail needed")
+        self.assertIn("site_bottomless_well", ids, "a rumour pointed at it (news_0003)")
+        self.assertNotIn("site_sunken_pier", ids, "already detailed")
+        self.assertEqual(p["chapter_file"], "design/chapters/chapter_1.md")
+        self.assertEqual([x["id"] for x in p["threads"]], ["thread_selen", "thread_vorin"])
+        news = {n["id"] for n in p["news"]}
+        self.assertIn("news_0001", news)
+        self.assertNotIn("news_0003", news, "reaches Reedham only")
+        self.assertEqual(p["pending_scenes"], [])
+        text = self.c.run("designer.py", "load-pack", check=True).stdout
+        self.assertIn("Detail gerekli:", text)
+        self.assertIn("site_tide_cave", text)
+        self.assertIn("thread_selen → design/threads/thread_selen.md", text)
+
+    def test_scene_enter_bundles_the_place_and_marks_it_seen(self):
+        proc = self.c.run("designer.py", "scene", "--enter", "Weary Gull", "--hours", "2", "--json", check=True)
+        p = json.loads(proc.stdout)
+        self.assertEqual(p["id"], "place_weary_gull")
+        here = [nid for nid, n in self.pub().items() if n.get("type") == "npc" and n.get("location_at_birth") == "place_weary_gull"]
+        self.assertEqual({n["id"] for n in p["npcs"] if n["here"]}, set(here))
+        self.assertTrue(p["news"])
+        self.assertEqual(p["hours"], 2)
+        ov = self.c.json("design/overlay.json")["entries"]["place_weary_gull"]["seen_in_play"]
+        self.assertIs(ov["value"], True)
+        site = json.loads(self.c.run("designer.py", "scene", "--enter", "site_tide_cave", "--json", check=True).stdout)
+        self.assertEqual(site["site"]["status"], "skeleton")
+        self.assertIn("detail site_tide_cave", site["warning"])
+        self.assertTrue(site["site"]["telegraphs"])
+        text = self.c.run("designer.py", "scene", "--enter", "site_tide_cave", check=True).stdout
+        self.assertIn("⚠", text)
+        self.assertIn("telegraf:", text)
+
+    def test_prep_ranks_candidates_records_them_and_warns_over_tier(self):
+        proc = self.c.run("designer.py", "prep", "--day", "0", "--intent", "Blind Lantern'e gidecekler", "--json", check=True)
+        p = json.loads(proc.stdout)
+        ids = [c["id"] for c in p["candidates"]]
+        self.assertEqual(ids[0], "site_blind_lantern", "the stated destination comes first")
+        self.assertIn("hedef olarak söylendi", p["candidates"][0]["reasons"])
+        self.assertIn("site_tide_cave", ids)
+        well = next((c for c in p["candidates"] if c["id"] == "site_bottomless_well"), None)
+        self.assertIsNotNone(well)
+        self.assertIn("üst kademe", well["warning"])
+        recorded = self.c.json("design/design.json")["prep"]
+        self.assertEqual([c["id"] for c in recorded["candidates"]], ids)
+        pack = json.loads(self.c.run("designer.py", "load-pack", "--json", check=True).stdout)
+        self.assertEqual([c["id"] for c in pack["prepped"]], ids)
+
+    def test_detail_runs_through_the_birth_machinery(self):
+        proc = self.c.run("designer.py", "detail", "site_tide_cave", "--trigger", "prep", "--day", "0", "--json", check=True)
+        out = json.loads(proc.stdout[proc.stdout.index("{"):])
+        self.assertEqual(out["workflow"], "design-fanout")
+        self.assertIsNone(out["phase_critic"])
+        e = out["entities"][0]
+        self.assertIn("render detail.site --id site_tide_cave", e["prompt_cmd"])
+        self.assertIn("--phase detail", e["prompt_cmd"])
+        self.assertIn("design/news.json", e["files"])
+        marker = json.loads(self.marker.read_text(encoding="utf-8"))
+        self.assertEqual(marker["mode"], "detail")
+        prompt = Path(e["prompt_file"]).read_text(encoding="utf-8")
+        self.assertIn("design/_staging/detail/site_tide_cave.json", prompt)
+        critic = Path(e["critic_file"]).read_text(encoding="utf-8")
+        self.assertIn("rubric_p6", critic.lower(), "a detailed site is judged by P6's rubric")
+        self.assertIn("design/_staging/detail/site_tide_cave.critic1.json", critic)
+        log = self.c.json("design/design.json")["detail_log"][-1]
+        self.assertEqual((log["id"], log["status"], log["trigger"]), ("site_tide_cave", "begun", "prep"))
+        # the agent's fragment: the row with its stamps unchanged, the overlay asking for detailed
+        row = dict(self.pub()["site_tide_cave"])
+        frag = {"schema_version": 1, "id": "site_tide_cave", "type": "site", "phase": "detail", "attempt": 1, "mode": "detail",
+                "agent": "detail.site_tide_cave.a1", "prose": {"file": row["file"]}, "dm_only_prose": None, "registry": row,
+                "overlay": {"status": "detailed"}, "graph": {"nodes": [], "edges": []}, "seeds": [], "counts": {"rooms": 11}, "status": "staged"}
+        self.c.write_json("design/_staging/detail/site_tide_cave.json", frag)
+        fin = self.c.run("designer.py", "detail", "site_tide_cave", "--finish", "--day", "0")
+        self.assertIn("detail site_tide_cave finished", fin.stdout, fin.stderr)
+        ov = self.c.json("design/overlay.json")["entries"]["site_tide_cave"]["status"]["value"]
+        self.assertEqual(ov, "detailed")
+        log = self.c.json("design/design.json")["detail_log"][-1]
+        self.assertEqual(log["status"], "finished")
+        self.assertFalse(self.marker.is_file(), "the guard is disarmed after the merge")
+        self.assertTrue(self.c.path("design/_staging/detail/merged/site_tide_cave.json").is_file())
+
+    def test_spotlight_ledger_flags_imbalance(self):
+        proc = self.c.run("designer.py", "spotlight", "--session", "1", "--scenes", "thread_selen=4,thread_vorin=1", check=True)
+        self.assertIn("spotlight dengesiz", proc.stdout)
+        proc = self.c.run("designer.py", "spotlight", "--session", "2", "--scenes", "thread_selen=2,thread_vorin=3", check=True)
+        self.assertNotIn("dengesiz", proc.stdout, "6 vs 4 over two sessions is within 35%")
+        pack = json.loads(self.c.run("designer.py", "load-pack", "--json", check=True).stdout)
+        self.assertEqual(pack["spotlight"]["totals"], {"thread_selen": 6, "thread_vorin": 4})
+
+    def test_end_pack_runs_tick_sweep_then_prep(self):
+        proc = self.c.run("designer.py", "end-pack", "--day", "3", "--session", "1", "--note", "Tolvan'ın işi sürüyor", check=True)
+        out = proc.stdout
+        self.assertLess(out.index("[factions tick]"), out.index("[factions sweep]"))
+        self.assertLess(out.index("[factions sweep]"), out.index("designer prep"))
+        self.assertIn("[design_check --fast]", out)
+        self.assertEqual(self.c.json("design/design.json")["prep"]["note_tr"], "Tolvan'ın işi sürüyor")
 
 
 if __name__ == "__main__":

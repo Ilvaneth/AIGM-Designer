@@ -30,6 +30,8 @@ CLI:
   designer.py -c CAMP status [--json]
   designer.py -c CAMP abandon --reason TEXT                 retire names and used rows, disarm
   designer.py -c CAMP commit --message TEXT                 design(<campaign>): commit, path-scoped
+  designer.py -c CAMP load-pack | scene --enter ID | prep | detail ID [--finish] | spotlight | end-pack
+                                                             the designer in play (play_pack.py; slice 1d)
 
 Auto-approve (owner decision 2026-09-25): a campaign initialised with --fixture or named
 `_test-*` carries `_meta.auto_approve: true`; `approve` then needs no `onay` and no `devam`.
@@ -58,6 +60,7 @@ import design_dice as dd  # noqa: E402
 import design_manifest as dm  # noqa: E402
 import design_prompts as dp  # noqa: E402
 import design_tables as dt  # noqa: E402
+import play_pack  # noqa: E402
 from design_io import (campaign_dir, design_dir, dm_only_dir, is_fragment, now_iso, read_json,  # noqa: E402
                        sha256_file, stamp_meta, write_json_atomic)
 from paths import runtime_dir  # noqa: E402
@@ -1161,6 +1164,7 @@ def main(argv=None) -> int:
     ab.add_argument("--reason", required=True)
     cm = sub.add_parser("commit")
     cm.add_argument("--message", required=True)
+    play_pack.add_subparsers(sub)
 
     a = ap.parse_args(argv)
     if a.verb == "new":
@@ -1210,6 +1214,8 @@ def main(argv=None) -> int:
         sha = design_commit(c, a.message)
         print(f"designer: commit {sha}" if sha else "designer: nothing to commit (or the campaign is git-ignored)")
         return 0
+    if a.verb in ("load-pack", "scene", "prep", "detail", "spotlight", "end-pack"):
+        return play_pack.dispatch(c, a)
     return 2
 
 

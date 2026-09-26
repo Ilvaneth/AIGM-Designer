@@ -35,7 +35,7 @@ SCHEMAS_DIR = PROMPTS_DIR / "schemas"
 ROLES = ("skeleton", "writer", "critic", "phase_critic", "ask")
 PLACEHOLDERS = {
     "campaign", "campaign_dir", "skill_dir", "phase", "attempt", "lang", "dials", "scale", "scale_line", "seed",
-    "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions",
+    "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions", "staging_phase",
     "wishes", "template", "prose_path", "mirror_path", "fragment_path", "notes_path", "rubrics", "common",
     "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order",
 }
@@ -52,6 +52,8 @@ TEMPLATES = {"npc": "npc.md", "site": "site-skeleton.md", "site_detailed": "site
              "premise": "premise.md", "cosmology": "cosmology.md", "arc": "arc.md", "calculus": "consequence-calculus.md",
              "primer": "primer.md", "report": "report.md"}
 
+
+DETAIL_BIRTH_PHASE = {"site": "P6", "settlement": "P3", "npc": "P5", "chapter": "P7"}   # a detail prompt's rolls and rubric
 
 PROMPT_BY_PHASE = {  # phase -> (skeleton prompt, [(id prefix, writer prompt)...]); the first prefix match wins
     "P1": (None, [("premise_", "P1.premise")]),
@@ -199,12 +201,21 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
     fm, body = load(name)
     manifest = dm.load(campaign)
     phase = str(fm.get("phase") or "")
-    if phase not in dm.PHASES:
+    projection_early = (read_json(design_dir(campaign) / "entities.json") or {}).get("entities", {})
+    etype_early = (projection_early.get(entity_id or "", {}).get("type") or (entity_id or "").split("_", 1)[0])
+    staging_phase = None
+    if phase == "detail" or phase_override == "detail":
+        # a detail prompt (play, slice 1d): the rolls and the rubric are the entity's birth phase, the fragment
+        # and the notes go to design/_staging/detail/
+        staging_phase = "detail"
+        phase = DETAIL_BIRTH_PHASE.get(etype_early, "P6")
+    elif phase not in dm.PHASES:
         # an all-phase prompt (the critics) serves the phase the conductor names, else the entity's phase;
         # tuning birth 1 rendered every critic for "Phase all" with the three special rubrics only
         phase = phase_override or str(manifest.get("entities", {}).get(entity_id or "", {}).get("phase") or "")
         if phase not in dm.PHASES and str(fm.get("role") or "") in ("critic", "phase_critic"):
             raise SystemExit(f"design_prompts: {name} is an all-phase prompt; pass --phase PN (entity {entity_id or '-'} has no phase)")
+    staging_phase = staging_phase or phase
     kind = str(fm.get("kind") or "")
     role = str(fm.get("role") or "")
     ph = manifest["phases"].get(phase) or {}
@@ -222,7 +233,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         directions += (f"\n- **Attempt {attempt}:** your previous fragment was refused by the registry — {erow['last_error']} "
                        "Repair exactly that; everything else stays as it was.")
     ctx = {
-        "campaign": campaign, "campaign_dir": str(campaign_dir(campaign)).replace("\\", "/"),
+        "campaign": campaign, "staging_phase": staging_phase, "campaign_dir": str(campaign_dir(campaign)).replace("\\", "/"),
         "skill_dir": str(skill_root()).replace("\\", "/"), "phase": phase, "attempt": str(attempt), "lang": d["lang"],
         "dials": dials_line(manifest), "scale": d["scale"], "scale_line": scale_line(manifest, phase) if phase in dm.PHASES else "",
         "seed": manifest["seed"]["master"], "entity_id": entity_id or "(skeleton)", "entity_type": (entity_id or kind).split("_", 1)[0],
@@ -231,8 +242,8 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "rolls": mine, "phase_rolls": all_rolls, "directions": question if question else directions,
         "wishes": f"must: {', '.join(d['wishes']['must']) or '—'}; must not: {', '.join(d['wishes']['must_not']) or '—'}",
         "template": paths["template"], "prose_path": paths["prose_path"], "mirror_path": paths["mirror_path"],
-        "fragment_path": f"design/_staging/{phase}/{entity_id or 'skeleton'}.json",
-        "notes_path": f"design/_staging/{phase}/{entity_id or 'skeleton'}.notes.md",
+        "fragment_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.json",
+        "notes_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.notes.md",
         "rubrics": rubric_lines(phase, scope, critic_order) if role in ("critic", "phase_critic") else "",
         "common": common_text(), "schema": schema_text(str(fm.get("schema") or "writer")),
         "agent_label": f"{phase}.{entity_id or role}.a{attempt}", "roster": ", ".join(ph.get("roster") or []) or "(none yet)",
