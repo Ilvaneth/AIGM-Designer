@@ -53,7 +53,32 @@ class LeakScan(unittest.TestCase):
         self.assertNotIn(sentence[:30], proc.stdout, "a hit is reported by length, never by text")
         out = json.loads(self.c.run("design_leak_scan.py", "--json").stdout)
         self.assertGreaterEqual(out["hits"], 1)
+        world.write_text(world.read_text(encoding="utf-8").replace(sentence, ""), encoding="utf-8")
+        prompts = self.c.path("design/_prompts/P1")
+        prompts.mkdir(parents=True, exist_ok=True)
+        (prompts / "premise.md").write_text("## Secret\n\nthe rendered instructions say the word\n", encoding="utf-8")
+        self.assertEqual(self.c.run("design_leak_scan.py").returncode, 0, "rendered prompts are not artifacts (dry run 1: 76 false hits)")
         self.assertEqual([r["file"] for r in out["results"]], ["world.md"], "one artifact leaks, and it is the one we planted in")
+
+
+class ValidatorAfterDryRun(unittest.TestCase):
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.c = TestCampaign("val1")
+
+    def tearDown(self):
+        self.c.remove()
+        self.guard.__exit__(None, None, None)
+
+    def test_map_only_links_resolve_and_generated_files_need_no_front_matter(self):
+        f = self.c.path("design/factions/faction_reedmarch.md")
+        f.write_text(f.read_text(encoding="utf-8") + "\n- Dalgakıran: [[landmark_broken_breakwater]] (haritada bir simge yer).\n", encoding="utf-8")
+        self.c.run("render_dm.py", "index", "report", check=True)
+        self.c.run("map_travel.py", "travel-times", check=True)
+        findings = json.loads(self.c.run("design_check.py", "--modules", "refs,secrecy", "--json", check=True).stdout)
+        self.assertFalse([x for x in findings if x["code"] in ("dangling_link", "dangling_ref") and "landmark_" in x["message"]])
+        self.assertFalse([x for x in findings if x["code"] == "file_no_secrecy" and any(g in x["message"] for g in ("index.md", "report.md", "travel-times.md"))])
 
 
 class Compare(unittest.TestCase):

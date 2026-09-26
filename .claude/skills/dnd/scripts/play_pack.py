@@ -113,10 +113,38 @@ def region_of(pub: dict, eid: str | None) -> str | None:
     return e.get("region") or pub.get(e.get("settlement") or "", {}).get("region")
 
 
-def news_for(campaign: str, pub: dict, here: str | None, day: int, days_back: int = 7, limit: int = 5) -> list[dict]:
+def pack_locations(campaign: str, day: int) -> dict:
+    """Days 0-1: the session-1 pack's "who is where" table (`| [[npc_x]] | morning | evening | night |`) places the
+    NPCs; the registry's location_at_birth is only the fallback (dry run 1: the Counting House bundle listed a
+    factor's superior who, by the pack, was elsewhere). Returns npc id -> place id, or None for "nowhere named"."""
+    if day > 1:
+        return {}
+    p = design_dir(campaign) / "session-1.md"
+    if not p.is_file():
+        return {}
+    cal = read_json(campaign_dir(campaign) / "calendar.json") or {}
+    tod = str(cal.get("time") or "").lower()
+    col = 3 if any(k in tod for k in ("night", "midnight", "late")) else 2 if any(k in tod for k in ("even", "dusk")) else 1
+    out: dict = {}
+    for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
+        m = re.match(r"^\|\s*\[\[(npc_[a-z0-9_]+)\]\]\s*\|(.*)\|\s*$", line)
+        if not m:
+            continue
+        cells = [c.strip() for c in m.group(2).split("|")]
+        if not cells:
+            continue
+        cell = cells[min(col, len(cells)) - 1]
+        link = re.search(r"\[\[((?:place|settlement|site|district|region)_[a-z0-9_]+)\]\]", cell)
+        out[m.group(1)] = link.group(1) if link else None
+    return out
+
+
+def news_for(campaign: str, pub: dict, here: str | None, day: int, days_back: int = 7, limit: int = 5, exclude: set | None = None) -> list[dict]:
     reach = {here, region_of(pub, here)} - {None}
     out = []
     for r in news_records(campaign):
+        if exclude and r.get("id") in exclude:
+            continue
         if not (day - days_back <= int(r.get("day", 0)) <= day):
             continue
         if r.get("visibility") not in ("public", "rumored"):
@@ -293,21 +321,31 @@ def scene_enter(campaign: str, target: str, hours: int | None, present: list[str
     e = pub[eid]
     settlement = e.get("settlement") if e.get("type") in ("place", "district") else (eid if e.get("type") == "settlement" else None)
     here = settlement or eid
+    placed = pack_locations(campaign, day)
     npcs = []
     for nid, n in sorted(pub.items()):
         if n.get("type") != "npc":
             continue
         loc_rec = ((overlay.get("entries") or {}).get(nid) or {}).get("location")
-        loc = loc_rec.get("value") if loc_rec else n.get("location_at_birth")
+        loc = loc_rec.get("value") if loc_rec else (placed[nid] if nid in placed else n.get("location_at_birth"))
         alive_rec = ((overlay.get("entries") or {}).get(nid) or {}).get("alive")
         alive = alive_rec.get("value") if alive_rec else "alive"
         if loc == eid or nid in present:
             npcs.append({"id": nid, "name": n.get("name"), "role": n.get("role"), "faction": n.get("faction"), "alive": alive,
                          "file": n.get("file"), "here": loc == eid})
+    # a news line is voiced once per campaign (dry run 1: the same three day-0 lines came back at every scene)
+    m = dm.load(campaign)
+    voiced = m.setdefault("news_voiced", {})
+    fresh = news_for(campaign, pub, here, day, limit=3, exclude=set(voiced))
+    for r in fresh:
+        voiced[r.get("id")] = {"day": day, "at": eid}
+    if fresh:
+        dm.save(campaign, m, "designer.py scene --enter")
     pack = {"campaign": campaign, "day": day, "session": session, "id": eid, "type": e.get("type"), "name": e.get("name"),
             "summary": e.get("summary"), "kind": e.get("kind"), "settlement": settlement, "region": region_of(pub, eid),
             "file": e.get("file"), "dm_only_file": None, "npcs": npcs,
-            "news": [{"id": r.get("id"), "day": r.get("day"), "line_tr": r.get("line_tr")} for r in news_for(campaign, pub, here, day, limit=3)],
+            "news": [{"id": r.get("id"), "day": r.get("day"), "line_tr": r.get("line_tr")} for r in fresh],
+            "news_already_voiced": len([r for r in news_for(campaign, pub, here, day, limit=20) if r.get("id") in voiced]),
             "hours": hours}
     if e.get("file"):
         mirror = dm_only_dir(campaign) / Path(e["file"]).relative_to("design") if str(e["file"]).startswith("design/") else None
@@ -346,8 +384,12 @@ def scene_text(p: dict) -> str:
         if s.get("escape_tr"):
             L.append(f"    - kaçış: {s['escape_tr']}")
     L.append("  Burada: " + (", ".join(f"{n['name']} ({n['role'] or '—'}{'' if n['alive'] == 'alive' else ', ' + n['alive']}{'' if n['here'] else ', getirildi'})" for n in p["npcs"]) or "(kayıtlı kimse yok)"))
+    if p["news"]:
+        L.append("  Haber (bu sahnede en az birini bir kişi, bir söylenti ya da görünür bir değişiklikle seslendir; bülten gibi okuma):")
     for n in p["news"]:
         L.append(f"  - haber gün {n['day']}: {n['line_tr']}")
+    if not p["news"] and p.get("news_already_voiced"):
+        L.append(f"  (bu bölgenin {p['news_already_voiced']} haberi zaten dile getirildi; yeni haber yok)")
     L.append(f"  Oku: {p.get('file') or '—'}" + (f" · sır gerekirse: {p['dm_only_file']}" if p.get("dm_only_file") else ""))
     if p.get("hours"):
         L.append(f"  Sahne bitince: calendar.py -c {p['campaign']} advance --hours {p['hours']}")

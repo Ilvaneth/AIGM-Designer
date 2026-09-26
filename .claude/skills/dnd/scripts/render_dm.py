@@ -327,31 +327,39 @@ def write(path: Path, text: str, label: str) -> None:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="the DM's generated files")
     ap.add_argument("-c", "--campaign", required=True)
-    ap.add_argument("verb", choices=("world", "npcs", "index", "state", "report", "all"))
+    ap.add_argument("verbs", nargs="+", choices=("world", "npcs", "index", "state", "report", "all"), metavar="verb",
+                    help="world | npcs | index | state | report | all — several at once (dry run 1: the save step says `world npcs index`)")
     ap.add_argument("--force", action="store_true", help="state: overwrite an existing state.md")
     a = ap.parse_args(argv)
     if not projection(a.campaign):
         print("render_dm: no public projection (design/entities.json); nothing to render", file=sys.stderr)
         return 1
     root = campaign_dir(a.campaign)
-    if a.verb in ("world", "all"):
+    verbs = set(a.verbs)
+    if "all" in verbs:
+        verbs = {"world", "npcs", "index", "state", "report"}
+        explicit_state = False
+    else:
+        explicit_state = "state" in verbs
+    rc = 0
+    if "world" in verbs:
         write(root / "world.md", world_text(a.campaign), "world")
-    if a.verb in ("npcs", "all"):
+    if "npcs" in verbs:
         write(root / "npcs.md", npcs_text(a.campaign), "npcs")
-    if a.verb in ("index", "all"):
+    if "index" in verbs:
         write(design_dir(a.campaign) / "index.md", index_text(a.campaign), "index")
-    if a.verb in ("state", "all"):
+    if "state" in verbs:
         target = root / "state.md"
         if target.is_file() and not a.force:
             print("render_dm: state.md exists; --force to regenerate the lean file (what happened in play would be lost)"
-                  if a.verb == "state" else "render_dm: state.md kept (exists)")
-            if a.verb == "state":
-                return 1
+                  if explicit_state else "render_dm: state.md kept (exists)")
+            if explicit_state:
+                rc = 1
         else:
             write(target, state_text(a.campaign), "state")
-    if a.verb in ("report", "all"):
+    if "report" in verbs:
         write(design_dir(a.campaign) / "report.md", report_text(a.campaign), "report")
-    return 0
+    return rc
 
 
 if __name__ == "__main__":

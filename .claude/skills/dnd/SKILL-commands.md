@@ -66,8 +66,9 @@ The designer's command family; every procedure is in `${CLAUDE_SKILL_DIR}/SKILL-
 0.9. **The designer's load pack (designed campaigns — a `design/` folder exists).** Run
    `python3 ${CLAUDE_SKILL_DIR}/scripts/designer.py -c <campaign-name> load-pack --day <day counter> --session <N>` and read it top to
    bottom: **pending scenes first** (the world parked a move on a party asset; it resolves at the table), the **detail needed** list (a
-   skeleton site within a day of the party, a stated destination, a rumour pointing there — `design detail <id>` before the party can
-   reach it, never improvised from the skeleton), the sites the last `end` prepped, the **RE-CHECK** flags, the **current chapter
+   skeleton site within a day of the party, a stated destination, a rumour pointing there; at load, run `design detail <id>` before the
+   recap **only if the first scene reaches it** — the session-1 pack's opening or the stated destination says so; otherwise note it
+   for this `end`'s prep, because a detail costs ten minutes the table is waiting through), the sites the last `end` prepped, the **RE-CHECK** flags, the **current chapter
    file** (read that one, no other chapter), **every PC thread file** (always read), the region's news lines (voice ≤2-3 per scene
    opening, through a person, a rumour or a visible change), the open sites and the spotlight ledger. `design/travel-times.md` has
    the days between places; `reference/travel-encounters.md` is compiled from the region files.
@@ -494,7 +495,7 @@ Default to `Step by step` if the question is dismissed. Either path lands in the
 6. Assign starting equipment per class + background
 7. Write to `characters/<name>.md` using `templates/character-sheet.md`; set `## Campaign History → Origin campaign`
 8. Add to `state.md` party line
-9. Mirror to global roster: `cp characters/<name>.md ~/.claude/dnd/characters/<name>.md`
+9. Mirror to global roster: `cp characters/<name>.md ~/.claude/dnd/characters/<name>.md` — **skipped for a `_test-*` campaign**, as is the name registry `add` of step 1: nothing of a test birth leaves its folder.
 10. Run supplemental builder to fetch any non-SRD spells/features the character uses:
     ```bash
     python3 ${CLAUDE_SKILL_DIR}/scripts/build_supplemental.py --character ~/.claude/dnd/campaigns/<name>/characters/<charname>.md
@@ -551,7 +552,7 @@ Read `characters/<name>.md`, display cleanly. If name omitted and one character 
 - New, **designed campaigns** → register first, always: `python3 ${CLAUDE_SKILL_DIR}/scripts/registry.py -c <name> add --type npc --name "<Name>" --summary "<one line as a native would say it>" --origin play` (an English fantasy name from the campaign's naming languages; the registry refuses a name it already holds, and the validator and the index cannot see an NPC that was never registered). The entry then lives in state.md and the generated `npcs.md` until `design detail <id>` writes the dossier; a place or item that appeared in play registers the same way (`--type place|item`).
 - New → generate full entry: role, CR-appropriate stats, demeanor, motivation, secret, speech quirk, faction (or "independent"), current goal, schedule, all four personality axes, ≥2 relationships to existing NPCs. Default attitude neutral. Append full entry to npcs-full.md; add one-line summary row to npcs.md index.
 
-  **Name uniqueness check (added 2026-05-07):** before generating, run `python3 ${CLAUDE_SKILL_DIR}/scripts/name_registry.py check "<proposed-name>"`. If duplicate (exit 1), surface the prior use to the DM and offer either: (a) proceed with the duplicate (some scenarios want recurring names — a Voss reference can be deliberate); or (b) regenerate with a different name. Whichever path is chosen, after the NPC is added to npcs.md / npcs-full.md, call `name_registry.py add --name "<name>" --type npc --campaign <name> --session <current>` to record the entry.
+  **Name uniqueness check (added 2026-05-07):** before generating, run `python3 ${CLAUDE_SKILL_DIR}/scripts/name_registry.py check "<proposed-name>"` (the `add` afterwards is skipped for a `_test-*` campaign). If duplicate (exit 1), surface the prior use to the DM and offer either: (a) proceed with the duplicate (some scenarios want recurring names — a Voss reference can be deliberate); or (b) regenerate with a different name. Whichever path is chosen, after the NPC is added to npcs.md / npcs-full.md, call `name_registry.py add --name "<name>" --type npc --campaign <name> --session <current>` to record the entry.
 
   When **/dm:dnd new** generates a batch of NPCs during world-gen, run the check on each generated name in the same loop: if duplicate, regenerate that name (re-prompt the LLM with the prior name added to a "do-not-pick" exclusion list). After world-gen completes, batch-call `name_registry.py add` for every accepted NPC.
 

@@ -28,7 +28,7 @@ from design_io import campaign_dir, design_dir  # noqa: E402
 VISIBLE = ("world.md", "npcs.md", "state.md", "session-log.md", "design/report.md", "design/index.md",
            "design/player-primer.md", "design/travel-times.md", "design/design.json", "design/entities.json",
            "playtest/transcript.md", "playtest/persona.md")
-VISIBLE_GLOBS = ("design/_approval/*.md", "design/player/*.md", "design/_prompts/**/*.md", "playtest/*.md")
+VISIBLE_GLOBS = ("design/_approval/*.md", "design/player/*.md", "playtest/*.md")   # not design/_prompts: rendered instructions carry the words "## Secret" by design (dry run 1: 76 false hits)
 
 
 def artifacts(campaign: str, extra: list[str], journal: str | None) -> list[Path]:

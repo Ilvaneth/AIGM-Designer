@@ -49,6 +49,7 @@ ROOM_CATEGORIES = ("combat", "trap", "special", "structural")
 CONTENT_BANDS = {"combat": (40, 60), "trap": (5, 15), "special": (8, 20), "structural": (10, 25)}
 MINOR_TOLERANCE = 20
 MAP_ONLY_PREFIXES = ("landmark_", "waypoint_")
+GENERATED_FILES = ("design/player-primer.md", "design/index.md", "design/report.md", "design/travel-times.md")
 PUBLIC_EXTRA_FILES = ("world.md", "npcs.md", "state.md", "graph.json", "factions.json", "goals.json",
                       "common-knowledge.json", "design/news.json", "design/naming.json",
                       "design/entities.json", "design/index.md", "design/player-primer.md")
@@ -92,6 +93,10 @@ class Bible:
 
     def is_public_path(self, path: Path) -> bool:
         return dm_only_dir(self.campaign).resolve() not in path.resolve().parents
+
+    def map_only_ids(self) -> set:
+        """landmark_ / waypoint_ nodes live in map.json only (docs/schemas/map.md); a link to one resolves there."""
+        return {n.get("id") for n in ((self.map or {}).get("nodes") or []) if str(n.get("id", "")).startswith(("landmark_", "waypoint_"))}
 
     def is_pending(self, ent: dict) -> bool:
         return ent.get("status") == "pending" or (ent.get("file") is None and self.phase is not None)
@@ -149,7 +154,7 @@ def check_refs(b: Bible, only: str | None) -> list[Finding]:
         if ent.get("secrecy") not in SECRECY:
             E(eid, "no_secrecy", "secrecy tier missing or unknown")
         for ref in ent.get("refs", []):
-            if ref not in ents:
+            if ref not in ents and ref not in b.map_only_ids():
                 E(eid, "dangling_ref", f"refs names {ref}, which does not exist")
 
     # wiki-links in prose
@@ -159,7 +164,7 @@ def check_refs(b: Bible, only: str | None) -> list[Finding]:
         if only and owner != only and only not in (fm.get("covers") or []):
             continue
         for ref in wiki_links(text):
-            if ref not in ents:
+            if ref not in ents and ref not in b.map_only_ids():
                 E(owner if owner and owner != "none" else None, "dangling_link",
                   f"[[{ref}]] in {relpath(b, path)} does not resolve")
 
@@ -373,8 +378,8 @@ def check_secrecy(b: Bible, only: str | None) -> list[Finding]:
     # every entity has a tier (already in refs) — and every prose file names one
     for path, fm in b.fm.items():
         rp = relpath(b, path)
-        if rp == "design/player-primer.md" or rp.startswith("design/player/"):
-            continue        # rendered player files carry no front matter; they are still leak haystacks (birth 2, R.4)
+        if rp in GENERATED_FILES or rp.startswith("design/player/"):
+            continue        # rendered files (player and DM) carry no front matter; they are still leak haystacks (birth 2 R.4, dry run 1)
         if fm.get("secrecy") not in SECRECY:
             E(fm.get("entity"), "file_no_secrecy", f"{rp} has no secrecy in its front matter")
     return out

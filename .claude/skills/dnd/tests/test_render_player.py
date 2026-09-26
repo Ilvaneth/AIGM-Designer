@@ -112,5 +112,35 @@ class Primer(unittest.TestCase):
         self.assertNotIn("Nerun", face)
 
 
+class DryRunFindings(unittest.TestCase):
+    """Dry run 1's readability judge: raw map ids and a design note reached the player."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.c = TestCampaign("player2")
+
+    def tearDown(self):
+        self.c.remove()
+        self.guard.__exit__(None, None, None)
+
+    def test_map_only_nodes_get_names_and_design_notes_are_scrubbed(self):
+        canon = self.c.json("design/dm-only/entities.json")
+        god = next(k for k, v in canon["entities"].items() if v.get("type") == "god")
+        canon["entities"][god]["church"] = "Court of Mourners (kurulu tapınak; P4 dinî fraksiyon yapabilir)"
+        self.c.write_json("design/dm-only/entities.json", canon)
+        self.c.run("registry.py", "project", check=True)
+        self.c.run("render_player.py", "primer", check=True)
+        text = self.c.path("design/player-primer.md").read_text(encoding="utf-8")
+        self.assertIn("- Broken Breakwater — landmark", text)
+        self.assertNotIn("landmark_broken_breakwater", text)
+        self.assertNotIn("P4", text)
+        self.assertIn("Court of Mourners", text)
+        import render_player as rp
+        pub = rp.public(self.c.name)
+        problems = rp.check_text(self.c.name, "Yol waypoint_reed_road üzerinden gider (P4 doldurur).", pub)
+        self.assertTrue(any(p.startswith("raw ids in player text") for p in problems), problems)
+        self.assertTrue(any(p.startswith("design notes in player text") for p in problems), problems)
+
+
 if __name__ == "__main__":
     unittest.main()

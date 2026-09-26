@@ -70,6 +70,28 @@ def hidden_ids_in(text: str, campaign: str, pub: dict) -> list[str]:
     return sorted(h for h in hidden if re.search(r"(?<![\w])" + re.escape(h) + r"(?![\w])", text))
 
 
+RAW_ID = re.compile(r"(?<![\w/`])(?:landmark|waypoint|npc|site|place|settlement|district|region|polity|faction|god|plane|era|event|item|creature|"
+                    r"seed|node|chapter|beat|socket|thread|pc|premise|signature|break|arc)_[a-z0-9]+(?:_[a-z0-9]+)*(?![\w/`])")
+META = re.compile(r"\((?:[^()]*\b(?:P[0-9]|skeleton|stub|iskelet|taslak|fan-out|designer|tasarımcı)\b[^()]*)\)")
+
+
+def map_name(node: dict) -> str:
+    """A map-only node's name: its `name` when the skeleton gave one, else the id without its kind, title-cased
+    (dry run 1: the player map printed landmark_the_truce_stone to the player)."""
+    if node.get("name"):
+        return str(node["name"])
+    nid = str(node.get("id") or "")
+    for prefix in ("landmark_", "waypoint_"):
+        if nid.startswith(prefix):
+            nid = nid[len(prefix):]
+    return nid.replace("_the_", " the ").replace("_", " ").title().replace(" The ", " the ")
+
+
+def scrub_meta(text: str) -> str:
+    """Drop a parenthetical design note ("(kurulu tapınak; P4 dinî fraksiyon yapabilir)") a writer left in a public field."""
+    return re.sub(r"\s*" + META.pattern, "", text)
+
+
 def check_text(campaign: str, text: str, pub: dict) -> list[str]:
     names, sentences = da.secret_terms(campaign)
     problems = da.leaks_in(text, names, sentences)
@@ -79,6 +101,12 @@ def check_text(campaign: str, text: str, pub: dict) -> list[str]:
     hidden = hidden_ids_in(text, campaign, pub)
     if hidden:
         problems.append(f"hidden ids named: {len(hidden)}")
+    raw = sorted(set(RAW_ID.findall(text)))
+    if raw:
+        problems.append(f"raw ids in player text: {', '.join(raw[:5])}")
+    meta = META.findall(text)
+    if meta:
+        problems.append(f"design notes in player text: {len(meta)}")
     return problems
 
 
@@ -207,7 +235,7 @@ def primer_text(campaign: str) -> tuple[str, dict]:
             lines.append(f"- **{pl['name']}** ({pl.get('kind', '')}, {name_of(pub, pl['settlement']) if pl.get('settlement') else ''})")
         for node in (mp.get("nodes") or []):
             if node.get("kind") == "landmark" and node.get("secrecy", "public") == "public":
-                lines.append(f"- {node['id'].replace('landmark_', '').replace('_', ' ').title()} — bir simge yer")
+                lines.append(f"- {map_name(node)} — bir simge yer")
         lines.append("")
         # taught history
         lines.append("### Öğretildiği hâliyle tarih")
@@ -246,10 +274,10 @@ def primer_text(campaign: str) -> tuple[str, dict]:
     lines.append("## Oyuncu haritası")
     for node in (mp.get("nodes") or []):
         if node.get("secrecy", "public") == "public" and node.get("kind") in ("settlement", "landmark", "waypoint", "site"):
-            lines.append(f"- {name_of(pub, node['id']) if node['id'] in pub else node['id']} — {node.get('kind')}, {node.get('terrain', '')}, {name_of(pub, node['region']) if node.get('region') in pub else ''}")
+            lines.append(f"- {name_of(pub, node['id']) if node['id'] in pub else map_name(node)} — {node.get('kind')}, {node.get('terrain', '')}, {name_of(pub, node['region']) if node.get('region') in pub else ''}")
     lines.append("")
     lines.append(f"*Üretildi: {now_iso()} — render_player.py primer*")
-    text = "\n".join(lines) + "\n"
+    text = scrub_meta("\n".join(lines) + "\n")
     text, bad = resolve_text(text, pub)
     problems += bad
     return text, {"problems": problems, "pub": pub}

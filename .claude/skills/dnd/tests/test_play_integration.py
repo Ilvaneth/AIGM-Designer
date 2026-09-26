@@ -104,6 +104,12 @@ class RenderDm(unittest.TestCase):
         self.assertIn("fled *(değişti: doğumda alive, gün 3)*", npcs)
         self.assertIn("design/npcs/<id>.md", npcs)
 
+    def test_several_verbs_in_one_call(self):
+        proc = self.c.run("render_dm.py", "world", "npcs", "index", check=True)
+        for label in ("world → world.md", "npcs → npcs.md", "index → index.md"):
+            self.assertIn(label, proc.stdout)
+        self.assertNotIn("report", proc.stdout)
+
     def test_index_lists_every_type_with_status_and_seen(self):
         self.c.run("registry.py", "play-set", "site_sunken_pier", "seen_in_play", "true", "--day", "1", "--reason", "girdiler", check=True)
         self.c.run("render_dm.py", "index", check=True)
@@ -189,6 +195,32 @@ class PlayPack(unittest.TestCase):
         text = self.c.run("designer.py", "scene", "--enter", "site_tide_cave", check=True).stdout
         self.assertIn("⚠", text)
         self.assertIn("telegraf:", text)
+
+    def test_scene_voices_a_news_line_once_and_seats_npcs_by_the_pack_on_day_0(self):
+        first = json.loads(self.c.run("designer.py", "scene", "--enter", "place_weary_gull", "--json", check=True).stdout)
+        self.assertTrue(first["news"])
+        again = json.loads(self.c.run("designer.py", "scene", "--enter", "place_weary_gull", "--json", check=True).stdout)
+        self.assertEqual(again["news"], [], "a rumour is told once (dry run 1)")
+        self.assertGreaterEqual(again["news_already_voiced"], len(first["news"]))
+        text = self.c.run("designer.py", "scene", "--enter", "place_weary_gull", check=True).stdout
+        self.assertIn("zaten dile getirildi", text)
+        self.assertIn("news_voiced", self.c.json("design/design.json"))
+        # the session-1 pack seats the NPCs on days 0-1; the registry's birth location is only the fallback
+        cal = self.c.json("calendar.json")
+        cal["time"] = "morning"
+        cal["day_counter"] = 0
+        self.c.write_json("calendar.json", cal)
+        self.c.path("design/session-1.md").write_text(
+            "---\nentity: none\nsecrecy: public\n---\n\n### Chapter 1 on day 0 — who is where\n| NPC | Sabah | Akşam | Gece |\n|---|---|---|---|\n"
+            "| [[npc_tolvan]] | [[place_mourners_hall]]: cenaze | [[place_weary_gull]] | [[place_weary_gull]] |\n", encoding="utf-8")
+        hall = json.loads(self.c.run("designer.py", "scene", "--enter", "place_mourners_hall", "--json", check=True).stdout)
+        self.assertIn("npc_tolvan", [n["id"] for n in hall["npcs"] if n["here"]])
+        gull = json.loads(self.c.run("designer.py", "scene", "--enter", "place_weary_gull", "--json", check=True).stdout)
+        self.assertNotIn("npc_tolvan", [n["id"] for n in gull["npcs"] if n["here"]])
+        cal["time"] = "evening"
+        self.c.write_json("calendar.json", cal)
+        gull = json.loads(self.c.run("designer.py", "scene", "--enter", "place_weary_gull", "--json", check=True).stdout)
+        self.assertIn("npc_tolvan", [n["id"] for n in gull["npcs"] if n["here"]])
 
     def test_prep_ranks_candidates_records_them_and_warns_over_tier(self):
         proc = self.c.run("designer.py", "prep", "--day", "0", "--intent", "Blind Lantern'e gidecekler", "--json", check=True)
