@@ -874,6 +874,13 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
                 ph["status"] = "partial"
                 dm.save(campaign, data, f"designer.py phase {phase} merge")
                 break
+        else:
+            # the DM's generated files and the map's derived files (slice 1d): world, npcs, index, report, a lean state.md
+            # when none exists, travel-times.md and the encounter tables
+            for script, args in (("render_dm.py", ("all",)), ("map_travel.py", ("travel-times",)), ("map_travel.py", ("encounters",))):
+                rd = run_script(script, campaign, *args)
+                tail = (rd.stdout or rd.stderr).strip().splitlines()
+                print(tail[-1] if tail else f"{script} {' '.join(args)}: ok")
     if refused:
         print(f"designer: {phase} {len(refused)} unit(s) refused and marked failed — the next `phase {phase} begin --json` "
               f"lists them with the reason: {', '.join(sorted(refused))}", file=sys.stderr)

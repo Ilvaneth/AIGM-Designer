@@ -6,7 +6,7 @@ Overland travel is not dead air. Read this file whenever a journey of a day or m
 
 1. **Roll once per day and once per night of travel, before narrating that leg** — never after, never skipped because the road "seems safe." A quiet result is a real, rolled outcome, not a shortcut.
 2. **Two-layer roll**: first a weighted category (Combat / Quiet-Texture / Social / Environmental / Discovery / Faction-Political), then a specific result from that category's own subtable. Both layers are rolled by the script below, never hand-picked.
-3. **Tier by party level**: each region defines an Early and a Late tier. Only the Combat subtable escalates between tiers — weather, travelers, and local texture don't scale with character level.
+3. **Tier by threat stage, never by party level** (the world does not scale): each region defines an Early tier (threat stage 1-2) and a Late tier (stage 3+); the stage is `design/overlay.json → _meta.threat_stage` (`designer.py load-pack` prints it). Only the Combat subtable escalates between tiers — weather, travelers, and local texture don't change. Rules 1 and 5 consult the news feed first: a Faction/Political or Discovery result is voiced through a current news record when one reaches the region (`load-pack` lists them) before a generic line.
 4. Run the roll with:
    ```bash
    python3 ${CLAUDE_SKILL_DIR}/scripts/travel.py --campaign <name> --region "<region name>" --tier early|late --days N
@@ -33,8 +33,10 @@ A multi-day journey fast-forwarded with nothing happening is not efficient pacin
 
 ## Building or extending a region table
 
+**Designed campaigns:** the tables are written by the designer into each region's file (`design/regions/<id>.md`, the `### Travel table` section) and compiled into `reference/travel-encounters.md` by `python3 ${CLAUDE_SKILL_DIR}/scripts/map_travel.py -c <name> encounters` (the Roll Log is kept). Edit the region file, recompile. `design/travel-times.md` (`map_travel.py travel-times`) gives the days between places from the map graph; `map_travel.py days A B` answers one route.
+
 Each region in the campaign's own `reference/travel-encounters.md` needs:
-- A level range and a one-line tonal identity distinct from every other region (don't reskin — a swamp-refugee borderland and a folk-horror moor should never produce interchangeable results).
+- A threat-stage tier pair (Early / Late) and a one-line tonal identity distinct from every other region (don't reskin — a swamp-refugee borderland and a folk-horror moor should never produce interchangeable results).
 - A weighted d12 Category table (start from 4/12 Combat, 1/12 Quiet-Texture, 1/12 Social, 1/12 Environmental, 3/12 Discovery, 2/12 Faction-Political — this specific table's own starting weights, previously tuned live after combat came up too rarely at an even split; re-tune for *this* table if actual play says otherwise, don't assume the ratio transfers untested).
 - Six d6 subtables (one per category) for the Early tier.
 - A Late-tier Combat subtable only — the other five categories carry over unchanged.

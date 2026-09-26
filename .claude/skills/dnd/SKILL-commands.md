@@ -63,6 +63,15 @@ The designer's command family; every procedure is in `${CLAUDE_SKILL_DIR}/SKILL-
    the world owes the party. Also run `factions.py tick --day N` if in-world days have passed since the
    last session: it refreshes weekly move-point budgets and surfaces what came due while nobody was watching.
 
+0.9. **The designer's load pack (designed campaigns — a `design/` folder exists).** Run
+   `python3 ${CLAUDE_SKILL_DIR}/scripts/designer.py -c <campaign-name> load-pack --day <day counter> --session <N>` and read it top to
+   bottom: **pending scenes first** (the world parked a move on a party asset; it resolves at the table), the **detail needed** list (a
+   skeleton site within a day of the party, a stated destination, a rumour pointing there — `design detail <id>` before the party can
+   reach it, never improvised from the skeleton), the sites the last `end` prepped, the **RE-CHECK** flags, the **current chapter
+   file** (read that one, no other chapter), **every PC thread file** (always read), the region's news lines (voice ≤2-3 per scene
+   opening, through a person, a rumour or a visible change), the open sites and the spotlight ledger. `design/travel-times.md` has
+   the days between places; `reference/travel-encounters.md` is compiled from the region files.
+
 1. **Ruleset.** 2014 (SRD 5.1) only; nothing to read or migrate. If state.md is missing, do not proceed with /dm:dnd load — surface the error to the DM.
 
 2. *(retired 2026-09-24 with 2024 support; the number is kept because steps 5 and 6 are referenced elsewhere)*
@@ -71,12 +80,12 @@ The designer's command family; every procedure is in `${CLAUDE_SKILL_DIR}/SKILL-
 4. **Mark this campaign active** (for the autosave hook): write `{"name": "<campaign-name>"}` to `$(python3 ${CLAUDE_SKILL_DIR}/scripts/paths.py runtime-dir)/active-campaign.json`. This is what `autosave_checkpoint.py` reads to know which campaign to checkpoint; a stale marker is harmless. Then read state.md, world.md, npcs.md (index only), and all characters/*.md
    - **state.md contains `## DM Style Notes`** — read and internalize before narrating anything. These are table-specific calibration patterns that override default DM instincts.
    - **state.md contains `## Pinned Facts`** — read and keep hot for the whole session. These are stable soft facts the table has chosen never to forget (a promise made, a dead relative's name, a house rule, a running joke, a detail the player flagged as mattering). Unlike Live State Flags, they don't change turn-to-turn — they are standing canon. Weave them in when relevant and never contradict one; if a pinned fact is now wrong, correct it via `/dm:dnd pin` rather than silently overriding it. If the section reads *(none pinned yet)*, there's nothing to load.
-   - **world.md:** Load in full — World Foundations, Three Truths, and factions inform narration and faction moves. Do NOT read `world-seeds.md` at load (generation artifact, not live reference).
+   - **world.md:** Load in full. In a designed campaign it is **generated** from the registry ⊕ overlay at every `save` (`render_dm.py world`): a value the world changed since birth carries a *(değişti …)* marker; hand notes go to the registry or state.md, never here. Do NOT read `world-seeds.md` at load (generation artifact, not live reference).
    - **reference/full-campaign-history.md (if present):** Load in full at every session start. This is a DM-authored master history — typically written once, by hand or via a dedicated research pass, for a campaign migrated/imported from a prior format or otherwise carrying pre-existing history the hot-path files (`state.md`/`npcs.md`/`world.md`) only summarize. Its purpose is decision-chain command: who promised what, how a relationship actually formed, what a past event's real consequence was — the layer a one-line NPC/location summary cannot carry and that "check when uncertain" reliably fails to catch in the moment (a real, logged failure mode: two live session-consistency errors traced directly to trusting a compressed summary instead of this record). If the file doesn't exist for a campaign, there is nothing to load here — this does not block or slow down campaigns without one.
    - **world-nodes.md (imported campaigns only):** Do **NOT** load at session start. It holds the full Quest Seed Bank and Adventure Nodes for the whole module; read only the current act's nodes on demand when a scene needs them. If the file is absent (dynamic/sandbox, or an older import), there is nothing to lazy-load — `world.md` already carries the nodes, unchanged from prior behavior.
    - **arc.md (imported campaigns only):** Do **NOT** load at session start. `state.md → ## Campaign Arc` already carries the current + next chapter window. Read `arc.md` only when advancing chapters or when a player asks about the broader arc. If absent, the arc lives inline in `state.md` (dynamic/sandbox) — read it there as before. **Sanity-check the pointer at load:** if `## Campaign Arc`'s `current_chapter` shows its `outstanding_beats` already cleared, or the last session plainly ended in the *next* chapter's location or situation, the pointer never advanced — surface it (*"the current chapter looks finished; pick up in `<next_chapter>`?"*) instead of opening another scene in a chapter that's already done. A pointer that never moves is exactly how a structured campaign quietly drifts off its own arc and starts improvising.
    - **source/<chapter-id>.md (imported campaigns only):** the full module text, one file per chapter. Never loaded at session start. Before running a scene in a chapter, read that chapter's `source/<id>.md` (the `source_ref` in the arc) — and only that chapter. This is the predefined-story equivalent of reading a single NPC's full entry on demand.
-   - **npcs.md:** Index row only at load. **Before writing substantive dialogue or decisions for any named NPC, read their full entry in `npcs-full.md`.** Do not wait for an explicit `/dm:dnd npc [name]` call — do it proactively when a scene centers on that character. Index rows carry surface traits only; personality axes, relationships, and hidden goals are in the full entry.
+   - **npcs.md:** Index row only at load (generated in a designed campaign). **Before writing substantive dialogue or decisions for any named NPC, read their full entry** — `design/npcs/<id>.md` in a designed campaign (its `## Secret` lives in `design/dm-only/npcs/<id>.md` and is read only when the scene needs that secret, in a separate pass from the voice/motive reading), `npcs-full.md` otherwise.** Do not wait for an explicit `/dm:dnd npc [name]` call — do it proactively when a scene centers on that character. Index rows carry surface traits only; personality axes, relationships, and hidden goals are in the full entry.
    - **Do NOT read session-log.md at load** — recent events are already in `state.md → ## Recent Events`. Only read session-log.md if the player explicitly requests a recap, or if DM Calibration from the last 1-2 sessions is needed and not already internalized.
    - **Pull every PC's Combat Triggers + Passive Item Effects at load, not just combat start:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c <campaign> triggers --all` right after reading the character files. Being "in the file" isn't enough on its own — a long Notable Items list buries the mechanically-relevant lines, and this has caused a real, repeated failure: a fresh session (especially a new tab, with no carried-over context) forgetting a worn item's passive effect (Stealth advantage from a cloak, doubled speed from boots, etc.) until the player reminds the DM mid-scene. Pulling this checklist explicitly at load — the same mechanism that already fixed the analogous Combat Triggers miss — closes the gap before it costs a scene.
 5. **Pull scene-context from the campaign graph.** Always run, even if you suspect `graph.json` doesn't exist — the script exits cleanly with a notice when uninitialized.
@@ -117,6 +126,12 @@ The designer's command family; every procedure is in `${CLAUDE_SKILL_DIR}/SKILL-
       For fresh (non-legacy) campaigns: skip the offer entirely — there's nothing to compress yet, and the going-forward rule covers all future entries.
 
    6. Re-run scene-context (now populated). Then proceed to step 6 (recap).
+
+5.5. **Opening a scene in a designed campaign.** Before the party enters any place or site for the first time this session, run
+   `python3 ${CLAUDE_SKILL_DIR}/scripts/designer.py -c <campaign-name> scene --enter <place-or-site id> [--hours N] [--present id,id]`.
+   The bundle names who is there with the overlay applied (dead is dead, fled is fled), the news lines to voice, a site's telegraphs,
+   escape geometry and progress, and the dm-only file to read lazily; it marks the place seen. A site the bundle flags as `skeleton`
+   is not opened: `design detail <id>` first ("give me a minute, I'm preparing"), then the scene.
 
 6. Deliver one in-character paragraph recapping current situation — where the party is, what's at stake, what was last happening.
 7. Enter active DM mode — no `/dm:dnd` prefix needed from this point.
@@ -271,7 +286,14 @@ for every faction the tool names as compelled; those moves are what the party wa
 
 Keep `state.md → ## Faction Moves` as the short, player-facing record: what the world visibly did, one
 line per event, pruned as things resolve. The plans, stances and budgets live in `factions.json` — do
-not duplicate them into prose. 
+not duplicate them into prose.
+
+**Designed campaigns, at every save:** regenerate the DM files — `python3 ${CLAUDE_SKILL_DIR}/scripts/render_dm.py -c <name> world npcs index`
+(never hand-edit them; a fact that changed in play is written with `registry.py play-set`, `site_progress.py`, `campaign_graph.py` or
+`factions.py`, and the files render it) — then `python3 ${CLAUDE_SKILL_DIR}/scripts/design_check.py -c <name> --fast` (reports, never
+halts; it warns above 600 lines of state.md: what was designed belongs in `design/`, not here) and
+`python3 ${CLAUDE_SKILL_DIR}/scripts/site_progress.py -c <name> status`. When the party named where they are going next, write it as
+`- **Stated destination:** <place>` under `## Current Situation`: `end` and the next `load` read it to know what to prepare. 
 **Session log archival (run on every save after session count > 3):**
 session-log.md keeps only the **2 most recent full session entries**. Older entries move to `session-log-archive.md` (append, never delete). Before archiving each entry, extract a 3–5 bullet continuity summary and write it to `## Continuity Archive` in state.md. Format:
 
@@ -348,6 +370,15 @@ If nothing in this session touched a tracked NPC/faction's goal, this step is a 
 ## `/dm:dnd end`
 1. Run `/dm:dnd save`, then:
    a. Append **Session Recap** block to session-log.md with key events and open threads.
+   a2. **Designed campaigns — the end pack, in this order and no other (risk 24.1 #15).** Run
+       `python3 ${CLAUDE_SKILL_DIR}/scripts/designer.py -c <name> end-pack --day <day> --session <N> [--intent "<where they said they are going>"] [--note "<one-line prep note>"]`:
+       it ticks the faction board, sweeps it (answer the forward question per faction as `save` describes), then **preps** the way a
+       human DM does — party level, what they can reach within a day, what they said, what the world just did near them — and names
+       the 1-3 sites to detail. For each: `designer.py -c <name> detail <id> --trigger prep --day <day> --json`, run the printed
+       fan-out (the `design-fanout` Workflow with that JSON, or the Agent tool on `prompt_cmd`; the play tab never writes the file),
+       then `designer.py -c <name> detail <id> --finish --day <day>`. Record the spotlight ledger:
+       `designer.py -c <name> spotlight --session <N> --scenes thread_<pc>=<scenes>,...` (an imbalance above 35% over three sessions is
+       flagged at the next load; a one-PC table is exempt). The week's simulation summary belongs to `simulate` (slice 2).
    a1. **Set `session_status: closed` in `state.md → ## Session Flags`** (added 2026-09-14) — this is what tells the next `/dm:dnd load` to actually increment `Session count`; see load step 0.5. Without this, the campaign stays "open" and the next load is treated as a continuation of the same session no matter how much real-world time passes.
    b. Ask: *"Quick calibration — what worked this session, and what would you adjust next time?"* Write answers to `### DM Calibration`. If skipped, leave blank.
    c. Update `## World State` in state.md: check whether events advanced the threat arc stage, shifted faction states, or changed the in-world date. Update all three.
@@ -445,6 +476,13 @@ Default to `Step by step` if the question is dismissed. Either path lands in the
    **Name uniqueness check:** run `python3 ${CLAUDE_SKILL_DIR}/scripts/name_registry.py check "<name>"`. Exit 1 (duplicate) → surface prior use; player confirms or changes. Record after step 9.
 
    The race grants the ability score increases (e.g. Wood Elf: +2 DEX, +1 WIS). Apply to abilities at step 4.
+1.5. **Origin (designed campaigns).** Ask which culture the character is from — the primer's sections (`design/player-primer.md`,
+   one `## <Polity> — buradan olan karakterler için` per culture) are the choices. The SRD background is the mechanical chassis; the
+   local overlay (what a native knows, the sayings, the taught history) comes from that section. Ask that section's socket questions
+   (`## Geçmişin için sorular`) and keep the answers: `design integrate` binds them. Register the PC in the registry so the threads
+   can reference it: `python3 ${CLAUDE_SKILL_DIR}/scripts/registry.py -c <name> add --type pc --name "<Name>" --summary "<class, origin settlement>" --origin play --file characters/<Name>.md`.
+   Write `## Identity → Origin` on the sheet. **After the last PC is created, run `/dm:dnd design integrate`** (P9: a thread per PC, the session-1 pack).
+
 2. Ask: *"In a sentence, what should the DM know about [Name]?"*
    - If answered: derive ONE pillar — **Bond**, **Flaw**, **Ideal**, or **Goal** (whichever fits best). Store both the raw sentence and derived pillar in `## Character Pillar`.
    - If skipped: leave `## Character Pillar` blank. Do not invent one. Do not re-prompt.
@@ -510,6 +548,7 @@ Read `characters/<name>.md`, display cleanly. If name omitted and one character 
 
 ## `/dm:dnd npc [name]`
 - Existing → read full entry from npcs-full.md (search by name), portray in character with voice/quirk
+- New, **designed campaigns** → register first, always: `python3 ${CLAUDE_SKILL_DIR}/scripts/registry.py -c <name> add --type npc --name "<Name>" --summary "<one line as a native would say it>" --origin play` (an English fantasy name from the campaign's naming languages; the registry refuses a name it already holds, and the validator and the index cannot see an NPC that was never registered). The entry then lives in state.md and the generated `npcs.md` until `design detail <id>` writes the dossier; a place or item that appeared in play registers the same way (`--type place|item`).
 - New → generate full entry: role, CR-appropriate stats, demeanor, motivation, secret, speech quirk, faction (or "independent"), current goal, schedule, all four personality axes, ≥2 relationships to existing NPCs. Default attitude neutral. Append full entry to npcs-full.md; add one-line summary row to npcs.md index.
 
   **Name uniqueness check (added 2026-05-07):** before generating, run `python3 ${CLAUDE_SKILL_DIR}/scripts/name_registry.py check "<proposed-name>"`. If duplicate (exit 1), surface the prior use to the DM and offer either: (a) proceed with the duplicate (some scenarios want recurring names — a Voss reference can be deliberate); or (b) regenerate with a different name. Whichever path is chosen, after the NPC is added to npcs.md / npcs-full.md, call `name_registry.py add --name "<name>" --type npc --campaign <name> --session <current>` to record the entry.

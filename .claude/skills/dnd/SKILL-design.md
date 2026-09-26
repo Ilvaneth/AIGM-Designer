@@ -77,7 +77,7 @@ Generation and critique inherit the session model; start `new` in an Opus-tier s
 
 - **`design status`** — `designer.py status`: phases and their states, the guard, the roll counts; in play also the "detail needed" list (item 13.1) and the sites prepped at the last `end`.
 - **`design phase <n> [--reseed]`** — `designer.py phase PN rerun --reason … [--reseed]`, then the loop above from `preroll`; later phases are stale until rerun.
-- **`design detail <id>`** — JIT elaboration through the birth machinery (24.6 #5): `designer.py arm --mode detail`, `design_prompts.py render detail.<kind> --id ID` as the one entity of a `design-fanout` run (or the Agent tool), `registry.py merge --phase detail`, `design_check.py --only ID`, disarm. Triggered by the DM on approach (the party within a day or in the same settlement, a stated destination, a rumour pointing there), by the prep step at `end` (predict 1-3 sites, detail them, validate), or by hand; never once the party is inside. Improvising a designed site from its skeleton is forbidden, with the one tiered exception of a minor, unlinked skeleton (band 5-10, lore or treasure payoff, tier at or below the band, no clue / beat / thread / hook reference) run live and marked `played-improvised`, backfilled at `end`.
+- **`design detail <id>`** — JIT elaboration through the birth machinery (24.6 #5): `designer.py -c CAMP detail ID --trigger prep|approach|hand --day N --json` arms the guard in detail mode, renders `detail.<kind>` (the entity's birth-phase rolls and rubric; fragment and critic return under `design/_staging/detail/`) and prints the one-entity fan-out JSON — run the `design-fanout` Workflow with it (or the Agent tool on `prompt_cmd`) — then `designer.py -c CAMP detail ID --finish --day N` merges (`registry.py merge --phase detail`), seeds (`design_seed.py`), checks the one entity (`design_check.py --only ID`), logs it in `design.json → detail_log`, commits and disarms. Triggered by the DM on approach (the party within a day or in the same settlement, a stated destination, a rumour pointing there), by the prep step at `end` (predict 1-3 sites, detail them, validate), or by hand; never once the party is inside. Improvising a designed site from its skeleton is forbidden, with the one tiered exception of a minor, unlinked skeleton (band 5-10, lore or treasure payoff, tier at or below the band, no clue / beat / thread / hook reference) run live and marked `played-improvised`, backfilled at `end`.
 - **`design check`** — `design_check.py -c CAMP` (all modules) or `--fast` at every `save`; output is redacted in every mode.
 - **`design integrate`** — P9 after all PCs exist: `preroll --phase P9`, `phase P9 begin --json`, the fan-out, merge, check, card, approve; then `render_player.py thread-face` per thread.
 - **`design primer`** — `render_player.py primer` (and `facts`, `news` when P8's fragments changed).
@@ -85,6 +85,17 @@ Generation and critique inherit the session model; start `new` in an Opus-tier s
 - **`design ask "<yes/no question>"`** — one fresh agent with the `ask` prompt (`design_prompts.py render ask --question "…"`) reading the dm-only projection, returning exactly `evet` / `hayır` / `spoiler vermeden cevaplanamaz`; logged with `design_manifest.py ask`.
 - **`design abandon`** — `designer.py abandon --reason …`: names retired from the registry, the campaign's `used.json` rows dropped, the guard disarmed.
 - **`arc fallback`** (play, the DM's call) — when a beat is pre-empted, pick one of its three designed fallbacks (cost / secondary / deferred) and log it in state.md's arc pointer; the bible is never rewritten for it.
+
+## In play
+
+The same conductor runs the designer's play half, all of it script-side (`play_pack.py` through `designer.py`; slice 1d):
+
+- **`load-pack --day N --session N`** at every `load`: pending scenes first, the detail-needed list (a skeleton within a day, a stated destination, a rumour pointing there), the last `end`'s prepped sites, RE-CHECK flags (a detailed-unplayed site later news touched), the current chapter file, every thread file, the region's news of the week, the open sites, the spotlight ledger.
+- **`scene --enter ID [--hours N] [--present a,b]`** before a scene opens in a place or site: who is there with the overlay applied, the news to voice, a site's telegraphs / escape / progress, the dm-only file to read lazily; marks the place seen; refuses to be the substitute for `detail` on a skeleton.
+- **`prep --day N [--intent "…"]`** the way a human DM prepares (level, reach, stated intent, the world's recent moves): 1-3 candidates with reasons and over-tier warnings, recorded for the next load; **`end-pack --day N --session N`** runs tick → sweep → prep in that order, then the fast validator.
+- **`spotlight --session N --scenes thread_a=3,…`**: the ledger item 12.3 asks for; >35% imbalance over three sessions is flagged.
+- **`render_dm.py world | npcs | index | state | report`** regenerates the DM's files from the projection ⊕ overlay (at every `save`; `state` only when none exists); **`map_travel.py travel-times | encounters | days | near`** serves the map. `phase P8 merge` renders all of them once at birth.
+- **`burst_check.py --reference --tier T --target-hp H`** sizes a boss against the tier's reference party (item 9.9).
 
 ## Phase → SRD map
 

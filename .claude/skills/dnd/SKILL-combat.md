@@ -160,6 +160,15 @@ Some armor imposes disadvantage on DEX (Stealth) checks — this is a rules-as-w
 - **Suffocation**: survives (1 + CON modifier) minutes without air, then drops to 0 HP after CON-modifier more rounds (minimum 1).
 - **Fire exposure**: typically 1d10 fire per round of contact, may ignite flammable gear.
 
+## Rooms of a designed site — mark as you go
+
+In a designed campaign a site's rooms are tracked by `site_progress.py`, and that record — not memory — is what `load-pack`, `end` and the
+validator read. When the party enters a room: `python3 ${CLAUDE_SKILL_DIR}/scripts/site_progress.py -c <name> enter <site id> <room> --day N --session N`;
+when it is cleared, `clear`; a room bypassed, `skip … --reason`; a new way through, `shortcut --from --to --how`; a rest inside,
+`rest <site> <room> --kind short|long --day N`. The site's overlay status flips to `played` from these marks, never by hand, and the
+first `enter` opens the record from the detailed file's room table. Combat in a room that was never marked entered is the sign you
+skipped this.
+
 ## Before running a deliberately-unfinalized solo boss
 
 See `SKILL-encounter-design.md` for how the fight should have been built in the first place; this section covers tuning one at the table.

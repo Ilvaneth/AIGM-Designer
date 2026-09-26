@@ -203,6 +203,8 @@ class Resume(unittest.TestCase):
         proc = self.c.run("designer.py", "phase", "P8", "merge", check=True)
         self.assertTrue(primer.is_file(), "P8's merge renders facts, news and the primer once the roster is complete")
         self.assertIn("primer", proc.stdout)
+        for rel in ("design/report.md", "design/index.md", "design/travel-times.md", "reference/travel-encounters.md"):
+            self.assertTrue(self.c.path(rel).is_file(), f"{rel} is rendered at P8 too (slice 1d)")
         self.assertEqual(self.c.json("design/design.json")["phases"]["P8"]["status"], "merged")
 
     def test_r6_the_p7_card_counts_the_arc_instead_of_printing_it(self):

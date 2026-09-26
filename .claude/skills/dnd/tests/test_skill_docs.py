@@ -64,6 +64,23 @@ class Docs(unittest.TestCase):
         self.assertIn("claude-fable-5-1", text)
         self.assertIn("design/overlay.json", text)
 
+    def test_slice_1d_play_integration_is_documented(self):
+        commands = read("SKILL-commands.md")
+        for key in ("designer.py -c <campaign-name> load-pack", "scene --enter", "end-pack --day", "registry.py -c <name> add --type pc",
+                    "registry.py -c <name> add --type npc", "render_dm.py -c <name> world npcs index", "Stated destination"):
+            self.assertIn(key, commands, key)
+        self.assertIn("threat stage", read("SKILL-travel.md"))
+        self.assertIn("map_travel.py -c <name> encounters", read("SKILL-travel.md"))
+        self.assertIn("site_progress.py -c <name> enter", read("SKILL-combat.md"))
+        self.assertIn("--reference --tier", read("SKILL-encounter-design.md"))
+        design = read("SKILL-design.md")
+        self.assertIn("## In play", design)
+        self.assertIn("detail ID --finish", design)
+        scripts = read("SKILL-scripts.md")
+        for key in ("map_travel.py", "render_dm.py", "play_pack.py", "--reference --tier"):
+            self.assertIn(key, scripts, key)
+        self.assertIn("load-pack", read("SKILL.md"))
+
     def test_guard_cites_a_heading_that_exists(self):
         guard = (SCRIPTS / "hooks" / "design_read_guard.py").read_text(encoding="utf-8")
         m = re.search(r'RULE_REF = \'SKILL\.md, "([^"]+)"\'', guard)
