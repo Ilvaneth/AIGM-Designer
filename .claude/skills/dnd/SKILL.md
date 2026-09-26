@@ -329,7 +329,7 @@ Read `## Campaign Arc` at every session load alongside `## DM Style Notes`. The 
 
 **Dice ownership — the line is absolute:**
 
-**Every die a player character's own action or ability produces is rolled by that player. Never by you.** This covers, without exception:
+**Every die a player character's own action or ability produces is rolled by that player. Never by you.** (In a playtest, plan item 22.5, the player is an agent: it rolls its own die with `dice.py … --player`, a flag `dice.py` and the dice guard refuse for everyone else and whenever no playtest is armed.) This covers, without exception:
 
 | Die | Who rolls |
 |---|---|

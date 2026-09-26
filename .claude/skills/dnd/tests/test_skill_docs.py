@@ -81,6 +81,17 @@ class Docs(unittest.TestCase):
             self.assertIn(key, scripts, key)
         self.assertIn("load-pack", read("SKILL.md"))
 
+    def test_slice_1e_dry_run_and_playtest_are_documented(self):
+        scripts = read("SKILL-scripts.md")
+        for key in ("design_leak_scan.py", "design_compare.py", "load_budget.py", "playtest.py", "subagent_type: player", "--player"):
+            self.assertIn(key, scripts, key)
+        self.assertIn("--player", read("SKILL.md"))
+        self.assertIn("phase P9 begin --json", read("SKILL-design.md"))
+        self.assertTrue((PROJECT / "docs" / "dry-run-and-playtest.md").is_file())
+        self.assertTrue((PROJECT / ".claude" / "agents" / "player.md").is_file())
+        for name in ("player", "judge_playtest", "judge_readability", "judge_uniqueness"):
+            self.assertTrue((SKILL / "prompts" / "play" / f"{name}.md").is_file(), name)
+
     def test_guard_cites_a_heading_that_exists(self):
         guard = (SCRIPTS / "hooks" / "design_read_guard.py").read_text(encoding="utf-8")
         m = re.search(r'RULE_REF = \'SKILL\.md, "([^"]+)"\'', guard)
