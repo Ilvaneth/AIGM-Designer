@@ -85,8 +85,29 @@ def load_snapshot(campaign: str) -> dict:
 # ── the two projection rules, the stamp union ────────────────────────────────
 
 def projection_of(canonical: dict) -> dict:
-    """Drop every secret entity, then drop the dm_only object of every remaining one."""
-    return {eid: {k: v for k, v in ent.items() if k != "dm_only"}
+    """Drop every secret entity, then the dm_only object of every remaining one, then every secret id anywhere in a
+    public row (refs, relations[].to, heir, public_face, key_npcs …): the canonical registry keeps the link, the
+    projection never says a secret entity exists (critique analysis 2026-09-26: dm_only_relation_in_public_refs was
+    a quarter of the critics' leak findings)."""
+    secret = {eid for eid, ent in canonical["entities"].items() if ent.get("secrecy") == "secret"}
+
+    def scrub(v):
+        if isinstance(v, str):
+            return None if v in secret else v
+        if isinstance(v, list):
+            out = []
+            for x in v:
+                if isinstance(x, str) and x in secret:
+                    continue
+                if isinstance(x, dict) and any(isinstance(x.get(k), str) and x.get(k) in secret for k in ("to", "id", "from", "npc")):
+                    continue
+                out.append(scrub(x))
+            return out
+        if isinstance(v, dict):
+            return {k: scrub(x) for k, x in v.items() if not (isinstance(x, str) and x in secret)}
+        return v
+
+    return {eid: {k: scrub(v) for k, v in ent.items() if k != "dm_only"}
             for eid, ent in canonical["entities"].items() if ent.get("secrecy") != "secret"}
 
 
@@ -125,10 +146,23 @@ def write_all(campaign: str, canonical: dict, snapshot: dict, written_by: str) -
 
 # ── validation of one registry row ───────────────────────────────────────────
 
+PROSE_TYPES = ("npc", "site", "settlement", "faction", "region", "chapter", "thread")
+OPAQUE_SECRET_NPC = re.compile(r"^npc_s\d+$")
+TURKISH_LETTERS = re.compile(r"[çğıöşüÇĞİÖŞÜ]")
+NAME_GROUPS = {**{t: "person" for t in ("npc", "pc")},
+               **{t: "place" for t in ("settlement", "site", "place", "district", "region", "polity")},
+               "faction": "faction", "god": "god", "item": "item", "plane": "plane"}
+
+
 def row_errors(eid: str, row: dict) -> list[str]:
     errs: list[str] = []
     if row.get("id") != eid:
         errs.append(f"{eid}: registry.id is {row.get('id')!r}")
+    # the stub rule (skeleton critic: missing_status_skeleton ×6; P9 left three npc rows with no file)
+    if row.get("file") is None and row.get("origin") != "play" and row.get("type") in PROSE_TYPES and row.get("status") != "pending":
+        errs.append(f"{eid}: a {row.get('type')} row without a file is a stub — set `status: pending` and `owner_phase` (or write the file)")
+    if row.get("secrecy") == "secret" and row.get("type") == "npc" and not OPAQUE_SECRET_NPC.match(eid):
+        errs.append(f"{eid}: a secret npc's id is opaque (npc_s01-style); this id names it")
     if row.get("type") not in ENTITY_TYPES:
         errs.append(f"{eid}: unknown type {row.get('type')!r}")
     elif id_type(eid) != row["type"]:
@@ -191,6 +225,96 @@ def public_words(canonical: dict, extra_rows: list[dict]) -> dict:
     return words
 
 
+def naming_blacklist() -> dict:
+    try:
+        import design_tables as dt
+        return dt.load("naming.yaml").get("blacklist") or {}
+    except Exception:
+        return {}
+
+
+def registered_elsewhere(campaign: str) -> set:
+    """Full names the project's .name_registry.json holds for other campaigns (plan items 4.6, 8.7)."""
+    try:
+        from paths import _root as data_root
+        reg = read_json(data_root() / ".name_registry.json") or {}
+    except Exception:
+        return set()
+    out = set()
+    for entry in (reg.get("entries") or {}).values():
+        if not isinstance(entry, dict) or not entry.get("name"):
+            continue
+        camps = set(entry.get("currently_active_in") or []) | ({entry.get("first_campaign")} - {None})
+        if campaign not in camps:
+            out.add(str(entry["name"]).strip().lower())
+    return out
+
+
+def naming_errors(eid: str, row: dict, bl: dict, registered: set) -> list[str]:
+    """errata 24.2 #17 and the owner's blacklist at the door (critics: rubric_english_names 14 fails, skeleton naming 6)."""
+    errs = []
+    etype = row.get("type")
+    name = str(row.get("name") or "").strip()
+    aliases = [str(a).strip() for a in (row.get("aliases") or []) if isinstance(a, str) and a.strip()]
+    if etype not in ("break", "premise") and name and TURKISH_LETTERS.search(name):
+        errs.append(f"{eid}: name {name!r} carries Turkish letters; every proper noun is an English fantasy name (errata 24.2 #17); "
+                    "a Turkish descriptor may be a lowercase alias")
+    exact = {str(x).lower() for k in ("exact", "mythology", "llm_favourites") for x in (bl.get(k) or [])}
+    exact |= {str(x).lower() for x in ((bl.get("owner_banned") or {}).get("exact") or [])}
+    stems = [str(x).lower() for x in ((bl.get("owner_banned") or {}).get("stems") or [])]
+    subs = [str(x).lower() for x in (bl.get("substrings") or [])]
+    tr_names = {str(x).lower() for x in (bl.get("turkish_as_name") or [])}
+    for n in [name] + aliases:
+        if not n:
+            continue
+        low = n.lower()
+        words = re.split(r"[\s'’-]+", low)
+        first = words[0] if words else low
+        if low in exact or first in exact:
+            errs.append(f"{eid}: {n!r} is on naming.yaml's blacklist (mythology, the owner's banned names or the model's favourites)")
+        if any(stem in w for stem in stems for w in words):
+            errs.append(f"{eid}: {n!r} carries a banned stem ({', '.join(stems)})")
+        if any(s in low for s in subs):
+            errs.append(f"{eid}: {n!r} carries a blacklisted substring")
+        if n[:1].isupper() and (low in tr_names or first in tr_names):
+            errs.append(f"{eid}: {n!r} is a Turkish common noun used as a proper name; name it in the campaign's naming language")
+        if registered and (low in registered) and etype in ("npc", "pc"):
+            errs.append(f"{eid}: {n!r} is a name another campaign registered (.name_registry.json); new campaigns never reuse it")
+    return errs
+
+
+def duplicate_errors(eid: str, row: dict, canonical: dict, incoming: list[tuple[str, dict]]) -> list[str]:
+    """No two persons, places, factions, gods, items or planes share a full name, and no two persons a first name."""
+    group = NAME_GROUPS.get(row.get("type"))
+    if not group:
+        return []
+    name = str(row.get("name") or "").strip().lower()
+    aliases = {str(a).strip().lower() for a in (row.get("aliases") or []) if isinstance(a, str)}
+    first = re.split(r"[\s'’-]+", name)[0] if name else ""
+    others = list(canonical["entities"].items()) + list(incoming)
+    errs = []
+    seen = set()
+    for oid, other in others:
+        if oid == eid or oid in seen or NAME_GROUPS.get(other.get("type")) != group:
+            continue
+        seen.add(oid)
+        oname = str(other.get("name") or "").strip().lower()
+        if not oname:
+            continue
+        if name and (name == oname or oname in aliases):
+            errs.append(f"{eid}: name {row.get('name')!r} is already {oid}'s (a {group}); every {group} has its own full name")
+        elif group == "person" and first and first == re.split(r"[\s'’-]+", oname)[0]:
+            errs.append(f"{eid}: first name {first!r} collides with {oid}'s; no two persons share a first name")
+    return errs
+
+
+def sentences_of(text: str) -> set:
+    if text.startswith("---"):
+        parts = text.split("---", 2)
+        text = parts[2] if len(parts) == 3 else text
+    return {s.strip() for s in re.split(r"(?<=[.!?])\s+|\n", text) if len(s.strip()) >= 40 and not s.strip().startswith(("|", "#"))}
+
+
 def secret_name_errors(eid: str, row: dict, publics: dict, haystack: str) -> list[str]:
     """A secret entity may not carry a name or alias that is public anywhere: the identity link goes under dm_only."""
     errs = []
@@ -250,15 +374,32 @@ def prose_errors(eid: str, frag: dict, root: Path, container: bool) -> tuple[lis
                 errs.append(f"{eid}: public file {pub_file} front matter must name `mirror: {mir_file}`")
             if not container and fm.get("entity") not in (None, eid):
                 errs.append(f"{eid}: public file {pub_file} front matter says entity: {fm.get('entity')}")
+    mirror_sentences: set = set()
     if mir_file and (root / mir_file).is_file():
         if not str(mir_file).startswith("design/dm-only/"):
             errs.append(f"{eid}: dm_only_prose.file must live under design/dm-only/")
         else:
-            fm = parse_front_matter((root / mir_file).read_text(encoding="utf-8", errors="replace"))
+            mtext = (root / mir_file).read_text(encoding="utf-8", errors="replace")
+            fm = parse_front_matter(mtext)
             if fm.get("secrecy") != "secret":
                 errs.append(f"{eid}: mirror {mir_file} front matter needs `secrecy: secret` (has {fm.get('secrecy')!r})")
             if pub_file and fm.get("mirror_of") != pub_file:
                 errs.append(f"{eid}: mirror {mir_file} front matter must name `mirror_of: {pub_file}`")
+            mirror_sentences = sentences_of(mtext)
+    # the leak classes the critics spent most fix loops on (analysis 2026-09-26): a mirror sentence repeated in the
+    # public file, a mirror sentence or a secret name in the public notes
+    if mirror_sentences and pub_file and (root / pub_file).is_file():
+        ptext = (root / pub_file).read_text(encoding="utf-8", errors="replace")
+        shared = [s for s in mirror_sentences if s in ptext]          # contained, not only equal: a prefix hides nothing
+        if shared:
+            errs.append(f"{eid}: {len(shared)} sentence(s) of the mirror repeated verbatim in the public file {pub_file}; the Secret layer is written once, in the mirror")
+    notes = frag.get("notes")
+    if isinstance(notes, str) and notes and not notes.startswith("design/dm-only/") and (root / notes).is_file():
+        ntext = (root / notes).read_text(encoding="utf-8", errors="replace")
+        if mirror_sentences and any(s in ntext for s in mirror_sentences):
+            errs.append(f"{eid}: the public notes file {notes} restates the mirror; notes that touch the secret layer go to design/dm-only/_staging/")
+        if SECRET_HEADING.search(ntext):
+            errs.append(f"{eid}: the public notes file {notes} carries a `## Secret` heading")
     return errs, warns
 
 
@@ -324,7 +465,12 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
             errors.append(f"{uid}: fragment says phase {frag.get('phase')}, merging {phase}")
         units.append({"path": frag_path, "id": uid, "container": container, "frag": frag, "rows": rows, "errors": errors})
 
-    publics = public_words(canonical, [r for u in units for _, r in u["rows"]])
+    incoming = [(eid, r) for u in units for eid, r in u["rows"]]
+    publics = public_words(canonical, [r for _, r in incoming])
+    bl = naming_blacklist()
+    registered = registered_elsewhere(campaign)
+    secret_names = {str(r.get("name")).strip() for r in list(canonical["entities"].values()) + [r for _, r in incoming]
+                    if r.get("secrecy") == "secret" and r.get("name")}
     accepted: list[dict] = []
     refused: dict[str, list[str]] = {}
     for u in units:
@@ -333,10 +479,19 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
             e2, w2 = prose_errors(u["id"], u["frag"], root, u["container"])
             errs += e2
             warns += w2
+            notes = u["frag"].get("notes")
+            if isinstance(notes, str) and notes and not notes.startswith("design/dm-only/") and (root / notes).is_file():
+                ntext = (root / notes).read_text(encoding="utf-8", errors="replace")
+                leaked = [n for n in secret_names if len(n) >= 3 and re.search(r"(?<![\w'])" + re.escape(n) + r"(?![\w])", ntext)]
+                if leaked:
+                    errs.append(f"{u['id']}: the public notes file {notes} names {len(leaked)} secret entit{'y' if len(leaked) == 1 else 'ies'}; "
+                                "notes that touch the secret layer go to design/dm-only/_staging/")
         u["revised"] = {}
         for eid, row in u["rows"]:
             errs += row_errors(eid, row)
             errs += secret_name_errors(eid, row, publics, haystack)
+            errs += naming_errors(eid, row, bl, registered)
+            errs += duplicate_errors(eid, row, canonical, [(i, r) for i, r in incoming if i != eid])
             e3, w3, drift = stamp_check(eid, row, canonical, snapshot, revise)
             errs += e3
             warns += w3

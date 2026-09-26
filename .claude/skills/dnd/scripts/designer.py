@@ -440,7 +440,10 @@ def preroll_p5(R: Roller, m: dict) -> None:
         spent_secrets = {s for s, c in secret_uses.items() if c >= cap}
         srec = R.table(f"npc.{n}.secret", "npcs.yaml#secret", secret=True, avoid=False, exclude=spent_secrets)
         secret_uses[srec["row_id"]] = secret_uses.get(srec["row_id"], 0) + 1
-        spent = {t for t, c in tic_uses.items() if c >= 2}
+        # a tic twice needs a differentiator the writers rarely give (rubric_p5_voice_distinct failed 9 of 18 times):
+        # unique while npcs.yaml#speech_tic has unused rows, never more than twice
+        tic_cap = 1 if len(tic_uses) < len(dt.rows("npcs.yaml#speech_tic")) else 2
+        spent = {t for t, c in tic_uses.items() if c >= tic_cap}
         rec = R.table(f"npc.{n}.tic", "npcs.yaml#speech_tic", avoid=False, exclude=spent)
         tic_uses[rec["row_id"]] = tic_uses.get(rec["row_id"], 0) + 1
         R.notation(f"npc.{n}.species", "d100")

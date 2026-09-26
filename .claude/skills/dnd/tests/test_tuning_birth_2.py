@@ -70,7 +70,7 @@ class Birth2(unittest.TestCase):
         self.c.run("designer.py", "phase", "P6", "begin", "--json", check=True)
 
     def test_3_2_graph_nodes_seed_before_edges_and_missing_endpoints_come_from_the_registry(self):
-        self.c.write_json("design/_staging/P6/npc_tune_graph.json", fragment("npc_tune_graph", row("npc_tune_graph", "npc", "Wren Tallow"), phase="P6"))
+        self.c.write_json("design/_staging/P6/npc_tune_graph.json", fragment("npc_tune_graph", row("npc_tune_graph", "npc", "Hobb Tallow"), phase="P6"))
         self.c.run("registry.py", "merge", "--phase", "P6", check=True)
         merged = self.c.path("design/_staging/P6/merged")
         self.c.write_json("design/_staging/P6/merged/aaa_edges.json", dict(fragment("aaa_edges", None, phase="P6"), graph={

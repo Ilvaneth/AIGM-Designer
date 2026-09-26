@@ -1,10 +1,10 @@
 {
   "_meta": {
     "schema_version": 1,
-    "campaign": "salt-lantern",
+    "campaign": "_test-regen-projection",
     "fixture": true,
-    "written_by": "registry.py merge --phase P9 (projection)",
-    "written_at": "2026-09-24T20:00:00Z",
+    "written_by": "registry.py project (projection)",
+    "written_at": "2026-09-26T13:35:50Z",
     "counts": {
       "premise": 1,
       "signature": 3,
@@ -75,7 +75,6 @@
         "signature_saltbound",
         "signature_court_of_mourners",
         "break_no_afterlife",
-        "npc_s01",
         "site_blind_lantern"
       ]
     },
@@ -778,8 +777,7 @@
       "stamped": {},
       "refs": [
         "faction_court_of_mourners",
-        "npc_ilme",
-        "npc_s01"
+        "npc_ilme"
       ]
     },
     "place_reeves_manor": {
@@ -947,7 +945,6 @@
       "refs": [
         "npc_ilme",
         "npc_yesra",
-        "npc_s01",
         "place_mourners_hall",
         "place_salt_house",
         "god_ormis",
@@ -1137,7 +1134,7 @@
       "cr": 2,
       "location_at_birth": "place_mourners_hall",
       "goal_tracked": false,
-      "heir_of": "npc_s01",
+      "heir_of": null,
       "heir": "npc_yesra",
       "voice_seed": "'yas hakkıdır' der, her şeye",
       "axes": {
@@ -1156,11 +1153,6 @@
           "to": "npc_sarven",
           "kind": "knows",
           "reason_tr": "Reeve'in borcunu defterde tutar"
-        },
-        {
-          "to": "npc_s01",
-          "kind": "heir_of",
-          "reason_tr": "kâtibin yüzü"
         }
       ],
       "stamped": {
@@ -1170,7 +1162,6 @@
         "faction_court_of_mourners",
         "npc_yesra",
         "npc_sarven",
-        "npc_s01",
         "place_mourners_hall",
         "god_ormis",
         "socket_court_trained"
@@ -1345,11 +1336,6 @@
           "to": "npc_tolvan",
           "kind": "controls",
           "reason_tr": "kayıklar rehin"
-        },
-        {
-          "to": "npc_s01",
-          "kind": "serves",
-          "reason_tr": "tuzu ona taşır"
         }
       ],
       "stamped": {
@@ -1359,7 +1345,6 @@
         "faction_tide_brotherhood",
         "npc_kortan",
         "npc_tolvan",
-        "npc_s01",
         "site_tide_cave",
         "site_sunken_pier",
         "thread_selen",
@@ -1608,9 +1593,7 @@
       "room_count": 14,
       "act": 1,
       "thread": "beat_1c",
-      "key_npcs": [
-        "npc_s01"
-      ],
+      "key_npcs": [],
       "payoff": "plot_item",
       "telegraphs": [
         {
@@ -1638,9 +1621,7 @@
         "room_count": 14,
         "act": 1,
         "thread": "beat_1c",
-        "key_npcs": [
-          "npc_s01"
-        ]
+        "key_npcs": []
       },
       "refs": [
         "faction_court_of_mourners",
@@ -1734,7 +1715,6 @@
       "refs": [
         "site_sunken_pier",
         "faction_court_of_mourners",
-        "npc_s01",
         "thread_selen"
       ]
     },
@@ -1751,14 +1731,13 @@
       "rarity": "rare",
       "attunement": true,
       "kind": "signature",
-      "location": "npc_s01",
+      "location": null,
       "srd_base": "ring of protection (reskin)",
       "stamped": {
         "kind": "signature"
       },
       "refs": [
         "site_blind_lantern",
-        "npc_s01",
         "faction_court_of_mourners"
       ]
     },
@@ -2250,7 +2229,6 @@
       "world_pressure": "op_court_1.step_4",
       "delivery_paths": [
         "site_blind_lantern",
-        "npc_s01",
         "news_0002"
       ],
       "fallbacks": {
@@ -2264,7 +2242,6 @@
       },
       "refs": [
         "site_blind_lantern",
-        "npc_s01",
         "npc_ilme",
         "item_lamp_seal",
         "faction_court_of_mourners",
@@ -2494,7 +2471,7 @@
       "origin": "birth",
       "pc": "pc_vorin",
       "question_tr": "Unutulan bir yemin hâlâ bağlar mı?",
-      "antagonist": "npc_s01",
+      "antagonist": null,
       "layers": [
         {
           "n": 1,
@@ -2528,7 +2505,6 @@
       "mission": "pc_vorin",
       "stamped": {
         "pc": "pc_vorin",
-        "antagonist": "npc_s01",
         "layers": [
           "npc_sarven",
           "site_tide_cave",

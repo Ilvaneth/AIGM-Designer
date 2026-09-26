@@ -90,9 +90,11 @@ class Registry(unittest.TestCase):
             self.assertIn("stamped", ent, eid)
 
     def test_projection_is_the_two_mechanical_rules(self):
-        expected = {eid: {k: v for k, v in ent.items() if k != "dm_only"}
-                    for eid, ent in self.ents.items() if ent["secrecy"] != "secret"}
+        # the two rules of plan item 3 plus the third of critique analysis 1: no secret id anywhere in a public row
+        import registry
+        expected = registry.projection_of({"entities": self.ents})
         self.assertEqual(self.public, expected)
+        self.assertNotIn("npc_s01", json.dumps(self.public))
 
     def test_stamp_snapshot_matches_the_canonical_stamps(self):
         self.assertEqual(self.stamps, {eid: stamp_snapshot_of(ent) for eid, ent in self.ents.items()})

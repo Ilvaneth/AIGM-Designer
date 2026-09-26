@@ -18,6 +18,8 @@ Roster of the phase: {{roster}}
 ### The rubric
 {{rubrics}}
 
+The registry door already refused the structural leaks and naming faults (a mirror sentence in a public file or the public notes, a secret name outside dm-only, blacklisted or duplicate names); `rubric_leak` here is about what a door cannot see — a secret *hinted* in public wording, a truth restated in other words.
+
 Answer each row across the whole phase (are these regions distinct only by name; do two NPCs share a voice; is any entity a reskin of another; is the cliché's one saving detail present). `findings[]` name the entity ids concerned with a `reason_code`; the reasoning goes to `design/_staging/{{phase}}/phase.critique.md`. No quoted text in the return.
 
 Return, as `{{agent_label}}`:

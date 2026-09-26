@@ -24,10 +24,18 @@ sys.path.insert(0, str(SCRIPTS))
 FRONT = "---\nentity: {eid}\ntype: {etype}\nsecrecy: {secrecy}\nphase: {phase}\nstamped: []\n{link}\n---\n\n# {eid}\n\n## Public\n\n- one line\n"
 
 
+PROSE_DIRS = {"npc": "npcs", "site": "sites", "settlement": "settlements", "faction": "factions", "region": "regions",
+              "chapter": "chapters", "thread": "threads"}
+
+
 def row(eid, etype, name, secrecy="public", **extra):
+    """A registry row; a prose-type row gets a file path (the door treats a fileless prose row as a stub) unless the
+    caller passes `file` or `status: pending`."""
     r = {"id": eid, "type": etype, "name": name, "aliases": [], "summary": f"{name} — bir satır.",
          "file": None, "secrecy": secrecy, "created_phase": "P5", "origin": "birth", "stamped": {}, "refs": []}
     r.update(extra)
+    if etype in PROSE_DIRS and "file" not in extra and extra.get("status") != "pending":
+        r["file"] = (f"design/dm-only/{PROSE_DIRS[etype]}/{eid}.md" if secrecy == "secret" else f"design/{PROSE_DIRS[etype]}/{eid}.md")
     return r
 
 
@@ -276,6 +284,8 @@ class Preroll(unittest.TestCase):
         secret = json.loads((CAMPAIGNS / self.name / "design" / "dm-only" / "dice-log.json").read_text(encoding="utf-8"))
         kinds = [r["row_id"] for r in secret["rolls"] if r["phase"] == "P5" and r["label"].endswith(".secret")]
         self.assertEqual(len(kinds), len(set(kinds)), f"{len(kinds)} npcs, 21 secret kinds: no kind twice")
+        tics = [r["row_id"] for r in m["dice_log"] if r["phase"] == "P5" and r["label"].endswith(".tic")]
+        self.assertEqual(len(tics), len(set(tics)), "tics are distinct while the table has rows (analysis 1)")
         self.assertTrue(all(k.startswith("npcsecret_") for k in kinds))
 
 

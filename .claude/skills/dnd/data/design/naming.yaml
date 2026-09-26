@@ -384,4 +384,8 @@ blacklist:
   # pantheons and the other traditions the model reaches for; banned as a whole name or a whole first name
   mythology: [Aegir, Ahura Mazda, Amaterasu, Anahita, Anu, Anubis, Apep, Aphrodite, Apollo, Arawn, Ares, Artemis, Astarte, Athena, Baal, Balder, Bast, Belenus, Bes, Brahma, Brigantia, Daghdha, Demeter, Diana, Diancecht, Dionysus, Dunatis, Enki, Enlil, Erlik, Forseti, Frey, Freya, Frigga, Goibhniu, Hades, Hathor, Hecate, Heimdall, Hel, Hephaestus, Hera, Hercules, Hermes, Hermod, Hestia, Huitzilopochtli, Imhotep, Inanna, Indra, Ishtar, Isis, Izanagi, Izanami, Janus, Juno, Jupiter, Kali, Loki, Lugh, Manannan mac Lir, Marduk, Mars, Math Mathonwy, Mercury, Minerva, Mithra, Mokosh, Moloch, Morrigan, Nephthys, Neptune, Nike, Njord, Nuada, Odin, Odur, Oghma, Osiris, Pan, Perun, Pluto, Poseidon, Ptah, Quetzalcoatl, Re-Horakhty, Saturn, Set, Shiva, Sif, Silvanus, Skadi, Sobek, Surtur, Susanoo, Svarog, Tengri, Tezcatlipoca, Thor, Thoth, Thrym, Tyche, Tyr, Uller, Umay, Veles, Venus, Vishnu, Vulcan, Zeus]
   # in-campaign exact bans live in naming.json `banned[]` (name_registry seeds it)
+  # Turkish common nouns a writer turns into a proper name ("Konsey", "Lonca"): a name, or an alias written with a capital,
+  # equal to one of these is refused at the registry door (critique analysis 2026-09-26: turkish_proper_noun_konsey_lonca).
+  # A lowercase alias in Turkish ("hancı", "kayıp gemi") is a common-noun descriptor and stays allowed.
+  turkish_as_name: [Konsey, Lonca, Meclis, Tarikat, Kardeşlik, Birlik, Cemiyet, Kumpanya, Ocak, Hane, Tapınak, Mahkeme, Loca, Tersane, Divan, Saray, Kale, Köy, Kasaba, Şehir, Liman, Kule, Han, Pazar, Muhafızlar, Bekçiler, Rahipler, Kardeşler, Sancak]
   lexicon_stems_are_never_banned: true
