@@ -58,8 +58,10 @@ designer.py -c CAMP phase PN approve --onay       records the approval, commits 
 | P5 people | the roster: major and supporting dossiers, minors in sixes, the relationship web into `graph.json`, standing channels | skeleton → fan-out, two critics on the BBEG and lieutenants |
 | P6 sites | the site directory with stamps, the first 2 / 3 / 3-4 intended-path sites detailed with the boss checklist | skeleton → fan-out |
 | P7 arc | beats, chapters with nodes, quest seeds in sixes, planted hooks, sockets, endings, the doom day | skeleton → fan-out |
-| P8 primer | one primer section per culture, then `render_player.py primer / facts / news`, the generated `world.md`, `npcs.md`, `index.md`, a lean `state.md`, `report.md`; the full validator; final approval = the report's public part + the primer | fan-out (document roster) |
+| P8 primer | one primer section per culture; `phase P8 merge` then renders `facts`, `news` and the primer itself (the generated `world.md`, `npcs.md`, `index.md`, a lean `state.md` and `report.md` are slice 1d); the full validator; final approval = the report's public part + the primer | fan-out (document roster) |
 | P9 integrate | after every `character new`: one thread per PC, the session-1 pack, `goals.py` pc records; `render_player.py thread-face` | fan-out (document roster), outside birth |
+
+**The card is the player's surface.** Rows of the arc (beats, chapters, nodes, sockets, threads) are counted on the card, never named or summarised; a seed shows its hook only; a card whose critics ended at `fix` says so in a warning line, and the decision is the player's.
 
 **Corrections.** A correction is one sentence. Classify it and run `design_revise.py -c CAMP round --phase PN --scope direction|fact|entity|phase --text "…"` (with `--entity`, `--field --value`, `--action remove|replace`, `--world`, `--reseed` as the scope needs); it records the round, marks the affected entities for a rerun and lists them. Rerun ≤3 entities with the Agent tool (each agent runs the render command `begin --json` printed for it) or the fan-out Workflow for more; then merge, check, a new card with its diff. Three rounds per phase, then approve as-is or `--scope phase`. A one-word correction gets one clarifying question first.
 

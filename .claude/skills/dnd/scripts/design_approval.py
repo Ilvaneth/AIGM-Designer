@@ -29,7 +29,11 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_manifest as dm  # noqa: E402
 import design_tables as dt  # noqa: E402
-from design_io import campaign_dir, design_dir, dm_only_dir, now_iso, read_json  # noqa: E402
+from design_io import CONTAINER_PREFIXES, campaign_dir, design_dir, dm_only_dir, now_iso, read_json  # noqa: E402
+
+# Rows of these types are the arc: DM-open, player-avoid. The card counts them and never prints their names or
+# one-liners (birth 2, R.6: the P7 card read as a plot synopsis to the owner, who is also the player).
+SPOILER_TYPES = ("arc", "beat", "chapter", "node", "socket", "thread")
 
 PHASE_TITLES = {"P0": "kadranlar", "P1": "premise", "P2": "kozmos", "P3": "topraklar", "P4": "güçler",
                 "P5": "insanlar", "P6": "mekânlar", "P7": "ark", "P8": "primer ve kapanış", "P9": "entegrasyon"}
@@ -249,11 +253,13 @@ def build_card(campaign: str, phase: str) -> str:
     scale = dt.scale_row(m["dials"]["scale"])
     roster = ph.get("roster") or []
     mine = {eid: e for eid, e in proj.items() if e.get("created_phase") == phase or eid in roster}
+    spoilers = {eid: e for eid, e in mine.items() if e.get("type") in SPOILER_TYPES}
+    shown_rows = {eid: e for eid, e in mine.items() if eid not in spoilers}
     attempt = int(ph.get("attempt") or 1)
 
     lines = [f"# Faz kartı — {phase} ({PHASE_TITLES.get(phase, phase)}) · {campaign} · deneme {attempt}",
              f"<!-- attempt: {attempt} -->", f"<!-- ids: {','.join(sorted(mine))} -->",
-             "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(mine.items())) + " -->", ""]
+             "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(shown_rows.items())) + " -->", ""]
     val = ph.get("validator") or {}
     crit = ph.get("critique") or {}
     failed = [e for e in roster if m["entities"].get(e, {}).get("status") == "failed"]
@@ -273,6 +279,14 @@ def build_card(campaign: str, phase: str) -> str:
     if incomplete:
         lines.append(f"- ⚠ **Eksik:** {', '.join(incomplete)} — faz tamamlanmadı; kayıt defterine girmeyen varlık var, bu kart onaylanamaz "
                      "(`phase begin --json` + fan-out, ya da `drop`).")
+    not_passed = [eid for eid, ch in chains.items() if ch and ch[-1].split(":")[-1] in ("fix", "rerun")]
+    if phase_verdict.split(" → ")[-1] in ("fix", "rerun"):
+        not_passed.append("faz eleştirmeni")
+    if skeleton_verdicts and skeleton_verdicts[-1] in ("fix", "rerun"):
+        not_passed.append("iskelet")
+    if not_passed:
+        lines.append(f"- ⚠ **Eleştirmen geçmedi:** {', '.join(not_passed)} — son karar `fix`; düzeltme döngüleri bitti, "
+                     "karar oyuncunun (bir düzeltme cümlesi ya da onay).")
     # scale band, script-side with the full count; the card prints the public count and a tick
     band_lines = []
     for etype, key in BAND_KEYS.get(phase, []):
@@ -297,11 +311,39 @@ def build_card(campaign: str, phase: str) -> str:
     lines.append("## Bu fazda doğanlar (herkese açık)")
     lines.append("| id | ad | tür | dil | eleştiri | bir satır |")
     lines.append("|---|---|---|---|---|---|")
-    for eid, e in sorted(mine.items()):
+    for eid, e in sorted(shown_rows.items()):
+        one = e.get("hook_tr") if e.get("type") == "seed" and e.get("hook_tr") else (e.get("summary") or "")
         lines.append(f"| {eid} | {e.get('name', '')} | {e.get('type', '')} | {language_of(eid, e, assignments, proj, default_lang)} | "
-                     f"{' → '.join(chains.get(eid) or []) or '—'} | {(e.get('summary') or '').replace('|', '/')} |")
-    if not mine:
+                     f"{' → '.join(chains.get(eid) or []) or '—'} | {one.replace('|', '/')} |")
+    if spoilers:
+        counts = {}
+        for e in spoilers.values():
+            counts[e.get("type")] = counts.get(e.get("type"), 0) + 1
+        lines.append("| — | — | " + ", ".join(f"{t} ×{n}" for t, n in sorted(counts.items())) + " | — | "
+                     + (" · ".join(f"{t}: {' → '.join(chains[eid])}" for eid in sorted(spoilers) for t in [eid] if chains.get(eid)) or "—")
+                     + " | (arkın içeriği DM'e açık, oyuncuya kapalı; kart yalnız sayıları ve eleştiri kararlarını gösterir) |")
+    docs = []
+    for rid in roster:
+        if not rid.startswith(CONTAINER_PREFIXES):
+            continue
+        frag = read_json(design_dir(campaign) / "_staging" / phase / "merged" / f"{rid}.json") or {}
+        prose = frag.get("prose")
+        pfile = prose.get("file") if isinstance(prose, dict) else (prose if isinstance(prose, str) else None)
+        counts = frag.get("counts") or {}
+        status = m["entities"].get(rid, {}).get("status", "pending")
+        docs.append(f"- `{rid}` — {status}" + (f" · {pfile}" if pfile else "")
+                    + (" · " + ", ".join(f"{k} {v}" for k, v in counts.items()) if counts else "")
+                    + (f" · eleştiri {' → '.join(chains[rid])}" if chains.get(rid) else ""))
+    if not mine and not docs:
         lines.append("| — | — | — | — | — | (bu faz henüz varlık üretmedi) |")
+    if docs:
+        lines.append("")
+        lines.append("## Belgeler (bu fazın dosyaları)")
+        lines += docs
+        if phase == "P8":
+            primer = design_dir(campaign) / "player-primer.md"
+            lines.append(f"- oyuncu primer'ı: `design/player-primer.md`"
+                         + (f" ({len(primer.read_text(encoding='utf-8')):,} karakter)".replace(",", ".") if primer.is_file() else " (henüz üretilmedi)"))
     lines.append("")
 
     if phase == "P3":
@@ -310,7 +352,7 @@ def build_card(campaign: str, phase: str) -> str:
 
     lines.append("## Bir yerlinin bildiği")
     shown = 0
-    for eid, e in sorted(mine.items()):
+    for eid, e in sorted(shown_rows.items()):
         if e.get("summary") and e.get("secrecy", "public") == "public":
             lines.append(f"- {e['name']}: {e['summary']}")
             shown += 1

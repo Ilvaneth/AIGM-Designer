@@ -137,5 +137,123 @@ class Birth2(unittest.TestCase):
         self.assertFalse([f for f in e["files"] if ":" in f or f.startswith("/")], e["files"])
 
 
+class Resume(unittest.TestCase):
+    """The resume addendum (R.3-R.6): the primer, the seed call, an empty merge, P8's player files, the P7 and P8
+    cards, critics that never passed, the seed batches' own file, the primer's default read list."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.c = TestCampaign("tune2r")
+        self.c.run("design_manifest.py", "set-mode", "birth", check=True)
+
+    def tearDown(self):
+        self.c.remove()
+        self.guard.__exit__(None, None, None)
+
+    def primer_container(self, pid="polity_reedmarch"):
+        merged = self.c.path("design/_staging/P8/merged")
+        merged.mkdir(parents=True, exist_ok=True)
+        section = self.c.path(f"design/_staging/P8/primer_{pid}.section.md")
+        self.c.write_json(f"design/_staging/P8/merged/primer_{pid}.json", dict(
+            fragment(f"primer_{pid}", None, phase="P8"), prose={"file": f"design/_staging/P8/primer_{pid}.section.md"},
+            counts={"words": 640, "sayings": 3}))
+        return section
+
+    def test_r6_primer_strips_section_front_matter_and_speaks_turkish(self):
+        section = self.c.path("design/_staging/P8/primer_polity_reedmarch.section.md")
+        section.parent.mkdir(parents=True, exist_ok=True)
+        section.write_text("---\nentity: none\ntype: primer_section\nsecrecy: public\nphase: P8\n---\n\n"
+                           "Reedmarch'ta dogan bilir: tuz her seyi hatirlar.\n", encoding="utf-8")
+        self.c.run("render_player.py", "primer", check=True)
+        text = self.c.path("design/player-primer.md").read_text(encoding="utf-8")
+        self.assertNotIn("type: primer_section", text, "the section's front matter never reaches the player")
+        self.assertIn("tuz her seyi hatirlar", text)
+        self.assertIn("## Kısa tanıtım", text)
+        self.assertIn("### Takvim ve bayramlar", text)
+        self.assertNotIn("The pitch", text)
+        self.assertNotIn("Famous places", text)
+        findings = json.loads(self.c.run("design_check.py", "--modules", "secrecy", "--json", check=True).stdout)
+        self.assertFalse([f for f in findings if f["code"] == "file_no_secrecy" and "player-primer" in str(f.get("message"))])
+
+    def test_r5_site_progress_open_speaks_the_cli_flags(self):
+        import design_seed
+        argv = design_seed.argv_for("site_progress", "open", {"site": "site_x", "payoff_room": 11, "room_count": 18, "entrances": ["1", "2"]}, "camp", 0)
+        self.assertEqual(argv[:5], ["site_progress.py", "-c", "camp", "open", "site_x"])
+        joined = " ".join(argv)
+        self.assertIn("--payoff 11", joined)
+        self.assertIn("--rooms 18", joined)
+        self.assertIn("--entrances", joined)
+        self.assertNotIn("payoff-room", joined)
+        self.assertNotIn("room-count", joined)
+
+    def test_r5_a_merge_that_merged_nothing_keeps_the_phase_open(self):
+        self.c.reopen("P6", "running", roster=[], skeleton={"status": "pending", "agent": None})
+        proc = self.c.run("designer.py", "phase", "P6", "merge", "--tokens", "197838", "--seconds", "146")
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("nothing merged", proc.stderr)
+        ph = self.c.json("design/design.json")["phases"]["P6"]
+        self.assertEqual(ph["status"], "running", "a Workflow that died before writing anything leaves no merged phase")
+
+    def test_r4_p8_merge_renders_the_player_files(self):
+        self.primer_container()
+        primer = self.c.path("design/player-primer.md")
+        if primer.is_file():
+            primer.unlink()
+        self.c.reopen("P8", "partial", roster=["primer_polity_reedmarch"])
+        proc = self.c.run("designer.py", "phase", "P8", "merge", check=True)
+        self.assertTrue(primer.is_file(), "P8's merge renders facts, news and the primer once the roster is complete")
+        self.assertIn("primer", proc.stdout)
+        self.assertEqual(self.c.json("design/design.json")["phases"]["P8"]["status"], "merged")
+
+    def test_r6_the_p7_card_counts_the_arc_instead_of_printing_it(self):
+        self.c.run("design_approval.py", "card", "--phase", "P7", check=True)
+        text = self.c.path("design/_approval/P7.card.md").read_text(encoding="utf-8")
+        rows = [l for l in text.splitlines() if l.startswith("| ")]
+        self.assertFalse([r for r in rows if r.startswith(("| chapter_", "| beat_", "| node_", "| socket_"))], "arc rows are never printed")
+        self.assertIn("chapter ×", text)
+        self.assertIn("oyuncuya kapalı", text)
+        names_comment = next(l for l in text.splitlines() if l.startswith("<!-- names:"))
+        self.assertNotIn("beat_", names_comment)
+
+    def test_r6_the_p8_card_lists_its_documents_and_the_primer(self):
+        self.primer_container()
+        self.c.reopen("P8", "partial", roster=["primer_polity_reedmarch"])
+        self.c.run("designer.py", "phase", "P8", "merge", check=True)
+        self.c.run("design_approval.py", "card", "--phase", "P8", check=True)
+        text = self.c.path("design/_approval/P8.card.md").read_text(encoding="utf-8")
+        self.assertIn("## Belgeler", text)
+        self.assertIn("`primer_polity_reedmarch` — merged", text)
+        self.assertIn("words 640", text)
+        self.assertIn("oyuncu primer'ı: `design/player-primer.md` (", text)
+        self.assertNotIn("(bu faz henüz varlık üretmedi)", text)
+
+    def test_r6_critics_that_never_passed_are_loud_on_the_card(self):
+        records = [{"entity_id": "site_sunken_pier", "critic": 1, "verdict": "fix", "findings": [], "kind": "entity"},
+                   {"entity_id": "phase", "critic": 1, "verdict": "fix", "findings": [], "kind": "phase"}]
+        self.c.reopen("P6", "partial", roster=["site_sunken_pier"],
+                      critique={"phase_loops": 1, "verdicts": ["fix"], "entity_loops_total": 2, "records": records, "skeleton_verdicts": ["fix", "fix"]})
+        self.c.run("design_approval.py", "card", "--phase", "P6", check=True)
+        text = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
+        self.assertIn("⚠ **Eleştirmen geçmedi:** site_sunken_pier, faz eleştirmeni, iskelet", text)
+
+    def test_r5_seed_batches_write_their_own_file(self):
+        rendered = self.c.run("design_prompts.py", "render", "P7.seeds", "--id", "seedbatch_1", "--attempt", "1", check=True).stdout
+        self.assertIn("design/seeds/seedbatch_1.md", rendered)
+        self.assertIn("Never write into `design/arc.md`", rendered)
+
+    def test_r6_a_primer_section_gets_a_default_read_list(self):
+        self.c.reopen("P8", "prerolled", roster=["primer_polity_newland"])
+        m = self.c.json("design/design.json")
+        m["entities"]["primer_polity_newland"] = {"phase": "P8", "status": "pending", "attempt": 0, "critique_loops": 0,
+                                                 "last_error": None, "file": None, "stage_file": None, "agent": None}
+        self.c.write_json("design/design.json", m)
+        proc = self.c.run("designer.py", "phase", "P8", "begin", "--json", check=True)
+        out = json.loads(proc.stdout[proc.stdout.index("{"):])
+        e = next(x for x in out["entities"] if x["id"] == "primer_polity_newland")
+        self.assertIn("design/cosmology.md", e["files"])
+        self.assertIn("design/premise.md", e["files"])
+        self.assertFalse([f for f in e["files"] if "dm-only" in f], "a primer writer reads public files only")
+
+
 if __name__ == "__main__":
     unittest.main()

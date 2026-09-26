@@ -679,6 +679,29 @@ def document_roster(campaign: str, phase: str) -> list[str]:
     return []
 
 
+def document_reads(campaign: str, phase: str, eid: str, proj: dict) -> list[str]:
+    """Default read list of a document-roster item (no skeleton names its files; birth 2 gave the primer `files: []`)."""
+    root = campaign_dir(campaign)
+    if phase == "P2":
+        want = ["design/premise.md", "design/dm-only/premise-secret.md", "design/naming.json", "design/entities.json"]
+    elif phase == "P8":
+        pid = eid[len("primer_"):] if eid.startswith("primer_") else None
+        want = ["design/premise.md", "design/cosmology.md", "design/naming.json", "design/entities.json", "design/map.json",
+                "calendar.json", "design/news.json", "design/common-knowledge.json"]
+        for kind in ("region", "settlement", "faction"):
+            for oid, e in proj.items():
+                if e.get("type") == kind and (pid is None or pid == "all" or e.get("polity") == pid or oid == pid) and e.get("file"):
+                    want.append(e["file"])
+        for oid, e in proj.items():
+            if e.get("type") == "polity" and e.get("file"):
+                want.append(e["file"])
+    elif phase == "P9":
+        want = ["design/premise.md", "design/arc.md", "design/entities.json", "design/player-primer.md"]
+    else:
+        want = []
+    return [w for w in dict.fromkeys(want) if (root / w).is_file()]
+
+
 def render_cmd(campaign: str, name: str, entity_id: str | None, attempt: int, order: int = 1, phase: str | None = None) -> str:
     cmd = f"py -X utf8 {SCRIPTS / 'design_prompts.py'} -c {campaign} render {name}"
     if entity_id:
@@ -731,6 +754,9 @@ def pending_with_prompts(campaign: str, phase: str) -> dict:
             continue
         budget = dm.read_budget(campaign, canonical, eid) if eid in canonical else []
         files = list(dict.fromkeys(budget + list(reads.get(eid) or [])))
+        if not files:
+            proj = (read_json(design_dir(campaign) / "entities.json") or {}).get("entities", {})
+            files = document_reads(campaign, phase, eid, proj)
         recorded = int(row.get("attempt") or 0)
         render_attempt = recorded + 1 if row.get("status") == "failed" and recorded else max(attempt, recorded or attempt)
         files = [dm.rel(campaign, Path(f)) if os.path.isabs(f) else f for f in files]
@@ -803,10 +829,22 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
     print(seed.stdout.strip())
     if seed.returncode != 0:
         print(seed.stderr.strip(), file=sys.stderr)
-    absorb_skeleton(campaign, phase)
+    absorbed = absorb_skeleton(campaign, phase)
     dm.reconcile(campaign, quiet=True)
     data = dm.load(campaign)
     ph = data["phases"][phase]
+    merged_now = bool(report.get("units"))
+    skeleton_missing = phase in dm.SKELETON_PHASES and (ph.get("skeleton") or {}).get("status") == "pending"
+    if not merged_now and not absorbed and not refused and skeleton_missing:
+        # birth 2 (R.5): a Workflow that died before writing anything left "P6 merged" with nothing in it
+        if tokens:
+            ph.setdefault("tokens", {"out": 0})["out"] = int((ph.get("tokens") or {}).get("out") or 0) + int(tokens)
+        if seconds:
+            ph["wall_s"] = int(ph.get("wall_s") or 0) + int(seconds)
+        dm.save(campaign, data, f"designer.py phase {phase} merge")
+        print(f"designer: {phase} nothing merged and no skeleton absorbed — status stays {ph['status']}; "
+              f"run `phase {phase} begin --json` and the Workflow again", file=sys.stderr)
+        return 1
     for uid, reasons in refused.items():
         row = data["entities"].setdefault(uid, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
                                                 "last_error": None, "file": None, "stage_file": None, "agent": None})
@@ -823,6 +861,16 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
         ph["status"] = "merged" if not any(data["entities"].get(e, {}).get("status") in ("pending", "staged", "failed")
                                            for e in ph.get("roster") or []) else "partial"
     dm.save(campaign, data, f"designer.py phase {phase} merge")
+    if phase == "P8" and ph["status"] == "merged":
+        # the primer phase's real output is the player's file set; the loop renders it here, not the conductor by hand
+        for verb, extra in (("facts", ()), ("news", ("--day", "0")), ("primer", ())):
+            rp = run_script("render_player.py", campaign, verb, *extra)
+            print((rp.stdout or rp.stderr).strip().splitlines()[-1] if (rp.stdout or rp.stderr).strip() else f"render_player {verb}: ok")
+            if rp.returncode != 0:
+                print(f"designer: render_player {verb} failed (exit {rp.returncode}); the P8 card cannot be approved until it passes", file=sys.stderr)
+                ph["status"] = "partial"
+                dm.save(campaign, data, f"designer.py phase {phase} merge")
+                break
     if refused:
         print(f"designer: {phase} {len(refused)} unit(s) refused and marked failed — the next `phase {phase} begin --json` "
               f"lists them with the reason: {', '.join(sorted(refused))}", file=sys.stderr)

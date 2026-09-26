@@ -40,7 +40,8 @@ PLACEHOLDERS = {
     "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order",
 }
 PROSE_DIRS = {"npc": "design/npcs", "site": "design/sites", "faction": "design/factions", "region": "design/regions",
-              "settlement": "design/settlements", "chapter": "design/chapters", "thread": "design/threads"}
+              "settlement": "design/settlements", "chapter": "design/chapters", "thread": "design/threads",
+              "seedbatch": "design/seeds"}     # each seed batch writes its own file (birth 2: two batches raced on arc.md)
 SINGLE_FILES = {"premise": "design/premise.md", "cosmology": "design/cosmology.md", "arc": "design/arc.md",
                 "calculus": "design/consequence-calculus.md", "primer": "design/player-primer.md",
                 "report": "design/report.md", "session1": "design/session-1.md"}

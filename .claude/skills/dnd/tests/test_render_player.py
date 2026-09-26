@@ -35,12 +35,12 @@ class Primer(unittest.TestCase):
         proc = self.c.run("render_player.py", "primer", check=True)
         self.assertIn("clean", proc.stdout)
         text = self.c.path("design/player-primer.md").read_text(encoding="utf-8")
-        self.assertIn("## The pitch", text)
+        self.assertIn("## Kısa tanıtım", text)
         self.assertIn("## Reedmarch — buradan olan karakterler için", text)
         self.assertIn("Lanternside limanında kandiller hiç sönmez", text, "the section's link resolved to the name")
         self.assertIn("Court of Mourners cenazelerde okur", text)
-        for heading in ("### The gods as worshipped", "### Calendar and festivals", "### History as taught",
-                        "### What everyone says is dangerous", "## Questions for your backstory", "## The player map"):
+        for heading in ("### Tanrılar, tapıldıkları gibi", "### Takvim ve bayramlar", "### Öğretildiği hâliyle tarih",
+                        "### Herkesin tehlikeli dediği yerler", "## Geçmişin için sorular", "## Oyuncu haritası"):
             self.assertIn(heading, text)
         self.assertIn("Lamp Night", text)
         self.assertIn("Reedham'dan kimse o yola çıkmaz", text, "the over-tier site's far telegraph")

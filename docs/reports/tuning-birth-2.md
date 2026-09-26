@@ -196,3 +196,162 @@ Workflow({scriptPath: "C:\Users\armag\.claude\projects\C--Users-armag-Desktop-Ca
 **Conductor**
 - `preroll --phase P2` was run twice by mistake. The second call was idempotent (status showed 78 public rolls, the expected total), so no re-roll happened.
 - The conductor used the protocol's loop exactly; nothing was hand-filtered.
+
+## Resume, second attempt (2026-09-25/26, code `6ed2f98`)
+
+*This section continues the birth from where 3.1 left it. It ran in the same conductor tab after the development tab's commit `6ed2f98` ("a registry crash is a conductor failure, graph nodes before edges, critic record kinds, majors' critics, stubs pass the validator"). The protocol step 1 in `docs/tuning-births.md` now reads `phase P5 merge --seconds <elapsed>`, with no `--tokens`.*
+
+**Outcome in one line:** the birth **reached P8**, and every phase P0-P8 is approved.
+- **Resume test: PASS** by the protocol's criteria, with the caveats in R.3.
+- **Leak test: FAIL on one validator line.** The cause is a missing front matter on the rendered primer, not a leak; the primer check is clean and all nine cards pass `leak-check` (R.4).
+
+### R.1 Run
+
+| | |
+|---|---|
+| Start / stop | 23:40:11 (re-merge) → 03:25:24 (`disarm`), 3 h 45 min, of which about 62 min was the account session limit (R.5). |
+| Workflow time | ≈ 155 min over 8 runs |
+| Agents | 109 (the resume counted 48: 10 replayed from cache and 38 live) |
+| Subagent tokens | ≈ 10.34 M |
+| Rolls at the end | 400 public, 30 secret |
+| Model | Opus 5.5; the conductor at low effort |
+
+| Phase | Workflow | Run id | Agents | Duration | Tokens | Tool uses |
+|---|---|---|---|---|---|---|
+| P5 | design-fanout, **resumed** | `wf_16fad664-7a3` (task `wh2dy0ij8`) | 48 (10 cached) | 718 s | 2 957 267 | 437 |
+| P6 | design-skeleton, **failed** | `wf_da8bbc14-eae` | 1 (error) | 146 s | 197 838 | 35 |
+| P6 | design-skeleton | `wf_09916877-7c2` | 4 | 2251 s | 785 222 | 154 |
+| P6 | design-fanout | `wf_a8d5b296-86e` | 12 | 1703 s | 1 425 183 | 205 |
+| P7 | design-skeleton | `wf_34dacc4c-d4b` | 4 | 1767 s | 685 074 | 125 |
+| P7 | design-fanout | `wf_d9198efc-7a9` | 24 | 1358 s | 2 855 677 | 423 |
+| P8 | design-fanout | `wf_578e7763-26f` | 8 | 761 s | 755 931 | 101 |
+| P8 | design-fanout (refused unit, attempt 2) | `wf_f5ed48b2-33e` | 8 | 618 s | 680 313 | 89 |
+
+Scripts are under `...\workflows\scripts\<workflow>-<run id>.js` and transcripts under `...\subagents\workflows\<run id>\`, with the same roots as section 1.
+
+### R.2 Per phase
+
+| Phase | Agents | Null | Fix loops | Critic verdicts (skeleton · entities · phase · wishes) | Merge units merged / refused | Validator | Approve | Card time / tokens |
+|---|---|---|---|---|---|---|---|---|
+| P5 | 48 (resume) | 0 | 6 | — · lorevan, grutak, selvarin, tarnek, npcbatch_1 and npcbatch_2 `fix`→`pass`; olavene, drogan, dunkar and kadrun `pass` · fix → 7 phase fixes, 6 `pass`, drogan `fix` · pass | re-merge 18 / 0 (16 rows); after resume 12 / 0 (10 rows) | 0 E, 0 W | ok | 61 dk / 3 620 766 |
+| P6 | 1 (failed) + 4 + 12 | 0 | 2 | `fix`,`pass` · saltgut_lock `fix`,`fix`,`pass`; waxfen `pass` · fix → waxfen `pass` · pass | skeleton 10 / 0; fan-out 7 / 0 | 0 E, 0 W | ok | 68 dk / 2 408 243 |
+| P7 | 4 + 24 | 0 | 4 | `fix`,`fix` (never `pass`) · chapter_1 `fix`×3 (then phase fix `pass`), chapter_2 `fix`→`pass`, chapter_3 `pass` (then phase fix `fix`), seedbatch_1 `pass`, seedbatch_2 `fix`→`pass` · fix · pass | skeleton 29 / 0; fan-out 24 / 0 (22 rows) | 0 E, 0 W | ok | 52 dk / 3 540 751 |
+| P8 | 8 + 8 | 0 | 1 + 1 | — · primer_polity_cairnmarch `fix`→`pass` (both runs) · fix, then fix · pass | run 1: 0 / **1 refused**; run 2: 1 / 0 (container, 0 rows) | 0 E, 0 W | run 1 **refused**; run 2 ok | 23 dk / 1 436 244 |
+
+Skeleton counts, as returned by each skeleton run:
+- **P6:** 8 sites (4 minor, 3 standard, 1 major, 0 capstone), roster `site_saltgut_lock, site_waxfen`. 6 skeletons written, 3 over-tier, 3 intended-path, 2 clues on sites, map +3 nodes / +5 edges, graph 8 / 18, 2 item stubs.
+- **P7:** 3 beats, 3 chapters, 12 nodes (4 / 3 / 5), 3 planted hooks, 7 seeds, 2 sockets, 3 endings, 32 assignments.
+- **Scale bands on the cards:** npc 16 (14-18 ✓) · site 8 (6-8 ✓) · seed 8 (6-8 ✓).
+
+### R.3 Resume test — PASS (with caveats)
+
+| Step | Result |
+|---|---|
+| `begin --json` before the stop (first session) | 10 pending |
+| `phase P5 merge --seconds 590` (no `--tokens`) at 23:40:11 | `registry: merged 18 unit(s) from P5 (16 row(s))` (16 npc stubs filled, `npcbatch_1` and `npcbatch_2` containers with 0 rows), 0 refused, `design_seed: P5: 1 call(s) made, 79 already seeded, 0 failed`, exit 0. The `registry.py` traceback of 3.1 is fixed. |
+| `phase P5 begin --json` after it | **0 pending**. All 10 writers had finished before the TaskStop. |
+| Path taken | **`resumeFromRunId`**, not a fresh run |
+| Resume call 1 (script path + run id, no `args`) | failed in 8 ms: `Error: design-fanout: args.entities is missing; run designer.py phase PN begin --json first` (workflow.js:43) |
+| Resume call 2 (script path + run id + the original pre-stop `args`) | ok. Journal went from 29 started / 28 results to 67 / 66; the tool counted 48 agents, 10 replayed from cache and 38 live. |
+| Per-id `attempt` in `design.json` after the resume merge | all 10 roster items at `attempt: 1`, status `critiqued`. **No id was re-attempted.** |
+| Card count vs skeleton | card `npc: 16 açık, bant 14-18 ✓`; the skeleton returned 16 npcs ✓ |
+
+Caveats:
+- **The writers came back from the cache, but their critics and fix agents ran live.** The 38 live agents included 6 entity fix loops and 7 phase fixes. They re-wrote fragments that had already merged at 23:40, and the post-resume merge merged 12 units (10 rows) a second time. The `attempt` counter does not see this, because a fix keeps the attempt. The protocol's criterion "no entity written twice (the registry's attempt per id)" therefore passes, but prose was written twice for the fixed ids.
+- **Critic chains double up across stop and resume.** The P5 card shows `npc_lorevan` as `c1:fix → c1:fix → c1:pass → c1:pass` and the phase critic as `fix → pass → fix`.
+- **P5 time is over-counted.** `wall_s` is 3681 = 1783 + 590 + 590 + 718: the stopped run's 590 s was added once by the first session's crashed merge and once by this re-merge. Token out is 3 620 766 = 663 499 + 2 957 267 + 0.
+- **Resume needs the original args.** A bare `resumeFromRunId` fails; the protocol should say to pass the original `args`.
+
+### R.4 Leak test (after P8) — FAIL on one line
+
+| Check | Result |
+|---|---|
+| `design_check.py -c _test-tune-2` | exit 1: refs 0, stamps 0, **secrecy 1**, overlay 0, map 0, sites 0. The one line: `✗ [secrecy] design/player-primer.md has no secrecy in its front matter` |
+| `render_player.py check` on the primer | `render_player: clean` (exit 0) |
+| `design_approval.py leak-check` P0-P8 | all 9 **clean** |
+| `designer.py status --json` | P0-P8 `approved` (attempt 1; rosters 0, 1, 1, 3, 5, 10, 2, 5, 1), P9 `pending`. 400 public, 30 secret rolls. |
+| `disarm` | `designer: guard disarmed` at 03:25:24 |
+
+The primer was produced by the conductor running `render_player.py -c _test-tune-2 facts` (14 facts), `news` (+7 records, day 0) and `primer` (21 690 chars, clean). Neither the protocol loop nor `designer.py phase P8 approve` does this (R.6).
+
+### R.5 Failures
+
+```
+# P6 skeleton, run wf_da8bbc14-eae (Workflow tool)
+[P6.skeleton.a1] failed: You've hit your session limit · resets 1am (Europe/Istanbul)
+
+# designer.py -c _test-tune-2 phase P6 merge --tokens 197838 --seconds 146
+registry: no staging folder C:\Users\armag\Desktop\Campaign-Designer\campaigns\_test-tune-2\design\_staging\P6
+design_seed: no merged fragments for P6
+designer: P6 merged                     (exit 0; the phase is "merged" with nothing in it)
+```
+
+The same `begin --json` was re-run after the reset (01:00) and succeeded.
+
+```
+# designer.py -c _test-tune-2 phase P6 merge --tokens 1425183 --seconds 1703   (exit 1, 7 units merged)
+✗ site_progress.py -c: usage: site_progress.py [-h] -c NAME
+                        {open,enter,clear,skip,shortcut,rest,note,status} ...
+site_progress.py: error: unrecognized arguments: --payoff-room 11 --room-count 18
+design_seed: P6: 10 call(s) made, 38 already seeded, 1 failed
+```
+
+The following refusal was worked through by the protocol (rerun with the `begin --json`, attempt 2, reason in the prompt), which then merged:
+
+```
+# designer.py -c _test-tune-2 phase P8 merge --tokens 755931 --seconds 761   (exit 1)
+✗ primer_polity_cairnmarch: public file <P8 staging>/primer_polity_cairnmarch.section.md front matter needs secrecy: public|discoverable (has None)
+designer: P8 1 unit(s) refused and marked failed — the next `phase P8 begin --json` lists them with the reason: primer_polity_cairnmarch
+registry: merged 0 unit(s) from P8 (0 row(s)); refused 1: primer_polity_cairnmarch
+
+# designer.py -c _test-tune-2 phase P8 approve   (exit 1)
+design_manifest: P8 has failed entities (primer_polity_cairnmarch); rerun the pending list or drop them via revise before approving
+```
+
+Merge warnings, with no refusal:
+
+```
+! seedbatch_1: prose is 58987 bytes, fragment says 49293     (P7)
+! seedbatch_2: prose is 58987 bytes, fragment says 58977     (P7)
+```
+
+Both batches write the same prose file.
+
+Blocked commands (read guard, false positives on a string, no read):
+1. A conductor note that quoted the P8 refusal line, with its staging path, into the scratchpad via heredoc.
+2. A `sed` filter in the conductor's own command whose pattern contained the staging folder token.
+
+In both cases the guard reported `the conductor may not read dm-only content (design/_staging/…)`. The protocol's rule 5 names dm-only paths, but staging paths trip the guard in the same way.
+
+### R.6 Observations
+
+**Fixed since the first session, confirmed live**
+- The P5 re-merge no longer crashes.
+- Graph seeding: P5-P8 had 0 `add-edge` failures, against 9 and 15 in P3/P4.
+- `site_moonford`'s `bad_tier` is gone (P6 skeleton).
+- The validator was 0 E / 0 W on P5, P6, P7 and P8.
+- The wishes critic now shows `pass` on the cards.
+- Refused units come back through `begin --json` with `attempt 2` and `last_error` in the prompt, as the protocol now says.
+
+**Player card and primer, the owner as player**
+- **P7 card spoils the arc.** It lists the three beats, the three chapter summaries and all 12 node one-liners as public rows, and they state future outcomes: which vote is bought, which deed passes to whom, the day and place the Progress stops. They are `secrecy: public`, so every leak scan passes, but they read as a plot synopsis to the owner.
+- **The rendered primer carries a stray front matter block.** The section file's own front matter (`entity`, `type`, `secrecy`, `phase`, `stamped`, `mirror`) appears as visible text under "## Cairnmarch — buradan olan karakterler için", while the primer itself has no front matter, which causes the one validator error.
+- **The primer mixes Turkish and English headings.** After the Turkish section come English headings: "The pitch", "The land and who rules it", "The gods as worshipped", "Calendar and festivals", "Money and prices", "Languages and peoples", "Magic and its keepers", "Famous places", "History as taught", "What everyone says is dangerous", "What people are talking about (day 0)", "Questions for your backstory", "The player map". These look like `render_player.py`'s own section titles.
+- `item_stillcloak`'s public one-liner names its SRD base item and its attunement. This is fine by the attunement rule; noted only because it is mechanics on the player card.
+- **P8 card reads "(bu faz henüz varlık üretmedi)"** although the primer section merged (container, 0 rows). The primer itself, the phase's real output, is not shown on the card.
+
+**Critics**
+- Skeleton critics ended at `fix` without a `pass` in P4 (earlier session) and P7 (`fix`,`fix`), yet the skeletons merged and the phases approved.
+- The phase critic ended at `fix` in P5, P6, P7 and P8 (P8 `fix → fix`), and every phase approved automatically. Per-entity: `npc_drogan` (P5) and `chapter_3` (P7) end at a `fix` verdict.
+- Recurring phase-critic finding `rubric_leak` "public restates mirror / secret content in public writer notes": P5 ×5, P6 ×1, P7 ×4.
+
+**P8 and the protocol**
+- `designer.py phase P8 approve` does not run `render_player.py facts / news / primer`, and the protocol loop does not tell the conductor to. The after-P8 block then checks a primer that only exists if the conductor improvises (conductor choice, R.4).
+- The P8 roster was a single primer section (`primer_polity_cairnmarch`, one polity) with `files: []` in the begin JSON.
+
+**Accounting**
+- A merge after a failed Workflow (P6, session limit) marks the phase `merged` with no staging folder, and adds its 146 s and 197 838 tokens to the phase. The P6 card shows 68 dk.
+- In P7 the two seed batches write the same prose file, and their fragments disagree on its size (R.5).
+
+**Conductor**
+- The protocol loop was followed exactly. Beyond it, the conductor passed the original args on the second resume call and ran `render_player` before the after-P8 block.

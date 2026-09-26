@@ -33,9 +33,9 @@ import design_manifest as dm  # noqa: E402
 from design_io import campaign_dir, design_dir, dm_only_dir, now_iso, read_json, stamp_meta, write_json_atomic  # noqa: E402
 
 LINK = re.compile(r"\[\[([a-z]+_[a-z0-9_]+)\]\]")
-SECTION_HEADINGS = ["The land and who rules it", "The gods as worshipped", "Calendar and festivals", "Money and prices",
-                    "Languages and peoples", "Magic and its keepers", "Famous places", "History as taught",
-                    "What everyone says is dangerous", "What people are talking about (day 0)"]
+SECTION_HEADINGS = ["Topraklar ve kim yönetiyor", "Tanrılar, tapıldıkları gibi", "Takvim ve bayramlar", "Para ve fiyatlar",
+                    "Diller ve halklar", "Büyü ve bekçileri", "Ünlü yerler", "Öğretildiği hâliyle tarih",
+                    "Herkesin tehlikeli dediği yerler", "Halkın dilinde (0. gün)"]
 
 
 # ── sources ───────────────────────────────────────────────────────────────────
@@ -110,6 +110,15 @@ def by_type(pub: dict, etype: str) -> list[tuple[str, dict]]:
     return sorted(((eid, e) for eid, e in pub.items() if e.get("type") == etype), key=lambda x: x[1].get("name", ""))
 
 
+def strip_front_matter(text: str) -> str:
+    """Drop a leading `---` block; a section file's front matter is bookkeeping, not primer text."""
+    if text.startswith("---\n"):
+        end = text.find("\n---", 4)
+        if end != -1:
+            return text[end + 4:].lstrip("\n")
+    return text
+
+
 def primer_text(campaign: str) -> tuple[str, dict]:
     manifest = dm.load(campaign)
     pub = public(campaign)
@@ -121,18 +130,20 @@ def primer_text(campaign: str) -> tuple[str, dict]:
     title = premise.get("name") or campaign.replace("-", " ").title()
     lines = [f"# {title} — bir yerlinin bildikleri", "",
              "*Bu dosya oyuncuya tamamen açıktır: dünyayı bu dünyada büyümüş birinin bildiği kadar anlatır. Her bölüm bir ülke ya da halk içindir; bir yerli komşusunu daha az bilir.*", "",
-             "## The pitch", "", premise.get("pitch_tr") or "(premise fazı henüz pitch yazmadı)", ""]
+             "## Kısa tanıtım", "", premise.get("pitch_tr") or "(premise fazı henüz pitch yazmadı)", ""]
     problems: list[str] = []
     tier = band_tier(manifest)
     polities = by_type(pub, "polity")
     if not polities:
         polities = [("polity_all", {"name": "Bu diyar", "capital": None})]
     for pid, pol in polities:
-        lines.append(f"## {pol.get('name')} — buradan olan karakterler için")
+        lines.append(f"## {pol.get('name')} — buradan olan karakterler için")   # the headings are Turkish: the narration is, the world is not
         lines.append("")
         section_files = [p for p in staged(campaign, "P8", ".section.md") if p.name.startswith(f"primer_{pid}")]
         if section_files:
-            text, bad = resolve_text(section_files[-1].read_text(encoding="utf-8").replace("\r\n", "\n").strip(), pub)
+            # a section file carries front matter like every prose file; the player never sees it (birth 2, R.6)
+            raw_section = strip_front_matter(section_files[-1].read_text(encoding="utf-8").replace("\r\n", "\n"))
+            text, bad = resolve_text(raw_section.strip(), pub)
             problems += [f"{section_files[-1].name}: {b}" for b in bad]
             lines += [text, ""]
         else:
@@ -140,7 +151,7 @@ def primer_text(campaign: str) -> tuple[str, dict]:
         # the land
         regions = [(rid, r) for rid, r in by_type(pub, "region") if r.get("polity") == pid or pid == "polity_all"]
         settlements = [(sid, s) for sid, s in by_type(pub, "settlement") if s.get("polity") == pid or pid == "polity_all"]
-        lines.append("### The land and who rules it")
+        lines.append("### Topraklar ve kim yönetiyor")
         cap = name_of(pub, pol.get("capital")) if pol.get("capital") else "—"
         ruler = name_of(pub, pol.get("ruler_at_birth")) if pol.get("ruler_at_birth") else "—"
         lines.append(f"- **{pol.get('name')}**: yönetim {pol.get('government', '—')}, başkent {cap}, hükümdar {ruler}, hukuk {pol.get('law_level', '—')}.")
@@ -150,14 +161,14 @@ def primer_text(campaign: str) -> tuple[str, dict]:
             lines.append(f"- {s['name']} — {s.get('scale', '')}, ~{s.get('population', '?')} kişi, {name_of(pub, s['region']) if s.get('region') else ''}")
         lines.append("")
         # the gods
-        lines.append("### The gods as worshipped")
+        lines.append("### Tanrılar, tapıldıkları gibi")
         for gid, g in by_type(pub, "god"):
             epithet = f", \"{g['aliases'][0]}\"" if g.get("aliases") else ""
             church = name_of(pub, g["church"]) if isinstance(g.get("church"), str) else (g.get("church") or "—")
             lines.append(f"- **{g['name']}**{epithet} — {', '.join(g.get('domains') or [])}; simgesi {g.get('symbol', '—')}; {church}.")
         lines.append("")
         # calendar
-        lines.append("### Calendar and festivals")
+        lines.append("### Takvim ve bayramlar")
         if calendar.get("months"):
             lines.append(f"- Aylar (her biri {calendar.get('month_length', 30)} gün): {', '.join(calendar['months'])}")
         if calendar.get("day_names"):
@@ -170,13 +181,13 @@ def primer_text(campaign: str) -> tuple[str, dict]:
             lines.append(f"- **{f.get('name')}** ({f.get('day')} {month}{', ' + god if god else ''}): {f.get('note', '')}")
         lines.append("")
         # money
-        lines.append("### Money and prices")
+        lines.append("### Para ve fiyatlar")
         for sid, s in settlements:
             eco = s.get("economy") or {}
             lines.append(f"- {s['name']}: satar {', '.join(eco.get('sells') or []) or '—'}; arar {', '.join(eco.get('needs') or []) or '—'}; fiyat çarpanı ×{eco.get('price_modifier', 1.0)}")
         lines.append("")
         # languages and peoples
-        lines.append("### Languages and peoples")
+        lines.append("### Diller ve halklar")
         langs = naming.get("languages") or {}
         for lid, lang in langs.items():
             lines.append(f"- **{lid}**: {lang.get('label_tr', '')}")
@@ -185,13 +196,13 @@ def primer_text(campaign: str) -> tuple[str, dict]:
                 lines.append(f"- **{c['name']}**: {c.get('rule_tr', '')}")
         lines.append("")
         # magic
-        lines.append("### Magic and its keepers")
+        lines.append("### Büyü ve bekçileri")
         for cid, c in by_type(pub, "signature"):
             if c.get("kind") in ("magic", "institution"):
                 lines.append(f"- **{c['name']}**: {c.get('rule_tr', '')}")
         lines.append("")
         # famous places
-        lines.append("### Famous places")
+        lines.append("### Ünlü yerler")
         for plid, pl in by_type(pub, "place")[:12]:
             lines.append(f"- **{pl['name']}** ({pl.get('kind', '')}, {name_of(pub, pl['settlement']) if pl.get('settlement') else ''})")
         for node in (mp.get("nodes") or []):
@@ -199,12 +210,12 @@ def primer_text(campaign: str) -> tuple[str, dict]:
                 lines.append(f"- {node['id'].replace('landmark_', '').replace('_', ' ').title()} — bir simge yer")
         lines.append("")
         # taught history
-        lines.append("### History as taught")
+        lines.append("### Öğretildiği hâliyle tarih")
         for evid, ev in sorted(by_type(pub, "event"), key=lambda x: (x[1].get("year") if isinstance(x[1].get("year"), int) else -99999)):
             lines.append(f"- {ev.get('year', '?')} — **{ev['name']}**: {ev.get('taught_tr', '')}")
         lines.append("")
         # dangerous places
-        lines.append("### What everyone says is dangerous")
+        lines.append("### Herkesin tehlikeli dediği yerler")
         shown = 0
         for sid, s in by_type(pub, "site"):
             if int(s.get("danger_tier") or 0) > tier and s.get("telegraphs"):
@@ -215,7 +226,7 @@ def primer_text(campaign: str) -> tuple[str, dict]:
             lines.append("- (herkesin uzak durduğu bir yer henüz yok)")
         lines.append("")
         # rumours
-        lines.append("### What people are talking about (day 0)")
+        lines.append("### Halkın dilinde (0. gün)")
         reach_ids = {pid} | {rid for rid, _ in regions} | {sid for sid, _ in settlements}
         shown = 0
         for rec in news:
@@ -225,14 +236,14 @@ def primer_text(campaign: str) -> tuple[str, dict]:
         if not shown:
             lines.append("- (henüz söylenti yok)")
         lines.append("")
-    lines.append("## Questions for your backstory")
+    lines.append("## Geçmişin için sorular")
     lines.append("*İstediklerini cevapla; her biri DM'e hikâyeni bağlayacağı bir yer verir. Hiçbiri tuzak değildir.*")
     lines.append("")
     for sid, s in by_type(pub, "socket"):
         if s.get("question_tr"):
             lines.append(f"- {s['question_tr']}")
     lines.append("")
-    lines.append("## The player map")
+    lines.append("## Oyuncu haritası")
     for node in (mp.get("nodes") or []):
         if node.get("secrecy", "public") == "public" and node.get("kind") in ("settlement", "landmark", "waypoint", "site"):
             lines.append(f"- {name_of(pub, node['id']) if node['id'] in pub else node['id']} — {node.get('kind')}, {node.get('terrain', '')}, {name_of(pub, node['region']) if node.get('region') in pub else ''}")

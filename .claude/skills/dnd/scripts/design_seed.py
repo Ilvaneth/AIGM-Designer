@@ -101,6 +101,11 @@ def argv_for(store: str, op: str, args: dict, campaign: str, session: int | None
         if op == "open":
             a = dict(args)
             site = a.pop("site")
+            # site_progress.py open takes --entrances --payoff --min-depth --rooms; the writers' fragments say
+            # payoff_room / room_count (birth 2, R.5) — map, and drop what the CLI does not know
+            alias = {"payoff_room": "payoff", "payoff": "payoff", "room_count": "rooms", "rooms": "rooms",
+                     "entrances": "entrances", "min_depth": "min_depth", "depth": "min_depth"}
+            a = {alias[k]: v for k, v in a.items() if k in alias}
             return ["site_progress.py", "-c", campaign, "open", str(site)] + kv_of(a, join=",")
         return None
     if store == "names":

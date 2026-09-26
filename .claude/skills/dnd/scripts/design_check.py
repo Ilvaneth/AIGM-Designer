@@ -372,8 +372,11 @@ def check_secrecy(b: Bible, only: str | None) -> list[Finding]:
 
     # every entity has a tier (already in refs) — and every prose file names one
     for path, fm in b.fm.items():
+        rp = relpath(b, path)
+        if rp == "design/player-primer.md" or rp.startswith("design/player/"):
+            continue        # rendered player files carry no front matter; they are still leak haystacks (birth 2, R.4)
         if fm.get("secrecy") not in SECRECY:
-            E(fm.get("entity"), "file_no_secrecy", f"{relpath(b, path)} has no secrecy in its front matter")
+            E(fm.get("entity"), "file_no_secrecy", f"{rp} has no secrecy in its front matter")
     return out
 
 
