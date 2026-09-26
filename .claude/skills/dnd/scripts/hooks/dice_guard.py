@@ -165,6 +165,25 @@ def agent_roll_during_design(payload: dict, command: str) -> "str | None":
     return None
 
 
+def player_roll_in_playtest(payload: dict, command: str) -> bool:
+    """Slice 1e (plan item 22.5): while a playtest is armed, the player agent (a subagent of a
+    `playtest_agent_types` type) may roll its own PC's die with dice.py --player. Nobody else may."""
+    if not payload.get("agent_id") or "--player" not in _executable_part(command):
+        return False
+    try:
+        from paths import runtime_dir
+        marker = runtime_dir() / "active-design.json"
+        if not marker.is_file():
+            return False
+        data = json.loads(marker.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    if data.get("mode") != "playtest":
+        return False
+    types = tuple(data.get("playtest_agent_types") or ("player",))
+    return str(payload.get("agent_type") or "") in types
+
+
 def main() -> None:
     try:
         payload = json.load(sys.stdin)
@@ -177,7 +196,10 @@ def main() -> None:
     if not command:
         sys.exit(0)
 
-    reason = agent_roll_during_design(payload, command) or check(command)
+    if player_roll_in_playtest(payload, command):
+        reason = None                       # the player's own die, rolled by the player
+    else:
+        reason = agent_roll_during_design(payload, command) or check(command)
     if reason:
         print(f"BLOCKED by dice_guard: {reason}", file=sys.stderr)
         sys.exit(2)

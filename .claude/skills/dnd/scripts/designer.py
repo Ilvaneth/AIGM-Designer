@@ -682,6 +682,10 @@ def document_roster(campaign: str, phase: str) -> list[str]:
     return []
 
 
+def rel_path(campaign: str, p: Path) -> str:
+    return p.resolve().relative_to(campaign_dir(campaign).resolve()).as_posix()
+
+
 def document_reads(campaign: str, phase: str, eid: str, proj: dict) -> list[str]:
     """Default read list of a document-roster item (no skeleton names its files; birth 2 gave the primer `files: []`)."""
     root = campaign_dir(campaign)
@@ -699,7 +703,39 @@ def document_reads(campaign: str, phase: str, eid: str, proj: dict) -> list[str]
             if e.get("type") == "polity" and e.get("file"):
                 want.append(e["file"])
     elif phase == "P9":
-        want = ["design/premise.md", "design/arc.md", "design/entities.json", "design/player-primer.md"]
+        want = ["design/premise.md", "design/arc.md", "design/entities.json", "design/player-primer.md", "design/naming.json"]
+        if eid.startswith("thread_"):
+            pcid = "pc_" + eid[len("thread_"):]
+            pc = proj.get(pcid) or {}
+            for f in (pc.get("sheet"), pc.get("file")):
+                if f:
+                    want.append(f)
+            for sid, s in proj.items():
+                if s.get("type") == "socket" and (s.get("bound_to") == pcid or not s.get("bound_to")):
+                    for ref in (s.get("npc"), s.get("faction")):
+                        if ref and proj.get(ref, {}).get("file"):
+                            want.append(proj[ref]["file"])
+            for fid, f in proj.items():
+                if f.get("type") == "faction" and f.get("file"):
+                    want.append(f["file"])
+            for oid, e in proj.items():
+                if e.get("type") == "thread" and e.get("file") and oid != eid:
+                    want.append(e["file"])
+        else:   # the session-1 pack
+            mp = read_json(design_dir(campaign) / "map.json") or {}
+            hub = next((n["id"] for n in mp.get("nodes", []) if n.get("hub")), None)
+            if hub and proj.get(hub, {}).get("file"):
+                want.append(proj[hub]["file"])
+            chapters = sorted(((cid, c) for cid, c in proj.items() if c.get("type") == "chapter"), key=lambda kv: kv[1].get("order") or 99)
+            if chapters and chapters[0][1].get("file"):
+                want.append(chapters[0][1]["file"])
+            for p in sorted((design_dir(campaign) / "player").glob("*.md")) if (design_dir(campaign) / "player").is_dir() else []:
+                want.append(rel_path(campaign, p))
+            overlay = read_json(design_dir(campaign) / "overlay.json") or {}
+            for sid, rec in (overlay.get("entries") or {}).items():
+                if (rec.get("status") or {}).get("value") == "detailed" and proj.get(sid, {}).get("file"):
+                    want.append(proj[sid]["file"])
+            want += ["design/news.json", "calendar.json"]
     else:
         want = []
     return [w for w in dict.fromkeys(want) if (root / w).is_file()]
@@ -864,6 +900,18 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
         ph["status"] = "merged" if not any(data["entities"].get(e, {}).get("status") in ("pending", "staged", "failed")
                                            for e in ph.get("roster") or []) else "partial"
     dm.save(campaign, data, f"designer.py phase {phase} merge")
+    if phase == "P9" and ph["status"] == "merged":
+        # design integrate: every thread's public face for the player, the npc index and the master index refreshed
+        proj9 = (read_json(design_dir(campaign) / "entities.json") or {}).get("entities", {})
+        for tid, t in sorted(proj9.items()):
+            if t.get("type") == "thread":
+                tf = run_script("render_player.py", campaign, "thread-face", tid)
+                tail = (tf.stdout or tf.stderr).strip().splitlines()
+                print(tail[-1] if tail else f"thread-face {tid}: ok")
+        for args in (("npcs",), ("index",)):
+            rd = run_script("render_dm.py", campaign, *args)
+            tail = (rd.stdout or rd.stderr).strip().splitlines()
+            print(tail[-1] if tail else f"render_dm {args[0]}: ok")
     if phase == "P8" and ph["status"] == "merged":
         # the primer phase's real output is the player's file set; the loop renders it here, not the conductor by hand
         for verb, extra in (("facts", ()), ("news", ("--day", "0")), ("primer", ())):

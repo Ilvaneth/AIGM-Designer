@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "required": ["message_tr", "rolls"],
+  "additionalProperties": false,
+  "properties": {
+    "message_tr": {"type": "string", "description": "what the player says and does, in Turkish, 2-6 sentences"},
+    "rolls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "notation", "raw"],
+        "additionalProperties": false,
+        "properties": {
+          "label": {"type": "string"},
+          "notation": {"type": "string"},
+          "raw": {"type": "integer", "description": "the raw die result as dice.py printed it; the DM adds modifiers"}
+        }
+      }
+    },
+    "ooc_tr": {"type": "string", "description": "one out-of-character line, only when a real player would say one"}
+  }
+}

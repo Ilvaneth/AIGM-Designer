@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "required": ["kind", "verdict", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "kind": {"type": "string", "enum": ["playtest", "readability", "uniqueness"]},
+    "verdict": {"type": "string", "enum": ["pass", "fix"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check", "verdict"],
+        "additionalProperties": false,
+        "properties": {
+          "check": {"type": "string", "description": "the checklist id"},
+          "verdict": {"type": "string", "enum": ["pass", "fix", "note"]},
+          "turn": {"type": "integer", "description": "the transcript turn concerned, when one"},
+          "note_tr": {"type": "string", "description": "one sentence, Turkish; never a quote from a dm-only file"}
+        }
+      }
+    }
+  }
+}

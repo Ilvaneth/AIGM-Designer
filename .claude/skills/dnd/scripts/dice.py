@@ -95,6 +95,16 @@ def owner_is_pc(owner: str, campaign: str | None = None) -> str | None:
     return None
 
 
+def playtest_armed() -> bool:
+    """A playtest is running (<runtime-dir>/active-design.json, mode playtest): the player agent rolls its own PC's dice."""
+    try:
+        from paths import runtime_dir
+        marker = runtime_dir() / "active-design.json"
+        return marker.is_file() and json.loads(marker.read_text(encoding="utf-8")).get("mode") == "playtest"
+    except Exception:
+        return False
+
+
 def parse_notation(notation: str):
     notation = notation.strip().lower()
     adv = "adv" in notation or "advantage" in notation
@@ -176,6 +186,8 @@ def run(notation: str, silent: bool = False, label: str = "", rng=None) -> int:
 if __name__ == "__main__":
     argv = sys.argv[1:]
     silent = "--silent" in argv
+    as_player = "--player" in argv          # slice 1e: the playtest's player agent rolling its own die
+    argv = [a for a in argv if a != "--player"]
     label = ""
     owner = ""
     campaign = None
@@ -206,6 +218,12 @@ if __name__ == "__main__":
         sys.exit(2)
 
     pc = owner_is_pc(owner, campaign)
+    if pc and as_player and not playtest_armed():
+        print(f'dice.py: REFUSED — --player is the playtest player agent\'s flag and no playtest is armed '
+              f'(playtest.py start). The DM never rolls {pc}\'s die.', file=sys.stderr)
+        sys.exit(3)
+    if pc and as_player:
+        pc = None                            # the player rolls their own die at the table
     if pc:
         print(f'dice.py: REFUSED — "{owner}" is a player character ({pc}).\n'
               f'  This die belongs to the player. Call for it by name, wait for the raw '
