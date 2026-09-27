@@ -555,6 +555,13 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
     if fn:
         fn(R, m)
     n_pub, n_sec = R.flush()
+    if phase not in ("P0", "P1"):
+        # root-cause analysis 1, RC-13: person and god names are rolled, never invented; P1 writes the languages
+        import design_names as dn
+        if dn.ensure_pool(campaign, phase, attempt) is not None:
+            print("designer: " + "; ".join(f"{lid}: {sum(1 for e in L['person'] if not e.get('used_by'))} person / "
+                                            f"{sum(1 for e in L['god'] if not e.get('used_by'))} god names unused"
+                                            for lid, L in dn.load_pool(campaign)["languages"].items()))
     data = dm.load(campaign)
     if data["phases"][phase]["status"] in ("pending", "stale", "failed"):
         data["phases"][phase]["status"] = "prerolled"

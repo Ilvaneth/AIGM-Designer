@@ -129,7 +129,7 @@ tables:
       - id: family_courtly_latinate
         label: Courtly Latinate
         feel: "long, formal, urban; three or four syllables, vowel endings common"
-        onsets: [c, v, l, aur, cass, ott, ""]
+        onsets: [c, v, l, aur, ser, ott, ""]
         nuclei: [a, e, i, o]
         codas: [n, r, l, us, ia, an, ""]
         length: [3, 4]
@@ -139,7 +139,7 @@ tables:
         samples_god: [Aurelan, Solenne]
         tr_suffix_friendly: true
         hooks:
-          - {phase: P1, must: "mutate by fixing the length to three; roots from law, coin, light, marble domains"}
+          - {phase: P1, must: "mutate by replacing one onset or coda, never by fixing the length (dry-2: a fixed three made one shape of every name); roots from law, coin, light, marble domains"}
       - id: family_deep_guttural
         label: Deep guttural
         feel: "throat-deep, heavy; for giants, deep-dwellers, a made people"

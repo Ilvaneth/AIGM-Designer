@@ -37,7 +37,7 @@ PLACEHOLDERS = {
     "campaign", "campaign_dir", "skill_dir", "phase", "attempt", "lang", "dials", "scale", "scale_line", "seed",
     "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions", "staging_phase",
     "wishes", "template", "prose_path", "mirror_path", "fragment_path", "notes_path", "rubrics", "common",
-    "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order",
+    "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order", "name_pool",
 }
 PROSE_DIRS = {"npc": "design/npcs", "site": "design/sites", "faction": "design/factions", "region": "design/regions",
               "settlement": "design/settlements", "chapter": "design/chapters", "thread": "design/threads",
@@ -196,6 +196,11 @@ def read_budget(campaign: str, entity_id: str | None) -> list[str]:
     return dm.read_budget(campaign, canonical, entity_id)
 
 
+def name_pool_text(campaign: str, entity_id: str | None) -> str:
+    import design_names as dn
+    return dn.prompt_text(campaign, entity_id)
+
+
 def render(campaign: str, name: str, entity_id: str | None = None, attempt: int | None = None,
            critic_order: int = 1, question: str | None = None, phase_override: str | None = None) -> str:
     fm, body = load(name)
@@ -249,6 +254,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "agent_label": f"{phase}.{entity_id or role}.a{attempt}", "roster": ", ".join(ph.get("roster") or []) or "(none yet)",
         "party_size": str(d["party_size"]), "level_band": f"{d['level_band'][0]}-{d['level_band'][1]}",
         "content_mix": ", ".join(d["content_mix"]), "critic_order": str(critic_order),
+        "name_pool": name_pool_text(campaign, entity_id),      # after "common": _common.md carries the placeholder
     }
     text = body
     for key, value in ctx.items():

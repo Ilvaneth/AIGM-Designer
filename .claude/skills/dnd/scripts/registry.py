@@ -436,6 +436,36 @@ def entity_budget(campaign: str, phase: str) -> dict:
             if dm.PHASES.index(phase) < dm.PHASES.index(owner)}
 
 
+def pool_errors(eid: str, row: dict, pool: dict | None, canonical: dict, phase: str, claimed: dict) -> list[str]:
+    """RC-13: once a campaign has a rolled pool (P2 on), a new public person or god takes its given name from its
+    language's list, a name is taken once, and a secret entity never takes a pool name (the lists are printed in
+    conductor-readable prompts). P1 writes the languages and names before any pool exists."""
+    import design_names as dn
+    if not pool or phase in ("P0", "P1") or row.get("type") not in ("npc", "god"):
+        return []
+    given = dn.given_of(row.get("name"))
+    if not given:
+        return []
+    if row.get("secrecy") == "secret":
+        if given.lower() in dn.all_pool_names(pool):
+            return [f"{eid}: a secret entity may not take a pool name ({given!r} is printed in conductor-readable prompts); "
+                    "name it in dm-only from the language's banks"]
+        return []
+    old = canonical["entities"].get(eid)
+    if old and dn.given_of(old.get("name")) == given:
+        return []                                   # a stub being filled keeps the name it was reserved under
+    kind = "god" if row["type"] == "god" else "person"
+    names = dn.pool_names(pool, row.get("lang"), kind)
+    if given not in names:
+        return [f"{eid}: the given name {given!r} is not on the rolled {kind} list of {row.get('lang') or 'any language'}; "
+                "take the next unused name from the list in your prompt (names are rolled, never invented)"]
+    holder = names[given] or claimed.get(given)
+    if holder and holder != eid:
+        return [f"{eid}: the rolled name {given!r} is already taken by {holder}; take the next unused one"]
+    claimed[given] = eid
+    return []
+
+
 def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) -> int:
     staging = design_dir(campaign) / "_staging" / phase
     if not staging.is_dir():
@@ -491,6 +521,9 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
     accepted: list[dict] = []
     refused: dict[str, list[str]] = {}
     budget = entity_budget(campaign, phase)
+    import design_names as dn
+    pool = dn.load_pool(campaign)
+    claimed: dict = {}
     used = {t: sum(1 for row in canonical["entities"].values() if row.get("type") == t) for t in budget}
     for u in units:
         errs, warns = list(u["errors"]), []
@@ -510,6 +543,7 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
             errs += row_errors(eid, row)
             errs += secret_name_errors(eid, row, publics, haystack)
             errs += naming_errors(eid, row, bl, registered)
+            errs += pool_errors(eid, row, pool, canonical, phase, claimed)
             errs += duplicate_errors(eid, row, canonical, [(i, r) for i, r in incoming if i != eid])
             e3, w3, drift = stamp_check(eid, row, canonical, snapshot, revise)
             errs += e3
@@ -571,6 +605,13 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
             summary.append(f"  > {u['id']}  (container, {len(u['rows'])} row(s))")
 
     if accepted:
+        if pool and phase not in ("P0", "P1"):
+            for u in accepted:
+                for eid, row in u["rows"]:
+                    if row.get("type") in ("npc", "god") and row.get("secrecy") != "secret":
+                        dn.mark_used(pool, row.get("lang"), "god" if row["type"] == "god" else "person",
+                                     dn.given_of(row.get("name")), eid)
+            dn.save_pool(campaign, pool, f"registry.py merge --phase {phase}")
         write_all(campaign, canonical, snapshot, f"registry.py merge --phase {phase}")
         save_overlay(campaign, overlay, "registry.py merge")
         for u in accepted:

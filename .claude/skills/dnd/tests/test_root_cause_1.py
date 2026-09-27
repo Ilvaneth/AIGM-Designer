@@ -11,6 +11,8 @@ RC-01  approve reads the gate (band, missing critics, the phase's own validator 
        mode; --force passes it with a recorded reason
 RC-14  an approval snapshots the disk-is-truth stores; rerun restores the last approval's before the phase
 RC-03  before P5 (npc) and P7 (seed) the registry stops at the band's top; the count rolls net out the reservations
+RC-13  person and god names are rolled from the campaign's languages, spread, listed in every prompt and taken from
+       the pool at the door; a secret entity never takes a pool name
 """
 
 import json
@@ -287,6 +289,72 @@ class Budgets(Base):
         self.assertEqual(r["seeds_new_count"]["value"], total - filled - 4)
         shapes = [k for k in r if k.startswith("seed.")]
         self.assertEqual(len(shapes), 4 + total - filled - 4, "a shape for every stub to fill and every new seed")
+
+
+class Names(Base):
+    """RC-13: person and god names are rolled from the campaign's languages, spread, and taken from the pool at the door."""
+
+    # dry-2's lampcourt, the bank that gave ten of twenty-two names an -an ending
+    LAMPCOURT = {"onsets": ["c", "v", "l", "aur", "ott", "ser", ""], "nuclei": ["a", "e", "i", "o"],
+                 "codas": ["n", "r", "l", "us", "ia", "an", ""], "length": [3, 3], "forbidden_clusters": ["uu", "ii", "cc", "rl"]}
+
+    def test_a_narrow_bank_still_gives_spread_names_the_door_accepts(self):
+        import random
+        from collections import Counter
+        import design_names as dn
+        import registry
+        names = dn.draw_names(random.Random("rca-names"), self.LAMPCOURT, 24, [])
+        self.assertEqual(len(names), 24)
+        self.assertLessEqual(max(Counter(n[-2:] for n in names).values()), 3, "no ending carries the campaign")
+        self.assertGreaterEqual(min(dn.distance(a, b) for i, a in enumerate(names) for b in names[i + 1:]), 3)
+        for n in names:
+            self.assertEqual(registry.naming_errors("probe", {"type": "npc", "name": n}, registry.naming_blacklist(), set()), [], n)
+            self.assertNotRegex(n.lower(), r"[aeiouy]{3}")
+
+    def pool(self):
+        self.c.reopen("P2", "pending")
+        self.c.run("designer.py", "preroll", "--phase", "P2", "--attempt", "9", check=True)
+        return self.c.json("design/dm-only/name-pool.json")
+
+    def test_the_pool_is_rolled_at_preroll_and_every_prompt_lists_it_rotated(self):
+        import design_prompts as dp
+        pool = self.pool()
+        langs = set(self.c.json("design/naming.json")["languages"])
+        self.assertEqual(set(pool["languages"]), langs)
+        self.assertTrue(all(len(L["person"]) >= 18 for L in pool["languages"].values()), "the band's top and a margin")
+        one = dp.render(self.c.name, "P5.npc", "npc_draskun")
+        two = dp.render(self.c.name, "P5.npc", "npc_kortan")
+        self.assertIn("Names (rolled, never invented)", one)
+        line = lambda t: next(x for x in t.splitlines() if x.startswith("- ") and " persons: " in x)
+        self.assertNotEqual(line(one), line(two), "parallel writers start their lists apart")
+
+    def test_the_door_takes_a_public_persons_name_from_the_pool_once(self):
+        pool = self.pool()
+        lang = sorted(pool["languages"])[0]
+        first = pool["languages"][lang]["person"][0]["name"]
+        self.c.reopen("P5", "running")
+        invented = row("npc_rcainvented", "npc", "Quintarro Vale", created_phase="P5", lang=lang)
+        self.c.write_json("design/_staging/P5/npc_rcainvented.json", fragment("npc_rcainvented", invented))
+        refused = self.c.run("registry.py", "merge", "--phase", "P5")
+        self.assertIn("is not on the rolled person list", refused.stderr)
+        rolled = row("npc_rcarolled", "npc", f"{first} Lampwright", created_phase="P5", lang=lang)
+        self.c.write_json("design/_staging/P5/npc_rcarolled.json", fragment("npc_rcarolled", rolled))
+        self.c.run("registry.py", "merge", "--phase", "P5")
+        self.assertIn("npc_rcarolled", self.c.json("design/dm-only/entities.json")["entities"])
+        used = {e["name"]: e["used_by"] for e in self.c.json("design/dm-only/name-pool.json")["languages"][lang]["person"]}
+        self.assertEqual(used[first], "npc_rcarolled")
+        secret = row("npc_s77", "npc", first, created_phase="P5", secrecy="secret", lang=lang)
+        self.c.write_json("design/_staging/P5/npc_s77.json", fragment("npc_s77", secret))
+        refused = self.c.run("registry.py", "merge", "--phase", "P5")
+        self.assertIn("a secret entity may not take a pool name", refused.stderr)
+
+    def test_the_courtly_family_keeps_its_length_free_and_carries_no_banned_onset(self):
+        import design_tables as dt
+        fam = next(r for r in dt.rows("naming.yaml#family") if r["id"] == "family_courtly_latinate")
+        self.assertNotIn("cass", fam["onsets"], "Cassiv- is the owner's banned stem")
+        hooks = " ".join(h["must"] for h in fam["hooks"])
+        self.assertNotIn("mutate by fixing the length", hooks)
+        self.assertIn("never by fixing the length", hooks)
 
 
 class RerunRollback(Base):
