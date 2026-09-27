@@ -1151,6 +1151,42 @@ def phase_card(campaign: str, phase: str) -> int:
     return 0
 
 
+def avoid_used_files() -> set:
+    """The table files whose roll header says `avoid_used: true`: their rows are a campaign's felt identity."""
+    from paths import skill_root
+    out = set()
+    for f in (skill_root() / "data" / "design").glob("*.yaml"):
+        if (dt.load(f.name).get("roll") or {}).get("avoid_used"):
+            out.add(f.name)
+    return out
+
+
+def record_used(campaign: str, phase: str) -> int:
+    """The rows an approved phase rolled from the avoid-used tables go to used.json, so the next campaign avoids them
+    (dry-3: design_compare read NOT DISTINCT because no birth ever wrote used.json; only a hand verb did). A secret
+    roll's row is kept as a hash. The hand-written fixture records nothing."""
+    m = dm.load(campaign)
+    if m["_meta"].get("fixture"):
+        return 0
+    avoid = avoid_used_files()
+    recs = [(r, False) for r in m.get("dice_log") or [] if r.get("phase") == phase]
+    recs += [(r, True) for r in (read_json(dm_only_dir(campaign) / "dice-log.json") or {}).get("rolls", []) if r.get("phase") == phase]
+    used = dd.load_used()
+    mine = used["campaigns"].setdefault(campaign, {})
+    added = 0
+    for r, secret in recs:
+        ref, row = r.get("table"), r.get("row_id")
+        if not row or not ref or str(ref).split("#")[0] not in avoid:
+            continue
+        entry = dd.hashed(row) if secret else row
+        if entry not in mine.setdefault(ref, []):
+            mine[ref].append(entry)
+            added += 1
+    if added:
+        dd.save_used(used)
+    return added
+
+
 def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round_text: str | None = None,
                   scope: str | None = None, force: bool = False, reason: str | None = None) -> int:
     m = dm.load(campaign)
@@ -1180,6 +1216,7 @@ def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round
                                                 force=force))
     if rc == 0:
         snapshot_stores(campaign, phase)
+        record_used(campaign, phase)
     if rc == 0 and closed:
         data = dm.load(campaign)
         data["phases"][phase]["approval"]["forced"] = {"gate": [{"code": i["code"], "ids": i["ids"]} for i in closed],

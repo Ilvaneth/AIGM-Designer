@@ -64,12 +64,26 @@ def save_used(data: dict) -> None:
     write_json_atomic(used_path(), data)
 
 
+def hashed(row_id: str) -> str:
+    """A secret roll's row as used.json keeps it: used.json sits where the owner reads, and a campaign's secret
+    archetype is a spoiler; the next campaign still avoids the row by matching the hash."""
+    import hashlib
+    return "h:" + hashlib.sha256(str(row_id).encode("utf-8")).hexdigest()[:16]
+
+
 def rows_used_elsewhere(campaign: str, table: str) -> set:
+    """Rows other campaigns used from `table`; a real campaign ignores the `_test-*` births, a test birth sees all."""
     used = load_used()
+    real = not campaign.startswith("_test-")
     out: set = set()
+    hashes: set = set()
     for camp, tables in used["campaigns"].items():
-        if camp != campaign:
-            out.update(tables.get(table, []))
+        if camp == campaign or (real and camp.startswith("_test-")):
+            continue
+        for x in tables.get(table, []):
+            (hashes if str(x).startswith("h:") else out).add(x)
+    if hashes:
+        out |= {r["id"] for r in load_table(table) if hashed(r["id"]) in hashes}
     return out
 
 

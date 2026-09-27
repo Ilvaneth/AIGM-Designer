@@ -429,6 +429,47 @@ class P8Render(Base):
         self.assertIn("render: the player's files did not render (primer)", refused.stderr)
 
 
+class UsedRows(Base):
+    """dry-3: design_compare read NOT DISTINCT; no birth ever wrote the rows it used to used.json."""
+
+    def setUp(self):
+        super().setUp()
+        import tempfile
+        import design_dice as dd
+        self.dd = dd
+        self.tmp = Path(tempfile.mkdtemp()) / "used.json"
+        self.real_path = dd.used_path
+        dd.used_path = lambda: self.tmp
+
+    def tearDown(self):
+        self.dd.used_path = self.real_path
+        super().tearDown()
+
+    def test_an_approved_phase_records_its_avoid_used_rows_and_hides_the_secret_ones(self):
+        import designer
+        import design_tables as dt
+        secrets = dt.load("secrets.yaml")["tables"]
+        sub = next(k for k, v in secrets.items() if isinstance(v, dict) and v.get("rows"))
+        secret_ref, secret_row = f"secrets.yaml#{sub}", secrets[sub]["rows"][0]["id"]
+        m = self.c.json("design/design.json")
+        self.assertEqual(designer.record_used(self.c.name, "P2"), 0, "the micro fixture records nothing")
+        m["_meta"]["fixture"] = False
+        m["dice_log"].append({"phase": "P2", "table": "pantheon.yaml#presence", "label": "presence", "row_id": "presence_walking"})
+        self.c.write_json("design/design.json", m)
+        log = self.c.json("design/dm-only/dice-log.json") if self.c.path("design/dm-only/dice-log.json").is_file() else {"rolls": []}
+        log["rolls"].append({"phase": "P2", "table": secret_ref, "label": "secret.kind", "row_id": secret_row})
+        self.c.write_json("design/dm-only/dice-log.json", log)
+        self.assertGreaterEqual(designer.record_used(self.c.name, "P2"), 2, "the fixture's own P2 rolls come along")
+        mine = json.loads(self.tmp.read_text(encoding="utf-8"))["campaigns"][self.c.name]
+        self.assertIn("presence_walking", mine["pantheon.yaml#presence"])
+        self.assertNotIn(secret_row, json.dumps(mine), "the secret row id never reaches used.json in clear")
+        self.assertTrue(mine[secret_ref][0].startswith("h:"), "a secret row is kept as a hash")
+        self.assertIn("presence_walking", self.dd.rows_used_elsewhere("_test-next", "pantheon.yaml#presence"))
+        self.assertIn(secret_row, self.dd.rows_used_elsewhere("_test-next", secret_ref), "the hash still excludes the row")
+        self.assertEqual(self.dd.rows_used_elsewhere("real-campaign", "pantheon.yaml#presence"), set(),
+                         "a real campaign is never narrowed by a test birth")
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 
