@@ -907,8 +907,14 @@ def refusal_owner(campaign: str, phase: str, uid: str, roster: list) -> str:
     return writer if writer in roster and dp.prompt_for(phase, writer) else uid
 
 
-def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, seconds: int | None = None) -> int:
+def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, seconds: int | None = None,
+                run_dirs: list | None = None) -> int:
     record_critics(campaign, phase)
+    # root-cause analysis 1, RC-09: the Workflow's totalTokens is summed peak context, not output; the run's own
+    # transcripts say what the phase cost, per role
+    for rd in run_dirs or []:
+        import design_cost as dc
+        dc.record(campaign, phase, rd)
     report_path = design_dir(campaign) / "_staging" / phase / "merge.report.json"
     if report_path.is_file():
         report_path.unlink()            # birth 2: never read a previous run's report
@@ -1436,6 +1442,7 @@ def main(argv=None) -> int:
     ph.add_argument("--day", type=int, default=0)
     ph.add_argument("--tokens", type=int, help="merge: output tokens the Workflow reported, added to the phase")
     ph.add_argument("--seconds", type=int, help="merge: wall-clock seconds the Workflow reported, added to the phase")
+    ph.add_argument("--run-dir", action="append", help="merge: the Workflow result's transcript folder; records the real cost (repeatable)")
     ph.add_argument("--force", action="store_true", help="approve: pass a closed gate (with --reason, recorded)")
     ph.add_argument("--full", action="store_true", help="check: every validator line instead of the grouped summary")
     ph.add_argument("--id", help="drop: the roster item")
@@ -1479,7 +1486,7 @@ def main(argv=None) -> int:
         if a.step == "begin":
             return phase_begin(c, a.phase, a.json, a.session_id)
         if a.step == "merge":
-            return phase_merge(c, a.phase, a.day, a.tokens, a.seconds)
+            return phase_merge(c, a.phase, a.day, a.tokens, a.seconds, a.run_dir)
         if a.step == "drop":
             if not (a.id and a.reason):
                 print("designer: drop needs --id and --reason", file=sys.stderr)

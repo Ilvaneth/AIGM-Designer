@@ -346,6 +346,15 @@ def readable(text: str, proj: dict) -> str:
     return LINK.sub(name, str(text or ""))
 
 
+def real_cost_text(ph: dict) -> str:
+    """The run transcripts' real cost (design_cost.py, RC-09) beside the Workflow's context figure."""
+    t = (ph.get("cost") or {}).get("totals") or {}
+    if not t.get("requests"):
+        return ""
+    fmt = lambda n: f"{int(n):,}".replace(",", ".")
+    return f" · **Gerçek çıktı:** {fmt(t['output'])} · **önbellekten okunan:** {fmt(t['cache_read'])} · **ajan:** {t['agents']}"
+
+
 def build_card(campaign: str, phase: str) -> str:
     m = dm.load(campaign)
     ph = m["phases"][phase]
@@ -374,7 +383,8 @@ def build_card(campaign: str, phase: str) -> str:
     gate_items = gate(campaign, phase, findings=findings)
     lines.append(f"- **Durum:** {ph['status']} · **Doğrulayıcı:** {val.get('errors', '—')} hata, {val.get('warnings', '—')} uyarı · "
                  f"**Başarısız:** {', '.join(failed) or '—'} · **Süre:** {elapsed_minutes(ph)} dk · "
-                 f"**Çıktı:** {f'{tokens_out:,}'.replace(',', '.') + ' token' if tokens_out else '—'}")
+                 f"**Bağlam (Workflow):** {f'{tokens_out:,}'.replace(',', '.') + ' token' if tokens_out else '—'}"
+                 + real_cost_text(ph))
     lines.append(f"- **Eleştiri:** faz eleştirmeni {phase_verdict} · dilek eleştirmeni {wishes_verdict}"
                  + (f" · iskelet {' → '.join(skeleton_verdicts)}" if skeleton_verdicts else "")
                  + f" · varlık düzeltme döngüsü {crit.get('entity_loops_total', 0)}"

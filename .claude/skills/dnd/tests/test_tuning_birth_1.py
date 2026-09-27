@@ -320,7 +320,7 @@ class Cards(unittest.TestCase):
         self.c.run("design_approval.py", "card", "--phase", "P6", check=True)
         text = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
         self.assertIn("**Süre:** 3 dk", text, "minutes come from the phase's start when no Workflow seconds were recorded")
-        self.assertIn("**Çıktı:** —", text, "unknown tokens are a dash, never 0")
+        self.assertIn("**Bağlam (Workflow):** —", text, "unknown tokens are a dash, never 0")
         self.assertIn("faz eleştirmeni fix", text)
         self.assertIn("dilek eleştirmeni pass", text)
         self.assertIn("iskelet fix → pass", text)

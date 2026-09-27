@@ -543,6 +543,40 @@ class Dry3Small(Base):
         self.assertEqual(lines.count("Liman kapısı bu sabah kapandı."), 1)
 
 
+class RealCost(Base):
+    """RC-09: the Workflow figure is summed peak context; the run's transcripts say the real cost, per role."""
+
+    def run_dir(self):
+        import tempfile
+        d = Path(tempfile.mkdtemp()) / "wf_rca-cost"
+        d.mkdir()
+        def agent(name, label, usages):
+            (d / f"agent-{name}.meta.json").write_text(json.dumps({"description": label}), encoding="utf-8")
+            with (d / f"agent-{name}.jsonl").open("w", encoding="utf-8") as fh:
+                for rid, (o, cr) in usages:
+                    rec = {"type": "assistant", "requestId": rid, "message": {"usage": {"output_tokens": o, "input_tokens": 2,
+                           "cache_creation_input_tokens": 10, "cache_read_input_tokens": cr}}}
+                    fh.write(json.dumps(rec) + "\n")
+                    fh.write(json.dumps(rec) + "\n")           # a request with a text and a tool block: stored twice
+        agent("a", "P6.site_x.a1", [("r1", (100, 1000)), ("r2", (50, 2000))])
+        agent("b", "P6.site_x.critic1.loop2", [("r3", (20, 500))])
+        agent("c", "P6.phase_critic", [("r4", (30, 800))])
+        return d
+
+    def test_merge_records_the_runs_real_cost_per_role_and_the_card_shows_it(self):
+        self.c.reopen("P6", "running")
+        self.c.run("designer.py", "phase", "P6", "merge", "--run-dir", str(self.run_dir()), check=True)
+        cost = self.c.json("design/design.json")["phases"]["P6"]["cost"]
+        self.assertEqual(cost["totals"]["output"], 200, "each request counted once")
+        self.assertEqual(cost["totals"]["requests"], 4)
+        by_role = cost["runs"]["wf_rca-cost"]["by_role"]
+        self.assertEqual(set(by_role), {"writer", "critic", "phase_critic"})
+        self.c.run("designer.py", "phase", "P6", "card", check=True)
+        card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
+        self.assertIn("**Gerçek çıktı:** 200", card)
+        self.assertIn("**Bağlam (Workflow):**", card)
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 
