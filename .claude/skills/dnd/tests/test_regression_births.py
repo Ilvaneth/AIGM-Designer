@@ -80,6 +80,11 @@ class Births(unittest.TestCase):
         self.assertIn("band", g["P7"], "11 seeds against 6-8: the P3 seed stubs were never netted")
         self.assertIn("orphan_stub", g["P6"], "a secret npc stub carrying a clue, never written")
 
+    def test_dry_3_completed_through_its_four_stops_passes_every_phase(self):
+        g = self.births("_test-dry-3")
+        for pn in ("P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"):
+            self.assertEqual(g[pn], {}, f"{pn}: the first birth on the gates, each stop fixed at its phase")
+
     def test_tune_2_passes_its_resumed_phases(self):
         g = self.births("_test-tune-2")
         for pn in ("P5", "P6", "P7", "P8"):
