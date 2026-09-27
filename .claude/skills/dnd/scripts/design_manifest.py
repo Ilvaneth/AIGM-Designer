@@ -397,6 +397,17 @@ def mark(campaign: str, a) -> int:
     return 0
 
 
+def orphan_stubs(campaign: str, phase: str) -> list[str]:
+    """Canonical rows still `status: pending` whose owner phase is `phase` or an earlier one (root-cause analysis 1,
+    RC-04: every stub carries owner_phase and no gate read it; dry-2 left eight owned stubs behind approved phases)."""
+    if phase not in PHASES:
+        return []
+    upto = PHASES.index(phase)
+    canonical = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
+    return sorted(eid for eid, row in canonical.items()
+                  if is_stub(row) and row.get("owner_phase") in PHASES and PHASES.index(row["owner_phase"]) <= upto)
+
+
 def approve(campaign: str, a) -> int:
     data = load(campaign)
     ph = data["phases"].get(a.phase)
@@ -424,6 +435,12 @@ def approve(campaign: str, a) -> int:
         what = (["the skeleton"] if skeleton_pending else []) + incomplete
         print(f"design_manifest: {a.phase} is not complete ({', '.join(what)} not merged); run `phase {a.phase} begin --json` "
               "and the fan-out again, drop the item, or approve --force", file=sys.stderr)
+        return 1
+    orphans = [e for e in orphan_stubs(campaign, a.phase) if e not in (ph.get("roster") or [])]
+    if orphans and not getattr(a, "force", False):
+        print(f"design_manifest: {a.phase} leaves {len(orphans)} stub(s) it or an earlier phase owns unwritten "
+              f"({', '.join(orphans[:12])}{' …' if len(orphans) > 12 else ''}); put them on a roster and write them, retire "
+              "them with `design_revise.py round --scope entity --action remove`, or approve --force", file=sys.stderr)
         return 1
     card = Path(a.card)
     if not card.is_file():

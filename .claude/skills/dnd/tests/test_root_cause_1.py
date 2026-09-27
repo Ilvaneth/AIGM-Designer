@@ -5,6 +5,7 @@ Each test pins a gate for a class of fault, fed with the shapes that broke it, n
 RC-16  every agent command in the begin JSON is bash-safe: forward slashes, a script that exists
 RC-08  a skeleton's graph is seeded by the merge that absorbs it; the seed result is kept on the manifest
 RC-02  a roster id the skeleton wrote stays owed to its own writer until that writer's fragment merges
+RC-04  approve refuses a stub its phase, or an earlier one, owns and never wrote
 """
 
 import json
@@ -119,6 +120,25 @@ class RosterIntent(Base):
         self.assertEqual(refused.returncode, 1)
         self.assertIn(self.NEW, refused.stderr)
         self.assertIn("not complete", refused.stderr)
+
+
+class OrphanStubs(Base):
+    """RC-04: a stub its owner phase never rostered is refused at that phase's approve, not left behind."""
+
+    def reserve(self, eid, name, owner):
+        stub = row(eid, "npc", name, created_phase="P3", status="pending", owner_phase=owner, reserved_by="P3.region_x.a1")
+        self.c.write_json(f"design/_staging/P3/{eid}.json", fragment(eid, stub, phase="P3"))
+        self.c.run("registry.py", "merge", "--phase", "P3", check=True)
+
+    def test_approve_refuses_a_stub_owned_by_this_or_an_earlier_phase(self):
+        self.reserve("npc_rcaorphan", "Tessaly Brune", "P5")
+        self.reserve("npc_rcalater", "Odrin Vask", "P7")
+        self.c.reopen("P6", "validated")
+        refused = self.c.run("designer.py", "phase", "P6", "approve", "--onay")
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("npc_rcaorphan", refused.stderr, "owned by P5, never written")
+        self.assertNotIn("npc_rcalater", refused.stderr, "P7 owns it; P6 does not answer for it")
+        self.c.run("designer.py", "phase", "P6", "approve", "--onay", "--force", check=True)
 
 
 if __name__ == "__main__":
