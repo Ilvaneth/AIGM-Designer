@@ -10,6 +10,7 @@ RC-05  the post-phase-fix critique has a file of its own; the phase critic's sec
 RC-01  approve reads the gate (band, missing critics, the phase's own validator errors, seed failures, orphans) in every
        mode; --force passes it with a recorded reason
 RC-14  an approval snapshots the disk-is-truth stores; rerun restores the last approval's before the phase
+RC-03  before P5 (npc) and P7 (seed) the registry stops at the band's top; the count rolls net out the reservations
 """
 
 import json
@@ -236,6 +237,56 @@ class ApproveGate(Base):
         self.assertEqual(refused.returncode, 1)
         self.assertIn("validator: validator errors on", refused.stderr)
         self.assertIn("npc_rcadangle", refused.stderr)
+
+
+class Budgets(Base):
+    """RC-03: before its owning phase a type's rows stop at the band's top, and the count roll nets out what is reserved."""
+
+    FIRST = ["Brannoc", "Dellis", "Fenwyr", "Gorrit", "Halvek", "Jossam", "Kelmar", "Lusken", "Merrit", "Norrab", "Pellin"]
+
+    def count(self, etype):
+        return sum(1 for e in self.c.json("design/dm-only/entities.json")["entities"].values() if e.get("type") == etype)
+
+    def reserve(self, etype, n, owner):
+        for i in range(n):
+            eid = f"{etype}_rcabudget{i:02d}"
+            name = f"{self.FIRST[i]} Quill" if etype == "npc" else f"The {self.FIRST[i]} Debt"
+            stub = row(eid, etype, name, created_phase="P3", status="pending", owner_phase=owner, reserved_by="P3.region_x.a1")
+            self.c.write_json(f"design/_staging/P3/{eid}.json", fragment(eid, stub, phase="P3"))
+        return self.c.run("registry.py", "merge", "--phase", "P3")
+
+    def rolls(self, phase):
+        return {r["label"]: r for r in self.c.json("design/design.json")["dice_log"]
+                if r.get("phase") == phase and r.get("attempt") == 9}
+
+    def test_the_door_refuses_an_npc_reservation_past_the_band_top_before_p5(self):
+        room = 18 - self.count("npc")                          # short: named_npcs 14-18
+        proc = self.reserve("npc", room + 1, "P5")
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn(f"npc_rcabudget{room:02d}: 1 new npc row(s) would pass the scale's band top (18) before P5", proc.stderr)
+        self.assertEqual(self.count("npc"), 18, "every reservation inside the band merged")
+
+    def test_the_p5_roll_nets_out_the_reserved_npcs(self):
+        self.reserve("npc", 17 - self.count("npc"), "P5").check_returncode()
+        self.c.reopen("P5", "pending")
+        self.c.run("designer.py", "preroll", "--phase", "P5", "--attempt", "9", check=True)
+        r = self.rolls("P5")
+        total = r["npcs_count"]["value"]
+        self.assertGreaterEqual(total, 17, "the total never drops below what the registry holds")
+        self.assertEqual(r["npcs_new_count"]["value"], total - 17)
+        self.assertEqual(sum(1 for k in r if k.endswith(".tic")), total, "one ordinal per NPC, stubs included")
+
+    def test_the_p7_roll_counts_the_seed_stubs_an_earlier_phase_reserved(self):
+        filled = self.count("seed")
+        self.reserve("seed", 4, "P7").check_returncode()
+        self.c.reopen("P7", "pending")
+        self.c.run("designer.py", "preroll", "--phase", "P7", "--attempt", "9", check=True)
+        r = self.rolls("P7")
+        total = r["seeds_count"]["value"]
+        self.assertGreaterEqual(total, filled + 4)
+        self.assertEqual(r["seeds_new_count"]["value"], total - filled - 4)
+        shapes = [k for k in r if k.startswith("seed.")]
+        self.assertEqual(len(shapes), 4 + total - filled - 4, "a shape for every stub to fill and every new seed")
 
 
 class RerunRollback(Base):

@@ -419,6 +419,23 @@ def stamp_check(eid: str, row: dict, canonical: dict, snapshot: dict, revise: st
     return [], [], drift
 
 
+# root-cause analysis 1, RC-03: the NPC band was spent before P5 rolled it (dry-1 +7, dry-2 +11 writer-reserved NPCs past
+# 14-18) and P3's seed stubs were never netted out of P7's roll. Before the phase that owns a type's band, the registry
+# holds no more rows of that type than the band's top, stubs included.
+BUDGETED = {"npc": ("P5", "named_npcs"), "seed": ("P7", "quest_seeds")}
+
+
+def entity_budget(campaign: str, phase: str) -> dict:
+    """{type: the most rows of it the registry may hold after this merge}, for the types whose owning phase is later."""
+    import design_manifest as dm
+    import design_tables as dt
+    if phase not in dm.PHASES:
+        return {}
+    sc = dt.scale_row(dm.load(campaign)["dials"]["scale"])
+    return {t: dt.band(sc[key])[1] for t, (owner, key) in BUDGETED.items()
+            if dm.PHASES.index(phase) < dm.PHASES.index(owner)}
+
+
 def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) -> int:
     staging = design_dir(campaign) / "_staging" / phase
     if not staging.is_dir():
@@ -473,6 +490,8 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
                     if r.get("secrecy") == "secret" and r.get("name")}
     accepted: list[dict] = []
     refused: dict[str, list[str]] = {}
+    budget = entity_budget(campaign, phase)
+    used = {t: sum(1 for row in canonical["entities"].values() if row.get("type") == t) for t in budget}
     for u in units:
         errs, warns = list(u["errors"]), []
         if u["frag"]:
@@ -497,6 +516,18 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
             warns += w3
             if drift:
                 u["revised"][eid] = drift
+        new_rows: dict[str, int] = {}
+        for eid, row in u["rows"]:
+            if row.get("type") in budget and eid not in canonical["entities"]:
+                new_rows[row["type"]] = new_rows.get(row["type"], 0) + 1
+        for t, n in new_rows.items():
+            if not errs and used[t] + n > budget[t]:
+                errs.append(f"{u['id']}: {n} new {t} row(s) would pass the scale's band top ({budget[t]}) before "
+                            f"{BUDGETED[t][0]}; carry the seed, role or hook with an existing {t} id (a stub or a filled "
+                            "row), or reserve fewer")
+        if not errs:
+            for t, n in new_rows.items():
+                used[t] += n
         for w in warns:
             print(f"  ! {w}", file=sys.stderr)
         if errs:

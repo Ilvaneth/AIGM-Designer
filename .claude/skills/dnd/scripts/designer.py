@@ -426,9 +426,31 @@ def preroll_p4(R: Roller, m: dict) -> None:
     R.count("regional_count", sc["antagonists"]["regional"])
 
 
+def registry_rows(campaign: str, etype: str) -> tuple[int, int]:
+    """(rows of `etype` in the canonical registry, of which stubs): the reservations a count roll nets out (RC-03)."""
+    canon = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
+    rows = [r for r in canon.values() if r.get("type") == etype]
+    return len(rows), sum(1 for r in rows if r.get("status") == "pending")
+
+
+def net_count(R: Roller, label: str, band_value, existing: int, what: str) -> tuple[int, int]:
+    """The band roll as the total, never below what the registry already holds, and `<label>_new` = total − existing as
+    an exact count line of its own (RC-03: P5 rolled the total from the die alone and the skeleton was told both 'fill
+    every stub' and 'exactly N')."""
+    total = R.count(label, band_value)
+    if existing > total:
+        R.by_label[label]["value"] = total = existing
+        R.by_label[label]["raised_to_reserved"] = f"{existing} {what} already in the registry"
+    rec = R._record(label.replace("_count", "_new_count"), None)
+    rec.update({"notation": "derived", "raw": None, "value": total - existing,
+                "derived_from": f"{label} {total} − {existing} already in the registry"})
+    R._keep(rec, False)
+    return total, total - existing
+
+
 def preroll_p5(R: Roller, m: dict) -> None:
     sc = scale_of(m)
-    n_npcs = R.count("npcs_count", sc["named_npcs"])
+    n_npcs, _ = net_count(R, "npcs_count", sc["named_npcs"], registry_rows(R.campaign, "npc")[0], "npcs")
     tic_uses: dict[str, int] = {}
     secret_uses: dict[str, int] = {}
     secret_rows = len(dt.rows("npcs.yaml#secret"))
@@ -484,7 +506,9 @@ def preroll_p7(R: Roller, m: dict) -> None:
     for act in range(1, int(sc["acts"]) + 1):
         for k in range(1, R.count(f"act.{act}.hooks_count", dt.scale_shared()["planted_hooks_per_act"]) + 1):
             R.table(f"act.{act}.hook.{k}", "arc.yaml#planted_hook_kind", avoid=False)
-    for k in range(1, R.count("seeds_count", sc["quest_seeds"]) + 1):
+    existing, stubs = registry_rows(R.campaign, "seed")
+    _, new = net_count(R, "seeds_count", sc["quest_seeds"], existing, "seeds")
+    for k in range(1, stubs + new + 1):      # a shape for every seed stub to fill and every new seed; filled seeds keep theirs
         R.table(f"seed.{k}", "arc.yaml#seed_shape", avoid=False)
     R.table_until("opening", "arc.yaml#opening_scene_type", not_forbidden, avoid=False, exclude={"open_tavern", "open_stranger_job"})
     R.table_until("plot_engine", "arc.yaml#plot_engine", not_forbidden, avoid=False, exclude={"engine_prophecy", "engine_collect_pieces"})
