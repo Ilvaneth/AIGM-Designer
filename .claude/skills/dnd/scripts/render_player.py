@@ -325,6 +325,8 @@ def cmd_news(campaign: str, day: int) -> int:
     doc = read_json(path) or {"_meta": {"schema_version": 1, "campaign": campaign, "next_id": 1, "last_day": 0}, "records": []}
     next_id = int(doc["_meta"].get("next_id") or (len(doc["records"]) + 1))
     added = 0
+    # dry-3: a second run appended the nine day-0 records again; a birth record is written once per day and line
+    have = {(x.get("day"), x.get("source"), x.get("line_tr")) for x in doc["records"]}
     for frag in staged(campaign, "P8", ".news.json"):
         fdoc = read_json(frag) or {}
         for r in (fdoc.get("records") if isinstance(fdoc, dict) else fdoc) or []:
@@ -335,6 +337,9 @@ def cmd_news(campaign: str, day: int) -> int:
                 if ref not in canonical or canonical[ref].get("secrecy") == "secret":
                     print(f"render_player: {frag.name}: bad or secret ref {ref}", file=sys.stderr)
                     return 1
+            if (day, "birth", r.get("line_tr", "")) in have:
+                continue
+            have.add((day, "birth", r.get("line_tr", "")))
             doc["records"].append({"id": f"news_{next_id:04d}", "day": day, "source": "birth", "faction": r.get("faction"),
                                    "move": None, "outcome": None, "roll": None, "region": r.get("region"),
                                    "settlement": r.get("settlement"), "visibility": r["visibility"], "kind": r.get("kind") or "rumour",

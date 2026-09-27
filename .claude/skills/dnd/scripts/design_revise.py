@@ -191,7 +191,7 @@ def do_entity(campaign: str, phase: str, text: str, eid: str, action: str) -> di
 
 def do_phase(campaign: str, phase: str, text: str, reseed: bool) -> dict:
     import designer
-    designer.phase_rerun(campaign, phase, text, reseed)
+    designer.phase_rerun(campaign, phase, text, reseed, direction=text)     # the owner's sentence is the direction
     return {"affected": [], "hidden": 0, "rerun": ["*"]}
 
 

@@ -243,13 +243,14 @@ class FixturePhase(unittest.TestCase):
         m = self.c.json("design/design.json")
         self.assertEqual(m["phases"]["P6"]["status"], "approved")
         self.assertEqual(m["phases"]["P6"]["approval"]["card_sha256"][:4] != "0000", True)
-        rerun = run("-c", self.c.name, "phase", "P6", "rerun", "--reason", "odalar dar", check=True)
+        rerun = run("-c", self.c.name, "phase", "P6", "rerun", "--reason", "odalar dar", "--direction", "odalar dar", check=True)
         self.assertIn("attempt 3", rerun.stdout)
         m = self.c.json("design/design.json")
         self.assertEqual(m["phases"]["P6"]["status"], "pending")
         self.assertEqual(m["phases"]["P7"]["status"], "stale")
         self.assertTrue(self.c.path("design/_staging/P6.attempt-1").is_dir())
-        self.assertIn("odalar dar", m["phases"]["P6"]["directions"])
+        self.assertIn("odalar dar", m["phases"]["P6"]["directions"], "the owner's correction goes to the writers")
+        self.assertEqual(m["phases"]["P6"]["reruns"][-1]["reason"], "odalar dar", "the reason is recorded")
 
     def test_begin_refuses_when_the_previous_phase_is_not_approved(self):
         self.c.reopen("P6", "prerolled")

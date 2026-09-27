@@ -334,6 +334,18 @@ def gate_card_line(items: list[dict], proj: dict) -> str:
             + " — onay reddedilir; geçmek için `--force` ve bir gerekçe gerekir.")
 
 
+LINK = re.compile(r"\[\[([a-z]+_[a-z0-9_]+)\]\]")
+
+
+def readable(text: str, proj: dict) -> str:
+    """The card is the player's surface: a [[link]] reads as its public name, a secret or unknown one as '…'
+    (dry-3: seed hooks printed [[settlement_greyreach]], [[npc_ord]] raw)."""
+    def name(m):
+        e = proj.get(m.group(1)) or {}
+        return e.get("name") if e.get("name") and e.get("secrecy", "public") == "public" else "…"
+    return LINK.sub(name, str(text or ""))
+
+
 def build_card(campaign: str, phase: str) -> str:
     m = dm.load(campaign)
     ph = m["phases"][phase]
@@ -410,7 +422,7 @@ def build_card(campaign: str, phase: str) -> str:
     lines.append("| id | ad | tür | dil | eleştiri | bir satır |")
     lines.append("|---|---|---|---|---|---|")
     for eid, e in sorted(shown_rows.items()):
-        one = e.get("hook_tr") if e.get("type") == "seed" and e.get("hook_tr") else (e.get("summary") or "")
+        one = readable(e.get("hook_tr") if e.get("type") == "seed" and e.get("hook_tr") else (e.get("summary") or ""), proj)
         lines.append(f"| {eid} | {e.get('name', '')} | {e.get('type', '')} | {language_of(eid, e, assignments, proj, default_lang)} | "
                      f"{' → '.join(chains.get(eid) or []) or '—'} | {one.replace('|', '/')} |")
     if spoilers:
@@ -452,7 +464,7 @@ def build_card(campaign: str, phase: str) -> str:
     shown = 0
     for eid, e in sorted(shown_rows.items()):
         if e.get("summary") and e.get("secrecy", "public") == "public":
-            lines.append(f"- {e['name']}: {e['summary']}")
+            lines.append(f"- {e['name']}: {readable(e['summary'], proj)}")
             shown += 1
             if shown >= 8:
                 break

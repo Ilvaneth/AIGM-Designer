@@ -1307,7 +1307,7 @@ def restore_stores(campaign: str, phase: str) -> tuple[str | None, list | None]:
     return source, json.loads((src / "seeded.json").read_text(encoding="utf-8"))
 
 
-def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool) -> int:
+def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool, direction: str | None = None) -> int:
     source, seeded = restore_stores(campaign, phase)
     data = dm.load(campaign)
     if source:
@@ -1320,7 +1320,11 @@ def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool) -> int:
     ph["attempt"] = int(ph.get("attempt") or 1) + 1
     ph["status"] = "pending"
     ph["skeleton"] = {"status": "pending", "agent": None}
-    ph.setdefault("directions", []).append(reason)
+    # dry-3: the conductor's rerun reason ("STOP P7 attempt 1: …; fixed in 9cb4002") reached every writer as a creative
+    # direction and the player's card; a reason is a record, a direction is the owner's correction sentence
+    ph.setdefault("reruns", []).append({"attempt": ph["attempt"], "reason": reason, "at": now_iso()})
+    if direction:
+        ph.setdefault("directions", []).append(direction)
     if reseed:
         data["seed"]["master"] = dm.new_seed(campaign)
         data["seed"]["reseeded_at"] = now_iso()
@@ -1440,6 +1444,7 @@ def main(argv=None) -> int:
     ph.add_argument("--round", help="approve: record a correction round instead of approving")
     ph.add_argument("--scope", choices=("fact", "entity", "phase", "direction"))
     ph.add_argument("--reason")
+    ph.add_argument("--direction", help="rerun: an owner's correction the writers receive (the reason is only recorded)")
     ph.add_argument("--reseed", action="store_true")
     ph.add_argument("--session-id")
 
@@ -1490,7 +1495,7 @@ def main(argv=None) -> int:
             if not a.reason:
                 print("designer: rerun needs --reason", file=sys.stderr)
                 return 2
-            return phase_rerun(c, a.phase, a.reason, a.reseed)
+            return phase_rerun(c, a.phase, a.reason, a.reseed, a.direction)
     if a.verb == "status":
         return status(c, a.json)
     if a.verb == "abandon":

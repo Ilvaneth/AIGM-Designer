@@ -516,6 +516,33 @@ class CriticLoopPath(Base):
             self.assertIn("(loop > 1 ? ' --loop ' + loop : '')", js, wf)
 
 
+class Dry3Small(Base):
+    """dry-3's small findings: the rerun reason, raw links on the card, the day-0 news twice."""
+
+    def test_a_rerun_reason_is_recorded_not_handed_to_the_writers(self):
+        before = list(self.c.json("design/design.json")["phases"]["P6"].get("directions") or [])
+        self.c.run("designer.py", "phase", "P6", "rerun", "--reason", "STOP P6: pipeline fix abc123", check=True)
+        ph = self.c.json("design/design.json")["phases"]["P6"]
+        self.assertEqual(ph.get("directions") or [], before, "a pipeline reason is no creative direction")
+        self.assertEqual(ph["reruns"][-1]["reason"], "STOP P6: pipeline fix abc123")
+        self.c.run("designer.py", "phase", "P6", "rerun", "--reason", "owner", "--direction", "Daha az deniz.", check=True)
+        self.assertIn("Daha az deniz.", self.c.json("design/design.json")["phases"]["P6"]["directions"])
+
+    def test_the_card_reads_links_as_public_names(self):
+        import design_approval as da
+        proj = {"settlement_greyreach": {"name": "Greyreach", "secrecy": "public"}, "npc_s01": {"name": "x", "secrecy": "secret"}}
+        self.assertEqual(da.readable("[[settlement_greyreach]]'da biri [[npc_s01]] ve [[npc_nobody]] arar", proj),
+                         "Greyreach'da biri … ve … arar")
+
+    def test_the_day_0_news_is_written_once(self):
+        self.c.write_json("design/_staging/P8/primer_rca.news.json",
+                          {"records": [{"visibility": "public", "line_tr": "Liman kapısı bu sabah kapandı.", "refs": []}]})
+        for _ in range(2):
+            self.c.run("render_player.py", "news", "--day", "0", check=True)
+        lines = [r["line_tr"] for r in self.c.json("design/news.json")["records"] if r.get("day") == 0]
+        self.assertEqual(lines.count("Liman kapısı bu sabah kapandı."), 1)
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 
