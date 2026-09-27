@@ -452,6 +452,7 @@ def preroll_p5(R: Roller, m: dict) -> None:
     sc = scale_of(m)
     n_npcs, _ = net_count(R, "npcs_count", sc["named_npcs"], registry_rows(R.campaign, "npc")[0], "npcs")
     tic_uses: dict[str, int] = {}
+    reg_uses: dict[str, int] = {}
     secret_uses: dict[str, int] = {}
     secret_rows = len(dt.rows("npcs.yaml#secret"))
     for n in range(1, n_npcs + 1):
@@ -469,6 +470,11 @@ def preroll_p5(R: Roller, m: dict) -> None:
         spent = {t for t, c in tic_uses.items() if c >= tic_cap}
         rec = R.table(f"npc.{n}.tic", "npcs.yaml#speech_tic", avoid=False, exclude=spent)
         tic_uses[rec["row_id"]] = tic_uses.get(rec["row_id"], 0) + 1
+        # the voice's register, unique while the table has rows (every birth's P5 phase critic flagged shared registers)
+        reg_cap = 1 if len(reg_uses) < len(dt.rows("npcs.yaml#voice_register")) else 2
+        spent_reg = {x for x, c in reg_uses.items() if c >= reg_cap}
+        reg = R.table(f"npc.{n}.register", "npcs.yaml#voice_register", avoid=False, exclude=spent_reg)
+        reg_uses[reg["row_id"]] = reg_uses.get(reg["row_id"], 0) + 1
         R.notation(f"npc.{n}.species", "d100")
         R.notation(f"npc.{n}.gender", "d100")
 

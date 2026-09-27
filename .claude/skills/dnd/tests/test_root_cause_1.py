@@ -611,6 +611,25 @@ class P5AfterDry3(Base):
         self.assertTrue(mirror, "the fixture's npc_draskun has a secret layer")
 
 
+class VoiceRegisters(Base):
+    """Every birth's P5 phase critic flagged shared registers; the register is rolled, one per NPC while rows last."""
+
+    def test_p5_rolls_a_distinct_register_for_every_npc_and_the_writer_is_told(self):
+        import design_prompts as dp
+        import design_tables as dt
+        rows = dt.rows("npcs.yaml#voice_register")
+        self.assertGreaterEqual(len(rows), 16)
+        self.assertTrue(all(r.get("sound") and r.get("words") and r.get("never") for r in rows))
+        self.c.reopen("P5", "pending")
+        self.c.run("designer.py", "preroll", "--phase", "P5", "--attempt", "9", check=True)
+        regs = [r["row_id"] for r in self.c.json("design/design.json")["dice_log"]
+                if r.get("phase") == "P5" and r.get("attempt") == 9 and r["label"].endswith(".register")]
+        self.assertGreaterEqual(len(regs), 14, "one per NPC ordinal")
+        first = regs[:len(rows)]
+        self.assertEqual(len(first), len(set(first)), "no register twice while the table has unused rows")
+        self.assertIn("npc.<n>.register", dp.load("P5.npc")[1])
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 
