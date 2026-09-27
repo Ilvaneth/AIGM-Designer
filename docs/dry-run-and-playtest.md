@@ -1,6 +1,6 @@
 # The dry run and the playtest — the protocol for slice 1e
 
-*Plan item 22.2-22.5. Like `docs/tuning-births.md`, this runs in a separate **Opus** tab (effort medium) that never edits the skill, the tables, the prompts or the plan; it writes reports under `docs/reports/` and the Fable development tab analyses and fixes. Findings are ids, codes, counts, paths and exact error text. The Workflow tool needs the owner's opt-in in that tab ("workflow kullan"). Rule 5 of the tuning protocol holds: never a `design/dm-only/…` or `design/_staging/…` path in a Bash command.*
+*Plan item 22.2-22.5. Like `docs/tuning-births.md`, this runs in a separate **Opus** tab (effort medium) that never edits the skill, the tables, the prompts or the plan; it writes reports under `docs/reports/` and the Fable development tab analyses and fixes. Findings are ids, codes, counts, paths and exact error text. The Workflow tool needs the owner's opt-in in that tab ("workflow kullan"). Rule 5 of the tuning protocol holds: never a `design/dm-only/…` or `design/_staging/…` path in a Bash command. Its **stop check** holds for every birth here: the conductor stops before approve on S1-S4, sends the STOP block and waits for the development tab's answer through the owner.*
 
 ## Part A — the dry-run birth (`_test-dry-1`)
 

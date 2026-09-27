@@ -7,7 +7,7 @@
 1. Read `docs/campaign-designer-plan.md` item 24 and `.claude/skills/dnd/SKILL-design.md`. Script syntax: `.claude/skills/dnd/SKILL-scripts.md`.
 2. Every script is `py .claude/skills/dnd/scripts/<name>.py`. Check the data root first: `py .claude/skills/dnd/scripts/paths.py project-root` must print this project, never Ashen Crown.
 3. The Workflow tool needs the user's opt-in in this tab ("workflow kullan"); it is given in the message that starts the birth.
-4. Tab discipline: while a birth is running nobody edits the working tree from another tab; the development tab starts only after the report is written and the guard is disarmed.
+4. Tab discipline: while a birth is running nobody edits the working tree from another tab; the development tab starts only after the report is written and the guard is disarmed. While a birth waits at a stop (below), the development tab only reads.
 5. Never put a `design/dm-only/…` or `design/_staging/…` path into a Bash command, not even inside a note, a `sed` pattern or a quoted error line: the read guard matches the token and blocks the command (birth 1, 3.7; birth 2, R.5). Notes name ids, never those paths.
 
 ## Birth 1 — straight through (`_test-tune-1`)
@@ -28,11 +28,40 @@ py .claude/skills/dnd/scripts/designer.py -c _test-tune-1 phase P1 begin --json
 - If the JSON says `"workflow": "design-skeleton"`: call the Workflow tool with `name: "design-skeleton"` and `args` = that JSON object (as a real JSON value, not a string). Then `phase P1 merge`, `commit --message "P1 skeleton"`, and `phase P1 begin --json` again — it now prints the pending entities with `"workflow": "design-fanout"`.
 - Call the Workflow tool with `name: "design-fanout"` and `args` = that JSON object.
 - After **every** Workflow return, before any text to the user: `phase P1 merge --tokens <the output tokens the Workflow result reported> --seconds <its duration in seconds>`, then `commit --message "P1 fan-out"`. The merge is per unit: a line `refused N: …` means those units are now `failed` with their reason, and the next `phase P1 begin --json` lists exactly them (one attempt later, the reason in their prompt) — run `design-fanout` again with that JSON. Never hand-filter the JSON and never re-run a staged entity.
-- `phase P1 check`, `phase P1 card` (show the card in the chat as the player would see it), `phase P1 approve` (auto; no `--onay`, no `devam` wait).
+- `phase P1 check`, `phase P1 card` (show the card in the chat as the player would see it), the **stop check** below, then `phase P1 approve` (auto; no `--onay`, no `devam` wait). Run check, card and approve as separate commands, never chained in one shell line or a helper script: dry-2's P6 was approved inside the same command that logged its fault (root-cause analysis 1, RC-01).
 - A Workflow that returned `failed` or nothing (a session limit, a dead agent) is not merged: run `phase PN begin --json` and the Workflow again. `phase P8 merge` renders `facts`, `news` and the primer itself once the roster is complete; the after-P8 block only checks them.
 - Note the wall-clock time of the phase, the number of agents the Workflow launched, how many returned null, how many fix loops ran, the critics' verdict counts, the validator's error and warning counts with rubric ids, and the exact text of anything that failed.
 
 **Failures.** A null agent return or a refused unit: `phase PN begin --json` after the merge lists only what is still pending or failed; run `design-fanout` again with that JSON (once more). A unit still failing after the second run stays `failed`; `approve` refuses an incomplete roster, so retire it: a batch or document that never reached the registry with `designer.py -c _test-tune-1 phase PN drop --id ID --reason "tuning: failed twice"`, a registry entity with `design_revise.py -c _test-tune-1 round --phase PN --scope entity --entity ID --action remove --text "tuning: failed twice"`; then check, card, approve. Never `approve --force` in a tuning birth: record the refusal instead. An approved phase cannot `begin` again (that was birth 1's 3.5 regression; `rerun --reason` is the only way back). A script error (traceback) ends the phase: record the traceback in the report and stop the birth there; do not patch the script. When the development tab has fixed it, the same birth continues from that command (a `merge` is idempotent; nothing is restarted). `begin --json` refuses while staged fragments wait in `_staging/PN/`: merge first, always.
+
+**The stop check.** Until the approve gate exists in code (root-cause analysis 1, RC-01/02/04), the conductor stops the birth on any of these, before `approve` and before the next Workflow. It never decides a stop itself:
+
+| Id | When to look | Stop when |
+|---|---|---|
+| S1 writers missing | the first `phase PN begin --json` after the skeleton merge (or the phase's first `begin` if it has no skeleton) | its `entities` list has fewer ids than the phase's roster (`designer.py status` prints `roster N`), or is empty with a non-empty roster. Later `begin` calls after a partial run or a refusal legitimately list fewer. |
+| S2 band | the card | the `Ölçek bandı` line carries ✗ |
+| S3 critic missing | the card | `faz eleştirmeni —` or `dilek eleştirmeni —` on a phase with a roster, `eleştiri eksik N`, or a roster id showing `—` in the table's `eleştiri` column (skeleton-only rows have no critic and do not count) |
+| S4 new validator error | the card | more errors than the previous phase's card, or an error line naming an id from this card's `Bu fazda doğanlar` table; `map no_map` before P3 is expected and does not count |
+
+A critic chain that ended at `fix` (`⚠ Eleştirmen geçmedi`) is recorded in the report and is **not** a stop: under that rule dry-2 would have stopped in six of seven phases.
+
+On a stop the conductor sends the owner this block and waits, with nothing approved, no Workflow started and nothing edited:
+
+```text
+STOP · <campaign> · <phase> · attempt <n> · <S1|S2|S3|S4>
+condition: <one line: ids and counts>
+roster: <ids> · begin entities: <ids>
+card: <the Durum, Eleştiri, Ölçek bandı and ⚠ lines, verbatim>
+validator: <the grouped `phase PN check` output, verbatim>
+last command: <command> → exit <code>
+runs: <this phase's Workflow run ids>
+```
+
+The owner carries it to the development tab, which reads the campaign and answers with one of three words; the owner passes the answer back:
+
+- **`devam`**: approve and continue. The report records the stop and the decision. The development tab may attach a conductor command this protocol already allows (a `drop`, a `revise` round), never a code change.
+- **`bitir`**: end the birth here. Run `status --json`, then `disarm`, and write the report up to the stop; the campaign is kept as a case.
+- **`yeni doğum`**: as `bitir`; the development tab fixes the cause, and a new birth starts later from the owner's message. The code is never changed under a waiting birth: its later phases would measure a different pipeline (RC-10).
 
 **After P8:**
 
