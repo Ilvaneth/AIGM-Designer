@@ -745,7 +745,9 @@ def document_reads(campaign: str, phase: str, eid: str, proj: dict) -> list[str]
 
 
 def render_cmd(campaign: str, name: str, entity_id: str | None, attempt: int, order: int = 1, phase: str | None = None) -> str:
-    cmd = f"py -X utf8 {SCRIPTS / 'design_prompts.py'} -c {campaign} render {name}"
+    # root-cause analysis 1, RC-16: a Windows path's backslashes collapse in the agents' bash, and 402 of 523 agents
+    # lost their first call to it; the command an agent runs verbatim carries forward slashes
+    cmd = f"py -X utf8 {(SCRIPTS / 'design_prompts.py').as_posix()} -c {campaign} render {name}"
     if entity_id:
         cmd += f" --id {entity_id}"
     cmd += f" --attempt {attempt}"
