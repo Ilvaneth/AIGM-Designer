@@ -975,6 +975,15 @@ def phase_drop(campaign: str, phase: str, entity_id: str, reason: str) -> int:
     return 0
 
 
+def written_by_skeleton(frag: dict, sk: dict, eid: str) -> bool:
+    """A merged fragment the skeleton produced (its agent label), not one its entity's own writer produced earlier."""
+    agent = str(frag.get("agent") or "")
+    if ".skeleton." in agent or (sk.get("agent") and agent == sk.get("agent")):
+        return True
+    listed = {Path(str(p)).stem for p in sk.get("fragments") or []}
+    return not agent and eid in listed
+
+
 def absorb_skeleton(campaign: str, phase: str) -> bool:
     """A skeleton agent's skeleton.json (roster, assignments, reads) becomes the phase's plan; the file moves to merged/."""
     staging = design_dir(campaign) / "_staging" / phase
@@ -990,8 +999,14 @@ def absorb_skeleton(campaign: str, phase: str) -> bool:
     ph["reads"] = {k: list(v) for k, v in (sk.get("reads") or {}).items() if isinstance(v, list)}
     ph["skeleton"] = {"status": "merged", "agent": sk.get("agent") or (ph.get("skeleton") or {}).get("agent")}
     for eid in roster:
-        data["entities"].setdefault(eid, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
-                                          "last_error": None, "file": None, "stage_file": None, "agent": None})
+        row = data["entities"].setdefault(eid, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
+                                                "last_error": None, "file": None, "stage_file": None, "agent": None})
+        # root-cause analysis 1, RC-02: a roster id whose fragment the skeleton itself merged in this phase is owed to
+        # its own writer, whatever status the skeleton wrote (dry-2 P6: two P1 stubs filled by the skeleton counted as
+        # merged and no site writer ran); reconcile keeps it pending until a different fragment replaces this one
+        own = staging / "merged" / f"{eid}.json"
+        if own.is_file() and written_by_skeleton(read_json(own) or {}, sk, eid):
+            row["writer_owed"] = {"phase": phase, "sha256": sha256_file(own)}
     dm.save(campaign, data, f"designer.py phase {phase} merge (skeleton)")
     merged = staging / "merged"
     merged.mkdir(exist_ok=True)

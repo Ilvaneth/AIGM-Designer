@@ -4,6 +4,7 @@ Each test pins a gate for a class of fault, fed with the shapes that broke it, n
 
 RC-16  every agent command in the begin JSON is bash-safe: forward slashes, a script that exists
 RC-08  a skeleton's graph is seeded by the merge that absorbs it; the seed result is kept on the manifest
+RC-02  a roster id the skeleton wrote stays owed to its own writer until that writer's fragment merges
 """
 
 import json
@@ -12,6 +13,7 @@ import unittest
 from pathlib import Path
 
 from _campaign import TestCampaign, MarkerGuard, SCRIPTS
+from test_tuning_birth_1 import fragment, row  # the registry-row and fragment builders, shared
 
 sys.path.insert(0, str(SCRIPTS))
 
@@ -75,6 +77,48 @@ class Seeding(Base):
         seed = self.c.json("design/design.json")["phases"]["P6"]["seed"]
         self.assertGreaterEqual(seed["made"], 1)
         self.assertEqual(seed["failed"], 0, "the seed result is on the manifest for the approve gate")
+
+
+class RosterIntent(Base):
+    """RC-02: a roster id is done when its own writer's fragment merged, never because of the status a skeleton wrote."""
+
+    STUB, NEW = "site_rcaquenmarsh", "site_rcaoxlight"
+
+    def site(self, eid, name, created_phase="P6", **extra):
+        return row(eid, "site", name, created_phase=created_phase, **extra)
+
+    def pending_ids(self) -> set:
+        return {e["id"] for e in begin_json(self.c, "P6")["entities"]}
+
+    def test_a_roster_id_the_skeleton_wrote_waits_for_its_own_writer(self):
+        # a P1 reservation, as dry-2's premise reserved its two roster sites
+        stub = self.site(self.STUB, "Quenmarsh Cellar", created_phase="P1", status="pending", owner_phase="P6",
+                         reserved_by="P1.premise.a1")
+        self.c.write_json(f"design/_staging/P1/{self.STUB}.json", fragment(self.STUB, stub, phase="P1"))
+        self.c.run("registry.py", "merge", "--phase", "P1", check=True)
+        self.c.reopen("P6", "running", skeleton={"status": "pending", "agent": None}, roster=[])
+        # the skeleton writes both roster sites as skeleton rows, in the two shapes the births used:
+        # dry-2's overlay status on the filled stub, dry-1's row status on a new id
+        self.c.write_json(f"design/_staging/P6/{self.STUB}.json", fragment(
+            self.STUB, self.site(self.STUB, "Quenmarsh Cellar", created_phase="P1"), phase="P6",
+            agent="P6.skeleton.a1", overlay={"status": "skeleton"}))
+        self.c.write_json(f"design/_staging/P6/{self.NEW}.json", fragment(
+            self.NEW, self.site(self.NEW, "Oxlight Barrow", status="skeleton"), phase="P6", agent="P6.skeleton.a1"))
+        self.c.write_json("design/_staging/P6/skeleton.json", {
+            "phase": "P6", "status": "staged", "roster": [self.STUB, self.NEW],
+            "assignments": {"site.1": self.STUB, "site.2": self.NEW}, "reads": {}, "fragments": []})
+        self.c.run("designer.py", "phase", "P6", "merge", check=True)
+        self.assertEqual(self.pending_ids(), {self.STUB, self.NEW}, "both roster sites are owed to their writers")
+        # the writer of one site returns; only the other stays owed, and approve refuses the incomplete roster
+        self.c.write_json(f"design/_staging/P6/{self.STUB}.json", fragment(
+            self.STUB, self.site(self.STUB, "Quenmarsh Cellar", created_phase="P1"), phase="P6",
+            agent=f"P6.{self.STUB}.a1", overlay={"status": "detailed"}))
+        self.c.run("designer.py", "phase", "P6", "merge", check=True)
+        self.assertEqual(self.pending_ids(), {self.NEW})
+        refused = self.c.run("designer.py", "phase", "P6", "approve", "--onay")
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn(self.NEW, refused.stderr)
+        self.assertIn("not complete", refused.stderr)
 
 
 if __name__ == "__main__":

@@ -236,6 +236,16 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
             new = recorded if ENTITY_RANK.get(recorded, 0) >= ENTITY_RANK["merged"] else "merged"
         else:
             new = "failed" if recorded == "failed" else "pending"
+        # root-cause analysis 1, RC-02: a roster id the skeleton wrote stays owed to its own writer; "done" is that
+        # writer's fragment replacing the skeleton's in merged/, never the row's status alone
+        owed = row.get("writer_owed")
+        if isinstance(owed, dict):
+            own = staging / str(owed.get("phase")) / "merged" / f"{eid}.json"
+            if own.is_file() and sha256_file(own) != owed.get("sha256"):
+                row.pop("writer_owed", None)
+                changed += 1
+            elif ENTITY_RANK.get(new, 0) >= ENTITY_RANK["merged"]:
+                new = "failed" if recorded == "failed" else "pending"
         if new != recorded:
             row["status"] = new
             changed += 1
