@@ -312,6 +312,19 @@ class Names(Base):
         for n in names:
             self.assertEqual(registry.naming_errors("probe", {"type": "npc", "name": n}, registry.naming_blacklist(), set()), [], n)
             self.assertNotRegex(n.lower(), r"[aeiouy]{3}")
+            self.assertGreaterEqual(len(n), 4, "dry-3: Sta, Ord, Ske")
+        self.assertFalse([(a, b) for a in names for b in names if a != b and b.lower().startswith(a.lower())],
+                         "no name is the head of another (dry-3: Ske, Skeik)")
+
+    def test_a_one_syllable_bank_still_gives_two_syllables_and_turkish_words_are_refused(self):
+        import random
+        import design_names as dn
+        import registry
+        short = {"onsets": ["sk", "st", "", "d"], "nuclei": ["a", "e", "o"], "codas": ["", "rd", "k"], "length": [1, 2]}
+        for n in dn.draw_names(random.Random("rca-short"), short, 12, []):
+            self.assertGreaterEqual(len(n), 4, n)
+        self.assertTrue(registry.naming_errors("god_x", {"type": "god", "name": "Sivil"}, registry.naming_blacklist(), set()),
+                        "dry-3's god Sivil is a Turkish word")
 
     def pool(self):
         self.c.reopen("P2", "pending")

@@ -82,8 +82,9 @@ def _raw_name(rng, lang: dict) -> str:
     """Syllables from the banks. An empty or vowel-led onset opens only the word, and a coda that carries a vowel
     (-ia, -us, -an) closes only the word: mid-word they stacked vowels (a first draft gave `Auroaureia`)."""
     lo, hi = dt.band(lang.get("length") or [2, 3])
-    if lo == hi:
-        lo = max(2, lo - 1)            # a fixed length made dry-2's names one shape; one syllable of play either way
+    lo, hi = max(2, lo), max(2, hi)    # dry-3: a [1, 2] bank gave Sta, Ord, Ske
+    if lo == hi and lo > 2:
+        lo -= 1                        # a fixed length made dry-2's names one shape; one syllable of play
     n = rng.randint(lo, hi)
     onsets = lang.get("onsets") or [""]
     inner = [o for o in onsets if o and o[0] not in VOWELS] or onsets
@@ -103,7 +104,7 @@ def acceptable(name: str, lang: dict, taken: list[str], caps: dict, kind: str) -
     """The candidate's shape, the door's naming rules and the campaign's spread."""
     import registry
     low = name.lower()
-    if not 3 <= len(low) <= 9 or not low.isalpha() or re.search(r"(.)\1\1", low) or re.search(r"[aeiouy]{3,}", low):
+    if not 4 <= len(low) <= 9 or not low.isalpha() or re.search(r"(.)\1\1", low) or re.search(r"[aeiouy]{3,}", low):
         return False
     if any(c and c in low for c in (lang.get("forbidden_clusters") or [])):
         return False
@@ -112,8 +113,8 @@ def acceptable(name: str, lang: dict, taken: list[str], caps: dict, kind: str) -
     if registry.naming_errors("probe", {"type": "npc" if kind == "person" else "god", "name": name},
                               registry.naming_blacklist(), registry.registered_elsewhere("")):
         return False
-    if any(t.lower() == low for t in taken):
-        return False
+    if any(t.lower() == low or t.lower().startswith(low) or low.startswith(t.lower()) for t in taken):
+        return False                                    # dry-3: Ske beside Skeik
     near = 1 if len(low) < 5 else 2
     if any(distance(t, low) <= near for t in taken):
         return False

@@ -387,5 +387,10 @@ blacklist:
   # Turkish common nouns a writer turns into a proper name ("Konsey", "Lonca"): a name, or an alias written with a capital,
   # equal to one of these is refused at the registry door (critique analysis 2026-09-26: turkish_proper_noun_konsey_lonca).
   # A lowercase alias in Turkish ("hancı", "kayıp gemi") is a common-noun descriptor and stays allowed.
-  turkish_as_name: [Konsey, Lonca, Meclis, Tarikat, Kardeşlik, Birlik, Cemiyet, Kumpanya, Ocak, Hane, Tapınak, Mahkeme, Loca, Tersane, Divan, Saray, Kale, Köy, Kasaba, Şehir, Liman, Kule, Han, Pazar, Muhafızlar, Bekçiler, Rahipler, Kardeşler, Sancak]
+  turkish_as_name: [Konsey, Lonca, Meclis, Tarikat, Kardeşlik, Birlik, Cemiyet, Kumpanya, Ocak, Hane, Tapınak, Mahkeme, Loca, Tersane, Divan, Saray, Kale, Köy, Kasaba, Şehir, Liman, Kule, Han, Pazar, Muhafızlar, Bekçiler, Rahipler, Kardeşler, Sancak,
+    # dry-3: a rolled god was named Sivil; common Turkish words spelled in ASCII only, which the letter check cannot see
+    Sivil, Asil, Kara, Deniz, Umut, Bulut, Orman, Nehir, Kaya, Vadi, Toprak, Hava, Gece, Sabah, Bahar, Kalem, Kitap,
+    Masa, Balta, Kuzu, Kurt, Aslan, Kartal, Tilki, Ayna, Demir, Tuz, Mum, Fener, Kandil, Sokak, Meydan, Tarla, Ekmek,
+    Sonsuz, Sessiz, Derin, Uzun, Yakut, Zeytin, Kiraz, Elma, Armut, Limon, Nar, Ceviz, Pamuk, Kumsal, Serin, Ilik,
+    Solgun, Soluk, Kalin, Ince, Genis, Veda, Vatan, Hasret, Umran, Sefa, Nazik, Kibar, Asker, Bekci, Ozan, Kaval]
   lexicon_stems_are_never_banned: true
