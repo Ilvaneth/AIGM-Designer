@@ -889,6 +889,14 @@ def record_critics(campaign: str, phase: str) -> int:
     return n
 
 
+def code_sha() -> str | None:
+    try:
+        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=str(SCRIPTS), capture_output=True, text=True)
+        return out.stdout.strip() or None
+    except OSError:
+        return None
+
+
 SEED_LINE = re.compile(r"(\d+) call\(s\) made, (\d+) already seeded, (\d+) failed")
 
 
@@ -948,6 +956,9 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
     data = dm.load(campaign)
     ph = data["phases"][phase]
     ph["seed"] = dict(seed_result(seed), at=now_iso())
+    sha = code_sha()
+    if sha and sha not in (ph.get("code") or []):
+        ph.setdefault("code", []).append(sha)     # the code each merge ran under: a mixed-code phase shows two (RC-10)
     merged_now = bool(report.get("units"))
     skeleton_missing = phase in dm.SKELETON_PHASES and (ph.get("skeleton") or {}).get("status") == "pending"
     if not merged_now and not absorbed and not refused and skeleton_missing:

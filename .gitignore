@@ -9,3 +9,6 @@ __pycache__/
 
 # Generated test campaigns (plan item 22.6)
 campaigns/_test-*/
+
+# Rows the test births used from the avoid-used tables (the development project holds no real campaign)
+used.json
