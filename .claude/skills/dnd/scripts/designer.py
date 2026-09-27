@@ -851,6 +851,17 @@ def record_critics(campaign: str, phase: str) -> int:
     return n
 
 
+SEED_LINE = re.compile(r"(\d+) call\(s\) made, (\d+) already seeded, (\d+) failed")
+
+
+def seed_result(proc: subprocess.CompletedProcess) -> dict:
+    """design_seed's last line as numbers; the approve gate reads `failed` (RC-08: failures were printed and ignored)."""
+    m = SEED_LINE.search(proc.stdout or "")
+    made, skipped, failed = (int(x) for x in m.groups()) if m else (0, 0, 0 if proc.returncode == 0 else 1)
+    return {"made": made, "skipped": skipped, "failed": failed,
+            "unsupported": (proc.stderr or "").count("unsupported seed skipped")}
+
+
 def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, seconds: int | None = None) -> int:
     record_critics(campaign, phase)
     report_path = design_dir(campaign) / "_staging" / phase / "merge.report.json"
@@ -869,14 +880,17 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
         return 1
     report = read_json(report_path) or {}
     refused: dict = report.get("refused") or {}
+    # root-cause analysis 1, RC-08: design_seed reads merged/ only, and skeleton.json moved there after the seed ran,
+    # so a skeleton's graph was seeded one merge late or never; absorb first, then seed, and keep the result
+    absorbed = absorb_skeleton(campaign, phase)
     seed = run_script("design_seed.py", campaign, "--phase", phase)
     print(seed.stdout.strip())
     if seed.returncode != 0:
         print(seed.stderr.strip(), file=sys.stderr)
-    absorbed = absorb_skeleton(campaign, phase)
     dm.reconcile(campaign, quiet=True)
     data = dm.load(campaign)
     ph = data["phases"][phase]
+    ph["seed"] = dict(seed_result(seed), at=now_iso())
     merged_now = bool(report.get("units"))
     skeleton_missing = phase in dm.SKELETON_PHASES and (ph.get("skeleton") or {}).get("status") == "pending"
     if not merged_now and not absorbed and not refused and skeleton_missing:
