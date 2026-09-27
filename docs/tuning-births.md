@@ -41,7 +41,7 @@ py .claude/skills/dnd/scripts/designer.py -c _test-tune-1 phase P1 begin --json
 | S1 writers missing | the first `phase PN begin --json` after the skeleton merge (or the phase's first `begin` if it has no skeleton) | its `entities` list has fewer ids than the phase's roster (`designer.py status` prints `roster N`), or is empty with a non-empty roster. Later `begin` calls after a partial run or a refusal legitimately list fewer. |
 | S2 band | the card | the `Ölçek bandı` line carries ✗ |
 | S3 critic missing | the card | `faz eleştirmeni —` or `dilek eleştirmeni —` on a phase with a roster, `eleştiri eksik N`, or a roster id showing `—` in the table's `eleştiri` column (skeleton-only rows have no critic and do not count) |
-| S4 new validator error | the card | more errors than the previous phase's card, or an error line naming an id from this card's `Bu fazda doğanlar` table; `map no_map` before P3 is expected and does not count |
+| S4 new validator error | the card | more errors than the previous phase's card, or an error line naming an id from this card's `Bu fazda doğanlar` table; `map no_map` before P3 and `clue_unplaced` before P6 are expected (the premise's clues are placed by P6; the gate does not count them either) |
 | S5 seed | the merge output, the gate | a failed seed call at the last merge |
 | S6 orphan stub | the gate | a stub this phase or an earlier one owns, on no roster, never written |
 

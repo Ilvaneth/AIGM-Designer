@@ -630,6 +630,35 @@ class VoiceRegisters(Base):
         self.assertIn("npc.<n>.register", dp.load("P5.npc")[1])
 
 
+class Anchors(Base):
+    """dry-4's P1 review: four births built on candles, hush and the dead, from the naming table's own examples."""
+
+    RECURRING = ("lantern", "lamp", "candle", "hush", "still", "mourn", "bell", "tallow", "wick", "salt", "ash", "warden", "tribunal")
+
+    def test_no_example_an_agent_reads_carries_the_recurring_words(self):
+        import design_tables as dt
+        nm = dt.load("naming.yaml")
+        shown = [s for s in nm["rules"]["modes"].values()]
+        shown += [x for rows in nm["patterns"].values() for r in rows for x in r.get("examples", [])]
+        shown += [r["example"] for r in nm["rules"]["turkish_suffixing"]["ending_table"]]
+        low = " ".join(str(s).lower() for s in shown)
+        self.assertFalse([w for w in self.RECURRING if w in low], "examples show a shape, not a campaign's words")
+        common = (SCRIPTS.parent / "prompts" / "design" / "_common.md").read_text(encoding="utf-8")
+        self.assertNotIn("Lanternside", common)
+
+    def test_the_p1_prompt_lists_the_earlier_campaigns_to_avoid(self):
+        import design_prompts as dp
+        other = TestCampaign("rca1other")
+        try:
+            text = dp.render(self.c.name, "P1.premise")
+            self.assertIn("### Earlier campaigns — never echo them", text)
+            self.assertIn(f"({other.name})", text)
+            self.assertNotIn(f"({self.c.name})", text, "a campaign never lists itself")
+            self.assertNotIn("Earlier campaigns", dp.render(self.c.name, "P3.skeleton"), "P1 only")
+        finally:
+            other.remove()
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 

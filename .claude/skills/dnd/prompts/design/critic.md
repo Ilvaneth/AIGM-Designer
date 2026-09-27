@@ -16,6 +16,8 @@ Campaign **{{campaign}}** at `{{campaign_dir}}`. Phase {{phase}}, entity **{{ent
 ### The rubric
 {{rubrics}}
 
+{{prior_campaigns}}
+
 The registry door already refused, before you, the structural faults: a mirror sentence repeated in the public file or in the public notes, a secret name or a `## Secret` heading outside dm-only, a name on the blacklist or shared with another entity, a stub without `status: pending`. What reached you passed that door; judge meaning and craft, and do not re-report those classes.
 
 For each rubric row give a verdict: `pass`, `fix` (a targeted change would repair it), `rerun` (the entity is wrong at the root), or `note`. Your `findings[]` carry rubric ids, entity ids, verdicts and a short `reason_code` slug; the full reasoning goes to `{{critique_path}}` (the dm-only path whenever the entity has a secret layer: reasoning about a mirror is secret text). **Never quote the entity's text in your return**; if you read a secret, your return still carries ids only.

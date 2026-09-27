@@ -38,7 +38,7 @@ PLACEHOLDERS = {
     "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions", "staging_phase",
     "wishes", "template", "prose_path", "mirror_path", "fragment_path", "notes_path", "rubrics", "common",
     "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order", "name_pool",
-    "critic_loop", "critique_path",
+    "critic_loop", "critique_path", "prior_campaigns",
 }
 PROSE_DIRS = {"npc": "design/npcs", "site": "design/sites", "faction": "design/factions", "region": "design/regions",
               "settlement": "design/settlements", "chapter": "design/chapters", "thread": "design/threads",
@@ -197,6 +197,27 @@ def read_budget(campaign: str, entity_id: str | None) -> list[str]:
     return dm.read_budget(campaign, canonical, entity_id)
 
 
+def prior_campaigns_text(campaign: str) -> str:
+    """P1 (plan risk 24.1 #18, regression to the mean): every other campaign's premise, signatures and naming roots, so
+    the new one never echoes them. dry-1 to dry-4 each built on candles, hush and the dead."""
+    root = campaign_dir(campaign).parent
+    lines = []
+    for d in sorted(p for p in root.iterdir() if p.is_dir() and p.name != campaign):
+        proj = (read_json(d / "design" / "entities.json") or {}).get("entities", {})
+        prem = [e for e in proj.values() if e.get("type") == "premise"]
+        if not prem:
+            continue
+        sigs = [str(e.get("name")) for e in proj.values() if e.get("type") in ("signature", "break") and e.get("name")]
+        langs = (read_json(d / "design" / "naming.json") or {}).get("languages") or {}
+        roots = sorted({r for L in langs.values() for r in (L.get("roots") or {})})
+        lines.append(f"- *{prem[0].get('name')}* ({d.name}): {prem[0].get('summary') or ''} · signatures: {', '.join(sigs) or '—'}"
+                     f" · naming roots: {', '.join(roots[:24]) or '—'}")
+    if not lines:
+        return ""
+    return ("### Earlier campaigns — never echo them\nThe premise's question and motif, the signatures and the naming roots come "
+            "from other ground than these: not the same motif in other words, not the same word families.\n" + "\n".join(lines))
+
+
 def name_pool_text(campaign: str, entity_id: str | None) -> str:
     import design_names as dn
     return dn.prompt_text(campaign, entity_id)
@@ -257,6 +278,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "content_mix": ", ".join(d["content_mix"]), "critic_order": str(critic_order),
         # dry-3: a loop critic saved to the loop-1 path its prompt named and overwrote the first verdict
         "critic_loop": f".loop{loop}" if loop and loop > 1 else "",
+        "prior_campaigns": prior_campaigns_text(campaign) if phase == "P1" else "",
         # dry-3 P5: a critic that read the mirror wrote its reasoning to the public staging folder; the prompt names one
         # path, the dm-only one whenever the entity has a secret layer on disk
         "critique_path": (f"design/dm-only/_staging/{staging_phase}/{entity_id or 'skeleton'}.critique.md"

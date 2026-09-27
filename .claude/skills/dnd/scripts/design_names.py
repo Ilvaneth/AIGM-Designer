@@ -234,7 +234,7 @@ def prompt_text(campaign: str, entity_id: str | None) -> str:
     if not pool:
         return ""
     lines = ["**Names (rolled, never invented).** Give a new public person or god the next unused given name of their "
-             "language from these lists, in order (a byname from the language's roots may follow: `Ilme Lampwright`); "
+             "language from these lists, in order (a byname from the language's roots may follow it); "
              "the door refuses a given name that is not on its language's list. A secret entity never takes a name from "
              "these lists (they are printed where the conductor can read them). A place takes one of its language's "
              "place candidates, or a compound of the language's roots in the same shape."]

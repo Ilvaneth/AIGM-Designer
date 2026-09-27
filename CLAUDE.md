@@ -24,7 +24,7 @@ Tests: `py .claude/skills/dnd/scripts/run_tests.py` (stdlib `unittest`, discover
 
 - Ruleset 2014 (SRD 5.1) only; 2024 support was removed on 2026-09-24 (plan item 21.G). The `**Ruleset:** 2014` state.md header line stays as a harmless stamp.
 - Development artifacts (code, tables, plan, commit messages) in English; conversation with the user in Turkish.
-- **The narration is Turkish, the world is not** (owner ruling 2026-09-25, errata 24.2 #17): every proper noun a campaign produces — persons, places, institutions, gods, ships, signature phenomena and creatures, months — is an English-language fantasy name, carried into Turkish prose with an apostrophe suffix (Lanternside'a). Common nouns stay Turkish. No word-stem blacklist: uniqueness is on full names and table rows (errata #18).
+- **The narration is Turkish, the world is not** (owner ruling 2026-09-25, errata 24.2 #17): every proper noun a campaign produces — persons, places, institutions, gods, ships, signature phenomena and creatures, months — is an English-language fantasy name, carried into Turkish prose with an apostrophe suffix that follows its last vowel. Common nouns stay Turkish. No word-stem blacklist: uniqueness is on full names and table rows (errata #18).
 - The user's stated rules are the spec: a conflicting upstream behaviour is deleted, never kept as a default.
 - `unittest` (stdlib), run by `scripts/run_tests.py` once it exists; keep the existing hook tests green.
 - Commit only when the user asks.

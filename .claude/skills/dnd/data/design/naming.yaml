@@ -18,34 +18,34 @@ hooks_common:
   - {phase: validator, must: "every registry name passes the blacklist and carries no Turkish letters"}
 
 rules:
-  world_language: "Names are English-language fantasy names, spelled in ASCII letters, never transliterated Turkish. Common nouns in prose stay Turkish (kandil, han, hancı)."
+  world_language: "Names are English-language fantasy names, spelled in ASCII letters, never transliterated Turkish. Common nouns in prose stay Turkish (çarşı, han, hancı)."
   modes:
-    person: "phonetic: 1-3 syllables from the family's banks; an optional byname from the lexicon (Ilme Lampwright, Yesra Saltreader)"
-    god: "phonetic like a person, plus an epithet from `patterns.god_epithet` (Ormis, Lampbearer)"
-    place: "compound from the lexicon: `patterns.place` (Lanternside, Saltmere, Reedham, Mourners' Hall)"
-    institution: "`patterns.institution` (Court of Mourners, Tide Brotherhood)"
-    people: "`patterns.people` (Saltbound, Marshfolk)"
+    person: "phonetic: 1-3 syllables from the family's banks; an optional byname from the lexicon (Ilme Stonecutter, Yesra Reedcarter)"
+    god: "phonetic like a person, plus an epithet from `patterns.god_epithet` (Ormis, Ploughbearer)"
+    place: "compound from the lexicon: `patterns.place` (Kettleside, Flintmere, Brackham, Carters' Hall)"
+    institution: "`patterns.institution` (Court of Weirs, Flint Brotherhood)"
+    people: "`patterns.people` (Stonebound, Marshfolk)"
     ship: "`patterns.ship` (the Vesper)"
-    month_day: "`patterns.month` and `patterns.day` from the calendar's roots (Lampmonth, Saltday); months are 30 days"
+    month_day: "`patterns.month` and `patterns.day` from the calendar's roots (Plowmonth, Flintday); months are 30 days"
   turkish_suffixing:
     principle: "The name keeps its English spelling; a Turkish suffix attaches after an apostrophe and harmonises with the LAST PRONOUNCED vowel, not the last letter."
     rules:
       - "back vowel sound (a, o, u, and English long i as in -side) → -a / -ı or -u / -da / -ın or -un"
       - "front vowel sound (e, i, ö, ü) → -e / -i or -ü / -de / -in or -ün"
-      - "final silent e is not a vowel: Lanternside'a, Velune'a (pronounced -oon), Saltmere'e (pronounced -meer)"
-      - "final voiceless consonant (p, t, k, ch, s, sh, f) → -ta / -te, -tan / -ten: Karsgate'te, Ashwick'te"
+      - "final silent e is not a vowel: Kettleside'a, Velune'a (pronounced -oon), Flintmere'e (pronounced -meer)"
+      - "final voiceless consonant (p, t, k, ch, s, sh, f) → -ta / -te, -tan / -ten: Karsgate'te, Brookmark'ta"
       - "a name that ends in a pronounced vowel takes the buffer y or n: Ottavia'ya, Ottavia'nın, Umbra'da"
     ending_table:
-      - {ending: "-side / -ide / -ine (long i)", harmony: back, example: "Lanternside'a, Lanternside'ın"}
-      - {ending: "-ham", harmony: back, example: "Reedham'a, Reedham'da"}
-      - {ending: "-mere / -meer", harmony: front, example: "Saltmere'e, Saltmere'in"}
-      - {ending: "-ford / -hold / -ton / -mouth / -moor", harmony: back, example: "Thornhold'a, Thornhold'un"}
-      - {ending: "-gate / -stead / -wick / -bury / -reach / -fen", harmony: front, example: "Karsgate'e, Ashwick'in"}
-      - {ending: "-crag / -march / -fall", harmony: back, example: "Blackcrag'a, Reedmarch'ın"}
+      - {ending: "-side / -ide / -ine (long i)", harmony: back, example: "Kettleside'a, Kettleside'ın"}
+      - {ending: "-ham", harmony: back, example: "Brackham'a, Brackham'da"}
+      - {ending: "-mere / -meer", harmony: front, example: "Flintmere'e, Flintmere'in"}
+      - {ending: "-ford / -hold / -ton / -mouth / -moor", harmony: back, example: "Thornford'a, Thornford'un"}
+      - {ending: "-gate / -stead / -wick / -bury / -reach / -fen", harmony: front, example: "Karsgate'e, Oxstead'in"}
+      - {ending: "-crag / -march / -fall", harmony: back, example: "Goatcrag'a, Birchmarch'ın"}
     examples:
-      - {name: Lanternside, dative: "Lanternside'a", locative: "Lanternside'da", genitive: "Lanternside'ın"}
-      - {name: Saltmere, dative: "Saltmere'e", locative: "Saltmere'de", genitive: "Saltmere'in"}
-      - {name: Reedham, dative: "Reedham'a", locative: "Reedham'da", genitive: "Reedham'ın"}
+      - {name: Kettleside, dative: "Kettleside'a", locative: "Kettleside'da", genitive: "Kettleside'ın"}
+      - {name: Flintmere, dative: "Flintmere'e", locative: "Flintmere'de", genitive: "Flintmere'in"}
+      - {name: Brackham, dative: "Brackham'a", locative: "Brackham'da", genitive: "Brackham'ın"}
       - {name: Karsgate, dative: "Karsgate'e", locative: "Karsgate'te", genitive: "Karsgate'in"}
       - {name: Velune, dative: "Velune'a", locative: "Velune'da", genitive: "Velune'un"}
       - {name: Ottavia, dative: "Ottavia'ya", locative: "Ottavia'da", genitive: "Ottavia'nın"}
@@ -318,48 +318,50 @@ lexicon:
   place_tails: [side, ham, mere, ford, wick, stead, hold, gate, mouth, bury, ton, by, thorpe, moor, fen, crag, reach, march, cross, well, bridge, bourne, combe, den, field, ley, worth, minster, haven, stow, wold, hithe, ness, tor, fell, dale, vale, garth, hurst, end]
 
 patterns:
+  # dry-1 to dry-4 all named their institutions, peoples and months from these examples' words (Court of Mourners →
+  # the Cairn and the Hush Tribunal, Order of the Still Bell → the Wardens of the Hushbell, Lampmonth, Hushday);
+  # the examples show the shapes only, in words no campaign has been built on
   place:
-    - {pattern: "{Head}{tail}", examples: [Lanternside, Saltmere, Reedham, Thornhold, Blackcrag, Ashford]}
-    - {pattern: "{Head} {Noun}", examples: [Salt Market, Salt House, Sunken Pier]}
-    - {pattern: "The {Adj} {Noun}", examples: [The Weary Gull, The Blind Lantern, The Bottomless Well]}
-    - {pattern: "{Owner}'s {Noun}", examples: ["Reeve's Manor", "Mourners' Hall"]}
+    - {pattern: "{Head}{tail}", examples: [Kettleside, Flintmere, Brackham, Thornford, Goatcrag, Oxstead]}
+    - {pattern: "{Head} {Noun}", examples: [Hide Market, Rope House, Broken Weir]}
+    - {pattern: "The {Adj} {Noun}", examples: [The Lame Goat, The Green Anvil, The Crooked Well]}
+    - {pattern: "{Owner}'s {Noun}", examples: ["Reeve's Manor", "Carters' Hall"]}
     - {pattern: "{Noun} of {Name}", examples: [Temple of Velune, Tomb of Skarde]}
   institution:
-    - {pattern: "Court of {Noun}s", examples: [Court of Mourners, Court of Tallies]}
-    - {pattern: "Order of the {Noun}", examples: [Order of the Lamp, Order of the Still Bell]}
-    - {pattern: "{Head} Brotherhood / Sisterhood", examples: [Tide Brotherhood, Kiln Sisterhood]}
-    - {pattern: "The {Noun} Watch", examples: [The Tide Watch, The Wall Watch]}
-    - {pattern: "Guild of {Noun}s", examples: [Guild of Lamplighters, Guild of Weighers]}
-    - {pattern: "House {Head}", examples: [House Ember, House Ottavia]}
-    - {pattern: "Wardens of the {Noun}", examples: [Wardens of the Road, Wardens of the Deep]}
-    - {pattern: "The {Head} Company", examples: [The Salt Company, The Moon Company]}
-    - {pattern: "The {Head} Tribunal", examples: [The Ash Tribunal, The Grey Tribunal]}
-    - {pattern: "The {Head} Choir", examples: [The Bell Choir, The Hush Choir]}
+    - {pattern: "Court of {Noun}s", examples: [Court of Weirs, Court of Fleeces]}
+    - {pattern: "Order of the {Noun}", examples: [Order of the Plough, Order of the Green Knot]}
+    - {pattern: "{Head} Brotherhood / Sisterhood", examples: [Flint Brotherhood, Kiln Sisterhood]}
+    - {pattern: "The {Noun} Watch", examples: [The Ford Watch, The Wall Watch]}
+    - {pattern: "Guild of {Noun}s", examples: [Guild of Coopers, Guild of Weighers]}
+    - {pattern: "House {Head}", examples: [House Brack, House Ottavia]}
+    - {pattern: "Keepers of the {Noun}", examples: [Keepers of the Road, Keepers of the Ford]}
+    - {pattern: "The {Head} Company", examples: [The Hide Company, The Barley Company]}
+    - {pattern: "The {Head} Assize", examples: [The Wool Assize, The River Assize]}
+    - {pattern: "The {Head} Fellowship", examples: [The Anvil Fellowship, The Ferry Fellowship]}
   people:
-    - {pattern: "{Head}bound", examples: [Saltbound, Oathbound]}
+    - {pattern: "{Head}bound", examples: [Stonebound, Clanbound]}
     - {pattern: "{Head}folk", examples: [Marshfolk, Cliffolk]}
     - {pattern: "{Head}kin", examples: [Stonekin, Wolfkin]}
-    - {pattern: "{Head}born", examples: [Mistborn, Ashborn]}
+    - {pattern: "{Head}born", examples: [Mistborn, Fenborn]}
     - {pattern: "the {Adj} Ones", examples: [the Hollow Ones, the Unnamed]}
   god_epithet:
-    - {pattern: "the {Adj} One", examples: [the Still One, the Patient One]}
-    - {pattern: "{Noun}bearer", examples: [Lampbearer, Oathbearer]}
+    - {pattern: "the {Adj} One", examples: [the Patient One, the Green One]}
+    - {pattern: "{Noun}bearer", examples: [Ploughbearer, Shieldbearer]}
     - {pattern: "Mother / Father of {Noun}s", examples: [Mother of Waves, Father of Kilns]}
-    - {pattern: "{God} of {Noun}s", examples: [God of Endings, Lady of Tallies]}
-    - {pattern: "the {Noun} Who {Verb}s", examples: [the Bell Who Waits, the Crow Who Counts]}
+    - {pattern: "{God} of {Noun}s", examples: [God of Harvests, Lady of Crossings]}
+    - {pattern: "the {Noun} Who {Verb}s", examples: [the Hound Who Waits, the Crow Who Counts]}
   ship:
-    - {pattern: "the {Noun}", examples: [the Vesper, the Gannet, the Tallow]}
+    - {pattern: "the {Noun}", examples: [the Vesper, the Gannet, the Plover]}
     - {pattern: "the {Adj} {Noun}", examples: [the Kindly Sister, the Grey Hart]}
-    - {pattern: "{Name}'s {Noun}", examples: ["Hild's Promise", "Ottavia's Debt"]}
+    - {pattern: "{Name}'s {Noun}", examples: ["Hild's Promise", "Ottavia's Wager"]}
   month:
-    - {pattern: "{Head}month", examples: [Lampmonth, Thawmonth]}
+    - {pattern: "{Head}month", examples: [Plowmonth, Thawmonth]}
     - {pattern: "{Head}tide", examples: [Frosttide, Reedtide]}
     - {pattern: "{Head}moon", examples: [Wolfmoon, Grainmoon]}
-    - {pattern: "{Head}fall", examples: [Reedfall, Ashfall]}
-    - {pattern: "High / First / Last {Head}", examples: [High Salt, First Thaw, Last Ember]}
+    - {pattern: "{Head}fall", examples: [Reedfall, Leaffall]}
+    - {pattern: "High / First / Last {Head}", examples: [High Harvest, First Thaw, Last Frost]}
   day:
-    - {pattern: "{Head}day", examples: [Saltday, Bellday, Hushday]}
-
+    - {pattern: "{Head}day", examples: [Flintday, Millday, Wellday]}
 blacklist:
   # brand and real-world names a generated name may never equal (whole name, case-insensitive)
   exact: [Mordor, Gondor, Rohan, Rivendell, Hogwarts, Westeros, Winterfell, Narnia, Waterdeep, Neverwinter, Baldur, Faerun, Eberron, Greyhawk, Krynn, Ravenloft, Barovia, Hyrule, Azeroth, Tamriel, Skyrim, Camelot, Avalon, London, Istanbul, Paris, Rome, Athens, Jerusalem, Gandalf, Drizzt, Elminster, Strahd, Sauron, Aragorn, Legolas, Frodo, Bilbo, Merlin, Arthur, Excalibur]
