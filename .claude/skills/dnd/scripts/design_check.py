@@ -502,7 +502,9 @@ def check_map(b: Bible, only: str | None) -> list[Finding]:
 def parse_rooms(text: str) -> list[dict]:
     rooms = []
     for num, name, cat, exits_cell, xp in ROOM_ROW.findall(text):
-        exits = [EXIT_ID.match(part).group(1) for part in exits_cell.split(",") if EXIT_ID.match(part)]
+        # a note in parentheses is not an exit: dry-3's "2 (çöken gövdeden ateşe, 30 ft)" split at its comma and read 30 as a room
+        bare = re.sub(r"\([^)]*\)", "", exits_cell)
+        exits = [EXIT_ID.match(part).group(1) for part in bare.split(",") if EXIT_ID.match(part)]
         rooms.append({"id": num, "name": name, "category": cat, "exits": exits, "xp": int(xp),
                       "entrance": "[Entrance]" in name, "payoff": "[Payoff]" in name})
     return rooms

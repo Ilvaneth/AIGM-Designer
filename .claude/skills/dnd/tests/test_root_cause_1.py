@@ -357,6 +357,19 @@ class Names(Base):
         self.assertIn("never by fixing the length", hooks)
 
 
+class ExitNotes(unittest.TestCase):
+    """The first live stop (dry-3 P6): a comma inside an exit's parenthesised note made its distance a room number."""
+
+    def test_a_parenthesised_note_in_the_exits_cell_is_never_an_exit(self):
+        import design_check
+        text = ("| 4 | Gedik Ağzı | combat | içerik | 2 (çöken gövdeden ateşe, 30 ft), 3 (ip merdiven, sur yolu), "
+                "5 (sekiye yarım kat iniş), 7 (merdiven başı) | 100 |\n"
+                "| 1 | Son Mil Taşı [Entrance] | structural | içerik | 2 (patika; 300 ft yokuş) | 0 |\n")
+        rooms = {r["id"]: r["exits"] for r in design_check.parse_rooms(text)}
+        self.assertEqual(rooms["4"], ["2", "3", "5", "7"])
+        self.assertEqual(rooms["1"], ["2"])
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 

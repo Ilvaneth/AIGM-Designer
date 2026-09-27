@@ -63,7 +63,7 @@ The owner carries it to the development tab, which reads the campaign and answer
 
 - **`devam`**: approve and continue. The report records the stop and the decision. The development tab may attach a conductor command this protocol already allows (a `drop`, a `revise` round), never a code change.
 - **`bitir`**: end the birth here. Run `status --json`, then `disarm`, and write the report up to the stop; the campaign is kept as a case.
-- **`yeni doğum`**: as `bitir`; the development tab fixes the cause, and a new birth starts later from the owner's message. The code is never changed under a waiting birth: its later phases would measure a different pipeline (RC-10).
+- **`yeni doğum`**: as `bitir`; the development tab fixes the cause, and a new birth starts later from the owner's message. The code is never changed under a waiting birth: its later phases would measure a different pipeline (RC-10). One exception: a stop caused by a false positive of a gate or the validator (the fragment is right, the check misread it) is fixed by the development tab in the check alone, never in a prompt, a table or a generation script, before it answers `devam`; the conductor then re-runs `check`, `card` and `approve` as separate commands, and the report names the stop and the fixing commit (dry-3 P6: `exit_dangling` on a comma inside an exit's note).
 
 **After P8:**
 
