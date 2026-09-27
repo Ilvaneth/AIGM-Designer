@@ -476,6 +476,23 @@ def pool_errors(eid: str, row: dict, pool: dict | None, canonical: dict, phase: 
     return []
 
 
+def ref_errors(eid: str, row: dict, known: set) -> list[str]:
+    """dry-3 P7: a chapter writer put `calculus_act_1` in refs, an id nothing answers, and the validator stopped the
+    phase after the fact. A ref must name a registry row, a row of this merge or a map-only node; the door says so
+    at the unit, with the reason in its retry."""
+    bad = []
+    for ref in row.get("refs") or []:
+        rid = str(ref).strip()
+        if rid.startswith("[[") and rid.endswith("]]"):
+            rid = rid[2:-2].strip()
+        if rid and rid not in known:
+            bad.append(rid)
+    if not bad:
+        return []
+    return [f"{eid}: refs name {', '.join(bad)}, which no registry row answers; reserve a stub for an entity that does "
+            "not exist yet, and cite a document (the consequence calculus, the cosmology) in the prose, never in refs"]
+
+
 def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) -> int:
     staging = design_dir(campaign) / "_staging" / phase
     if not staging.is_dir():
@@ -534,6 +551,9 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
     import design_names as dn
     pool = dn.load_pool(campaign)
     claimed: dict = {}
+    map_ids = {n.get("id") for n in ((read_json(design_dir(campaign) / "map.json") or {}).get("nodes") or [])
+               if str(n.get("id", "")).startswith(("landmark_", "waypoint_"))}
+    known_ids = set(canonical["entities"]) | {eid for eid, _ in incoming} | map_ids
     used = {t: sum(1 for row in canonical["entities"].values() if row.get("type") == t) for t in budget}
     for u in units:
         errs, warns = list(u["errors"]), []
@@ -554,6 +574,7 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
             errs += secret_name_errors(eid, row, publics, haystack)
             errs += naming_errors(eid, row, bl, registered)
             errs += pool_errors(eid, row, pool, canonical, phase, claimed)
+            errs += ref_errors(eid, row, known_ids)
             errs += duplicate_errors(eid, row, canonical, [(i, r) for i, r in incoming if i != eid])
             e3, w3, drift = stamp_check(eid, row, canonical, snapshot, revise)
             errs += e3

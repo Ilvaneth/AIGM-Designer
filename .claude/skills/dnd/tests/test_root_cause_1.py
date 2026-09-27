@@ -228,9 +228,11 @@ class ApproveGate(Base):
         self.assertIn("seed: 2 seed call(s) failed", refused.stderr)
 
     def test_a_validator_error_on_the_phases_own_entity_closes_the_gate(self):
-        bad = row("npc_rcadangle", "npc", "Merrow Tallis", created_phase="P6", refs=["[[npc_rcanobody]]"])
-        self.c.write_json("design/_staging/P6/npc_rcadangle.json", fragment("npc_rcadangle", bad, phase="P6"))
-        self.c.run("registry.py", "merge", "--phase", "P6")
+        # the door now refuses a dangling ref (RefsAtTheDoor); the row is written past it to probe the gate's reading
+        bad = row("npc_rcadangle", "npc", "Merrow Tallis", created_phase="P6", refs=["npc_rcanobody"])
+        canon = self.c.json("design/dm-only/entities.json")
+        canon["entities"]["npc_rcadangle"] = bad
+        self.c.write_json("design/dm-only/entities.json", canon)
         self.c.reopen("P6", "validated")
         check = self.c.run("design_check.py", "--phase", "P6", "--json")
         errors = [f for f in json.loads(check.stdout or "[]") if f.get("severity") == "error" and f.get("entity") == "npc_rcadangle"]
@@ -468,6 +470,22 @@ class UsedRows(Base):
         self.assertIn(secret_row, self.dd.rows_used_elsewhere("_test-next", secret_ref), "the hash still excludes the row")
         self.assertEqual(self.dd.rows_used_elsewhere("real-campaign", "pantheon.yaml#presence"), set(),
                          "a real campaign is never narrowed by a test birth")
+
+
+class RefsAtTheDoor(Base):
+    """dry-3 P7 attempt 2: a ref to an id nothing answers is refused at the unit, not found by the validator later."""
+
+    def test_a_ref_nothing_answers_is_refused_and_a_known_one_passes(self):
+        self.c.reopen("P7", "running")
+        bad = row("node_rcaref", "node", "The Ledger Hearing", created_phase="P7", refs=["calculus_act_1", "[[chapter_1]]"])
+        self.c.write_json("design/_staging/P7/node_rcaref.json", fragment("node_rcaref", bad, phase="P7"))
+        refused = self.c.run("registry.py", "merge", "--phase", "P7")
+        self.assertIn("refs name calculus_act_1, which no registry row answers", refused.stderr)
+        good = row("node_rcaref", "node", "The Ledger Hearing", created_phase="P7", refs=["[[chapter_1]]", "node_rcaother"])
+        other = row("node_rcaother", "node", "The Salt Hearing", created_phase="P7")
+        self.c.write_json("design/_staging/P7/node_rcaref.json", fragment("node_rcaref", good, phase="P7"))
+        self.c.write_json("design/_staging/P7/node_rcaother.json", fragment("node_rcaother", other, phase="P7"))
+        self.c.run("registry.py", "merge", "--phase", "P7").check_returncode()
 
 
 class RerunRollback(Base):
