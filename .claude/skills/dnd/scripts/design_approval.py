@@ -243,6 +243,78 @@ def map_lines(campaign: str) -> list[str]:
     return lines
 
 
+GATE_LABELS = {"incomplete": "roster eksik", "band": "bant dışı", "critic_missing": "eleştirmen çalışmadı",
+               "validator": "doğrulayıcı hatası", "seed": "seed hatası", "orphan_stub": "sahipsiz taslak"}
+
+
+def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
+    """The approve gate (root-cause analysis 1, RC-01): the facts the card already computes, read by approve in test and
+    real births alike; [] when open. Items carry a code, the ids concerned and an English detail."""
+    m = dm.load(campaign)
+    ph = m["phases"].get(phase) or {}
+    if phase not in dm.PHASES or phase == "P0":
+        return []
+    import design_prompts as dp
+    roster = ph.get("roster") or []
+    canon = canonical(campaign)
+    out: list[dict] = []
+    incomplete = [e for e in roster
+                  if dm.ENTITY_RANK.get(m["entities"].get(e, {}).get("status", "pending"), 0) < dm.ENTITY_RANK["merged"]]
+    if incomplete:
+        out.append({"code": "incomplete", "ids": incomplete, "detail": f"not complete ({', '.join(incomplete)} not merged)"})
+    if not m["_meta"].get("fixture"):           # the hand-written fixture is a micro bible, below every band by design
+        scale = dt.scale_row(m["dials"]["scale"])
+        for etype, key in BAND_KEYS.get(phase, []):
+            lo, hi = dt.band(dig(scale, key))
+            if not lo <= sum(1 for e in canon.values() if e.get("type") == etype) <= hi:
+                out.append({"code": "band", "ids": [], "detail": f"{etype} outside band {lo}-{hi}"})
+    if roster:
+        chains, phase_verdict, _, wishes_verdict, _ = critique_chains(dict(ph, id=phase))
+        missing = [n for n, v in (("phase critic", phase_verdict), ("wishes critic", wishes_verdict)) if v == "—"]
+        silent = [e for e in roster if e not in incomplete and dp.prompt_for(phase, e) and not chains.get(e)]
+        if missing or silent:
+            out.append({"code": "critic_missing", "ids": silent,
+                        "detail": ", ".join(missing + ([f"{len(silent)} roster item(s) never critiqued"] if silent else []))})
+    if findings is None:
+        _, findings = validator_summary(campaign, phase)
+    early = dm.PHASES.index(phase) < dm.PHASES.index("P3")       # the map is written in P3
+    owned = sorted({str(f.get("entity")) for f in findings if f.get("severity") == "error"
+                    and not (early and f.get("code") == "no_map")
+                    and (f.get("entity") in roster or (canon.get(f.get("entity")) or {}).get("created_phase") == phase)})
+    if owned:
+        out.append({"code": "validator", "ids": owned, "detail": f"validator errors on {len(owned)} entit(ies) of this phase"})
+    failed = int((ph.get("seed") or {}).get("failed") or 0)
+    if failed:
+        out.append({"code": "seed", "ids": [], "detail": f"{failed} seed call(s) failed at the last merge"})
+    orphans = [e for e in dm.orphan_stubs(campaign, phase) if e not in roster]
+    if orphans:
+        out.append({"code": "orphan_stub", "ids": orphans, "detail": f"{len(orphans)} owned stub(s) never written"})
+    return out
+
+
+def gate_text(items: list[dict]) -> str:
+    """The conductor's refusal line: codes, details and ids."""
+    return "; ".join(f"{i['code']}: {i['detail']}"
+                     + (f" [{', '.join(i['ids'][:12])}]" if i["ids"] and i["code"] != "incomplete" else "")
+                     for i in items)
+
+
+def gate_card_line(items: list[dict], proj: dict) -> str:
+    """The card's line: public, non-arc ids by id; secret and arc rows only as a count (the card is the player's surface)."""
+    if not items:
+        return "- **Kapı:** açık ✓"
+    parts = []
+    for i in items:
+        shown = [e for e in i["ids"] if e in proj and proj[e].get("type") not in SPOILER_TYPES
+                 and proj[e].get("secrecy", "public") == "public"]
+        hidden = len(i["ids"]) - len(shown)
+        ids = ", ".join(shown[:6]) + (f" +{len(shown) - 6}" if len(shown) > 6 else "")
+        extra = " · ".join(x for x in (ids, f"{hidden} kapalı kayıt" if hidden else "") if x)
+        parts.append(GATE_LABELS.get(i["code"], i["code"]) + (f" ({extra})" if extra else ""))
+    return ("- ⛔ **Kapı kapalı:** " + " · ".join(parts)
+            + " — onay reddedilir; geçmek için `--force` ve bir gerekçe gerekir.")
+
+
 def build_card(campaign: str, phase: str) -> str:
     m = dm.load(campaign)
     ph = m["phases"][phase]
@@ -267,6 +339,8 @@ def build_card(campaign: str, phase: str) -> str:
     missing = sum(1 for v in crit.get("verdicts") or [] if v == "critique_missing")
     chains, phase_verdict, phase_lines, wishes_verdict, skeleton_verdicts = critique_chains(dict(ph, id=phase))
     tokens_out = int((ph.get("tokens") or {}).get("out") or 0)
+    per_module, findings = validator_summary(campaign, phase)
+    gate_items = gate(campaign, phase, findings=findings)
     lines.append(f"- **Durum:** {ph['status']} · **Doğrulayıcı:** {val.get('errors', '—')} hata, {val.get('warnings', '—')} uyarı · "
                  f"**Başarısız:** {', '.join(failed) or '—'} · **Süre:** {elapsed_minutes(ph)} dk · "
                  f"**Çıktı:** {f'{tokens_out:,}'.replace(',', '.') + ' token' if tokens_out else '—'}")
@@ -287,6 +361,7 @@ def build_card(campaign: str, phase: str) -> str:
     if not_passed:
         lines.append(f"- ⚠ **Eleştirmen geçmedi:** {', '.join(not_passed)} — son karar `fix`; düzeltme döngüleri bitti, "
                      "karar oyuncunun (bir düzeltme cümlesi ya da onay).")
+    lines.append(gate_card_line(gate_items, proj))
     # scale band, script-side with the full count; the card prints the public count and a tick
     band_lines = []
     for etype, key in BAND_KEYS.get(phase, []):
@@ -362,7 +437,6 @@ def build_card(campaign: str, phase: str) -> str:
         lines.append("- (henüz yok)")
     lines.append("")
 
-    per_module, findings = validator_summary(campaign, phase)
     lines.append("## Doğrulayıcı (özet, kısaltılmış)")
     if per_module:
         for mod, c in sorted(per_module.items()):

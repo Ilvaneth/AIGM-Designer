@@ -1092,7 +1092,7 @@ def phase_card(campaign: str, phase: str) -> int:
 
 
 def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round_text: str | None = None,
-                  scope: str | None = None, force: bool = False) -> int:
+                  scope: str | None = None, force: bool = False, reason: str | None = None) -> int:
     m = dm.load(campaign)
     if round_text:
         rc = dm.approve(campaign, argparse.Namespace(phase=phase, card=None, commit=None, round=round_text,
@@ -1101,6 +1101,13 @@ def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round
     if not (auto_approve(m) or onay):
         print("designer: a real birth is approved only with the player's explicit `onay` (pass --onay after they typed it)",
               file=sys.stderr)
+        return 1
+    # root-cause analysis 1, RC-01: approve read no quality signal; the gate reads what the card computes, in every mode
+    import design_approval as da
+    closed = da.gate(campaign, phase)
+    if closed and not force:
+        print(f"designer: {phase} gate closed — {da.gate_text(closed)}. Fix the cause, or approve --force --reason TEXT "
+              "(a tuning birth never forces: it stops and reports)", file=sys.stderr)
         return 1
     if card is None:
         card = str(design_dir(campaign) / CARD_DIR / f"{phase}.card.md")
@@ -1111,6 +1118,11 @@ def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round
     sha = design_commit(campaign, f"{phase} approved")
     rc = dm.approve(campaign, argparse.Namespace(phase=phase, card=card, commit=sha, round=None, scope=None, affected=None,
                                                 force=force))
+    if rc == 0 and closed:
+        data = dm.load(campaign)
+        data["phases"][phase]["approval"]["forced"] = {"gate": [{"code": i["code"], "ids": i["ids"]} for i in closed],
+                                                        "reason": reason or "", "at": now_iso()}
+        dm.save(campaign, data, f"designer.py phase {phase} approve --force")
     if rc == 0:
         print(f"designer: {phase} approved ({'auto' if auto_approve(m) else 'onay'}; commit {sha or 'none'})")
         if not auto_approve(m):
@@ -1236,7 +1248,7 @@ def main(argv=None) -> int:
     ph.add_argument("--day", type=int, default=0)
     ph.add_argument("--tokens", type=int, help="merge: output tokens the Workflow reported, added to the phase")
     ph.add_argument("--seconds", type=int, help="merge: wall-clock seconds the Workflow reported, added to the phase")
-    ph.add_argument("--force", action="store_true", help="approve: accept an incomplete roster")
+    ph.add_argument("--force", action="store_true", help="approve: pass a closed gate (with --reason, recorded)")
     ph.add_argument("--full", action="store_true", help="check: every validator line instead of the grouped summary")
     ph.add_argument("--id", help="drop: the roster item")
     ph.add_argument("--card")
@@ -1289,7 +1301,7 @@ def main(argv=None) -> int:
         if a.step == "card":
             return phase_card(c, a.phase)
         if a.step == "approve":
-            return approve_phase(c, a.phase, a.card, a.onay, a.round, a.scope, a.force)
+            return approve_phase(c, a.phase, a.card, a.onay, a.round, a.scope, a.force, a.reason)
         if a.step == "rerun":
             if not a.reason:
                 print("designer: rerun needs --reason", file=sys.stderr)

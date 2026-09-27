@@ -34,7 +34,7 @@ py .claude/skills/dnd/scripts/designer.py -c _test-tune-1 phase P1 begin --json
 
 **Failures.** A null agent return or a refused unit: `phase PN begin --json` after the merge lists only what is still pending or failed; run `design-fanout` again with that JSON (once more). A unit still failing after the second run stays `failed`; `approve` refuses an incomplete roster, so retire it: a batch or document that never reached the registry with `designer.py -c _test-tune-1 phase PN drop --id ID --reason "tuning: failed twice"`, a registry entity with `design_revise.py -c _test-tune-1 round --phase PN --scope entity --entity ID --action remove --text "tuning: failed twice"`; then check, card, approve. Never `approve --force` in a tuning birth: record the refusal instead. An approved phase cannot `begin` again (that was birth 1's 3.5 regression; `rerun --reason` is the only way back). A script error (traceback) ends the phase: record the traceback in the report and stop the birth there; do not patch the script. When the development tab has fixed it, the same birth continues from that command (a `merge` is idempotent; nothing is restarted). `begin --json` refuses while staged fragments wait in `_staging/PN/`: merge first, always.
 
-**The stop check.** Until the approve gate exists in code (root-cause analysis 1, RC-01/02/04), the conductor stops the birth on any of these, before `approve` and before the next Workflow. It never decides a stop itself:
+**The stop check.** `approve` refuses on these itself and prints `gate closed` (root-cause analysis 1, RC-01/02/04); S1 shows earlier, at `begin`. On any of them the conductor stops the birth before the next Workflow. It never decides a stop itself and never passes `--force`:
 
 | Id | When to look | Stop when |
 |---|---|---|
@@ -42,14 +42,16 @@ py .claude/skills/dnd/scripts/designer.py -c _test-tune-1 phase P1 begin --json
 | S2 band | the card | the `Ölçek bandı` line carries ✗ |
 | S3 critic missing | the card | `faz eleştirmeni —` or `dilek eleştirmeni —` on a phase with a roster, `eleştiri eksik N`, or a roster id showing `—` in the table's `eleştiri` column (skeleton-only rows have no critic and do not count) |
 | S4 new validator error | the card | more errors than the previous phase's card, or an error line naming an id from this card's `Bu fazda doğanlar` table; `map no_map` before P3 is expected and does not count |
+| S5 seed | the merge output, the gate | a failed seed call at the last merge |
+| S6 orphan stub | the gate | a stub this phase or an earlier one owns, on no roster, never written |
 
 A critic chain that ended at `fix` (`⚠ Eleştirmen geçmedi`) is recorded in the report and is **not** a stop: under that rule dry-2 would have stopped in six of seven phases.
 
 On a stop the conductor sends the owner this block and waits, with nothing approved, no Workflow started and nothing edited:
 
 ```text
-STOP · <campaign> · <phase> · attempt <n> · <S1|S2|S3|S4>
-condition: <one line: ids and counts>
+STOP · <campaign> · <phase> · attempt <n> · <S1-S6>
+condition: <one line: ids and counts; the `gate closed` line verbatim if approve refused>
 roster: <ids> · begin entities: <ids>
 card: <the Durum, Eleştiri, Ölçek bandı and ⚠ lines, verbatim>
 validator: <the grouped `phase PN check` output, verbatim>

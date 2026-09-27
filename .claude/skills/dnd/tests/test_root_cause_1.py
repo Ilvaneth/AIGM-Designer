@@ -7,6 +7,8 @@ RC-08  a skeleton's graph is seeded by the merge that absorbs it; the seed resul
 RC-02  a roster id the skeleton wrote stays owed to its own writer until that writer's fragment merges
 RC-04  approve refuses a stub its phase, or an earlier one, owns and never wrote
 RC-05  the post-phase-fix critique has a file of its own; the phase critic's second reading is the phase's verdict
+RC-01  approve reads the gate (band, missing critics, the phase's own validator errors, seed failures, orphans) in every
+       mode; --force passes it with a recorded reason
 """
 
 import json
@@ -167,6 +169,56 @@ class CritiqueLoop(Base):
         card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
         self.assertIn("faz eleştirmeni fix → pass", card)
         self.assertNotIn("Eleştirmen geçmedi:** faz eleştirmeni", card)
+
+
+class ApproveGate(Base):
+    """RC-01: approve reads the facts the card computes, identically in test and real births; --force records why."""
+
+    def approve(self, phase, *extra):
+        return self.c.run("designer.py", "phase", phase, "approve", "--onay", *extra)
+
+    def test_a_band_miss_closes_the_gate_and_force_records_the_reason(self):
+        m = self.c.json("design/design.json")
+        m["_meta"]["fixture"] = False           # a birth, not the micro fixture: the short band applies (npc 14-18)
+        self.c.write_json("design/design.json", m)
+        self.c.reopen("P5", "validated")
+        refused = self.approve("P5")
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("gate closed", refused.stderr)
+        self.assertIn("npc outside band 14-18", refused.stderr)
+        self.approve("P5", "--force", "--reason", "fixture below band").check_returncode()
+        forced = self.c.json("design/design.json")["phases"]["P5"]["approval"]["forced"]
+        self.assertEqual([g["code"] for g in forced["gate"]], ["band"])
+        self.assertEqual(forced["reason"], "fixture below band")
+
+    def test_a_roster_nobody_critiqued_closes_the_gate_and_the_card_says_so(self):
+        self.c.reopen("P6", "validated", roster=["site_sunken_pier"])
+        refused = self.approve("P6")
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("critic_missing: phase critic, wishes critic, 1 roster item(s) never critiqued", refused.stderr)
+        self.assertIn("site_sunken_pier", refused.stderr)
+        self.c.run("designer.py", "phase", "P6", "card", check=True)
+        card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
+        self.assertIn("⛔ **Kapı kapalı:** eleştirmen çalışmadı", card)
+
+    def test_a_failed_seed_call_closes_the_gate(self):
+        self.c.reopen("P6", "validated", seed={"made": 3, "skipped": 0, "failed": 2, "unsupported": 0})
+        refused = self.approve("P6")
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("seed: 2 seed call(s) failed", refused.stderr)
+
+    def test_a_validator_error_on_the_phases_own_entity_closes_the_gate(self):
+        bad = row("npc_rcadangle", "npc", "Merrow Tallis", created_phase="P6", refs=["[[npc_rcanobody]]"])
+        self.c.write_json("design/_staging/P6/npc_rcadangle.json", fragment("npc_rcadangle", bad, phase="P6"))
+        self.c.run("registry.py", "merge", "--phase", "P6")
+        self.c.reopen("P6", "validated")
+        check = self.c.run("design_check.py", "--phase", "P6", "--json")
+        errors = [f for f in json.loads(check.stdout or "[]") if f.get("severity") == "error" and f.get("entity") == "npc_rcadangle"]
+        self.assertTrue(errors, "the probe needs a validator error on the phase's own row")
+        refused = self.approve("P6")
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("validator: validator errors on", refused.stderr)
+        self.assertIn("npc_rcadangle", refused.stderr)
 
 
 if __name__ == "__main__":
