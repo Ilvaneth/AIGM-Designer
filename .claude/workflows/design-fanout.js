@@ -77,7 +77,7 @@ const writeStage = (e) => agent(bootstrap('writer', e.prompt_cmd, e), {
   effort: e.effort === 'high' ? 'high' : 'medium',
 })
 
-const critique = (e, order, loop) => agent(bootstrap('critic', order === 2 ? e.critic2_cmd : e.critic_cmd, e,
+const critique = (e, order, loop) => agent(bootstrap('critic', (order === 2 ? e.critic2_cmd : e.critic_cmd) + (loop > 1 ? ' --loop ' + loop : ''), e,
   `Save your return as design/_staging/${a.phase}/${e.id}.critic${order}${loop > 1 ? '.loop' + loop : ''}.json before returning it (the conductor records it from there).`), {
   label: `${a.phase}.${e.id}.critic${order}${loop > 1 ? '.loop' + loop : ''}`,
   phase: 'Critique',

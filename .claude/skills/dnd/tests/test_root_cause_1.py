@@ -488,6 +488,21 @@ class RefsAtTheDoor(Base):
         self.c.run("registry.py", "merge", "--phase", "P7").check_returncode()
 
 
+class CriticLoopPath(Base):
+    """dry-3: P1's premise showed c1:pass → c1:pass for fix → pass; the loop critic saved to the path its prompt named."""
+
+    def test_a_loop_critic_prompt_names_its_own_save_path_and_the_workflows_pass_the_loop(self):
+        import design_prompts as dp
+        first = dp.render(self.c.name, "critic", "site_sunken_pier", phase_override="P6")
+        second = dp.render(self.c.name, "critic", "site_sunken_pier", phase_override="P6", loop=2)
+        self.assertIn("site_sunken_pier.critic1.json", first)
+        self.assertIn("site_sunken_pier.critic1.loop2.json", second)
+        self.assertNotIn("site_sunken_pier.critic1.json`", second)
+        for wf in ("design-fanout.js", "design-skeleton.js"):
+            js = (SCRIPTS.parents[3] / ".claude" / "workflows" / wf).read_text(encoding="utf-8")
+            self.assertIn("(loop > 1 ? ' --loop ' + loop : '')", js, wf)
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 

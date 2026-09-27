@@ -28,7 +28,7 @@ Roster of the phase: {{roster}}
 
 Give a verdict per rubric row and per bullet above: `pass`, `fix` (the skeleton agent can repair it in one loop), `rerun`, or `note`. `findings[]` carry rubric ids (use `rubric_skeleton_<bullet>` for the bullets: `counts`, `roster`, `stubs`, `secret_names`, `naming`, `structure`), the entity ids concerned, verdicts and a `reason_code` slug; the reasoning goes to `design/_staging/{{phase}}/skeleton.critique.md` (under `design/dm-only/_staging/{{phase}}/` if you read a secret file). **Never quote names or text in your return.**
 
-The overall verdict is `rerun` if any row says rerun, `fix` if any says fix, else `pass`. Save your return as `design/_staging/{{phase}}/skeleton.critic{{critic_order}}.json` before returning it.
+The overall verdict is `rerun` if any row says rerun, `fix` if any says fix, else `pass`. Save your return as `design/_staging/{{phase}}/skeleton.critic{{critic_order}}{{critic_loop}}.json` before returning it.
 
 Return, as `{{agent_label}}`:
 ```json

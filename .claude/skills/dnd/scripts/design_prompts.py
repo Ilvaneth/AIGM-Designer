@@ -38,6 +38,7 @@ PLACEHOLDERS = {
     "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions", "staging_phase",
     "wishes", "template", "prose_path", "mirror_path", "fragment_path", "notes_path", "rubrics", "common",
     "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order", "name_pool",
+    "critic_loop",
 }
 PROSE_DIRS = {"npc": "design/npcs", "site": "design/sites", "faction": "design/factions", "region": "design/regions",
               "settlement": "design/settlements", "chapter": "design/chapters", "thread": "design/threads",
@@ -202,7 +203,7 @@ def name_pool_text(campaign: str, entity_id: str | None) -> str:
 
 
 def render(campaign: str, name: str, entity_id: str | None = None, attempt: int | None = None,
-           critic_order: int = 1, question: str | None = None, phase_override: str | None = None) -> str:
+           critic_order: int = 1, question: str | None = None, phase_override: str | None = None, loop: int = 1) -> str:
     fm, body = load(name)
     manifest = dm.load(campaign)
     phase = str(fm.get("phase") or "")
@@ -254,6 +255,8 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "agent_label": f"{phase}.{entity_id or role}.a{attempt}", "roster": ", ".join(ph.get("roster") or []) or "(none yet)",
         "party_size": str(d["party_size"]), "level_band": f"{d['level_band'][0]}-{d['level_band'][1]}",
         "content_mix": ", ".join(d["content_mix"]), "critic_order": str(critic_order),
+        # dry-3: a loop critic saved to the loop-1 path its prompt named and overwrote the first verdict
+        "critic_loop": f".loop{loop}" if loop and loop > 1 else "",
         "name_pool": name_pool_text(campaign, entity_id),      # after "common": _common.md carries the placeholder
     }
     text = body
@@ -297,6 +300,7 @@ def main(argv=None) -> int:
     r.add_argument("--id")
     r.add_argument("--attempt", type=int)
     r.add_argument("--critic-order", type=int, default=1)
+    r.add_argument("--loop", type=int, default=1, help="critic prompts: the loop this reading is (its save path)")
     r.add_argument("--phase", help="all-phase prompts (the critics): the phase they serve")
     r.add_argument("--question", help="ask prompts: the yes/no question")
     r.add_argument("--out")
@@ -315,7 +319,7 @@ def main(argv=None) -> int:
     if not a.campaign:
         print("design_prompts: render needs -c CAMP", file=sys.stderr)
         return 2
-    text = render(a.campaign, a.name, a.id, a.attempt, a.critic_order, a.question, a.phase)
+    text = render(a.campaign, a.name, a.id, a.attempt, a.critic_order, a.question, a.phase, a.loop)
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8", newline="\n")
         print(f"design_prompts: wrote {a.out} ({len(text)} chars)")

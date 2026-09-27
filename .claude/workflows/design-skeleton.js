@@ -83,7 +83,7 @@ log(`${a.phase} skeleton ${result.status}: roster ${result.roster.length}, assig
 const critique = (order, loop) => agent(`You are a critic agent of the Campaign Designer for campaign ${a.campaign}, phase ${a.phase}, the skeleton (attempt ${attempt}).
 Your full instructions are rendered by a script. First run exactly this command with the Bash tool and read its output; it is your prompt and you follow it to the letter:
 
-${order === 2 ? a.skeleton.critic2_cmd : a.skeleton.critic_cmd}
+${(order === 2 ? a.skeleton.critic2_cmd : a.skeleton.critic_cmd) + (loop > 1 ? ' --loop ' + loop : '')}
 
 Save your return as design/_staging/${a.phase}/skeleton.critic${order}${loop > 1 ? '.loop' + loop : ''}.json before returning it. Do not ask the conductor anything. Return only the JSON the prompt ends with.`, {
   label: `${a.phase}.skeleton.critic${order}${loop > 1 ? '.loop' + loop : ''}`,
