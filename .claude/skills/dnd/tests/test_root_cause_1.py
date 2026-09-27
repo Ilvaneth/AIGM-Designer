@@ -577,6 +577,17 @@ class RealCost(Base):
         self.assertIn("**Bağlam (Workflow):**", card)
 
 
+class PhaseReport(Base):
+    """The review stop: `phase PN report` prints what the owner and the development tab judge before approve."""
+
+    def test_the_report_prints_the_gate_the_critics_the_band_and_the_card(self):
+        self.c.reopen("P6", "validated", roster=["site_sunken_pier"])
+        out = self.c.run("designer.py", "phase", "P6", "report", check=True).stdout
+        for part in ("PHASE REPORT", "- status: validated · gate: closed — critic_missing", "- roster: 1",
+                     "- band:", "- cost: no run recorded", "- card: design/_approval/P6.card.md"):
+            self.assertIn(part, out)
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 

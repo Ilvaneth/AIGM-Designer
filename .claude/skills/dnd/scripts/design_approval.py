@@ -355,6 +355,20 @@ def real_cost_text(ph: dict) -> str:
     return f" · **Gerçek çıktı:** {fmt(t['output'])} · **önbellekten okunan:** {fmt(t['cache_read'])} · **ajan:** {t['agents']}"
 
 
+def band_lines_of(campaign: str, phase: str) -> list[str]:
+    """The phase's scale bands: the full count decides the tick, the public count is what the line prints."""
+    m = dm.load(campaign)
+    scale = dt.scale_row(m["dials"]["scale"])
+    canon, proj = canonical(campaign), projection(campaign)
+    out = []
+    for etype, key in BAND_KEYS.get(phase, []):
+        full = sum(1 for e in canon.values() if e.get("type") == etype)
+        public = sum(1 for e in proj.values() if e.get("type") == etype)
+        lo, hi = dt.band(dig(scale, key))
+        out.append(f"{etype}: {public} açık, bant {lo}-{hi} {'✓' if lo <= full <= hi else '✗'}")
+    return out
+
+
 def build_card(campaign: str, phase: str) -> str:
     m = dm.load(campaign)
     ph = m["phases"][phase]
@@ -408,13 +422,7 @@ def build_card(campaign: str, phase: str) -> str:
         lines.append("- ⚠ **Yazılmamış küçük taslak:** " + ", ".join(f"{t} ×{n}" for t, n in sorted(minor.items()))
                      + " — sahibi bu faz ya da önceki bir faz; onayı durdurmaz.")
     # scale band, script-side with the full count; the card prints the public count and a tick
-    band_lines = []
-    for etype, key in BAND_KEYS.get(phase, []):
-        full = sum(1 for e in canon.values() if e.get("type") == etype)
-        public = sum(1 for e in proj.values() if e.get("type") == etype)
-        lo, hi = dt.band(dig(scale, key))
-        ok = lo <= full <= hi
-        band_lines.append(f"{etype}: {public} açık, bant {lo}-{hi} {'✓' if ok else '✗'}")
+    band_lines = band_lines_of(campaign, phase)
     if band_lines:
         lines.append("- **Ölçek bandı:** " + " · ".join(band_lines))
     wl = wish_ticks(ph, m["dials"].get("wishes") or {})

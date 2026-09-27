@@ -1193,6 +1193,56 @@ def record_used(campaign: str, phase: str) -> int:
     return added
 
 
+def phase_report(campaign: str, phase: str) -> int:
+    """The review stop's report (docs/tuning-births.md, phase by phase): what the owner and the development tab judge
+    before approve, in ids, codes and counts; the conductor pastes it as printed."""
+    from collections import Counter
+    import design_approval as da
+    m = dm.load(campaign)
+    ph = m["phases"].get(phase) or {}
+    roster = ph.get("roster") or []
+    status = Counter(m["entities"].get(e, {}).get("status", "pending") for e in roster)
+    owed = [e for e in roster if m["entities"].get(e, {}).get("writer_owed")]
+    gate = da.gate(campaign, phase)
+    chains, phase_v, phase_lines, wishes_v, sk_v = da.critique_chains(dict(ph, id=phase))
+    recs = (ph.get("critique") or {}).get("records") or []
+    entity_recs = [r for r in recs if r.get("kind") == "entity"]
+    reasons = Counter(f"{f['rubric_id']}/{f.get('reason_code') or '-'}" for r in recs for f in r.get("findings") or []
+                      if f.get("verdict") in ("fix", "rerun"))
+    ended_fix = sorted(e for e, ch in chains.items() if ch and ch[-1].split(":")[-1] in ("fix", "rerun"))
+    val = ph.get("validator") or {}
+    cost = (ph.get("cost") or {}).get("totals") or {}
+    fmt = lambda n: f"{int(n or 0):,}".replace(",", ".")
+    lines = [f"PHASE REPORT · {campaign} · {phase} · attempt {ph.get('attempt') or 1}",
+             f"- status: {ph.get('status')} · gate: " + ("open" if not gate else "closed — " + da.gate_text(gate)),
+             f"- roster: {len(roster)} (" + ", ".join(f"{k} {v}" for k, v in sorted(status.items())) + (f"; owed to their writers: {', '.join(owed)}" if owed else "") + ")",
+             f"- critics: entity returns {len(entity_recs)}, fix {sum(1 for r in entity_recs if r['verdict'] == 'fix')}"
+             f"{', chains ending fix: ' + ', '.join(ended_fix) if ended_fix else ''} · phase {phase_v} · wishes {wishes_v}"
+             f" · skeleton {' → '.join(sk_v) if sk_v else '—'}",
+             "- fix reasons: " + (", ".join(f"{k} ×{v}" for k, v in reasons.most_common(8)) or "—"),
+             f"- validator: {val.get('errors', '—')} errors, {val.get('warnings', '—')} warnings",
+             "- band: " + (" · ".join(da.band_lines_of(campaign, phase)) or "—")]
+    pool = None
+    if phase not in ("P0", "P1"):
+        import design_names as dn
+        pool = dn.load_pool(campaign)
+    if pool:
+        lines.append("- names: " + " · ".join(f"{lid} {sum(1 for e in L['person'] + L['god'] if e.get('used_by'))} used / "
+                                               f"{sum(1 for e in L['person'] + L['god'] if not e.get('used_by'))} unused"
+                                               for lid, L in pool["languages"].items()))
+    lines.append(f"- cost: " + (f"{cost.get('agents', 0)} agents, {fmt(cost.get('requests'))} requests, output {fmt(cost.get('output'))}, "
+                                f"cache read {fmt(cost.get('cache_read'))}" if cost else "no run recorded (merge --run-dir)")
+                 + f" · Workflow context {fmt((ph.get('tokens') or {}).get('out'))} · wall {round(int(ph.get('wall_s') or 0) / 60)} min")
+    look = [f"phase critic: {x}" for x in phase_lines[:4]] + [f"chain ended fix: {e}" for e in ended_fix[:4]]
+    minor = da.minor_orphans(campaign, phase) if phase in dm.PHASES and phase != "P0" else {}
+    if minor:
+        look.append("unwritten minor stubs: " + ", ".join(f"{k} ×{v}" for k, v in sorted(minor.items())))
+    lines.append("- look at: " + ("; ".join(look) if look else "—"))
+    lines.append(f"- card: design/{CARD_DIR}/{phase}.card.md")
+    print("\n".join(lines))
+    return 0
+
+
 def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round_text: str | None = None,
                   scope: str | None = None, force: bool = False, reason: str | None = None) -> int:
     m = dm.load(campaign)
@@ -1437,7 +1487,7 @@ def main(argv=None) -> int:
 
     ph = sub.add_parser("phase")
     ph.add_argument("phase")
-    ph.add_argument("step", choices=("begin", "merge", "check", "card", "approve", "rerun", "drop"))
+    ph.add_argument("step", choices=("begin", "merge", "check", "card", "report", "approve", "rerun", "drop"))
     ph.add_argument("--json", action="store_true")
     ph.add_argument("--day", type=int, default=0)
     ph.add_argument("--tokens", type=int, help="merge: output tokens the Workflow reported, added to the phase")
@@ -1496,6 +1546,8 @@ def main(argv=None) -> int:
             return phase_check(c, a.phase, a.full)
         if a.step == "card":
             return phase_card(c, a.phase)
+        if a.step == "report":
+            return phase_report(c, a.phase)
         if a.step == "approve":
             return approve_phase(c, a.phase, a.card, a.onay, a.round, a.scope, a.force, a.reason)
         if a.step == "rerun":
