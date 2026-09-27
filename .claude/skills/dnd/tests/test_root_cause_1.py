@@ -263,21 +263,21 @@ class Budgets(Base):
         return {r["label"]: r for r in self.c.json("design/design.json")["dice_log"]
                 if r.get("phase") == phase and r.get("attempt") == 9}
 
-    def test_the_door_refuses_an_npc_reservation_past_the_band_top_before_p5(self):
-        room = 18 - self.count("npc")                          # short: named_npcs 14-18
+    def test_the_door_refuses_an_npc_reservation_past_the_budget_before_p5(self):
+        room = 15 - self.count("npc")          # short: named_npcs 14-18 less p5_room 3 (dry-3: P5 had no room left)
         proc = self.reserve("npc", room + 1, "P5")
         self.assertEqual(proc.returncode, 1)
-        self.assertIn(f"npc_rcabudget{room:02d}: 1 new npc row(s) would pass the scale's band top (18) before P5", proc.stderr)
-        self.assertEqual(self.count("npc"), 18, "every reservation inside the band merged")
+        self.assertIn(f"npc_rcabudget{room:02d}: 1 new npc row(s) would pass the npc budget before P5 (15:", proc.stderr)
+        self.assertEqual(self.count("npc"), 15, "every reservation inside the budget merged")
 
     def test_the_p5_roll_nets_out_the_reserved_npcs(self):
-        self.reserve("npc", 17 - self.count("npc"), "P5").check_returncode()
+        self.reserve("npc", 14 - self.count("npc"), "P5").check_returncode()
         self.c.reopen("P5", "pending")
         self.c.run("designer.py", "preroll", "--phase", "P5", "--attempt", "9", check=True)
         r = self.rolls("P5")
         total = r["npcs_count"]["value"]
-        self.assertGreaterEqual(total, 17, "the total never drops below what the registry holds")
-        self.assertEqual(r["npcs_new_count"]["value"], total - 17)
+        self.assertGreaterEqual(total, 14, "the total never drops below what the registry holds")
+        self.assertEqual(r["npcs_new_count"]["value"], total - 14)
         self.assertEqual(sum(1 for k in r if k.endswith(".tic")), total, "one ordinal per NPC, stubs included")
 
     def test_the_p7_roll_counts_the_seed_stubs_an_earlier_phase_reserved(self):
@@ -586,6 +586,29 @@ class PhaseReport(Base):
         for part in ("PHASE REPORT", "- status: validated · gate: closed — critic_missing", "- roster: 1",
                      "- band:", "- cost: no run recorded", "- card: design/_approval/P6.card.md"):
             self.assertIn(part, out)
+
+
+class P5AfterDry3(Base):
+    """dry-3's P5: the card listed 7 NPCs of 17, and a critic that read a mirror wrote its reasoning to public staging."""
+
+    def test_the_card_lists_every_row_the_phase_merged_batch_members_included(self):
+        stub = row("npc_rcaminor", "npc", "Tobin Quarrel", created_phase="P3", status="pending", owner_phase="P5", reserved_by="P3.region_x.a1")
+        self.c.write_json("design/_staging/P3/npc_rcaminor.json", fragment("npc_rcaminor", stub, phase="P3"))
+        self.c.run("registry.py", "merge", "--phase", "P3", check=True)
+        self.c.reopen("P5", "running", roster=["npcbatch_9"])
+        filled = row("npc_rcaminor", "npc", "Tobin Quarrel", created_phase="P3", tier="minor")
+        self.c.write_json("design/_staging/P5/npcbatch_9.json", fragment("npcbatch_9", None, phase="P5", rows=[filled]))
+        self.c.run("registry.py", "merge", "--phase", "P5", check=True)
+        self.c.run("designer.py", "phase", "P5", "card", check=True)
+        card = self.c.path("design/_approval/P5.card.md").read_text(encoding="utf-8")
+        self.assertIn("| npc_rcaminor | Tobin Quarrel |", card, "a P3 stub filled inside a P5 batch is P5's")
+
+    def test_a_mirrored_entitys_critique_notes_are_named_in_dm_only(self):
+        import design_prompts as dp
+        text = dp.render(self.c.name, "critic", "npc_draskun", phase_override="P5")
+        mirror = self.c.path("design/dm-only/npcs/npc_draskun.md").is_file()
+        self.assertIn("design/dm-only/_staging/P5/npc_draskun.critique.md" if mirror else "design/_staging/P5/npc_draskun.critique.md", text)
+        self.assertTrue(mirror, "the fixture's npc_draskun has a secret layer")
 
 
 class RerunRollback(Base):

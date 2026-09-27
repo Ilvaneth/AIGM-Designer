@@ -369,6 +369,21 @@ def band_lines_of(campaign: str, phase: str) -> list[str]:
     return out
 
 
+def phase_written_ids(campaign: str, phase: str) -> set:
+    """Ids of every row this phase merged: the fragments in its merged folder and the rows of its containers."""
+    from design_io import is_fragment
+    merged = design_dir(campaign) / "_staging" / phase / "merged"
+    out: set = set()
+    for f in (merged.glob("*.json") if merged.is_dir() else []):
+        if not is_fragment(f):
+            continue
+        frag = read_json(f) or {}
+        if frag.get("registry") and frag.get("id"):
+            out.add(frag["id"])
+        out |= {r.get("id") for r in frag.get("rows") or [] if isinstance(r, dict) and r.get("id")}
+    return out
+
+
 def build_card(campaign: str, phase: str) -> str:
     m = dm.load(campaign)
     ph = m["phases"][phase]
@@ -378,7 +393,10 @@ def build_card(campaign: str, phase: str) -> str:
     assignments = naming.get("assignments") or {}
     scale = dt.scale_row(m["dials"]["scale"])
     roster = ph.get("roster") or []
-    mine = {eid: e for eid, e in proj.items() if e.get("created_phase") == phase or eid in roster}
+    # dry-3: the P5 card listed 7 NPCs of 17; the ten minors were P3 stubs filled inside two batches, and the table
+    # took only rows created in this phase or on its roster; every row this phase merged is the phase's
+    written = phase_written_ids(campaign, phase)
+    mine = {eid: e for eid, e in proj.items() if e.get("created_phase") == phase or eid in roster or eid in written}
     spoilers = {eid: e for eid, e in mine.items() if e.get("type") in SPOILER_TYPES}
     shown_rows = {eid: e for eid, e in mine.items() if eid not in spoilers}
     attempt = int(ph.get("attempt") or 1)

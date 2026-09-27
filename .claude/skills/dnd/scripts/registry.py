@@ -442,7 +442,8 @@ def entity_budget(campaign: str, phase: str) -> dict:
     if phase not in dm.PHASES:
         return {}
     sc = dt.scale_row(dm.load(campaign)["dials"]["scale"])
-    return {t: dt.band(sc[key])[1] for t, (owner, key) in BUDGETED.items()
+    room = {"npc": int(sc.get("p5_room") or 0)}      # the people P5 adds itself, kept out of the earlier phases' reach
+    return {t: dt.band(sc[key])[1] - room.get(t, 0) for t, (owner, key) in BUDGETED.items()
             if dm.PHASES.index(phase) < dm.PHASES.index(owner)}
 
 
@@ -587,9 +588,9 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
                 new_rows[row["type"]] = new_rows.get(row["type"], 0) + 1
         for t, n in new_rows.items():
             if not errs and used[t] + n > budget[t]:
-                errs.append(f"{u['id']}: {n} new {t} row(s) would pass the scale's band top ({budget[t]}) before "
-                            f"{BUDGETED[t][0]}; carry the seed, role or hook with an existing {t} id (a stub or a filled "
-                            "row), or reserve fewer")
+                errs.append(f"{u['id']}: {n} new {t} row(s) would pass the {t} budget before {BUDGETED[t][0]} "
+                            f"({budget[t]}: the band's top, less what {BUDGETED[t][0]} adds itself); carry the seed, role or "
+                            f"hook with an existing {t} id (a stub or a filled row), or reserve fewer")
         if not errs:
             for t, n in new_rows.items():
                 used[t] += n

@@ -38,7 +38,7 @@ PLACEHOLDERS = {
     "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions", "staging_phase",
     "wishes", "template", "prose_path", "mirror_path", "fragment_path", "notes_path", "rubrics", "common",
     "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order", "name_pool",
-    "critic_loop",
+    "critic_loop", "critique_path",
 }
 PROSE_DIRS = {"npc": "design/npcs", "site": "design/sites", "faction": "design/factions", "region": "design/regions",
               "settlement": "design/settlements", "chapter": "design/chapters", "thread": "design/threads",
@@ -257,6 +257,11 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "content_mix": ", ".join(d["content_mix"]), "critic_order": str(critic_order),
         # dry-3: a loop critic saved to the loop-1 path its prompt named and overwrote the first verdict
         "critic_loop": f".loop{loop}" if loop and loop > 1 else "",
+        # dry-3 P5: a critic that read the mirror wrote its reasoning to the public staging folder; the prompt names one
+        # path, the dm-only one whenever the entity has a secret layer on disk
+        "critique_path": (f"design/dm-only/_staging/{staging_phase}/{entity_id or 'skeleton'}.critique.md"
+                          if paths["mirror_path"] != "(none)" and (campaign_dir(campaign) / paths["mirror_path"]).is_file()
+                          else f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.critique.md"),
         "name_pool": name_pool_text(campaign, entity_id),      # after "common": _common.md carries the placeholder
     }
     text = body

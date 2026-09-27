@@ -43,6 +43,7 @@ rows:
     settlements: {metropolis: 0, city: 0, town: 1, village: [2, 3]}
     factions: {count: [3, 4], quota: {state: 1, guild: 1, criminal: 1, religious: [0, 1]}, signature_institution_counts: true}
     named_npcs: [14, 18]
+    p5_room: 3          # NPCs the budget keeps for P5 itself (dry-3: P3 and P4 reserved all 18, P5 added none)
     npc_tiers: {major: 3, supporting: 5, minor: [6, 10]}
     sites: {count: [6, 8], roles: {minor: 4, standard: 3, major: 1, capstone: 0}, detailed_at_birth: 2}
     gods: [3, 5]
@@ -73,6 +74,7 @@ rows:
     settlements: {metropolis: 0, city: 1, town: 2, village: [5, 8]}
     factions: {count: [6, 10], quota: {state: 1, religious: 1, guild: 1, criminal: 1}, pool: [martial, scholarly, resistance, cult, trade], signature_institution_counts: true}
     named_npcs: [30, 40]
+    p5_room: 5          # NPCs the budget keeps for P5 itself (dry-3: P3 and P4 reserved all 18, P5 added none)
     npc_tiers: {major: 6, supporting: 11, minor: [13, 23]}
     sites: {count: [15, 25], roles: {minor: 8, standard: 9, major: 5, capstone: 1}, detailed_at_birth: 3}
     gods: [6, 9]
@@ -103,6 +105,7 @@ rows:
     settlements: {metropolis: 1, city: 3, town: 6, village: [10, 14]}
     factions: {count: [12, 16], quota: {state: 1, religious: 1, guild: 1, criminal: 1}, pool: [martial, scholarly, resistance, cult, trade], signature_institution_counts: true}
     named_npcs: [60, 80]
+    p5_room: 8          # NPCs the budget keeps for P5 itself (dry-3: P3 and P4 reserved all 18, P5 added none)
     npc_tiers: {major: 10, supporting: 20, minor: [30, 50]}
     sites: {count: [30, 40], roles: {minor: 12, standard: 14, major: 10, capstone: 2}, detailed_at_birth: [3, 4]}
     gods: [9, 14]
