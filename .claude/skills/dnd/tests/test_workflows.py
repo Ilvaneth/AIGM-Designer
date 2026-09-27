@@ -90,7 +90,7 @@ class Scripts(unittest.TestCase):
         self.assertIn("fix (second critic)", fan, "the second critic's fix gets a loop")
         self.assertIn("critique(r.e, 2, 2)", fan)
         self.assertIn("fix (phase critic)", fan, "entities the phase critic names get one targeted fix")
-        self.assertIn("critique(e, 1, 3)", fan)
+        self.assertIn("critique(e, 1, PHASE_FIX_LOOP)", fan, "a loop number no entity loop uses (RC-05)")
         self.assertIn("phase_fixes", fan)
         sk = self.script("design-skeleton")
         for key in ("a.skeleton.critic_cmd", "a.skeleton.critic2_cmd", "skeleton.critic${order}", "skeleton.fix1", "result.verdicts = verdicts"):

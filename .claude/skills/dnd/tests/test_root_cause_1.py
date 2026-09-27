@@ -6,6 +6,7 @@ RC-16  every agent command in the begin JSON is bash-safe: forward slashes, a sc
 RC-08  a skeleton's graph is seeded by the merge that absorbs it; the seed result is kept on the manifest
 RC-02  a roster id the skeleton wrote stays owed to its own writer until that writer's fragment merges
 RC-04  approve refuses a stub its phase, or an earlier one, owns and never wrote
+RC-05  the post-phase-fix critique has a file of its own; the phase critic's second reading is the phase's verdict
 """
 
 import json
@@ -139,6 +140,33 @@ class OrphanStubs(Base):
         self.assertIn("npc_rcaorphan", refused.stderr, "owned by P5, never written")
         self.assertNotIn("npc_rcalater", refused.stderr, "P7 owns it; P6 does not answer for it")
         self.c.run("designer.py", "phase", "P6", "approve", "--onay", "--force", check=True)
+
+
+class CritiqueLoop(Base):
+    """RC-05: the post-phase-fix critique has a file of its own, and the phase critic judges once more after its fixes."""
+
+    FANOUT = SCRIPTS.parents[3] / ".claude" / "workflows" / "design-fanout.js"
+
+    def test_the_post_phase_fix_critique_never_shares_an_entity_loop_file(self):
+        js = self.FANOUT.read_text(encoding="utf-8")
+        self.assertIn("const PHASE_FIX_LOOP = MAX_FIX_LOOPS + 2", js)
+        self.assertIn("critique(e, 1, PHASE_FIX_LOOP)", js)
+        self.assertNotIn("critique(e, 1, 3)", js, "loop 3 is an entity's second re-critique when MAX_FIX_LOOPS is 2")
+        self.assertIn("phase.critic1.loop2.json", js, "the phase critic's second reading is saved beside the first")
+
+    def test_the_phase_critic_second_reading_is_the_phase_outcome_on_the_card(self):
+        self.c.reopen("P6", "running")
+        finding = {"rubric_id": "rubric_p6_only_here", "entity_id": "site_sunken_pier", "verdict": "fix", "reason_code": "generic_rooms"}
+        self.c.write_json("design/_staging/P6/phase.critic1.json", {"entity_id": "P6", "verdict": "fix", "findings": [finding]})
+        self.c.write_json("design/_staging/P6/phase.critic1.loop2.json",
+                          {"entity_id": "P6", "verdict": "pass", "findings": [dict(finding, verdict="pass")]})
+        self.c.run("designer.py", "phase", "P6", "merge", check=True)
+        records = self.c.json("design/design.json")["phases"]["P6"]["critique"]["records"]
+        self.assertEqual([(r["kind"], r["verdict"]) for r in records], [("phase", "fix"), ("phase", "pass")])
+        self.c.run("designer.py", "phase", "P6", "card", check=True)
+        card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
+        self.assertIn("faz eleştirmeni fix → pass", card)
+        self.assertNotIn("Eleştirmen geçmedi:** faz eleştirmeni", card)
 
 
 if __name__ == "__main__":
