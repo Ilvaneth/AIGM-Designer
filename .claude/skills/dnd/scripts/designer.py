@@ -994,9 +994,14 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
             if rp.returncode != 0:
                 print(f"designer: render_player {verb} failed (exit {rp.returncode}); the P8 card cannot be approved until it passes", file=sys.stderr)
                 ph["status"] = "partial"
+                # dry-3: `check` turned partial back to validated and the gate read no render result, so P8 was
+                # approved with no primer and no DM files; the failure is now a fact the gate reads
+                ph["render"] = {"failed": verb, "at": now_iso()}
                 dm.save(campaign, data, f"designer.py phase {phase} merge")
                 break
         else:
+            if ph.pop("render", None):
+                dm.save(campaign, data, f"designer.py phase {phase} merge")
             # the DM's generated files and the map's derived files (slice 1d): world, npcs, index, report, a lean state.md
             # when none exists, travel-times.md and the encounter tables
             for script, args in (("render_dm.py", ("all",)), ("map_travel.py", ("travel-times",)), ("map_travel.py", ("encounters",))):

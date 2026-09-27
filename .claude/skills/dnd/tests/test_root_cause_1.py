@@ -407,6 +407,28 @@ class Refusals(Base):
         self.assertIn("[[premise_<slug>]]", text)
 
 
+class P8Render(Base):
+    """dry-3's P8 stop: the approval snapshots made every public sentence a 'dm-only sentence', the primer was refused,
+    and the gate, reading no render result, let P8 through with no primer and no DM files."""
+
+    def test_an_approval_snapshot_is_not_the_secret_corpus(self):
+        import re
+        import design_approval as da
+        text = self.c.path("design/sites/site_sunken_pier.md").read_text(encoding="utf-8")
+        public = next(s.strip() for s in re.split(r"(?<=[.!?])\s+|\n", text) if len(s.strip()) >= 60 and not s.startswith(("|", "#", "-")))
+        self.c.reopen("P5", "validated")
+        self.c.run("designer.py", "phase", "P5", "approve", "--onay", check=True)
+        self.assertTrue(self.c.path("design/dm-only/_snapshots/approved/P5/design/sites/site_sunken_pier.md").is_file())
+        _, sentences = da.secret_terms(self.c.name)
+        self.assertNotIn(public, sentences, "a public sentence copied into a snapshot is still public")
+
+    def test_a_failed_p8_render_closes_the_gate(self):
+        self.c.reopen("P8", "validated", render={"failed": "primer", "at": "2026-09-27T00:00:00Z"})
+        refused = self.c.run("designer.py", "phase", "P8", "approve", "--onay")
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("render: the player's files did not render (primer)", refused.stderr)
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 

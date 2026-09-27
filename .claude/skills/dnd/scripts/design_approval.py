@@ -143,6 +143,8 @@ def secret_terms(campaign: str) -> tuple[set, list]:
     sentences = []
     dm_dir = dm_only_dir(campaign)
     for path in dm_dir.rglob("*.md"):
+        if "_snapshots" in path.relative_to(dm_dir).parts:
+            continue        # dry-3: an approval snapshot copies design/ whole; its public half is not secret text
         text = path.read_text(encoding="utf-8", errors="replace")
         for s in re.split(r"(?<=[.!?])\s+|\n", text):
             s = s.strip().strip("-*# ").strip()
@@ -246,7 +248,7 @@ def map_lines(campaign: str) -> list[str]:
 # errors a later phase resolves by design: not the approving phase's own until then (the gate over the archived births:
 # every premise without pre-placed clues would have stopped P1)
 EXPECTED_UNTIL = {"no_map": "P3", "clue_unplaced": "P6"}
-GATE_LABELS = {"incomplete": "roster eksik", "band": "bant dışı", "critic_missing": "eleştirmen çalışmadı",
+GATE_LABELS = {"render": "oyuncu dosyaları üretilemedi", "incomplete": "roster eksik", "band": "bant dışı", "critic_missing": "eleştirmen çalışmadı",
                "validator": "doğrulayıcı hatası", "seed": "seed hatası", "orphan_stub": "sahipsiz taslak"}
 
 
@@ -286,6 +288,9 @@ def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
                     and (f.get("entity") in roster or (canon.get(f.get("entity")) or {}).get("created_phase") == phase)})
     if owned:
         out.append({"code": "validator", "ids": owned, "detail": f"validator errors on {len(owned)} entit(ies) of this phase"})
+    render = (ph.get("render") or {}).get("failed")
+    if render:
+        out.append({"code": "render", "ids": [], "detail": f"the player's files did not render ({render})"})
     failed = int((ph.get("seed") or {}).get("failed") or 0)
     if failed:
         out.append({"code": "seed", "ids": [], "detail": f"{failed} seed call(s) failed at the last merge"})
