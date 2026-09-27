@@ -66,6 +66,41 @@ Roughly 230 agent calls. Approval waits were zero (auto-approve). The plan's est
 - **Readability judge** (`playtest/judge-readability.json`): `fix` — 5 pass, 1 note, 2 fix: `native_knowledge` (the primer printed a god's `church` field with its design note, "(kurulu tapınak; P4 dinî fraksiyon yapabilir)") and `names_hold` (the player map printed `landmark_the_truce_stone`, `waypoint_the_sluice` and four more raw ids). Both fixed: the primer scrubs design notes and names map-only nodes, `render_player check` refuses raw ids and design notes, and the writers' preamble forbids design talk in public fields.
 - The scene pack now tells the DM to voice at least one fresh news line per scene and shows a line once per campaign.
 
-## 7. Uniqueness — not run
+## 7. Uniqueness — part D, stopped inside P7
 
-Part D (`_test-dry-2`, `design_compare`, the uniqueness judge) waits for the Opus tab.
+*Written by the conductor tab (Opus) on 2026-09-26. The owner stopped the P7 fan-out by hand, so the comparison itself did not run; this section records the second birth up to that point.*
+
+**Outcome in one line:** `_test-dry-2` (seed `DRY-0002`, code `24f16f5`, resumed from a P1 whose fragments were already on disk) is approved through P6. P7's skeleton is merged, and its fan-out Workflow (`wf_f0705adc-e3f`, 5 entities: `chapter_1`-`chapter_3`, `seedbatch_1`-`seedbatch_2`) was stopped by the owner with nothing merged. P8, `design_compare.py _test-dry-1 _test-dry-2`, the uniqueness judge and `design_critique_stats.py` **did not run**.
+
+### 7.1 Per phase
+
+| Phase | Workflow run | Agents | Seconds | Agent tokens | Units merged / refused | Critics at the end | Card |
+|---|---|---|---|---|---|---|---|
+| P1 | `wf_bd29c507-ee6` | 11 | 1619 | 1.029.945 | 10 / 0 | premise fix, pass, c2 fix, c2 pass · phase fix (`rubric_leak` ×2, `public_carrion_line_hints_corpse`) · wishes pass | 27 min, output "—" (merged with `--seconds 1600` only); check 1E `no_map` |
+| P2 | `wf_cd05b4fd-4f6` | 8 | 1799 | 947.524 | 1 container (21 rows) / 0 | `doc_cosmology` fix, fix, fix (never passed) · phase pass · wishes pass | ⚠ critic not passed; god 4 ✓ |
+| P3 skeleton | `wf_cfae2931-81b` | 4 | 1111 | 560.179 | — | skeleton fix → pass | |
+| P3 fan-out | `wf_1334afa3-651` | 16 | 849 | 1.581.558 | 28 (27 rows) / 0 | 3 fix → pass · phase pass | 33 min, 2.141.737; check 0E/0W |
+| P4 skeleton | `wf_721fb71f-62f` | 5 | 2205 | 889.709 | — | fix, pass, c2 fix | |
+| P4 fan-out | `wf_170d7eb8-de1` | 18 | 769 | 1.752.277 | 5 / 0 | 1 fix · phase fix | 50 min, 2.641.986; ⚠ phase and skeleton critics not passed; faction 4 ✓ |
+| P5 skeleton | `wf_6ed376ab-a32` | 2 | 1549 | 495.885 | — | pass | |
+| P5 fan-out | `wf_a1fc8f1c-97c` | 36 | 1142 | 3.833.443 | 16 (15 rows) / 0 | 3 fix; 4 majors with a second critic · phase fix | 45 min, 4.329.328; **npc 21, band 14-18 ✗**; ⚠ phase critic |
+| P6 skeleton | `wf_bd6d3d81-6e6` | 4 | 2017 | 687.583 | 9 / 0 | fix → pass | phase and wishes critic "—" (never ran); site 8 ✓ |
+| P6 fan-out | not run | — | — | — | — | — | `begin` listed 0 entities (see 7.2) |
+| P7 skeleton | `wf_c0f46a32-4df` | 4 | 2143 | 796.499 | 29 / 0 | fix, fix | 3 beats, 3 chapters, 12 nodes, 8 seeds, 2 sockets, 4 hooks, 3 endings |
+| P7 fan-out | `wf_f0705adc-e3f` | 5 started | — | — | nothing merged | — | **stopped by the owner** |
+| **total to the stop** | | **108** (+5) | **15.203 s ≈ 4.2 h** | **12.574.602** | | | |
+
+The token figure is the Workflow's subagent total passed to `--tokens`. It is not the same measure as dry-1's column 2, so the two are not directly comparable. Rolls at the stop: 387 public, 27 secret. No merge unit was refused in any phase.
+
+### 7.2 Findings
+
+1. **P6 left the birth with no detailed site (major).** Both roster sites, `site_candlewake_wreck` and `site_stillgate`, had been created as stubs in P1. The P6 skeleton emitted them again as fragments, and the merge marked them `merged` (status merged, stage file under P6's merged folder). `phase P6 begin --json` then listed `entities: []`, and no site writer ran. Both site files still read `# … — skeleton` (`status: skeleton`). `design_check.py` gave 0E/0W because it does not flag an intended-path site left as a skeleton. The card showed the phase and wishes critics as "—" and auto-approve approved it. The conductor did not run a fan-out with zero entities. dry-1 had two sites detailed at birth; dry-2 has none.
+2. **The NPC count is over the band again.** It reached 21 against 14-18, as in dry-1 (20). The P5 card shows ✗, and auto-approve passed it.
+3. **The names cluster near the owner's banned stems.** The dry-2 NPCs include Cavelor, Celavo, Ceravia, Colevia, Covelan (≈ Corvan), Velocan, Vorelan, Velian, Lovarin, Lorican and Lucaren. That is a Cav-/Cov-/Col-/Cel- and V/L-an/-in family close to the Corv-/Cassiv- blacklist in `naming.yaml`. The blacklist matches full names, so none were refused. This is the likeliest ground a uniqueness judge would fail dry-2 on against dry-1.
+4. **Critics ending at `fix` pass silently under auto-approve.** P1 phase, P2 `doc_cosmology` (three `fix` verdicts, never `pass`), P4 phase and skeleton, P5 phase, and the P7 skeleton (fix, fix). This is the same pattern as dry-1's P4/P5/P7.
+5. **P1 was resumed with `--seconds` only**, per the owner's instruction, so its card shows the output as "—". The time is recorded; the tokens are not.
+
+### 7.3 State at the stop, and how to resume
+
+- `designer.py -c _test-dry-2 status`: P0-P6 approved; P7 `running`, attempt 1, roster 5, skeleton merged (agent `P7.skeleton.a1`); P8 and P9 pending. The guard is still armed in birth mode.
+- The stopped Workflow's partial fragments were **not merged**. A resume re-runs `phase P7 begin --json` and launches `design-fanout` with its output, then merge (with `--tokens`/`--seconds`), check, card and approve. After that: P8, then `design_compare.py _test-dry-1 _test-dry-2`, `playtest.py -c _test-dry-1 judge uniqueness --against _test-dry-2` (plus `--record`) and `design_critique_stats.py _test-dry-2`. This section's uniqueness verdict stays open until then.
