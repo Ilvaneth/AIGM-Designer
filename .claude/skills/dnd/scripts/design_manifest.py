@@ -397,15 +397,22 @@ def mark(campaign: str, a) -> int:
     return 0
 
 
-def orphan_stubs(campaign: str, phase: str) -> list[str]:
-    """Canonical rows still `status: pending` whose owner phase is `phase` or an earlier one (root-cause analysis 1,
-    RC-04: every stub carries owner_phase and no gate read it; dry-2 left eight owned stubs behind approved phases)."""
+# the stub types whose orphan stops a phase: the prose types, each an entity with a dossier (registry.PROSE_TYPES;
+# a test keeps the two equal). A pending place, district, polity, event, seed, item or god row is shown, not refused.
+BLOCKING_STUB_TYPES = ("npc", "site", "settlement", "faction", "region", "chapter", "thread")
+
+
+def orphan_stubs(campaign: str, phase: str, types: tuple | None = None) -> list[str]:
+    """Canonical rows still `status: pending` whose owner phase is `phase` or an earlier one, of `types` if given
+    (root-cause analysis 1, RC-04: every stub carries owner_phase and no gate read it; dry-2 left a faction and seven
+    NPCs behind approved phases, dry-1 a secret NPC carrying a clue)."""
     if phase not in PHASES:
         return []
     upto = PHASES.index(phase)
     canonical = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
     return sorted(eid for eid, row in canonical.items()
-                  if is_stub(row) and row.get("owner_phase") in PHASES and PHASES.index(row["owner_phase"]) <= upto)
+                  if is_stub(row) and row.get("owner_phase") in PHASES and PHASES.index(row["owner_phase"]) <= upto
+                  and (types is None or row.get("type") in types))
 
 
 def approve(campaign: str, a) -> int:
@@ -436,7 +443,7 @@ def approve(campaign: str, a) -> int:
         print(f"design_manifest: {a.phase} is not complete ({', '.join(what)} not merged); run `phase {a.phase} begin --json` "
               "and the fan-out again, drop the item, or approve --force", file=sys.stderr)
         return 1
-    orphans = [e for e in orphan_stubs(campaign, a.phase) if e not in (ph.get("roster") or [])]
+    orphans = [e for e in orphan_stubs(campaign, a.phase, BLOCKING_STUB_TYPES) if e not in (ph.get("roster") or [])]
     if orphans and not getattr(a, "force", False):
         print(f"design_manifest: {a.phase} leaves {len(orphans)} stub(s) it or an earlier phase owns unwritten "
               f"({', '.join(orphans[:12])}{' …' if len(orphans) > 12 else ''}); put them on a roster and write them, retire "

@@ -243,6 +243,9 @@ def map_lines(campaign: str) -> list[str]:
     return lines
 
 
+# errors a later phase resolves by design: not the approving phase's own until then (the gate over the archived births:
+# every premise without pre-placed clues would have stopped P1)
+EXPECTED_UNTIL = {"no_map": "P3", "clue_unplaced": "P6"}
 GATE_LABELS = {"incomplete": "roster eksik", "band": "bant dışı", "critic_missing": "eleştirmen çalışmadı",
                "validator": "doğrulayıcı hatası", "seed": "seed hatası", "orphan_stub": "sahipsiz taslak"}
 
@@ -277,19 +280,30 @@ def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
                         "detail": ", ".join(missing + ([f"{len(silent)} roster item(s) never critiqued"] if silent else []))})
     if findings is None:
         _, findings = validator_summary(campaign, phase)
-    early = dm.PHASES.index(phase) < dm.PHASES.index("P3")       # the map is written in P3
+    here = dm.PHASES.index(phase)
     owned = sorted({str(f.get("entity")) for f in findings if f.get("severity") == "error"
-                    and not (early and f.get("code") == "no_map")
+                    and not (f.get("code") in EXPECTED_UNTIL and here < dm.PHASES.index(EXPECTED_UNTIL[f["code"]]))
                     and (f.get("entity") in roster or (canon.get(f.get("entity")) or {}).get("created_phase") == phase)})
     if owned:
         out.append({"code": "validator", "ids": owned, "detail": f"validator errors on {len(owned)} entit(ies) of this phase"})
     failed = int((ph.get("seed") or {}).get("failed") or 0)
     if failed:
         out.append({"code": "seed", "ids": [], "detail": f"{failed} seed call(s) failed at the last merge"})
-    orphans = [e for e in dm.orphan_stubs(campaign, phase) if e not in roster]
+    orphans = [e for e in dm.orphan_stubs(campaign, phase, dm.BLOCKING_STUB_TYPES) if e not in roster]
     if orphans:
         out.append({"code": "orphan_stub", "ids": orphans, "detail": f"{len(orphans)} owned stub(s) never written"})
     return out
+
+
+def minor_orphans(campaign: str, phase: str) -> dict:
+    """Owned stubs of the non-blocking types, counted by type for the card (a warning, not a refusal)."""
+    canon = canonical(campaign)
+    counts: dict = {}
+    for eid in dm.orphan_stubs(campaign, phase):
+        t = canon.get(eid, {}).get("type")
+        if t not in dm.BLOCKING_STUB_TYPES:
+            counts[t] = counts.get(t, 0) + 1
+    return counts
 
 
 def gate_text(items: list[dict]) -> str:
@@ -362,6 +376,10 @@ def build_card(campaign: str, phase: str) -> str:
         lines.append(f"- ⚠ **Eleştirmen geçmedi:** {', '.join(not_passed)} — son karar `fix`; düzeltme döngüleri bitti, "
                      "karar oyuncunun (bir düzeltme cümlesi ya da onay).")
     lines.append(gate_card_line(gate_items, proj))
+    minor = minor_orphans(campaign, phase) if phase in dm.PHASES and phase != "P0" else {}
+    if minor:
+        lines.append("- ⚠ **Yazılmamış küçük taslak:** " + ", ".join(f"{t} ×{n}" for t, n in sorted(minor.items()))
+                     + " — sahibi bu faz ya da önceki bir faz; onayı durdurmaz.")
     # scale band, script-side with the full count; the card prints the public count and a tick
     band_lines = []
     for etype, key in BAND_KEYS.get(phase, []):

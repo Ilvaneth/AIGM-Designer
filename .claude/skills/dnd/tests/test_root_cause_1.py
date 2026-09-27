@@ -144,6 +144,22 @@ class OrphanStubs(Base):
         self.assertNotIn("npc_rcalater", refused.stderr, "P7 owns it; P6 does not answer for it")
         self.c.run("designer.py", "phase", "P6", "approve", "--onay", "--force", check=True)
 
+    def test_a_minor_type_orphan_is_a_card_warning_not_a_refusal(self):
+        stub = row("place_rcaquay", "place", "Tallow Quay", created_phase="P3", status="pending", owner_phase="P5",
+                   reserved_by="P3.settlement_x.a1")
+        self.c.write_json("design/_staging/P3/place_rcaquay.json", fragment("place_rcaquay", stub, phase="P3"))
+        self.c.run("registry.py", "merge", "--phase", "P3", check=True)
+        self.c.reopen("P6", "validated")
+        self.c.run("designer.py", "phase", "P6", "card", check=True)
+        card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
+        self.assertIn("Yazılmamış küçük taslak:** place ×1", card)
+        self.c.run("designer.py", "phase", "P6", "approve", "--onay", check=True)
+
+    def test_the_blocking_stub_types_are_the_registrys_prose_types(self):
+        import design_manifest as dm
+        import registry
+        self.assertEqual(set(dm.BLOCKING_STUB_TYPES), set(registry.PROSE_TYPES))
+
 
 class CritiqueLoop(Base):
     """RC-05: the post-phase-fix critique has a file of its own, and the phase critic judges once more after its fixes."""
