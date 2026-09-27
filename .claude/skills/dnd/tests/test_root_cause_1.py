@@ -9,6 +9,7 @@ RC-04  approve refuses a stub its phase, or an earlier one, owns and never wrote
 RC-05  the post-phase-fix critique has a file of its own; the phase critic's second reading is the phase's verdict
 RC-01  approve reads the gate (band, missing critics, the phase's own validator errors, seed failures, orphans) in every
        mode; --force passes it with a recorded reason
+RC-14  an approval snapshots the disk-is-truth stores; rerun restores the last approval's before the phase
 """
 
 import json
@@ -219,6 +220,32 @@ class ApproveGate(Base):
         self.assertEqual(refused.returncode, 1)
         self.assertIn("validator: validator errors on", refused.stderr)
         self.assertIn("npc_rcadangle", refused.stderr)
+
+
+class RerunRollback(Base):
+    """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
+
+    def test_rerun_restores_the_registry_and_the_stores_of_the_previous_approval(self):
+        self.c.reopen("P5", "validated")
+        self.c.run("designer.py", "phase", "P5", "approve", "--onay", check=True)
+        self.assertTrue(self.c.path("design/dm-only/_snapshots/approved/P5/design/dm-only/entities.json").is_file())
+        graph_before = self.c.path("graph.json").read_text(encoding="utf-8")
+        # P6 merges a row and seeds its node, then is rerun
+        self.c.reopen("P6", "running")
+        probe = row("npc_rcarerun", "npc", "Hadric Vane", created_phase="P6")
+        self.c.write_json("design/_staging/P6/npc_rcarerun.json", fragment(
+            "npc_rcarerun", probe, phase="P6",
+            graph={"nodes": [{"id": "npc_rcarerun", "type": "npc", "name": "Hadric Vane"}], "edges": []}))
+        self.c.run("designer.py", "phase", "P6", "merge", check=True)
+        self.assertIn("npc_rcarerun", self.c.json("design/dm-only/entities.json")["entities"])
+        self.assertNotEqual(self.c.path("graph.json").read_text(encoding="utf-8"), graph_before)
+        proc = self.c.run("designer.py", "phase", "P6", "rerun", "--reason", "rca probe", check=True)
+        self.assertIn("restored the stores of P5's approval", proc.stdout)
+        self.assertNotIn("npc_rcarerun", self.c.json("design/dm-only/entities.json")["entities"])
+        self.assertNotIn("npc_rcarerun", self.c.json("design/entities.json")["entities"])
+        self.assertEqual(self.c.path("graph.json").read_text(encoding="utf-8"), graph_before)
+        self.assertNotIn("graph:node:npc_rcarerun", self.c.json("design/design.json").get("seeded", []),
+                         "the ledger is restored too, so the rerun can seed again")
 
 
 if __name__ == "__main__":

@@ -50,6 +50,7 @@ import json
 import os
 import random
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -1118,6 +1119,8 @@ def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round
     sha = design_commit(campaign, f"{phase} approved")
     rc = dm.approve(campaign, argparse.Namespace(phase=phase, card=card, commit=sha, round=None, scope=None, affected=None,
                                                 force=force))
+    if rc == 0:
+        snapshot_stores(campaign, phase)
     if rc == 0 and closed:
         data = dm.load(campaign)
         data["phases"][phase]["approval"]["forced"] = {"gate": [{"code": i["code"], "ids": i["ids"]} for i in closed],
@@ -1130,8 +1133,93 @@ def approve_phase(campaign: str, phase: str, card: str | None, onay: bool, round
     return rc
 
 
+# ── RC-14: the stores an approval froze, so a rerun has a clean way back ──────────
+# design/ is the store of record (the registry, the projection, the stamp snapshot, the overlay, the map, naming, the
+# prose); the campaign root's *.json are the play-time stores the seeds write (graph, factions, goals, channels ...).
+# Scratch folders and the manifest itself are not store state: rerun edits the manifest, and restores only its ledger.
+SNAPSHOT_SKIP = ("_staging", "_prompts", "_approval", "_revised")
+
+
+def snapshot_root(campaign: str) -> Path:
+    return dm_only_dir(campaign) / "_snapshots" / "approved"
+
+
+def _store_ignore(ddir: Path):
+    def ignore(dirpath, names):
+        rel = Path(dirpath).resolve().relative_to(ddir.resolve())
+        if rel == Path("."):
+            return {n for n in names if n in SNAPSHOT_SKIP or n == "design.json"}
+        if rel == Path("dm-only") / "_snapshots":
+            return {"approved"} & set(names)
+        return set()
+    return ignore
+
+
+def snapshot_stores(campaign: str, phase: str) -> Path:
+    """The stores as they stand when `phase` is approved (root-cause analysis 1, RC-14: rerun had no rollback)."""
+    root = snapshot_root(campaign)
+    root.mkdir(parents=True, exist_ok=True)
+    # a real birth commits design/; copies of dm-only never enter git
+    (root / ".gitignore").write_text("*\n", encoding="utf-8", newline="\n")
+    dest = root / phase
+    if dest.exists():
+        shutil.rmtree(dest)
+    ddir = design_dir(campaign)
+    shutil.copytree(ddir, dest / "design", ignore=_store_ignore(ddir))
+    (dest / "root").mkdir(parents=True, exist_ok=True)
+    for f in campaign_dir(campaign).glob("*.json"):
+        shutil.copy2(f, dest / "root" / f.name)
+    (dest / "seeded.json").write_text(json.dumps(dm.load(campaign).get("seeded", []), ensure_ascii=False),
+                                      encoding="utf-8", newline="\n")
+    return dest
+
+
+def restore_stores(campaign: str, phase: str) -> tuple[str | None, list | None]:
+    """Put back the stores of the latest approval before `phase`; the snapshots of `phase` and later are dropped.
+    Returns (the phase restored from, its seed ledger), or (None, None) when no earlier approval left a snapshot."""
+    snaps = snapshot_root(campaign)
+    idx = dm.PHASES.index(phase)
+    source = next((p for p in reversed(dm.PHASES[:idx]) if (snaps / p / "design").is_dir()), None)
+    for p in dm.PHASES[idx:]:
+        if (snaps / p).exists():
+            shutil.rmtree(snaps / p)
+    if source is None:
+        return None, None
+    src = snaps / source
+    ddir = design_dir(campaign)
+    for child in list(ddir.iterdir()):
+        if child.name in SNAPSHOT_SKIP or child.name == "design.json":
+            continue
+        if child.name == "dm-only":
+            for sub in list(child.iterdir()):
+                if sub.name == "_snapshots":
+                    for s2 in list(sub.iterdir()):
+                        if s2.name != "approved":
+                            shutil.rmtree(s2) if s2.is_dir() else s2.unlink()
+                    continue
+                shutil.rmtree(sub) if sub.is_dir() else sub.unlink()
+            continue
+        shutil.rmtree(child) if child.is_dir() else child.unlink()
+    shutil.copytree(src / "design", ddir, dirs_exist_ok=True)
+    root = campaign_dir(campaign)
+    kept = {f.name for f in (src / "root").glob("*.json")}
+    for f in root.glob("*.json"):
+        if f.name not in kept:
+            f.unlink()
+    for f in (src / "root").glob("*.json"):
+        shutil.copy2(f, root / f.name)
+    return source, json.loads((src / "seeded.json").read_text(encoding="utf-8"))
+
+
 def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool) -> int:
+    source, seeded = restore_stores(campaign, phase)
     data = dm.load(campaign)
+    if source:
+        data["seeded"] = seeded
+        print(f"designer: {phase} rerun restored the stores of {source}'s approval")
+    else:
+        print(f"designer: no approval snapshot before {phase}; the registry and the stores keep this phase's rows "
+              "(births approved before RC-14 have none)", file=sys.stderr)
     ph = data["phases"][phase]
     ph["attempt"] = int(ph.get("attempt") or 1) + 1
     ph["status"] = "pending"
