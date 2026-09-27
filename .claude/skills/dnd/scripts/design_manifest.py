@@ -238,6 +238,14 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
             new = "failed" if recorded == "failed" else "pending"
         # root-cause analysis 1, RC-02: a roster id the skeleton wrote stays owed to its own writer; "done" is that
         # writer's fragment replacing the skeleton's in merged/, never the row's status alone
+        over = row.get("failed_over")
+        if isinstance(over, dict) and recorded == "failed":
+            own = staging / str(over.get("phase")) / "merged" / f"{eid}.json"
+            if (sha256_file(own) if own.is_file() else None) == over.get("sha256"):
+                new = "failed"                      # the refusal stands until a newer fragment replaces the old one
+            else:
+                row.pop("failed_over", None)
+                changed += 1
         owed = row.get("writer_owed")
         if isinstance(owed, dict):
             own = staging / str(owed.get("phase")) / "merged" / f"{eid}.json"

@@ -403,6 +403,16 @@ def prose_errors(eid: str, frag: dict, root: Path, container: bool) -> tuple[lis
     return errs, warns
 
 
+def stamp_value(v):
+    """A stamp compared as ids: `[[chapter_1]]` and `chapter_1` are one value (link syntax is not drift)."""
+    if isinstance(v, str):
+        s = v.strip()
+        return s[2:-2].strip() if s.startswith("[[") and s.endswith("]]") else s
+    if isinstance(v, list):
+        return [stamp_value(x) for x in v]
+    return v
+
+
 def stamp_check(eid: str, row: dict, canonical: dict, snapshot: dict, revise: str | None) -> tuple[list[str], list[str], list[str]]:
     """(errors, warnings, revised_fields): stamped drift on a filled row is refused; a stub's stamps are set by its filler."""
     existing = canonical["entities"].get(eid)
@@ -413,7 +423,7 @@ def stamp_check(eid: str, row: dict, canonical: dict, snapshot: dict, revise: st
         return [], ([f"{eid}: stub's reserved stamp(s) {', '.join(changed)} changed by its filler"] if changed else []), []
     new_stamps = stamps_of(row)
     drift = sorted(k for k in set(snapshot["stamps"][eid]) | set(new_stamps)
-                   if snapshot["stamps"][eid].get(k) != new_stamps.get(k))
+                   if stamp_value(snapshot["stamps"][eid].get(k)) != stamp_value(new_stamps.get(k)))
     if drift and not revise:
         return [f"{eid}: stamped field(s) changed without --revise: {', '.join(drift)}"], [], []
     return [], [], drift

@@ -370,6 +370,43 @@ class ExitNotes(unittest.TestCase):
         self.assertEqual(rooms["1"], ["2"])
 
 
+class Refusals(Base):
+    """dry-3's second stop: a refused re-emission flipped back to merged and a writerless unit's refusal was listed nowhere."""
+
+    def node(self, eid, chapter, agent):
+        r = row(eid, "node", "The Quill Hearing" if eid.endswith("one") else "The Salt Vote", created_phase="P7",
+                chapter=chapter, stamped={"chapter": chapter})
+        self.c.write_json(f"design/_staging/P7/{eid}.json", fragment(eid, r, phase="P7", agent=agent))
+        return self.c.run("registry.py", "merge", "--phase", "P7")
+
+    def test_a_refused_node_goes_back_to_the_chapter_writer_that_emitted_it_and_stays_failed(self):
+        self.c.reopen("P7", "running", roster=["chapter_1"], skeleton={"status": "merged", "agent": "P7.skeleton.a1"})
+        self.node("node_rcaone", "chapter_1", "P7.skeleton.a1").check_returncode()
+        self.c.write_json("design/_staging/P7/node_rcaone.json", fragment(
+            "node_rcaone", row("node_rcaone", "node", "The Quill Hearing", created_phase="P7", chapter="chapter_2",
+                               stamped={"chapter": "chapter_2"}), phase="P7", agent="P7.chapter_1.a1"))
+        self.assertEqual(self.c.run("designer.py", "phase", "P7", "merge").returncode, 1)
+        m = self.c.json("design/design.json")
+        self.assertEqual(m["entities"]["chapter_1"]["status"], "failed", "the writer that emitted the node answers for it")
+        self.assertIn("node_rcaone: ", m["entities"]["chapter_1"]["last_error"])
+        self.assertNotIn("node_rcaone", m["phases"]["P7"]["roster"], "a node has no writer of its own to rerun")
+        listed = {e["id"]: e for e in begin_json(self.c, "P7")["entities"]}
+        self.assertIn("chapter_1", listed, "begin re-lists the refused writer instead of an empty list")
+        self.assertIn("prompt_cmd", listed["chapter_1"])
+        self.assertEqual(self.c.json("design/design.json")["entities"]["chapter_1"]["status"], "failed",
+                         "reconcile keeps the refusal until a newer fragment replaces the old one")
+
+    def test_link_syntax_in_a_stamp_is_not_drift(self):
+        self.c.reopen("P7", "running")
+        self.node("node_rcatwo", "chapter_1", "P7.skeleton.a1").check_returncode()
+        self.node("node_rcatwo", "[[chapter_1]]", "P7.chapter_1.a1").check_returncode()
+
+    def test_the_arc_template_links_no_id_that_cannot_exist(self):
+        text = (SCRIPTS.parent / "templates" / "design" / "arc.md").read_text(encoding="utf-8")
+        self.assertNotIn("thread_premise", text, "dry-3's skeleton copied it; threads are per PC and born in P9")
+        self.assertIn("[[premise_<slug>]]", text)
+
+
 class RerunRollback(Base):
     """RC-14: an approval snapshots the disk-is-truth stores; rerun puts back the last approval's before the phase."""
 

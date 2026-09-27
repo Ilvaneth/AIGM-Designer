@@ -14,7 +14,7 @@ mirror: design/dm-only/arc.md
 
 ## Public
 
-- **Theme (the question):** see [[thread_premise]]
+- **Theme (the question):** <the premise's question in one line> ([[premise_<slug>]], the premise row's id)
 - **Resolution shape:** <the emotional / thematic truth if the party succeeds — no events>
 - **Acts:** <1 (short) / 3> · **Beats:** <3 / 6> · **Chapters:** [[chapter_1]], [[chapter_2]], …
 

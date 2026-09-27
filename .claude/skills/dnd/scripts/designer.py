@@ -894,6 +894,19 @@ def seed_result(proc: subprocess.CompletedProcess) -> dict:
             "unsupported": (proc.stderr or "").count("unsupported seed skipped")}
 
 
+def refusal_owner(campaign: str, phase: str, uid: str, roster: list) -> str:
+    """The entity that answers for a refused unit: itself when it has a writer prompt, else the roster entity named by
+    the refused fragment's agent label (`P7.chapter_2.a1` → chapter_2)."""
+    if dp.prompt_for(phase, uid):
+        return uid
+    refused_dir = design_dir(campaign) / "_staging" / phase / "refused"
+    frags = sorted(refused_dir.glob(f"{uid}.attempt-*.json"), key=lambda p: p.stat().st_mtime) if refused_dir.is_dir() else []
+    agent = str((read_json(frags[-1]) or {}).get("agent") or "") if frags else ""
+    parts = agent.split(".")
+    writer = parts[1] if len(parts) >= 3 else ""
+    return writer if writer in roster and dp.prompt_for(phase, writer) else uid
+
+
 def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, seconds: int | None = None) -> int:
     record_critics(campaign, phase)
     report_path = design_dir(campaign) / "_staging" / phase / "merge.report.json"
@@ -936,13 +949,23 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
               f"run `phase {phase} begin --json` and the Workflow again", file=sys.stderr)
         return 1
     for uid, reasons in refused.items():
-        row = data["entities"].setdefault(uid, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
-                                                "last_error": None, "file": None, "stage_file": None, "agent": None})
+        # dry-3 P7: the chapter writers re-emitted five node rows, the door refused them, and the nodes (no writer
+        # prompt of their own) were listed nowhere; a writerless unit's refusal goes to the roster entity whose
+        # writer produced it, with the unit's id in the reason
+        owner = refusal_owner(campaign, phase, uid, ph.get("roster") or [])
+        if owner != uid:
+            reasons = [f"{uid}: {r}" if not r.startswith(uid) else r for r in reasons]
+        row = data["entities"].setdefault(owner, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
+                                                  "last_error": None, "file": None, "stage_file": None, "agent": None})
         row["status"] = "failed"
         row["last_error"] = "; ".join(reasons)[:600]
         row["attempt"] = max(int(row.get("attempt") or 0), 1)
-        if uid not in (ph.get("roster") or []) and not (ph.get("skeleton") or {}).get("status") in (None, "pending"):
-            ph.setdefault("roster", []).append(uid)
+        # ...and stays failed until a fragment newer than the one merged before the refusal replaces it: reconcile
+        # used to rank the older merged fragment as proof and flip the refusal back to merged
+        prior = design_dir(campaign) / "_staging" / phase / "merged" / f"{owner}.json"
+        row["failed_over"] = {"phase": phase, "sha256": sha256_file(prior) if prior.is_file() else None}
+        if owner not in (ph.get("roster") or []) and not (ph.get("skeleton") or {}).get("status") in (None, "pending"):
+            ph.setdefault("roster", []).append(owner)
     if tokens:
         ph.setdefault("tokens", {"out": 0})["out"] = int((ph.get("tokens") or {}).get("out") or 0) + int(tokens)
     if seconds:
