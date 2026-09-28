@@ -13,6 +13,7 @@ from collections import Counter
 from _campaign import SCRIPTS
 
 sys.path.insert(0, str(SCRIPTS))
+import design_arbiter as arb  # noqa: E402
 import design_tables as dt  # noqa: E402
 
 DOC = dt.load("foundation.yaml")
@@ -66,6 +67,29 @@ class Palette(unittest.TestCase):
         self.assertEqual(DOC["tables"]["palette"]["roll"]["count_by_scale"],
                          {"short": [4, 5], "standard": [6, 8], "epic": [9, 12]})
 
+    def test_the_thin_place_never_counts_toward_the_cap(self):
+        """Owner review of item 3: 'low: only the thin place' — it is a plane's touch, drawable at every magic level
+        and outside the fantastic cap."""
+        thin = PALETTE["land_thin_place"]
+        self.assertTrue(thin.get("cap_exempt"))
+        self.assertEqual([k for k, r in PALETTE.items() if r.get("cap_exempt")], ["land_thin_place"])
+        res = arb.arbitrate("foundation.yaml#palette", list(PALETTE.values()), arb.Context(dials={"magic": "low"}))
+        drawable_fantastic = [r["id"] for r in res["pool"] if r.get("fantastic")]
+        self.assertEqual(drawable_fantastic, ["land_thin_place"])
+
+    def test_underground_is_forced_and_the_unreadable_kinds_weigh_half(self):
+        """Owner, 2026-09-28: 'underground: the surface is rare'."""
+        self.assertEqual(DOC["tables"]["palette"]["roll"]["forces_by_dial"], {"era": {"underground": ["land_underground"]}})
+        half = {"land_plain", "land_steppe", "land_forest", "land_marsh", "land_desert", "land_cold", "land_coast",
+                "land_island", "land_highland", "land_floating_isles", "land_sky_river", "land_crystal_forest",
+                "land_stone_sea", "land_glass_desert", "land_giant_bones"}
+        ug = arb.Context(dials={"era": "underground"})
+        other = arb.Context(dials={"era": "medieval"})
+        for k, r in PALETTE.items():
+            with self.subTest(kind=k):
+                ratio = arb.weight_of(r, ug) / arb.weight_of(r, other)
+                self.assertEqual(ratio, 0.5 if k in half else (3 if k == "land_underground" else 1))
+
     def test_palettes_are_never_excluded_across_campaigns(self):
         head = dt.roll_header("foundation.yaml#palette")
         self.assertFalse(head.get("avoid_used") or head.get("family_wait") or head.get("row_wait"))
@@ -108,6 +132,29 @@ class Spine(unittest.TestCase):
             self.assertEqual(by[sid]["requires"], {"dial": {"magic": ["medium", "high"]}})
         self.assertIn("land_thin_place", by["spine_two_worlds"]["forces"])
         self.assertNotIn("forces", by["spine_star_crater"], "the crater is a P3 landmark, not a palette kind")
+
+    def test_the_spines_unreadable_underground_weigh_a_quarter(self):
+        quarter = {"spine_river_to_sea", "spine_mountain_passes", "spine_long_coast", "spine_barren_corridor",
+                   "spine_oasis_ring", "spine_archipelago", "spine_forest_clearings", "spine_mesa_land", "spine_terraces",
+                   "spine_above_below_sea", "spine_peninsula", "spine_strait_two_continents", "spine_long_wall",
+                   "spine_climate_belt", "spine_edge_of_civilisation", "spine_titan_back", "spine_floating_archipelago",
+                   "spine_giant_tree", "spine_world_edge"}
+        heavy = {"spine_great_rift", "spine_valley_maze", "spine_lake_chain", "spine_three_depths", "spine_mountain_within"}
+        ug = arb.Context(dials={"era": "underground"})
+        other = arb.Context(dials={"era": "medieval"})
+        for r in SPINE:
+            with self.subTest(spine=r["id"]):
+                ratio = arb.weight_of(r, ug) / arb.weight_of(r, other)
+                self.assertEqual(ratio, 0.25 if r["id"] in quarter else (3 if r["id"] in heavy else 1))
+
+    def test_the_merge_rules_name_real_ruins(self):
+        """Owner, 2026-09-28: one crater, and the rift is the two worlds' crossing point (applied at step 1)."""
+        ruins = {r["id"] for r in RUIN}
+        merges = {r["id"]: set(r["merges_with"]) for r in SPINE if r.get("merges_with")}
+        self.assertEqual(merges, {"spine_star_crater": {"ruin_fallen_star", "ruin_celestial_war"},
+                                  "spine_two_worlds": {"ruin_planar_rift"}})
+        for m in merges.values():
+            self.assertFalse(m - ruins)
 
     def test_the_family_waits_three_births(self):
         head = dt.roll_header("foundation.yaml#spine")
@@ -160,6 +207,11 @@ class RuinSource(unittest.TestCase):
                 self.assertTrue(PALETTE[r["adds_palette"]].get("fantastic"))
             if r.get("adds_biome"):
                 self.assertIn(r["adds_biome"], BIOMES)
+
+    def test_giants_and_dragons_fit_the_inverted_element(self):
+        """Owner review of item 3: 'fire burns otherwise near the bones' is closest to the inverted-element rule."""
+        by = {r["id"]: r for r in RUIN}
+        self.assertEqual(by["ruin_giants_and_dragons"]["olgu_families"], ["magic_behaviour", "matter"])
 
     def test_the_only_tomb_is_the_khans(self):
         self.assertEqual([r["id"] for r in RUIN if "site_dungeon_tomb" in r["sites"]], ["ruin_steppe_union"])

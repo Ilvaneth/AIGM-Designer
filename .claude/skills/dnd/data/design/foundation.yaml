@@ -25,24 +25,27 @@ tables:
     roll:
       avoid_used: false                 # palettes are never excluded across campaigns
       count_by_scale: {short: [4, 5], standard: [6, 8], epic: [9, 12]}
-      fantastic_cap_by_magic: {low: 0, medium: 1, high: 2}   # the thin place is outside the cap at low
+      fantastic_cap_by_magic: {low: 0, medium: 1, high: 2}   # `cap_exempt` rows (the thin place) never count
       needs: [height, water]            # at least one of each
+      forces_by_dial: {era: {underground: [land_underground]}}   # owner, 2026-09-28: underground is never optional there
       note: >-
-        the spine's forced kinds come first; the rest are drawn without replacement. One fantastic kind
-        born of the ruin source or a scar is exempt from the cap and comes on top of the count (item 25
-        review #4).
+        the spine's and the dial's forced kinds come first; the rest are drawn without replacement. The one
+        fantastic kind the ruin source brings (`adds_palette`) comes on top of the count (+1), skips the
+        kind's own magic requirement and is exempt from the cap; only one is exempt. A fantastic kind a scar
+        brings counts toward the cap, and a scar whose kind the full cap cannot take is excluded by requires
+        (item 25 review #4; owner, 2026-09-28).
     hooks_common:
       - {phase: P3, must: "every palette kind lives on at least one map node (short has 1-2 regions against 4-5 kinds)"}
       - {phase: P3, must: "a region's biomes come from its palette kinds' biomes"}
     rows:
       - {id: land_mountain, label: Mountains, height: true, biomes: [biome_high_mountains, biome_foothills], tr: {name: "dağ"}}
-      - {id: land_highland, label: Highlands, height: true, biomes: [biome_pine_uplands, biome_grazing_hills, biome_moor], tr: {name: "yayla"}}
-      - {id: land_plain, label: Plains, biomes: [biome_river_valley], tr: {name: "ova"}}
-      - {id: land_steppe, label: Steppe, biomes: [biome_steppe], tr: {name: "bozkır"}}
-      - {id: land_forest, label: Forest, biomes: [biome_old_forest, biome_jungle], tr: {name: "orman"}}
-      - {id: land_marsh, label: Marsh, biomes: [biome_fen, biome_salt_marsh], tr: {name: "bataklık"}}
-      - {id: land_desert, label: Desert, biomes: [biome_sand_desert, biome_stone_desert, biome_dunes, biome_salt_flats], tr: {name: "çöl"}}
-      - {id: land_cold, label: Cold lands, biomes: [biome_tundra], tr: {name: "soğuk topraklar"}}
+      - {id: land_highland, label: Highlands, height: true, biomes: [biome_pine_uplands, biome_grazing_hills, biome_moor], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "yayla"}}
+      - {id: land_plain, label: Plains, biomes: [biome_river_valley], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "ova"}}
+      - {id: land_steppe, label: Steppe, biomes: [biome_steppe], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "bozkır"}}
+      - {id: land_forest, label: Forest, biomes: [biome_old_forest, biome_jungle], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "orman"}}
+      - {id: land_marsh, label: Marsh, biomes: [biome_fen, biome_salt_marsh], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "bataklık"}}
+      - {id: land_desert, label: Desert, biomes: [biome_sand_desert, biome_stone_desert, biome_dunes, biome_salt_flats], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "çöl"}}
+      - {id: land_cold, label: Cold lands, biomes: [biome_tundra], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "soğuk topraklar"}}
       - {id: land_volcanic, label: Volcanic land, height: true, biomes: [biome_volcanic], tr: {name: "volkanik"}}
       - {id: land_river, label: River, water: true, biomes: [biome_river_delta, biome_river_valley], tr: {name: "nehir"}}
       - {id: land_lake, label: Lakes, water: true, biomes: [biome_lake_country], tr: {name: "göl"}}
@@ -50,13 +53,13 @@ tables:
         label: Coast and sea
         water: true
         biomes: [biome_sea_cliffs, biome_salt_marsh]
-        weight_by: [{when: {dial: {era: [nautical]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}, {when: {dial: {era: [nautical]}}, x: 2}]
         tr: {name: "kıyı ve deniz"}
       - id: land_island
         label: Islands
         implies: [land_coast]
         biomes: [biome_sea_cliffs, biome_salt_marsh]
-        weight_by: [{when: {dial: {era: [nautical]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}, {when: {dial: {era: [nautical]}}, x: 2}]
         tr: {name: "ada"}
       - id: land_underground
         label: The underground
@@ -64,17 +67,18 @@ tables:
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "yeraltı"}
       # fantastic (8): gated by the magic dial; only the thin place at low
-      - {id: land_floating_isles, label: Floating isles, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "yüzen adalar", what: "havada asılı kayalar ve üstlerindeki köyler"}}
-      - {id: land_crystal_forest, label: Crystal forest, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "kristal orman", what: "ağaçları kristalden bir orman"}}
-      - {id: land_stone_sea, label: Petrified sea, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "taşlaşmış deniz", what: "dalgaları taş kesilmiş, üstünde yürünen bir deniz"}}
-      - {id: land_giant_bones, label: Giant's bones, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "dev kemikleri", what: "bir titanın iskeletinin üstünde ve içinde kurulmuş toprak"}}
-      - {id: land_sky_river, label: River into the sky, fantastic: true, water: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "göğe akan nehir", what: "yukarı doğru akan, havada bir su yolu"}}
-      - {id: land_glass_desert, label: Glass desert, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "cam çölü", what: "eski bir büyü savaşının camlaştırdığı kum"}}
+      - {id: land_floating_isles, label: Floating isles, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "yüzen adalar", what: "havada asılı kayalar ve üstlerindeki köyler"}}
+      - {id: land_crystal_forest, label: Crystal forest, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "kristal orman", what: "ağaçları kristalden bir orman"}}
+      - {id: land_stone_sea, label: Petrified sea, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "taşlaşmış deniz", what: "dalgaları taş kesilmiş, üstünde yürünen bir deniz"}}
+      - {id: land_giant_bones, label: Giant's bones, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "dev kemikleri", what: "bir titanın iskeletinin üstünde ve içinde kurulmuş toprak"}}
+      - {id: land_sky_river, label: River into the sky, fantastic: true, water: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "göğe akan nehir", what: "yukarı doğru akan, havada bir su yolu"}}
+      - {id: land_glass_desert, label: Glass desert, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "cam çölü", what: "eski bir büyü savaşının camlaştırdığı kum"}}
       - {id: land_giant_fungus, label: Giant fungus forest, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "dev mantar ormanı", what: "yüzeyde, ağaç boyu mantarlar"}}
       - id: land_thin_place
         label: Thin place
         fantastic: true
         thin_place: true
+        cap_exempt: true                 # a plane's touch (P2's planes), drawable at every magic level
         tr: {name: "ince yer", what: "bir düzlemin dünyaya değdiği yer; düzlemi P2 seçer"}
         hooks:
           - {phase: P2, must: "the thin place's plane is chosen and touched"}
@@ -97,7 +101,7 @@ tables:
         family: line
         key_kind: crossing
         forces: [land_river, land_mountain, land_coast]
-        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "kaynaktan denize bir nehir", heart: "orta akıştaki köprü-şehir", ends: ["kaynaktaki dağ halkları", "deltadaki liman"], key_place: "nehrin tek geçilebilir sığlığı", travel: "nehir boyunca aşağı ve yukarı, mavnayla ve yoldan"}
       - id: spine_great_rift
         label: A great rift
@@ -111,20 +115,21 @@ tables:
         family: line
         key_kind: crossing
         forces: [land_mountain]
-        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "sıradağ boyunca geçitler", heart: "en büyük geçitteki kale-şehir", ends: ["dağın yağmur alan yamacı", "kurak yamacı"], key_place: "ana geçit", travel: "geçitten geçide, mevsime bağlı"}
       - id: spine_long_coast
         label: A long coastline
         family: line
         key_kind: landmark
         forces: [land_coast]
-        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         tr: {name: "uzun bir kıyı şeridi", heart: "büyük liman", ends: ["bir uçta buzul fiyortları", "öbür uçta sıcak koylar"], key_place: "kıyıyı ikiye bölen burun", travel: "gemiyle kıyı boyunca; kara yolunu dağlar keser"}
       - id: spine_barren_corridor
         label: A barren corridor
         family: line
         key_kind: water
         forces_one_of: [land_desert, land_steppe]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "çorak koridor", heart: "koridorun ortasındaki han-şehir", ends_both: "koridorun iki ucundaki iki uygarlık", key_place: "yoldaki tek su kaynağı", travel: "konaktan konağa, suya bağlı"}
       # 2. centred
       - id: spine_lake_basin
@@ -147,6 +152,9 @@ tables:
         key_kind: descent
         landmark: crater                 # a P3 landmark, not a palette kind (review #4)
         weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        merges_with:                     # owner, 2026-09-28: one crater, the spine's heart
+          ruin_fallen_star: "the ruin's crater and star stone are the spine's heart crater"
+          ruin_celestial_war: "the war's impact crater is the spine's heart crater"
         tr: {name: "gökten düşen bir taşın krateri", heart: "kraterin ortasındaki taş", ends: ["krater içi (değişmiş)", "krater dışı"], key_place: "kenardan inen tek yol", travel: "kenardan merkeze"}
         hooks:
           - {phase: P3, must: "the crater is a landmark and the heart's node"}
@@ -155,7 +163,7 @@ tables:
         family: centred
         key_kind: water
         forces: [land_desert]
-        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "vaha ve çevresindeki halka", heart: "vaha", ends: ["vaha", "çölün öbür yakası"], key_place: "vahanın suyu", travel: "vahadan dışa seferler; geri dönmek zorunlu"}
       - id: spine_crossroads
         label: Four roads meeting
@@ -168,7 +176,7 @@ tables:
         family: fragmented
         key_kind: crossing
         forces: [land_island, land_coast]
-        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         tr: {name: "takımadalar", heart: "en büyük ada", ends: ["iç adalar", "uzak ve vahşi dış adalar"], key_place: "adaları bağlayan tek güvenli boğaz", travel: "adadan adaya gemiyle, mevsime bağlı"}
       - id: spine_valley_maze
         label: A maze of valleys
@@ -182,13 +190,14 @@ tables:
         family: fragmented
         key_kind: network
         forces: [land_forest]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "sonsuz ormanın açıklıkları", heart: "en büyük açıklık", ends: ["açıklıklar", "ormanın derinliği"], key_place: "açıklıkları bağlayan patikalar", travel: "açıklıktan açıklığa, yolsuz"}
       - id: spine_mesa_land
         label: A land of mesas
         family: fragmented
         key_kind: bridge
         forces_one_of: [land_desert, land_highland]
-        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "mesa ülkesi", heart: "en büyük masa dağın üstündeki şehir", ends: ["yaşanan mesa tepeleri", "aradaki vahşi kanyonlar"], key_place: "mesaları bağlayan köprüler ve ip yollar", travel: "mesadan mesaya, kanyonlara iniş"}
       - id: spine_lake_chain
         label: A chain of lakes
@@ -210,7 +219,7 @@ tables:
         family: layered
         key_kind: descent
         forces: [land_highland, land_plain]
-        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "basamaklar", heart: "orta terastaki şehir", ends: ["en üstteki yayla", "en alttaki ova"], key_place: "teraslar arası merdivenler ve şelaleler", travel: "basamak basamak"}
       - id: spine_two_worlds
         label: Two worlds, one over the other
@@ -218,6 +227,8 @@ tables:
         key_kind: network
         forces: [land_thin_place]
         requires: {dial: {magic: [medium, high]}}
+        merges_with:                     # owner, 2026-09-28: the rift is no separate place
+          ruin_planar_rift: "the rift is the two worlds' crossing point, the key place"
         tr: {name: "üst üste iki dünya", heart: "iki dünyanın örtüştüğü şehir", ends: ["bizim dünya", "öbür düzlem"], key_place: "geçiş noktaları", travel: "iki katman arasında gidip gelme"}
       - id: spine_mountain_within
         label: The mountain's inside and outside
@@ -231,7 +242,7 @@ tables:
         family: layered
         key_kind: network
         forces: [land_coast]
-        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         tr: {name: "deniz üstü ve deniz altı", heart: "kıyı şehri ya da bir resif", ends: ["kıyı halkı", "deniz altı halkları"], key_place: "sualtı mağaraları", travel: "dalış ve sualtı yolları"}
       # 5. frontier
       - id: spine_peninsula
@@ -239,32 +250,33 @@ tables:
         family: frontier
         key_kind: crossing
         forces: [land_coast]
-        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "yarımada", heart: "boyuna yakın şehir", ends: ["yarımadanın ucu", "anakara"], key_place: "boyun, tek kara geçişi", travel: "yarımadanın içinde; dışarı boyundan ya da denizden"}
       - id: spine_strait_two_continents
         label: A strait and two continents
         family: frontier
         key_kind: crossing
         forces: [land_coast]
-        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "boğaz ve iki kıta", heart: "iki yakadaki ikiz şehir", ends_both: "iki kıta", key_place: "boğaz", travel: "boğazı geçmek, iki kıyı boyunca gitmek"}
       - id: spine_long_wall
         label: A border along a long wall
         family: frontier
         key_kind: gate
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "uzun bir sur boyunca sınır", heart: "surun ana kapısı", ends: ["surun içi", "dışı"], key_place: "kapılar", travel: "sur boyunca ve kapılardan dışarı"}
       - id: spine_climate_belt
         label: A climate belt
         family: frontier
         key_kind: crossing
         forces: [land_cold, land_desert]
-        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "iklim kuşağı", heart: "kuşağın ortasındaki şehir", ends: ["donmuş kuzey", "kavrulan güney"], key_place: "kuşağın daraldığı yer", travel: "kuşak boyunca doğu-batı, kenarlara seferler"}
       - id: spine_edge_of_civilisation
         label: The edge of civilisation
         family: frontier
         key_kind: gate
-        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "uygarlığın kenarı", heart: "son büyük şehir", ends: ["bilinen topraklar", "haritasız vahşi"], key_place: "sınır kalesi ya da son köprü", travel: "sınırdan vahşiye doğru"}
       # 6. fantastic
       - id: spine_titan_back
@@ -272,6 +284,7 @@ tables:
         family: fantastic
         key_kind: descent
         requires: {dial: {magic: [high]}}
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "bir titanın sırtı", heart: "sırttaki şehir", ends: ["baş", "kuyruk"], key_place: "canlının içine inen yol", travel: "sırt boyunca"}
       - id: spine_floating_archipelago
         label: A floating archipelago
@@ -279,6 +292,7 @@ tables:
         key_kind: network
         forces: [land_floating_isles]
         requires: {dial: {magic: [high]}}
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "yüzen takımada", heart: "en büyük yüzen ada", ends: ["yüksek adalar", "yere yakın adalar"], key_place: "adaları bağlayan zincirler ve rüzgâr yolları", travel: "uçan gemiler ve köprüler"}
       - id: spine_void_ring
         label: A ring around a bottomless void
@@ -292,6 +306,7 @@ tables:
         key_kind: landmark
         forces: [land_forest]
         requires: {dial: {magic: [medium, high]}}
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "tek dev ağaç (dağ boyunda)", heart: "gövdedeki şehir", ends: ["dallardaki ülke", "köklerdeki ülke"], key_place: "gövde", travel: "yukarı dallara, aşağı köklere"}
         hooks:
           - {phase: validator, must: "the giant tree is no 'world tree'; nothing in it refers to a real-world mythology (errata #19)"}
@@ -300,6 +315,7 @@ tables:
         family: fantastic
         key_kind: descent
         requires: {dial: {magic: [medium, high]}}
+        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "dünyanın kenarı", heart: "uçurumun kenarındaki şehir", ends: ["iç topraklar", "uçurumun ötesindeki bulut denizi"], key_place: "kenardan aşağı inen tek yol", travel: "kenara doğru ve aşağıya"}
 
   # ── 3. the ruin source: what left the dangerous places (8 families, 40) ────────────────────
@@ -371,7 +387,7 @@ tables:
         family: wars
         remnant_kind: body
         sites: [site_stronghold, site_dungeon_lair, site_wilderness]
-        olgu_families: [matter, nature_creatures]
+        olgu_families: [magic_behaviour, matter]
         tr: {name: "devler ve ejderhalar", what: "iki büyük soy arasında savaş", remnant: "ejderha kemikleri ve dev kaleleri", sites: "dev kaleleri, ejderha inleri, savaş alanları", strangeness: "kemiklerin yakınında ateş başka türlü yanıyor"}
       - id: ruin_besieged_land
         label: The besieged land
