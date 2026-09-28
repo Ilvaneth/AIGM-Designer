@@ -872,3 +872,22 @@ Cümle kimliğin girdisidir, okuyucunun metni değil; kartta tırmanışın basa
 **Eleştirmenler (zanaat):** iki eleştirmen ve faz eleştirmeni; yeni ölçütler: soru somut mu; üç cümle gerçekten yalnızca bu dünyada mı doğru; öncül önceki kampanyalardan farklı mı; her söz için bir hüküm.
 
 **Kart:** temel cümlesi, oyuncu pitch'i, imzaların birer satırı, trope break'ler, sırrın spoiler'sız özeti, açık söz sayısı.
+
+## 18. P1'in bütün taraması: düzeltmeler (owner-approved 2026-09-28; where they differ from the sections above, these hold)
+
+**Sıra**
+1. **Trope break 2. adımın ilk zarıdır.** Tersine çevirdiği varsayımlar (soyların yurtları, silah, canavar antlaşmaları, tanrı büyüsü…) sonraki zarlarca okunur. Bağı yalnızca temel parçalarına yaslanır: can damarı, yıkıntı, çekişme, kırılma (§12'deki halk, kurum ve olgu seçenekleri düşer).
+2. **Omurga paletten önce atılır.** Omurga gerektirdiği yer türlerini palete zorla koyar (takımadalar → ada ve kıyı, yüzey ve derin → yeraltı, vaha → çöl…), kalanı zarla gelir.
+3. **Ad havuzu P1'in zarlarının sonunda kurulur** (bugün `designer.py` onu P2'den başlatıyor); sırrın tanrısı ve imza adları da havuzdan gelir.
+
+**Bağlantılar**
+4. **Yıkıntıdan ya da yaradan doğan tek fantastik yer türü büyü sınırından muaftır** (düşük büyülü dünyada son büyü savaşından kalan tek cam çölü gibi). "Krater" ve "havada duran parçalar" palet türü değildir, P3'te simge yer (landmark) olur.
+5. **Kurum yalnızca arketip ipucu olan bir rolden çekilir** (devlet, din, askerî, lonca, ticaret, bilgin, suç, direniş); dev klanları, ejderha, fey gibi roller kurum olamaz.
+6. **Olgu tek kuraldır:** her yıkıntı satırı tuhaflığına uyan 2-3 kural ailesini (`olgu_families`) taşır, kural havuzu bunlara süzülür; "büyünün bir kuralı değişti" yarası varsa havuz yalnızca 8. aile ve olgunun evi kırılmadır, yıkıntının tuhaflığı kendi mekânlarında yerel renk olarak kalır (P6'ya söz). Kapı kuralın ailesini evin listesine karşı denetler; bir test binlerce tohumla kanıtlar. Eşleşmeler tablo kurulurken sahibine onaylatılır.
+7. **Seçen ile kötünün bağı iki yönlüdür:** seçen kötüyse bağ "onu yarattı", bağ "onu yarattı" ise seçen kötüdür.
+8. **Eylem uyumu ayrıntılıdır:** eylem ile can damarı ailesi, kalıntı türü ve kilit yer türü için ayrı uyum tabloları (script). Kazanan, kırılmanın yok ettiği rol olamaz. Kalp yok olduysa kampanya kalbin kalıntılarında ya da en yakın uçta başlar.
+9. **Sır ve kötü tablolarının çakışma listelerini geliştirme sekmesi kurar;** sahibi yalnızca sayıları görür.
+10. **Küçükler:** kurum işareti "yalnızca kendi dillerini konuşurlar" en az üç dil ister (short'ta çekilmez); epic'te kötünün kutbu ve kurumun rolü ana çekişmeden gelir.
+
+**Katlar**
+11. **Sözler zarları geçemez.** P2 iklimi, P3 bölge biyomları (short'ta 1-2 bölgeye karşı 4-5 palet türü: türler harita düğümlerinde yaşar), P3 yerleşim malları, P4 faksiyon kotası, P6 mekân türleri ve P7 açılış sahnesi bugün temelden habersiz zar atıyor; bir söz zarla atılmış bir satırı ezemez. **Yol:** yeni test doğumu önce yalnızca P1'i koşar; inceleme durağında sıradaki faz konuşulur, o fazın zar bağları inşa edilir, doğum oradan devam eder. Doğum hiçbir zaman henüz bağlanmamış bir kata çıkmaz.
