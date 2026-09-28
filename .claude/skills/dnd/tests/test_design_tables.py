@@ -127,7 +127,7 @@ class PlanNumbers(unittest.TestCase):
         self.assertEqual(dt.dial_values("scale"), ("short", "standard", "epic"))
         self.assertEqual(dt.dial_values("tone"), ("grimdark", "dark fantasy", "heroic", "horror", "political",
                                                   "swashbuckling", "cosmic"))
-        self.assertEqual(dt.dial_values("magic"), ("none", "low", "medium", "high"))
+        self.assertEqual(dt.dial_values("magic"), ("low", "medium", "high"))   # errata 24.2 #24: never none
         self.assertEqual(dt.dial_values("era"), ("medieval", "renaissance", "ancient", "nautical", "underground"))
         self.assertEqual(dt.dial_values("danger"), ("lethal", "gritty", "standard", "heroic"))
         self.assertEqual(dt.dial_values("content_mix"), ("exploration", "politics", "war", "horror", "mystery"))

@@ -20,7 +20,7 @@ Three rules shape every command here:
 |---|---|
 | scale | short / standard / epic |
 | tone | grimdark / dark fantasy / heroic / horror / political / swashbuckling / cosmic |
-| magic | none / low / medium / high |
+| magic | low / medium / high (never none; errata 24.2 #24) |
 | era | medieval / renaissance / ancient / nautical / underground |
 | danger | lethal / gritty / standard / heroic (touches only non-CR knobs) |
 | party size, starting level | 1-6; default 1 |

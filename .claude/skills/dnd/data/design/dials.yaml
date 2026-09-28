@@ -177,23 +177,8 @@ tables:
           - {phase: P6, must: "one planar site inside the level band"}
 
   magic:
-    notation: d4
+    notation: d3
     rows:
-      - id: magic_none
-        value: none
-        label: None
-        weight: 1
-        effects:
-          caster_share_of_roster: 0.02
-          loot_item_multiplier: 0.25
-          regulator: "none needed; the signature phenomenon is regulated as a natural hazard or a rite, not as spellcraft"
-          wild_magic_roll: {notation: d6, "on": []}
-          planes_touched_modifier: -1
-          srd_note: "PC casters are the exception the primer names; NPC casters are reskinned monsters, never class NPCs"
-        hooks:
-          - {phase: P1, must: "the signature magic phenomenon is the only visible magic; the primer says so"}
-          - {phase: P5, must: "no NPC carries a caster stat anchor except the signature institution's keepers"}
-          - {phase: P6, must: "loot budget rolls at the none multiplier; consumables are relics, not potions"}
       - id: magic_low
         value: low
         label: Low
