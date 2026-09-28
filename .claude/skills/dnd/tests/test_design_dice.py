@@ -17,7 +17,7 @@ sys.path.insert(0, str(SCRIPTS))
 import dice as dice_mod  # noqa: E402
 import design_dice as dd  # noqa: E402
 
-USED = PROJECT / "used.json"
+from _campaign import USED  # noqa: E402  (the suite's own temporary used.json)
 
 
 class InjectedRng(unittest.TestCase):

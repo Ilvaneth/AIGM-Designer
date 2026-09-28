@@ -51,7 +51,21 @@ from paths import _root as data_root  # noqa: E402
 
 
 
+TEST_USED_ENV = "DESIGN_USED_PATH"   # tests only: tests/_campaign.py points it at a temporary file
+
+
 def used_path() -> Path:
+    """<data root>/used.json; the test suite reads and writes its own temporary file instead, so no test ever
+    touches the owner's store."""
+    override = os.environ.get(TEST_USED_ENV)
+    if override:
+        import tempfile
+        temp = Path(tempfile.gettempdir()).resolve()
+        path = Path(override).resolve()
+        if path == temp or temp in path.parents:
+            return path
+        # the DND_CAMPAIGN_ROOT leak's class: an environment value must never redirect a real store
+        print(f"design_dice: {TEST_USED_ENV}={override} is outside the system temp directory; ignored", file=sys.stderr)
     return data_root() / "used.json"
 
 

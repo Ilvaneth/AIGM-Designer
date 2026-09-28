@@ -154,7 +154,10 @@ def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=N
     `conflicts` and `secret_ids` default to the committed tables' (tests pass their own)."""
     exclude = set(exclude or ())
     usage = usage or {}
-    conflicts = dt.conflict_index() if conflicts is None else conflicts
+    if conflicts is None or secret_ids is None:
+        idx_conflicts, idx_secret = dt.indexes()
+        conflicts = idx_conflicts if conflicts is None else conflicts
+        secret_ids = idx_secret if secret_ids is None else secret_ids
     barred: list[dict] = []
     allowed: list[dict] = []
     for r in rows:
@@ -175,7 +178,7 @@ def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=N
                 fallback = "family waits dropped" if skip == ("family_wait",) else "every usage exclusion dropped"
             barred += [e for e in spent if e is not None]
             break
-    secret_ids = dt.secret_row_ids() if secret_ids is None else set(secret_ids)
+    secret_ids = set(secret_ids)
     public, hidden = [], []
     by_id = {r["id"]: r for r in rows}
     for e in barred:

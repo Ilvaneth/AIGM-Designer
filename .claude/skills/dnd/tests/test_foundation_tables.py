@@ -376,6 +376,8 @@ class Break(unittest.TestCase):
         self.assertTrue(by["act_rose"]["winner_is_target_role"])
         self.assertEqual(by["act_closed"]["bars_scars_on_target"], {"thin_place": ["scar_plane_thinned"]})
         self.assertEqual({r["id"] for r in ACTIONS if r.get("concretise")}, {"act_fell_from_sky", "act_gave_birth"})
+        self.assertEqual({r["id"] for r in ACTIONS if r.get("leaves_ruins")},
+                         {"act_sank", "act_burned", "act_fell_from_sky", "act_corrupted"})
         leads = {r["id"]: r["tr"]["lead"] for r in dt.rows("foundation.yaml#time")}
         self.assertEqual(leads["time_coming"], "işaretler belli:")
 
@@ -405,6 +407,52 @@ class Break(unittest.TestCase):
     def test_the_escalation_is_the_four_tiers_of_play(self):
         tiers = dt.rows("foundation.yaml#escalation_tier")
         self.assertEqual([t["levels"] for t in tiers], [[1, 4], [5, 10], [11, 16], [17, 20]])
+
+
+def sentence_texts(node, key=""):
+    """Every string a template may place: the `tr` values, minus the notes (`*_note`, `tr_note`)."""
+    if isinstance(node, str):
+        yield key, node
+    elif isinstance(node, dict):
+        for k, v in node.items():
+            if not str(k).endswith("_note"):
+                yield from sentence_texts(v, k)
+    elif isinstance(node, list):
+        for v in node:
+            yield from sentence_texts(v, key)
+
+
+class CleanPhrases(unittest.TestCase):
+    """Owner, 2026-09-28: a design note never enters the foundation sentence; it lives beside the phrase."""
+
+    def test_no_parenthesis_in_any_phrase_a_template_places(self):
+        for sub, rows in dt.all_row_lists(DOC).items():
+            for r in rows:
+                phrases = list(sentence_texts(r.get("tr")))
+                for role in (r.get("roles") or {}).values():
+                    phrases.append(("tr", role["tr"]))
+                phrases += [("form", f) for f in (r.get("forms") or {}).values()]
+                for key, t in phrases:
+                    with self.subTest(row=r["id"], field=key):
+                        self.assertNotIn("(", t)
+                        self.assertNotIn(")", t)
+
+    def test_the_notes_are_kept_beside_their_phrase(self):
+        by = {r["id"]: r for r in LIFE}
+        self.assertEqual(by["life_giant_peace"]["tr"], {"name": "devlerle barış", "name_note": "devler dağda, insanlar ovada",
+                                                         "who": "sınır elçileri", "yields": "güvenlik, takas",
+                                                         "weak_point": "söz bozulursa"})
+        scars = {r["id"]: r for r in dt.rows("foundation.yaml#scar")}
+        self.assertEqual(scars["scar_time_flow_changed"]["tr"]["name"], "bir bölgede zamanın akışı değişti")
+        sea = next(r for r in CONTEST if r["id"] == "contest_land_sea_folk")["roles"]["b"]
+        self.assertEqual(sea["tr"], "deniz halkı")
+        self.assertNotIn("triton", sea["tr_note"].lower(), "tritons are not in SRD 5.1")
+        self.assertEqual(next(r for r in SPINE if r["id"] == "spine_star_crater")["tr"]["ends"][0], "değişmiş krater içi")
+
+    def test_no_ruin_repeats_the_templates_time(self):
+        """The template says 'Çok önce'; a ruin's `what` never says it again."""
+        for r in RUIN:
+            self.assertNotRegex(r["tr"]["what"], r"(?i)bir zamanlar|çok önce|eskiden", r["id"])
 
 
 class Attractors(unittest.TestCase):

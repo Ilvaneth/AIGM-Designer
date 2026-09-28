@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import uuid
 from pathlib import Path
 
@@ -24,38 +25,23 @@ FIXTURE = HERE / "fixtures" / "salt-lantern"
 CAMPAIGNS = PROJECT / "campaigns"
 
 
-USED = PROJECT / "used.json"
+# every test reads and writes its own used.json, never the owner's (design_dice.used_path; owner, 2026-09-28): the
+# variable is set when the first test module imports this one, so in-process calls and subprocesses both see it
+USED = Path(tempfile.mkdtemp(prefix="aigm-used-")) / "used.json"
+os.environ["DESIGN_USED_PATH"] = str(USED)
 
 
 class TestCampaign:
-    """Copy the fixture under campaigns/_test-*/; `run` drives a script against it. The project's used.json is
-    snapshotted when the first live test campaign is made and restored when the last is removed: an approve a
-    test drives stamps the birth order there, and a test must leave the owner's store as it found it."""
-
-    _live = 0
-    _used_snapshot = None
+    """Copy the fixture under campaigns/_test-*/; `run` drives a script against it."""
 
     def __init__(self, label: str):
         self.name = f"_test-{label}-{os.getpid()}-{uuid.uuid4().hex[:6]}"
         self.dir = CAMPAIGNS / self.name
-        if TestCampaign._live == 0:
-            TestCampaign._used_snapshot = USED.read_bytes() if USED.is_file() else None
-        TestCampaign._live += 1
-        self._removed = False
         shutil.copytree(FIXTURE, self.dir)
         self.env = {k: v for k, v in os.environ.items() if not k.startswith(("DND_", "CLAUDE_"))}
 
     def remove(self):
         shutil.rmtree(self.dir, ignore_errors=True)
-        if self._removed:
-            return
-        self._removed = True
-        TestCampaign._live -= 1
-        if TestCampaign._live == 0:
-            if TestCampaign._used_snapshot is not None:
-                USED.write_bytes(TestCampaign._used_snapshot)
-            elif USED.is_file():
-                USED.unlink()
 
     def run(self, script: str, *args: str, check: bool = False) -> subprocess.CompletedProcess:
         proc = subprocess.run([sys.executable, str(SCRIPTS / script), "-c", self.name, *args],

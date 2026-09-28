@@ -81,6 +81,14 @@ def save(campaign: str, data: dict, written_by: str) -> None:
     write_json_atomic(manifest_path(campaign), data)
 
 
+def legacy_birth(data: dict) -> bool:
+    """A birth whose P1 ran before the foundation existed (the archived test births, the hand-written fixture):
+    P1 went past its preroll and design.json holds no `foundation`. The gates that read the foundation, the
+    promise ledger and the card leave such a birth as it was built (plan item 25, build item 6)."""
+    p1 = (data.get("phases") or {}).get("P1") or {}
+    return p1.get("status") not in (None, "pending") and not data.get("foundation")
+
+
 def empty_phase() -> dict:
     return {"status": "pending", "attempt": 0, "workflow_run_id": None, "started": None, "finished": None,
             "wall_s": 0, "roster": [], "skeleton": {"status": "pending", "agent": None},

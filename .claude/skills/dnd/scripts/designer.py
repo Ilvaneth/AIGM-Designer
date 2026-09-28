@@ -152,6 +152,21 @@ class Roller:
         self.secret_notes: list[dict] = []
         self.by_label: dict[str, dict] = {}
         self.ctx = dd.context(campaign, skip_phase=phase)
+        self.foundation: dict | None = None
+
+    @classmethod
+    def in_memory(cls, master: str, dials: dict, phase: str = "P1", attempt: int = 1) -> "Roller":
+        """A Roller with no campaign behind it (the many-seeds tests): no disk, no used.json, the same draws."""
+        R = cls.__new__(cls)
+        R.campaign, R.phase, R.attempt, R.master = None, phase, attempt, master
+        R.manifest = {"dials": dials, "dice_log": []}
+        R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
+        R.ctx = arb.Context(dials=dict(dials))
+        R.foundation = None
+        return R
+
+    def _usage(self, ref: str, avoid: bool) -> dict:
+        return dd.usage(self.campaign, ref, avoid) if self.campaign else {}
 
     def _record(self, label: str, table: str | None) -> dict:
         return {"phase": self.phase, "table": table or "dice", "label": label, "notation": None, "raw": None,
@@ -165,7 +180,7 @@ class Roller:
         if not rows:
             raise SystemExit(f"designer: no rows in {ref}")
         rng = dd.derive(self.master, self.phase, ref, label, self.attempt)
-        use = dd.usage(self.campaign, ref, avoid)
+        use = self._usage(ref, avoid)
         if also_used:
             use["pair"] = set(also_used)
         try:
@@ -267,6 +282,12 @@ def spread_exclude(uses: dict, n_rows: int) -> set:
 # ── preroll plans per phase ───────────────────────────────────────────────────
 
 def preroll_p1(R: Roller, m: dict) -> None:
+    """Step 1, the foundation (design_foundation.py), then the identity's rolls (items 7-10 of the build replace
+    the old ones below)."""
+    import design_foundation as fd
+    used_pairs = dd.used_values(R.campaign, fd.PAIR_KEY) if R.campaign else set()
+    out = fd.roll(R, dials_of(m), used_pairs)
+    R.foundation = fd.build(out, dials_of(m)["level_band"])
     sc = scale_of(m)
     R.table("tension.1", "tensions.yaml")
     if R.notation("tension.second", "d2")["raw"] == 2:
@@ -553,6 +574,12 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
     if fn:
         fn(R, m)
     n_pub, n_sec = R.flush()
+    if R.foundation is not None:
+        data = dm.load(campaign)
+        data["foundation"] = R.foundation        # public and stamped: the identity builds on it, never changes it
+        dm.save(campaign, data, f"designer.py preroll --phase {phase} (foundation)")
+        print(f"designer: foundation — {R.foundation['sentence_tr']}")
+        print(f"designer: escalation — {R.foundation['escalation']['steps']} step(s)")
     if phase not in ("P0", "P1"):
         # root-cause analysis 1, RC-13: person and god names are rolled, never invented; P1 writes the languages
         import design_names as dn

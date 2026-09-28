@@ -232,7 +232,7 @@ class PhaseState(unittest.TestCase):
         self.assertEqual(ph["wall_s"], wall0 + 700)
 
 
-USED = PROJECT / "used.json"
+from _campaign import USED  # noqa: E402  (the suite's own temporary used.json)
 
 
 class Preroll(unittest.TestCase):

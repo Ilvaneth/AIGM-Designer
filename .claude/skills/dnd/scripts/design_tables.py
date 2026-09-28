@@ -42,7 +42,9 @@ HOOK_TARGETS = PHASES + ("validator", "play")
 DIAL_NAMES = ("scale", "tone", "magic", "era", "danger", "content_mix")
 
 
+@lru_cache(maxsize=1)
 def tables_dir() -> Path:
+    """data/design/ (resolved once per process: the skill does not move while a script runs)."""
     return data_dir() / "design"
 
 
@@ -112,8 +114,12 @@ def row(ref: str, row_id: str) -> dict | None:
 # ── the arbiter's indexes (plan item 25: the script is the only arbiter of conflicts) ──
 
 def _signature() -> tuple:
-    """Committed table files and their mtimes: an index is rebuilt when any table changes."""
-    return tuple((n, (tables_dir() / n).stat().st_mtime_ns) for n in list_tables())
+    """Committed table files and their mtimes, read on every call: an index is rebuilt the moment any table
+    changes, even inside one process. One directory scan (os.scandir carries the mtimes) keeps it cheap enough for
+    a many-seeds preroll."""
+    with os.scandir(tables_dir()) as it:
+        return tuple(sorted((e.name, e.stat().st_mtime_ns) for e in it
+                            if e.name.endswith(".yaml") and not e.name.startswith("_")))
 
 
 def _every_row():
@@ -168,6 +174,12 @@ def _secret_for(sig: tuple) -> frozenset:
 def secret_row_ids() -> frozenset:
     """Rows of the tables whose roll header says `secret: true`: a public log never names them."""
     return _secret_for(_signature())
+
+
+def indexes() -> tuple[dict, frozenset]:
+    """(conflict_index, secret_row_ids) on one signature read: the arbiter's per-draw lookup."""
+    sig = _signature()
+    return _conflicts_for(sig), _secret_for(sig)
 
 
 # ── the values other scripts derive from the tables ─────────────────────────────

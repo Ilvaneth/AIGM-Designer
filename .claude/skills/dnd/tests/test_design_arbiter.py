@@ -178,6 +178,52 @@ class BirthOrder(unittest.TestCase):
         self.assertEqual(dd.rows_used_by(dd.recent_births("_test-now", 2, u), "t.yaml", u), {"d", "b"})
 
 
+class Hardening(unittest.TestCase):
+
+    def test_the_table_signature_sees_a_change_at_once(self):
+        """Owner, 2026-09-28: the index follows the files' mtimes, not a clock; a table changed inside one process is
+        never read stale."""
+        import os
+        import tempfile
+        from pathlib import Path
+        tmp = Path(tempfile.mkdtemp())
+        (tmp / "t.yaml").write_text("rows: []", encoding="utf-8")
+        real = dt.tables_dir
+        dt.tables_dir = lambda: tmp
+        try:
+            first = dt._signature()
+            st = (tmp / "t.yaml").stat()
+            os.utime(tmp / "t.yaml", ns=(st.st_atime_ns, st.st_mtime_ns + 10 ** 9))
+            self.assertNotEqual(dt._signature(), first)
+        finally:
+            dt.tables_dir = real
+
+    def test_the_test_used_path_must_live_in_the_temp_dir(self):
+        """Owner, 2026-09-28: the DND_CAMPAIGN_ROOT leak's class; an outside path is ignored with a warning."""
+        import io
+        import os
+        import tempfile
+        from contextlib import redirect_stderr
+        from pathlib import Path
+        saved = os.environ.get(dd.TEST_USED_ENV)
+        try:
+            inside = Path(tempfile.mkdtemp()) / "used.json"
+            os.environ[dd.TEST_USED_ENV] = str(inside)
+            self.assertEqual(dd.used_path(), inside.resolve())
+            os.environ[dd.TEST_USED_ENV] = str(SCRIPTS.parent / "used.json")
+            err = io.StringIO()
+            with redirect_stderr(err):
+                path = dd.used_path()
+            self.assertNotEqual(path, (SCRIPTS.parent / "used.json").resolve())
+            self.assertEqual(path.name, "used.json")
+            self.assertIn("outside the system temp directory; ignored", err.getvalue())
+        finally:
+            if saved is None:
+                os.environ.pop(dd.TEST_USED_ENV, None)
+            else:
+                os.environ[dd.TEST_USED_ENV] = saved
+
+
 class SmallPools(unittest.TestCase):
     """Correction C: table_until left P3, P4, P6, P7 and P9 with the same constraints; the pools they filter must
     never be empty, or the preroll stops."""

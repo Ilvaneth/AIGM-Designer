@@ -20,11 +20,12 @@ from _campaign import TestCampaign, SCRIPTS, PROJECT, CAMPAIGNS
 
 sys.path.insert(0, str(SCRIPTS))
 import design_tables as dt  # noqa: E402
+from design_manifest import legacy_birth as dm_legacy  # noqa: E402
 from design_io import is_fragment  # noqa: E402
 from paths import runtime_dir  # noqa: E402
 
 MARKER = runtime_dir() / "active-design.json"
-USED = PROJECT / "used.json"
+from _campaign import USED  # noqa: E402  (the suite's own temporary used.json)
 
 
 def run(*args, check=False):
@@ -141,6 +142,18 @@ class NewBirth(unittest.TestCase):
         self.assertIn("prerolled", proc.stdout)
         again = run("-c", name, "preroll", "--phase", "P1")
         self.assertEqual(again.returncode, 1, "a second preroll of the same attempt is refused")
+        found = m["foundation"]
+        self.assertTrue(found["stamped"])
+        self.assertIn(found["sentence_tr"], proc.stdout)
+        self.assertEqual(sum(1 for l in pub if l.startswith("foundation.contest.")), 1)
+        self.assertFalse(dm_legacy(m), "a birth with a foundation is no legacy birth")
+        import designer
+        designer.record_used(name, "P1")      # approve's write, into the suite's own used.json
+        mine = json.loads(USED.read_text(encoding="utf-8"))["campaigns"][name]
+        self.assertIn(found["spine"], mine["foundation.yaml#spine"])
+        self.assertIn(found["ruin_source"], mine["foundation.yaml#ruin_source"])
+        self.assertEqual(len(mine["foundation.yaml#break_pair"]), 1, "the target + action pair is recorded")
+        self.assertNotIn("foundation.yaml#palette", mine, "palettes are never excluded")
 
     def test_preroll_is_reproducible_from_the_seed(self):
         a, _ = self.birth(seed="SAME-0001", scale="standard")

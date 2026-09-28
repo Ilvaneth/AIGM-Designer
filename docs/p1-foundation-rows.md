@@ -361,7 +361,7 @@ Sütunlar: A ve B (varsayılan olarak omurganın iki ucunda; farklıysa adın ya
 | Çekişme | A | B | Üçüncü | 4. rol | Ödül | Tırmanma |
 |---|---|---|---|---|---|---|
 | Hazineye koşan gruplar | kraliyetin resmî seferi (devlet) | paralı bir birlik (askerî) | yerli halkın avcıları | bir büyücünün gizli seferi (bilgin) | kalıntı | haritaların çalınması → yolda pusu |
-| Boş tahta, üç ev | en güçlü ev (devlet) | en zengin ev (ticaret) | en eski ev (din) | halkın sevdiği bir yabancı (direniş) | kalp | evlilik ittifakları → zehir → açık savaş |
+| Boş taht, üç ev | en güçlü ev (devlet) | en zengin ev (ticaret) | en eski ev (din) | halkın sevdiği bir yabancı (direniş) | kalp | evlilik ittifakları → zehir → açık savaş |
 | Yeni toprağa ilk yerleşen | bir krallığın yerleşimcileri (devlet) | özgür yerleşimciler (direniş) | toprağın yerli halkı | toprak satan dolandırıcılar (suç) | yeni | sınır taşları → yerleşim yakma |
 | Canavar için ödül | bir şövalye tarikatı (askerî) | avcılar loncası (lonca) | canavarı koruyan köylüler | canavarın parçalarını isteyen simyacılar (bilgin) | kalp | tuzaklar → rakibi canavara yem etmek |
 | Yeni kaynağı ilk kim alacak | devlet (devlet) | loncalar (lonca) | kaynağın üstünde yaşayan halk | kaçakçılar (suç) | yeni | hak iddiaları → kaynağın başında kan |
