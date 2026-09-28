@@ -573,14 +573,17 @@ Folded into the item texts on 2026-09-24; markers '(errata 24.2 #n)' show where.
 17. **Naming language (owner ruling 2026-09-25, replaces the "names are born in the language of play" reading of 11.7 and 4.6):** the narration is Turkish, the world is not. Every proper noun — persons, places, institutions, gods, ships, signature phenomena and creatures, months and day names — is an **English-language fantasy name** (the Ashen Crown model: Emberhold, Cinder Choir, Kriv Shestendeliath), carried into Turkish prose with Turkish suffixes after an apostrophe (Emberhold'a, Karsgate'e). `naming.yaml`'s sound families and root lexicons produce English-style names; `tr_suffix_friendly` means the name takes a Turkish suffix cleanly, not that the name is Turkish. Common nouns stay Turkish. The fixture bible is renamed accordingly.
 18. **No stem soft-ban (owner ruling 2026-09-25, narrows 24.1 #18):** roots like crown, hollow, ember may recur across campaigns; uniqueness is enforced on full names (`name_registry`) and on table rows (`used.json`), never on word stems. `naming.json`'s `banned[]` holds only exact names already used, plus a profanity/brand filter. **Owner ban list (2026-09-25):** names the model kept producing in Ashen Crown — Cassivar, Corvina and every Corv-/Corw- derivative (Corvin, Corven, Corwyn, Corren, Corvan), Emberhold, Cinder Choir — are banned outright in `naming.yaml`'s `blacklist.owner_banned` as whole names and name-stems, beside an `llm_favourites` list of the model's overused fantasy first names; this bans names, never lexicon roots.
 19. **No real-world mythology deities (owner ruling 2026-09-25, narrows item 5 and 18.1):** the SRD's four historical pantheons are not used at all, not even as a domain / symbol / alignment scaffold; `pantheon.yaml`'s own `domain_scaffold` replaces them, and their names (Greek, Norse, Egyptian, Celtic and the other traditions the model reaches for) are banned in `naming.yaml` `blacklist.mythology`. `build_design_index.py` indexes nothing from the gods appendix.
-20. **Naming roots are rolled (owner ruling 2026-09-28; item 25):** the script draws a campaign's naming roots from `naming.yaml`'s lexicon with avoid-used; the writer never picks them. #18 stands: no word is banned, a root recurs once the lexicon is exhausted, and a real birth ignores the test births. Proposed with it, to be settled with P1's step 2:
-    - a door that lets a place, institution or signature name use a lexicon root only if this campaign rolled it (persons draw from the name pool);
-    - a wider lexicon with neutral glosses;
-    - fewer roots per family at short scale.
+20. **Naming roots are rolled (owner ruling 2026-09-28; item 25):** the script draws a campaign's naming roots from `naming.yaml`'s lexicon with avoid-used; the writer never picks them. #18 stands: no word is banned, a root recurs once the lexicon is exhausted, and a real birth ignores the test births. The model's favourite roots (candle, hush, still, wake…) stay in the lexicon and reach a campaign only when it rolls them. Settled with P1's step 2:
+    - roots are weighted by the foundation's domains;
+    - 8-10 roots per language at short, 12 at standard, 15 at epic;
+    - the lexicon grows from 115 to 300-400 roots with neutral glosses;
+    - the sound families grow from 10 to 20-24, and the script, not the writer, mutates them;
+    - every non-person proper noun comes from a candidate pool built from the rolled roots (#25).
 21. **The motor leaves P0 (owner ruling 2026-09-28; reverses the same conversation's earlier move of `plot_engine` into P0):** a single engine cannot carry a whole campaign; journey or exploration would leave it empty, and one megadungeon cannot carry twenty levels. Its rows become play modes for blocks of two or three sessions. The arc floor (P7) owns them and chooses them by what the world holds; P7's campaign-wide plot-engine roll goes when P7's turn comes. The campaign-level engine is the break's escalation (item 25).
 22. **The villain's visibility, shape and origin move from P4 to P1's secret rolls (owner ruling 2026-09-28):** the villain is a column whose base is P1's secret layer, which already writes the villain's answer.
     - P4 keeps the front, the doom shape, the lieutenants and the BBEG's faction archetype, and reads the moved rolls.
-    - The villain carries the tension's other pole. A secret roll ties it to the break: it caused the break, exploits it, wants to complete it, or wants to reverse it at a terrible price.
+    - The villain carries one of the question's poles to its terrible extreme; a secret roll picks which side's pole.
+    - A secret roll ties it to the break, in six ways: it caused the break; exploits it; wants to complete it; wants to reverse it at a terrible price; tried to stop it, failed and is now enraged; or is the break's product, born with it. When the secret's chooser is the villain, the tie must be "caused it"; the script enforces this.
     - No birth showed a P1/P4 mismatch; the move follows item 25's principle.
 23. **The promise ledger replaces #10's blanket acceptance (owner ruling 2026-09-28; item 25):** a forward reference is a promise recorded in `design.json`: what, from which phase, due at which phase, and how it is checked.
     - *Sources:* registry stubs (`owner_phase`); non-entity placements (clues, the god and the event P1 names); the later-phase hooks of rolled rows; the foundation's columns.
@@ -588,6 +591,13 @@ Folded into the item texts on 2026-09-24; markers '(errata 24.2 #n)' show where.
     - *Check:* countable promises become door or validator rules, and the rest get a per-promise critic verdict. A due promise not kept closes the gate; before its due phase a promise shows on the card as open work, not as an error.
     - *Validator:* the per-phase validator accepts a pending row only when its owner phase is later, and each validator module names the phase it starts at. `EXPECTED_UNTIL` goes (dry-4's three `clue_unplaced` errors under an open P1 gate, `docs/reports/dry-run-3.md` §3.2 #1).
     - *Scope:* the ledger is how the foundation reaches P2-P8 while their designs stay as they are.
+24. **The magic dial never takes `none` (owner ruling 2026-09-28; narrows item 2's dials and `dials.yaml`):** the minimum is `low`. `magic_none` is deleted from `dials.yaml#magic`, together with `test_design_tables.py`'s dial assertion and `SKILL-design.md`'s dial line; every table gate written for `none` goes with it.
+25. **The writer invents no proper noun (owner ruling 2026-09-28; narrows items 4.6 and 11.7):** persons and gods keep coming from the rolled name pool (`design_names.py`, RC-13). Every place, institution, signature, month, day and ship name comes from a candidate pool the script builds from `naming.yaml`'s patterns and the campaign's rolled roots; the writer picks among 3-5 candidates.
+    - The door refuses a proper noun outside the pools.
+    - The patterns lose their examples (they anchored every birth); "Court of…", "…Assize" and the month pattern "…tide" are deleted.
+    - Institution form words (Order, Guild, Company, House, Council, League…) come from item 25's institution-form table.
+    - The sample names in `naming.json` come from the pools.
+    - Every blacklist and the registry uniqueness check stay.
 
 #### 24.3 Build order (developer-days for one person working through Claude Code sessions; +30% calendar slack for tuning births; item 23's compatibility rule is a tested invariant from slice 1)
 - **Slice 0 — decisions and foundations (3-4 d):** the six answers and the errata folded into items 1-23; the shared schemas (`entities.json` canonical + projection, `overlay.json`, `design.json`, `map.json`, `news.json`, `site-progress.json`, fragments) as documented examples; the `design/` templates incl. the `Exits` column and `state_before`/`state_after`; the **hand-written micro `short` fixture bible** (Turkish); the PreToolUse payload probe; the existing hook tests made self-contained (4 of `test_dice_guard.py`'s 21 cases depend on Ashen Crown's PC names being the active campaign and fail in this project until the fixture campaign carries PCs the tests can point at).
@@ -663,13 +673,15 @@ Folded into the item texts on 2026-09-24; markers '(errata 24.2 #n)' show where.
   - *The analysis:* the owner proposed a rolled keyword table for P1. The discussion found the fault lower down: P1 lays no foundation, and the floors are not tied to it (dial effects and table hooks are read by no script).
   - *Decided:*
     - item 25, step 1: a script-built foundation of six seeds (the world's shape, the ruin source, the lifeline, the contest, the break, the escalation) under the owner's building principle, with the approved rows in `docs/p1-foundation-rows.md`;
-    - errata 24.2 #20-23: rolled roots, the motor out of P0, the villain's rolls into P1, the promise ledger.
+    - errata 24.2 #20-23: rolled roots, the motor out of P0, the villain's rolls into P1, the promise ledger;
+    - the same day, item 25 step 2, the identity: three signatures of one shape, the question on the contest, the trope break tied to a piece, the secret and the villain (rows unseen by the owner), names from pools only, the foundation sentence's template, and the script as the only arbiter of conflicts;
+    - errata 24.2 #24-25: the magic dial's minimum is `low`, and the writer invents no proper noun.
+  - *Found:* the identity tables' rows carried the attractor themselves (item 25's diagnosis, corrected); two conflict holes in `designer.py`.
   - *Next, in order:*
-    1. P1 step 2 (the identity) and the foundation sentence's Turkish template;
-    2. the build, one green commit each: the tables from the approved rows, step 1, step 2, the door and the card, the promise ledger carrying the foundation's columns, the villain's rolls, the rolled roots, the anchor cleanup;
-    3. a new test birth, phase by phase, once P0 and P1 are complete;
-    4. the read bundles (RC-06) and the skeleton (RC-07);
-    5. slice 2.
+    1. the build, one green commit each: the tables from the approved rows (with their conflict and requirement lists for the owner), P0's dial change, P1 step 1, step 2, the name pools and the door, the conflict filter, the card, the promise ledger carrying the foundation's columns, the villain's rolls, the anchor cleanup;
+    2. a new test birth, phase by phase, once P0 and P1 are complete;
+    3. the read bundles (RC-06) and the skeleton (RC-07);
+    4. slice 2.
 
   **Slice 1c in progress (2026-09-25).** Items, one green commit each, the owner's `Başla` given for 1-7, item 8 (the tuning births) waits for an explicit `workflow` go: **1 `designer.py`** — delivered (the conductor's CLI: `new` rolls blank dials live and writes the P0 card, `arm` / `disarm` the read guard, `preroll --phase` makes every labelled roll of a phase from the tables with the closed lists, conflicts, distinctness and secrecy honoured, `phase PN begin | merge | check | card | approve | rerun`, `status`, `abandon`, path-scoped `commit`; auto-approve for `--fixture` and `_test-*` campaigns, `--onay` otherwise; `design_dice.draw()` extracted for batched draws). **2 prompt library** — delivered (`prompts/design/`: the `_common.md` preamble, 27 prompts — single writers for P1 and P2, skeleton plus fan-out writers for P3-P7, primer sections for P8, threads and the session-1 pack for P9, four `detail` writers, the entity critic with the second-critic order, the phase critic, the `design ask` proxy — with four return schemas; `design_prompts.py` renders and checks them from the manifest and the public projection only; `designer.py phase begin` hands out render commands and rendered copies under `design/_prompts/`, `merge` absorbs `skeleton.json`; `registry.py` and `design_manifest.py` skip the skeleton, facts and critique files in staging). **3 `design_approval.py`** — delivered (the Turkish phase card from the public projection and the manifest: scale band with the full count computed script-side, per-wish ticks from the wishes critic, redacted validator summary, critique loops and failed ids, tokens and minutes, names with language, the native-knows excerpt, the text player map on P3, the spoiler-safe secret abstract on P1, the diff against the archived previous card on a rerun; a leak scan over secret names and dm-only sentences refuses a leaking card; `critique` stores a critic's return as ids, verdicts and codes only; `designer.py phase approve --round` records correction rounds). **4 `design_revise.py`** — delivered (one-sentence rounds with the four scopes: direction on the phase or the wishes, fact on a public registry field with projection and snapshot following, entity remove with archived prose or replace, phase rerun with `--reseed`; referrers by refs, hidden ones counted; rounds recorded on the phase, max three, and in the revision log; `reconcile` honours a `rerun` flag so a marked entity stays pending until a fresher fragment lands). **5 `render_player.py`** — delivered (the primer assembled from the public projection, the P8 section files, the calendar, the map and the day-0 news with every link resolved to a name; `facts` and `news` merging the P8 fragments into `common-knowledge.json` and `news.json`; a thread's public face; `resolve` and `check`; a hidden id, a secret name or a dm-only sentence refuses the file; the P8 prompt now writes a section file plus facts and news fragments instead of the primer itself). **6 Workflows** — delivered as two saved scripts under `.claude/workflows/` rather than ten: `design-skeleton` (one phase's single-writer skeleton agent) and `design-fanout` (the per-entity `pipeline(write → critique → fix ×≤2 → second critic)` with no barrier, then the phase critic and the wishes critic), both fed the JSON `designer.py phase PN begin --json` prints (which now names the workflow to run and carries both critics' render commands); every agent bootstraps by running its render command, so the conductor's context never holds a prompt; critics save their returns in staging and `designer.py phase merge` records them; P0 is scriptless, P1/P2/P8/P9 run the fan-out with a document roster, `detail` runs the fan-out with one entity, `design ask` uses the Agent tool. Scripts cannot be executed here (no Node, and the Workflow tool needs the owner's opt-in): the tests check their shape, the embedded schemas against the prompt library and the wiring; the first live run is item 8. **7 `SKILL-design.md` and the SKILL edits** — delivered (`SKILL-design.md`: what the designer is, the three rules, the Phase 0 dials, the phase loop with the two Workflows, the phase table, corrections, failures, routing and cost, every `design` command, the phase → SRD map, the critique pass, names and language; `SKILL-commands.md`: the 14-step wizard deleted, `new` is the designer, the `design` family added; `SKILL.md`: Standard 15 "The World Does Not Scale", the blind-conductor section the read guard cites, the routing table refreshed to the Claude 5 ids with the Opus-tier rule for `new`, the layout lines for `SKILL-design.md`, `prompts/design/`, `data/design/`, `templates/design/`, the campaign's `design/` folder and the project-level `.claude/workflows/`; `load` / `save` / `end` / `character new` edits stay in 1d; also `designer.py new --ask-approval`, a test birth that keeps the `onay` wait — the approval test had been committing a throwaway `real-birth-*` campaign into this repository on every run, eight `design(real-birth-…): P0 approved` commits in the history, harmless, their files removed, the test now births under the git-ignored `_test-` prefix). **8 tuning births** — waiting for the owner's `workflow` go.
 - **Slice 1 — smallest playable `short` campaign, end to end (19-24 d):** 1a core scripts (5-6 d): `registry.py`, `design_manifest.py`, `design_dice.py` + `dice.py` rng + `used.json`, `design_seed.py`, `design_check.py` core modules, read guard, `site_progress.py`, atomic writes + `_meta` in the stores, `.gitattributes`; 1b tables and SRD index (4-5 d): the minimum table set, `monster-ecology.yaml` v0 generated from SRD fields with 50-80 curated rows, `build_design_index.py`; 1c prompts, Workflows, approval (5-6 d + 2-3 tuning births): per-entity prompts tuned one entity at a time, return schemas, Workflows P0-P8, P9 ending in the session-1 pack, `design_approval.py`, birth-round `design_revise.py`, `render_player.py`, `SKILL-design.md`; 1d play integration (3-4 d): `map.json` + generated `travel-times.md` (no SVG yet), regenerated `world.md`/`npcs.md`/`index.md`, `load-pack` and `scene --enter`, `load`/`save`/`end` edits, `detail` at `end` through the agent pipeline (order tick → sweep → prep), play registration, reference-party `burst_check`, SKILL edits; 1e dry run and playtest (2-3 d).
@@ -696,10 +708,11 @@ Stamped fields as the mechanical form of "immutable"; the blind conductor with s
 ### 25. The P1 foundation
 **Question (owner, at `_test-dry-4`'s P1 review, 2026-09-27):** every birth's premise landed on the same ground. P1's rolls are abstract and the concrete ground is left to the writer. How does P1 become a foundation every later phase builds on?
 
-**Status: step 1 decided (2026-09-27/28, development tab with the owner); step 2 open.** The approved rows are in `docs/p1-foundation-rows.md`.
+**Status: decided.** Step 1 was decided on 2026-09-27/28 and step 2 on 2026-09-28, by the development tab with the owner. The approved rows are in `docs/p1-foundation-rows.md`; the secret and villain rows are the exception (see step 2).
 
 **Diagnosis (six births: the public projections, dice logs and naming files; `docs/reports/dry-run-3.md` §3.2).**
-- The rolls were not the problem. In six births every P1 table (tension, break, the three signature sub-tables) drew six different rows. The output converged anyway: light as a fuel or a commodity, ledgers, bills and tolls, the rights and voices of the dead, hush and stillness, a court, tides. `candle` and `still` are among the naming roots of all six births; 92 of the lexicon's 115 roots were used.
+- In six births every P1 table (tension, break, the three signature sub-tables) drew six different rows. The output converged anyway: light as a fuel or a commodity, ledgers, bills and tolls, the rights and voices of the dead, hush and stillness, a court, tides. `candle` and `still` are among the naming roots of all six births; 92 of the lexicon's 115 roots were used.
+- *Correction found in step 2:* the rows differed, but the identity tables' rows themselves carried the attractor. The counts: institution 11 of 18 (a bonded court, a toll, lamplighters, an order of silence, keepers of the dead's rights, a ledger house, a census), people 9 of 18, phenomenon 6 of 18, trope breaks 16 of 42, tensions 2 of 30 (and 3 more that staged courts), secret archetypes 2 of 24. Every birth drew at least one such row: tune-1 lantern fish and municipal magic; tune-2 the blood ledger and the ledger house; dry-1 the visible dead, the moth court and the tide watch; dry-2 the spoken price; dry-3 the gods on trial; dry-4 the keepers of the dead's rights. The writer then spread that row's motif across the premise. The court was a table row, not the writer's invention.
 - The dice chose the concept, the writer chose the matter, and the matter came from the model's attractor. The tables pointed there too: the signature seeds' examples ("a common substance (salt, ash, wax, ice)"), mutation prompts about ownership and cost, lexicon glosses (`tide` "debt", `lamp` "mourning"), history rows (`age_silence`, `age_dimming`, `age_lanterns`, `age_reckoning`, `evtype_silencing`). The writer picked its naming roots freely.
 - P0 feeds P1 only a text line. The dial effects in `dials.yaml` (era's economy bias, site additions, faction multipliers and habitat filter, tone's secret-archetype bias) are read by no script; only magic's wild gate is. The tables' 1,810 hooks are read by no script either; about 80 per birth are aimed at a later phase and reach none.
 - Nothing measured the repetition. The critic shares the attractor, and ae6786b's "earlier campaigns" block is a prompt steer (RC-11) that primes what it names.
@@ -713,7 +726,7 @@ Seed criteria: load-bearing; a situation, not a mood; concrete (a native can poi
 
 **P1 in two steps.**
 - *Step 1, the foundation,* by script, no model: the rolls below in order, each conditioned on the dials and on the earlier rolls, assembled into one Turkish situation sentence. The foundation is stamped and public (it holds no secret).
-- *Step 2, the identity,* by the premise writer on top of the foundation, which it makes specific and never changes (open).
+- *Step 2, the identity:* the script rolls every identity piece, then the premise writer builds on the foundation, which it makes specific and never changes (below).
 - Then the door (each signature carries its home seed's id, the foundation's stamps are untouched, the promises are recorded), the critics (craft only; the earlier-campaigns block moves from the writer to the critic), the card and the review stop.
 
 **Step 1, in order, and what each seed promises.**
@@ -730,9 +743,108 @@ Seed criteria: load-bearing; a situation, not a mood; concrete (a native can poi
 
    → each scar goes to its floor (P2 magic, gods, planes, sky, seasons, time; P3 map, peoples, polities, economy, law; P5 peoples; P6 creatures); a dated P2 event, the P7 opening, the P8 day-0 news. The secret is the break's true cause (step 2). Behind every break stands a living person's choice (`forbidden_awakening_ancient_evil`).
 6. *The escalation.* D&D's four tiers of play (1-4 local, 5-10 regional, 11-16 continental, 17-20 world and planes) are the break's steps; their number follows the level band (short 1-2, standard 3, epic 4). → the arc (P7) climbs this ladder: the party meets the break as a local symptom and ends at its heart. This, not a campaign-wide engine, is what makes a campaign legendary.
-7. *The foundation sentence,* assembled by script.
+7. *The foundation sentence,* assembled by script from five templates (the world's shape, the past, the value, the conflict, the break).
+   - The script never adds a suffix to a fragment. Every row's Turkish fragment is a self-standing noun phrase or a full clause, and links are separate words ("ile", "arasında").
+   - Every action carries three tense forms: past (just now, a generation ago), present (unfolding), imminent (coming). The script picks by the break's time, and a test catches a missing form.
+   - The sentence is the identity's input, not the reader's text. The card shows it with the escalation's step count.
+
+**Step 2, in order, and what each piece promises.** The three signatures share one shape: a home in the foundation, a *visible* piece and a *behaving* piece, framing rolls; the writer joins, names and makes them specific.
+1. *The people signature.*
+   - Home: the lifeline; the new-people scar, when rolled, is the people.
+   - A lineage: 15 rows, weighted by the palette and the lifeline, with playable and unplayable lineages.
+   - Two traits: one visible (body, bond with a creature, place and movement), one behaving (custom, belief, social order, relation to the break); 50 rows in seven families.
+   - An attitude to strangers: 6 rows.
+   - → P3 settlements and region; P4 a contest role if the contest has a people's role; P5 its NPCs showing both traits; P6 a site of theirs; P8 the primer's culture section; P9 a PC may belong to it or have grown up among them.
+2. *The institution signature.*
+   - Home: a contest role the people did not take.
+   - A form: 14 rows, weighted by the role's archetype hint.
+   - A practice (behaving): 40 rows in eight families, each with what it gives the party.
+   - A sign (visible): 18 rows.
+   - A power source: 10 rows, each with its P4 counterpart.
+   - One practice, and one institution signature per campaign; other institutions come as P4 factions.
+   - → P4 the role's faction is the institution (its power sets its assets, its practice its services); P3 its seat; P5 its leader and members; P6 a site it holds; P7 quests from its practice; P8 what natives know.
+3. *The phenomenon signature.*
+   - Home: the ruin source's strangeness. The "a magic rule changed" scar, when rolled, is the rule, drawn from the family of rules born of the break.
+   - A rule (behaving): 40 rows in eight families, each with how it plays at the table.
+   - A sign (visible): 16 rows.
+   - A limit: 12 rows; two of them tie to the people or the institution.
+   - Who uses it: 8 rows, which can lock the three signatures together.
+   - No row owns or sells magic.
+   - → P2 the magic system agrees with the rule; P3 where it is strong or weak; P5 its users; P6 a site where it is strongest; P8 what natives know; the table (the DM applies it in combat and travel).
+4. *The question.*
+   - Home: the contest; the roll is weighted by the contest's family. The two sides carry the two poles, and the villain carries one pole to its extreme.
+   - 33 pole pairs: two dropped (silence and witness, debt and grace), five added. The table carries no example question, because examples anchor.
+   - One question per contest: short and standard 1, epic 2. `scale.yaml`'s `tensions` becomes the contest count and the d2 second-tension roll goes.
+   - The question grows with the escalation.
+   - → P4 each side's doctrine carries its pole; P5 NPC positions and the villain's answer (dm-only); P7 the endings are the possible answers and each step asks the question at its scale; P8 how natives argue it; P9 each PC's story touches it.
+5. *The trope break.*
+   - A rolled tie to one foundation or identity piece, through which the writer explains the inversion.
+   - The "new law or taboo" scar, when rolled, draws one break from the prohibition rows.
+   - Short 1, standard and epic 2, from different families.
+   - 29 rows in six families: 17 kept, 25 dropped (the dead, money and ledgers, courts and law, light, magic as a commodity, rows the foundation or the signatures now carry), 12 added.
+   - The kept rows already carry per-phase hooks; the new ones get them at the build, and all enter the promise ledger.
+6. *The secret.*
+   - Home: the break; the secret is its true cause.
+   - An archetype: attractor rows out; a row that makes a secret of something the foundation already shows is excluded by conflict.
+   - A chooser (new): always a person — the villain, a contest role, the institution, the people, an ordinary person now dead or forgotten, or a mortal who bargained with a power.
+   - A twist: 12 rows kept, 3 added.
+   - A trail: about 10 rows.
+   - The clues open act by act; the last one sits on the escalation's top step, and every clue's place is a promise.
+   - The owner, who is also the player, does not see these rows: the development tab builds them straight into `secrets.yaml`.
+7. *The villain* (#22).
+   - Visibility, shape and origin move from P4.
+   - A tie to the break: six rows. A pole: one of the question's, carried to its extreme.
+   - The chooser rule: a villain who chose the break "caused it".
+   - The villain is no public side by default; the visibility roll places it.
+   - The escalation: its works and people at tier 1, itself at the top.
+   - The forbidden shapes and the forbidden origin never enter the pool.
+   - Rows built by the development tab and unseen by the owner.
+8. *The names* (#20, #25).
+   - Languages: short 2, standard and epic 3. The first is the signature people's; the second the common tongue or the contest's other side; the third the institution's or a second people's.
+   - The sound families are mutated by script.
+   - The roots are rolled and weighted by the foundation.
+   - The script builds candidate pools for every proper noun; the writer invents none.
+
+**The writer (one agent), after every roll.**
+- *Public premise:*
+  - the concrete question;
+  - three signatures, each with a pooled name and one paragraph in a native's voice: the rule, how it shows, how it touches daily life;
+  - the trope breaks with their ties;
+  - the languages and who speaks them;
+  - the player pitch: three sentences, no secret;
+  - three sentences that could only be true in this world.
+- *Mirror (dm-only):*
+  - the secret: the break's true cause, the chooser, the twist;
+  - the clues, by act and step, kind and place promise;
+  - the villain: shape, origin, tie to the break, answer to the question;
+  - the DM pitch;
+  - the signature mechanic's sketch if its gate rolled yes.
+- *Notes:* where each signature will appear; these become promises.
+- *It never:* changes the foundation, picks or rerolls a row, invents a proper noun, or writes example names. It no longer sees the earlier-campaigns block, which moves to the critics.
+
+**The door, the critics and the card.**
+- *The door (script) checks:*
+  - each signature carries its home's id;
+  - the foundation's stamps are untouched;
+  - no two rows conflict;
+  - every proper noun is pooled;
+  - the promises are recorded;
+  - no secret leaks into the public file.
+- *The critics (two, plus the phase critic) judge craft only.* New rubrics: is the question concrete, are the three sentences true only here, does the premise differ from the earlier campaigns. They give a verdict on each promise.
+- *The card:* the foundation sentence, the player pitch, one line per signature, the trope breaks, the secret's spoiler-safe abstract, the count of open promises.
 
 **Common rules.**
+- *The script is the only arbiter of conflicts:*
+  - every row carries `conflicts_with` and `requires`; a table's "heavier in" is a weight, and its "needs" or "only" is a requirement;
+  - conflicts are made symmetric when the table loads;
+  - the pool is filtered before each draw, against every earlier roll and in both directions; the redraw-until-ok loop goes;
+  - an empty pool stops the preroll (a table fault), and a conflicting row is never kept;
+  - every exclusion is logged with its reason;
+  - the door rechecks the final set;
+  - a model-free test rolls P1 over thousands of seeds and proves no conflicting set appears;
+  - in the prose, rows carry "never" lines. The door catches the lexical ones, as `forbidden.yaml`'s patterns do; for the rest a critic records a per-promise verdict that the ledger and the gate read.
+
+  Two present holes close with it: `table_until` keeps a conflicting row after eight tries, and the trope-break draw never checks the candidate's own `conflicts_with` against the rolls made before it (the question), so "rule by lottery" can today come with "birthright versus merit".
 - A row another campaign used is not drawn again while the table has rows, and rows of the same family wait three births. Actions and scars are grammar: a used one waits three births, and a target + action pair never repeats. Palettes are not excluded.
 - The attractor clusters (light and fuel, hush and bells, ledgers and tolls, the rights of the dead, courts, tides, salt) have no row in any foundation table. This is a table decision, not a word ban; #18 stands.
 - The dials weight rows: era, tone, magic, scale.
@@ -745,13 +857,7 @@ Seed criteria: load-bearing; a situation, not a mood; concrete (a native can poi
 - The break as a list of 64 fixed events: too small for a legendary story.
 - The adventurer's place in society as a seventh seed: too much (owner).
 
-**Open, next.**
-- Step 2, the identity:
-  - the signature homes: people ← lifeline, institution ← contest, phenomenon ← ruin source. A scar that changes a magic rule or makes a new people may merge with the phenomenon or the people signature;
-  - the question, asked through the contest;
-  - the secret, as the break's true cause;
-  - the villain's rolls (#22) and its secret relation to the break;
-  - the rolled roots (#20).
-- The Turkish template of the foundation sentence.
-- The cleanup of the anchors listed in the diagnosis, after every P1 decision.
+**Next.**
+- The build, one green commit per item. The tables come from the approved rows, with their conflict and requirement lists shown to the owner like the rows.
+- The cleanup of every anchor the diagnosis lists: the signature seeds' examples, the mutation prompts, the lexicon glosses, the history rows, the naming patterns' examples and the three attractor patterns.
 - The other phases stay as designed until their turn (owner, 2026-09-28).

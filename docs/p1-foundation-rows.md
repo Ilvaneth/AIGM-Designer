@@ -45,7 +45,7 @@ Common rules (plan item 25):
 | dev mantar ormanı | yüzeyde, ağaç boyu mantarlar |
 | ince yer | bir düzlemin dünyaya değdiği yer; düzlemi P2 seçer |
 
-**Kurallar:** büyü none → fantastik yok; low → yalnızca ince yer; medium → en fazla bir fantastik; high → en fazla iki. Her palette en az bir yükselti (dağ, yayla, volkanik) ve en az bir su (nehir, göl, kıyı). Sayı: short 4-5, standard 6-8, epic 9-12. Palet satırları kampanyalar arasında dışlanmaz.
+**Kurallar:** büyü low → yalnızca ince yer; medium → en fazla bir fantastik; high → en fazla iki (büyü kadranı artık none almaz, en az low; 2. adımın kararı). Her palette en az bir yükselti (dağ, yayla, volkanik) ve en az bir su (nehir, göl, kıyı). Sayı: short 4-5, standard 6-8, epic 9-12. Palet satırları kampanyalar arasında dışlanmaz.
 
 ---
 
@@ -472,3 +472,403 @@ Bilerek dışarıda: "ölüler geri dönüyor, ölümün kuralı değişti" (alt
 Motor P0'dan çıktı (errata 24.2 #21). Bu satırlar kampanyanın tamamını değil, 2-3 oturumluk bir bloğu anlatır; bloklar dünyada ne varsa ona göre seçilir. Liste onaylı değil, P7'nin sırası gelince konuşulacak.
 
 soruşturma · geri sayım · kuşatma · savaş cephesi · yolculuk · keşif · derine iniş · av · yarış · entrika · sınırda kurmak · savunma · sürgün ve dönüş · paralı birlik · hayatta kalma · sonuç zinciri. Kehanet ve parça toplama yasak kalır.
+
+---
+
+# Step 2 — the identity (approved 2026-09-28, discussion continuing)
+
+Every identity table follows step 1's rules. The three signatures share one shape: a **home** in the foundation, a **visible** piece and a **behaving** piece, plus one or two framing rolls; the writer joins them, names them and makes them specific.
+
+**P0 ruling (owner, 2026-09-28):** the magic dial never takes `none`; its minimum is `low`. `dials.yaml#magic` loses `magic_none` (plus `test_design_tables.py` and `SKILL-design.md`'s dial line).
+
+## 8. Halk imzası
+
+Kuruluş: **ev** can damarı (yara "yeni bir halk ortaya çıktı" ise o yeni halk) · **soy** (zar; paletten ve damardan ağırlık) · **iki özellik**, biri **görünen** (beden, bir canlıyla bağ, yer ve hareket) biri **davranan** (âdet, inanç, toplumsal düzen, kırılmayla ilişki) aileden · **yabancıya tavrı**. Her ölçekte iki özellik; büyük kampanyalar zenginliği daha çok halktan alır (P3, P5).
+
+**Soy (15):** insan (en yüksek ağırlık) · cüce (yeraltı, dağ) · elf (orman) · buçukluk (ova, nehir) · gnom (yeraltı, zanaat) · yarı-elf, yarı-ork (karışık soylar) · ejderdoğan (ejderha satırlarıyla) · tiefling (düzlem satırlarıyla) · dev soyu (oynanamaz; dağ) · deniz halkı, merfolk (oynanamaz; kıyı) · kertenkele halkı, lizardfolk (oynanamaz; bataklık) · kentaurlar (oynanamaz; bozkır) · goblin ya da kobold halkı (oynanamaz; kötü değil, bir kültür) · fey halkı (oynanamaz; büyü low ve üstü) · karışık halk (kanla değil kültürle tanımlanan). Soy oynanamazsa oyuncunun karakteri bu halkın arasında büyümüş olabilir.
+
+**1. Beden** (görünen)
+
+| Özellik | Masada |
+|---|---|
+| tenleri yaşadıkları toprağın rengini alır | bir yabancıyı ilk bakışta tanırlar |
+| yaşlandıkça boynuzları uzar; boynuz yaşın ve saygının ölçüsüdür | boynuzu kırılan biri onurunu kaybetmiştir |
+| kırılmadan beri gölgeleri yok | gölgesi olan her yabancı dikkat çeker |
+| her kış bir mevsim boyu uyurlar; uyanık kalanlar köyü korur | kışın köyler savunmasızdır |
+| suyun altında bir süre nefes alabilirler | sualtı yolları yalnızca onlarla açılır |
+| soğuğu hissetmezler | kışın dağ yolları yalnızca onlarla geçilir |
+| bedenleri can damarının izini taşır (bakırcıların yeşil tırnakları, ipekçilerin ipek gibi saçları) | kimin nereden geldiği bedeninden okunur |
+| kırk yılda ihtiyarlarlar, her şeyi erken ve hızlı yaparlar | liderleri gençtir, sabırsızdır |
+
+**2. Âdet** (davranan)
+
+| Özellik | Masada |
+|---|---|
+| misafir üç gün kutsaldır; dördüncü gün gitmeyen düşman sayılır | parti üç gün dokunulmazdır |
+| yetişkin olunca adlarını değiştirirler; çocukluk adını yalnızca aile bilir | birinin çocukluk adını bilmek büyük bir güçtür |
+| kimse kendi sofrasında yemez; her akşam başka bir evde yenir | her akşam yeni bir ev, yeni bir söylenti |
+| pazarlık bir sanattır; fiyatı ilk söyleyen utanır | alışveriş bir sosyal karşılaşmaya döner |
+| önemli kararlar bir yarışla verilir (at, kürek, tırmanış) | parti bir tarafın yarışçısı olabilir |
+| yabancıya yüzlerini göstermezler; maske ya da peçe takarlar | kimin kim olduğu belirsizdir |
+| tarihlerini şarkıyla değil dansla anlatırlar | bir ipucu bir dansın içinde saklıdır |
+
+**3. Bir canlıyla bağ** (görünen)
+
+| Özellik | Masada |
+|---|---|
+| her çocuk bir yavru hayvanla birlikte büyür; ikisi aynı gün yetişkin sayılır | hayvanına zarar veren kişiye zarar vermiş olur |
+| sürüleriyle aynı rüyayı görürler; sürü tehlikeyi rüyada haber verir | baskını önceden bilirler |
+| dev kuşlarla birlikte uçarlar (büyü medium ve üstü) | haberleri ve baskınları havadan gelir |
+| arılarla konuşurlar; kovana bir meclis gibi danışılır | kovanın kararı köyün kararıdır |
+| dev böcekler hem evleri hem gemileridir (büyü medium ve üstü ya da yeraltı) | köy yer değiştirebilir |
+| kurtlarla birlikte avlanırlar; av kurtla paylaşılmazsa uğursuzluk gelir | ormanda kurtlar onların gözüdür |
+| balıkçılığı yunuslarla birlikte yapar, işaretle anlaşırlar | denizde yalnız değillerdir |
+
+**4. İnanç** (davranan)
+
+| Özellik | Masada |
+|---|---|
+| kırılmayı bir ceza sayar, kefaretini ödemeye çalışırlar | kırılmaya karşı çıkana düşman olurlar |
+| kırılmayı bir armağan sayar, onu büyütmek isterler | kırılmayı durdurmak isteyenlere direnirler |
+| dünyanın bir gün tersine dönüp başa geleceğine inanırlar | her şeye bir döngünün işareti olarak bakarlar |
+| her dağın bir ruhu olduğuna, dağa sormadan kazılmayacağına inanırlar | maden açmak bir pazarlık gerektirir |
+| tanrılara değil can damarına taparlar (nehre, sürüye, madene) | damara dokunmak kutsala dokunmaktır |
+| yalanın havayı bozduğuna inanırlar; yalan söyleyen fırtına getirir | fırtına çıkınca bir suçlu aranır |
+| demirin uğursuz olduğuna inanırlar; aletleri taştan, kemikten ve bronzdan yaparlar | demir silahlı yabancıya güvenilmez |
+
+**5. Toplumsal düzen** (davranan)
+
+| Özellik | Masada |
+|---|---|
+| yöneticilerini ustalık yarışmalarıyla seçerler | lider olmak için bir şey yapmak gerekir |
+| her karar herkesin önünde, açık havada alınır; kapalı kapı ardında karar yoktur | gizli anlaşmalar büyük bir suçtur |
+| en gençler yönetir; kırkını geçen danışman olur | liderler cesur ama deneyimsizdir |
+| aileler yerine atölyeler vardır: çocuk öğrendiği zanaatın adını taşır | birinin ustası onun ailesidir |
+| biri barışta, biri savaşta olmak üzere iki başkanları vardır | savaş ilan edilince yönetim el değiştirir |
+| kimse bir yerde yedi yıldan fazla kalmaz; köyler dönüşümlü yer değiştirir | bir yeri tanıyan kimse kalmamıştır |
+| dışarıyla yalnızca köyün yabancı elçisi konuşur | her kapı bir elçiden geçer |
+
+**6. Kırılmayla ilişki** (davranan)
+
+| Özellik | Masada |
+|---|---|
+| kırılmadan önceki dünyayı hatırlayan tek halktır | geçmişin bilgisi onlardadır |
+| kırılmanın dönüştürdüğü ilk kuşaktır (yeni halk yarasıyla birleşir) | eski halk onlardan korkar |
+| kırılmanın yarasını bedenlerinde taşırlar | yaraya en yakın onlardır |
+| kırılmadan kaçıp buraya gelmişlerdir; eski yurtları yaranın içinde kaldı | geri dönmek isterler |
+| kırılmayı önceden sezip hazırlanmışlardır; şimdi en güçlü onlardır | neyi nasıl bildikleri merak edilir |
+| kırılmadan kazananlardır, bu yüzden sevilmezler | kıskançlığın hedefidirler |
+| kırılmanın olduğu yeri kutsal sayar, kimseyi yaklaştırmazlar | kırılmanın kalbine giden yol onlardan geçer |
+
+**7. Yer ve hareket** (görünen)
+
+| Özellik | Masada |
+|---|---|
+| hiç durmazlar; sürüleriyle, sallarıyla ya da kervanlarıyla hep yoldadırlar | onları bulmak bir arayış olur |
+| dikey yaşarlar; evleri yamaçlara ve uçurumlara oyulmuştur | köyleri tırmanılarak gezilir |
+| gündüz yeraltında, gece yüzeyde yaşarlar | gündüz köyleri boş görünür |
+| suyun üstünde yaşarlar: yüzen köyler, kazık üstünde evler | köye kayıkla girilir |
+| ağaçların tepesinde yaşarlar; yere inmek bir törendir | yerde karşılaşılırlarsa bir sebebi vardır |
+| mevsime göre iki yurt arasında göç ederler (yazın yayla, kışın ova) | aynı köy yarım yıl boştur |
+| tek bir büyük yapının içinde yaşarlar (dev bir kale, bir kazı, bir gemi) | halkın evi aynı zamanda bir zindandır |
+
+**Yabancıya tavrı (6):** misafirperver ve meraklı (kapılar açık, sorular çok) · tüccar (yabancı bir alışveriş fırsatıdır) · temkinli (yabancı önce sınanır) · kapalı (yalnızca tek bir kapıdan konuşulur) · nedenli bir düşmanlık (geçmişte yaşanmış bir şey yüzünden) · ikiye bölünmüş (yarısı açık, yarısı kapalı).
+
+**Vaadi:** P3 yerleşimler ve bölge · P4 çekişmede bir halk rolü varsa o rol · P5 bu halktan NPC'ler, iki özellik görünür · P6 bu halka ait bir mekân · P8 primerin kültür bölümü · P9 oyuncunun karakteri bu halktan olabilir ya da aralarında büyümüş olabilir.
+
+**Kurallar:** atılan eski satırlar: ölülerini çalan halk, ölümsüz memurlar, haraç toplayan devler, fener balıkları, mumdan çocuklar, hesap tutan kargalar, tuz yürüyenleri, ışığa gelen güveler, büyü izi süren tazılar, adını veren halk (taşlaşan halk dry-4'te kullanıldı). Doğuştan kötü halk yok (hiçbir soy hizalanmayı sabitlemez). Başka bir kampanyanın çektiği özellik satırı bir daha çekilmez; soy ve tavır tekrar edebilir, bir önceki doğumun halkıyla aynı soy bir doğum bekler.
+
+## 9. Kurum imzası
+
+Kuruluş: **ev** çekişmenin rollerinden biri (zar; halk bir rolü aldıysa başkası) · **biçim** (rolün arketip ipucundan ağırlık) · **uygulama** (davranan: başka kimsenin yapmadığı iş) · **işaret** (görünen) · **güç kaynağı**. Tek uygulama, kampanyada tek kurum imzası; diğer kurumlar P4'te faksiyon olarak gelir.
+
+**Biçim (14):** tarikat · lonca · bölük · hane (bir aile) · meclis · birlik · okul · kardeşlik · manastır · gezgin topluluk (kervan, filo, tiyatro) · gizli cemiyet (kötü değil) · beratlı şirket · boylar birliği · milis. Ağırlık: devlet → meclis, hane · din → tarikat, manastır · askerî → bölük, tarikat, milis · lonca → lonca · ticaret → şirket, birlik · bilgin → okul · suç → gizli cemiyet · direniş → kardeşlik, milis.
+
+**Uygulama (8 aile, 40)**
+
+| Aile | Uygulama | Partiye ne verir |
+|---|---|---|
+| Koruma | omurganın kilit yerini tutarlar (geçit, köprü, boğaz) | geçiş izni, oradaki görevler ve düşmanlar |
+| Koruma | tek yolun bekçileridir | kervan korumaları, yol haritaları |
+| Koruma | suru yapan ve tutan ustalardır | sur ötesine seferler, onarım görevleri |
+| Koruma | kalıntının kapısını tutarlar | kalıntıya girmenin tek yasal yolu |
+| Koruma | sürüleri ve göç yollarını korurlar | avcılara ve hırsızlara karşı görevler |
+| Taşıma | haberi ve tarihi oyunlarla taşıyan gezgin tiyatrodur | söylentiler, kılık değiştirme, halkın nabzı |
+| Taşıma | tehlikeli sularda ve yollarda kılavuzluk ederler | rehberler, yol bilgisi |
+| Taşıma | dev kuşlarla ya da hızlı atlarla haber taşırlar | mektuplar, yetiştirilmesi gereken acil işler |
+| Taşıma | kervanları düzenlerler | kervan işleri, uzak ülkelerle bağlantı |
+| Taşıma | nehrin ya da boğazın salcıları ve kayıkçılarıdır | geçiş, kaçakçılık söylentileri |
+| Yapma | eski krallığın yapılarını (sarnıçlar, yollar, kuleler) onarıp çalışır tutarlar | kalıntılara giriş, eski bilgiler |
+| Yapma | golem ve makine dökerler | koruyucu yapılar, bozulan makineler |
+| Yapma | can damarının eşsiz zanaatını yaparlar (ünlü çelik, cam, halı) | eşsiz eşyalar, ustanın sırrı |
+| Yapma | gemi ve köprü yaparlar | gemi, köprü, yapım sırasında sabotaj |
+| Yapma | kırılmanın yarasını onarmaya çalışırlar | yaranın içine seferler |
+| Bilme | harita çizer ve saklarlar | haritalar, yasak topraklar |
+| Bilme | kalıntıyı incelerler | kazı görevleri, eski yazıların çözülmesi |
+| Bilme | kaybolanı ararlar (kayıp bir bilgi ya da zanaat) | arayış görevleri |
+| Bilme | ölmekte olanı saklarlar (tohumlar, türler, şarkılar) | koruma ve toplama görevleri |
+| Bilme | gökyüzünü izlerler | göğün işaretleri, yaklaşan kırılmanın haberi |
+| Bakım | kırılmanın yetimlerini büyütürler | yetimler, kayıp çocuklar, geçmişin sırları |
+| Bakım | şifacıdırlar | iyileşme, salgın görevleri |
+| Bakım | kıtlıkta halkı besleyen ambarları tutarlar | ekinin dağıtımı, kıtlığın siyaseti |
+| Bakım | ebedirler, doğumları gözetirler | doğan çocukların işaretleri |
+| Bakım | sürüleri ve binekleri iyileştirirler | sürü hastalığı görevleri |
+| Savaş | canavar avcılarıdır | av sözleşmeleri, canavar bilgisi |
+| Savaş | sınırın ve kalelerin süvarileridir | sınır görevleri |
+| Savaş | savaşın yerine teke tek dövüşen şampiyonlardır | düellolar; parti bir tarafın şampiyonu olabilir |
+| Savaş | paralı bir bölüktür | iş, rakipler, bozulan sözleşmeler |
+| Savaş | ejderha ya da dev avlarlar | büyük av, ejderhanın hazinesi |
+| Ticaret | kraliyet beratıyla bir malın tekelini tutarlar | ticaret görevleri, tekelin düşmanları |
+| Ticaret | kalıntıdan çıkan eşyaları satarlar | hazine, sahte eserler |
+| Ticaret | can damarının ürününü tek elden satarlar | pazar, kaçakçılar |
+| Ticaret | uzak ülkelerle takas yapan yabancı bir tüccar evidir | yabancı mallar, casusluk |
+| Ticaret | yarı gizli bir kaçakçılar birliğidir | kaçak yollar, yasa dışı işler |
+| İnanç | can damarını ayakta tutan ayini yaparlar (her bahar nehri yola getiren ayin gibi) | ayin bozulursa her şey bozulur |
+| İnanç | hacıları kutsal yere götürürler | hac yolu görevleri |
+| İnanç | kutsal yeri korurlar | kutsal yerin sırları |
+| İnanç | kırılmayı yorumlayıp ona taparlar ("yeni bir inanç" yarasıyla birleşir) | yeni inancın müritleri ve düşmanları |
+| İnanç | terk eden tanrının boş tapınaklarında hâlâ ibadet ederler | tapınak labirentlerine giriş |
+
+**İşaret (18):** yüzlerine ya da ellerine bir işaret boyarlar · hep tek bir renk giyerler · bir hayvan maskesi takarlar · mesleklerinin aletini hep üstlerinde taşırlar (bir anahtar, bir çekiç, bir halat) · giriş töreninden kalan bir yara izi taşırlar · yanlarında hep bir hayvan taşırlar (bir şahin, bir kertenkele) · silah taşımazlar · evlenmezler, aileleriyle bağlarını keserler · yalnızca ikişer ikişer yolculuk ederler · toprak sahibi olamazlar · hiçbir hükümdarın önünde diz çökmezler · kurumlarına bir kez giren bir daha çıkamaz · kazançlarının yarısını halka dağıtırlar · gece yolculuk etmezler · yalnızca kendi dillerini konuşurlar, dışarıyla tercümanla anlaşırlar · saçlarını hiç kesmezler · her üye bir sır taşır ve ölene dek saklar · yılda bir kez bütün üyeler kalpte toplanır.
+
+**Güç kaynağı (10):** tekel (vazgeçilmezlik) · yer: kilit yeri ya da kalıntıyı tutarlar (bir mekân varlığı) · bilgi: yolu, haritayı ya da bir sırrı bilirler (casusluk, pazarlık) · silah (askerî güç) · halkın sevgisi (isyan ya da destek) · kutsallık (dokunulmazlık) · hazine (satın alma) · bir yaratıkla bağ (beklenmedik güç) · berat: bir hükümdardan yazılı bir hak (yasal dayanak) · korku (yıldırma).
+
+**Vaadi:** P3 merkezi bir yerleşimde · P4 çekişmedeki rolün faksiyonu kurumun kendisi; güç kaynağı varlıklarını, uygulaması hizmetlerini belirler · P5 önderi ve üyeleri, işaret görünür · P6 tuttuğu ya da koruduğu bir mekân · P7 uygulamasından doğan görevler · P8 yerlilerin bildikleri.
+
+**Kurallar:** atılan eski satırlar: ölüleri okuyan tarikat, geçiş ücreti, bağlı mahkeme, lamba yakıcılar, sayım dairesi, sessizlik tarikatı, gelgit nöbeti, para olmayan bir şeyin pazarı, misafirlik yasasının bekçileri, ölülerin haklarının bekçileri, gerçeği tartanlar, yasayı tutan koro, defter evi. Kötü tarikat yok; gizli cemiyet varsayılan olarak kötü değildir, inanç kurumları meşru taraflardır. Başka bir kampanyanın çektiği uygulama satırı bir daha çekilmez; biçim, işaret ve güç tekrar edebilir.
+
+## 10. Olgu imzası
+
+Kuruluş: **ev** yıkıntı kaynağının tuhaflığı (yara "büyünün bir kuralı değişti" ise o kural; kural 8. aileden çekilir) · **kural** (davranan) · **belirti** (görünen) · **sınır** · **kim kullanır** (diğer iki imzaya bağlanabilir).
+
+**Kural (8 aile, 40)**
+
+| Aile | Kural | Masada |
+|---|---|---|
+| Büyünün davranışı | her büyü saatlerce orada kalan ve okunabilen bir yankı bırakır | gizlice büyü yapılamaz; iz süren biri bulur |
+| Büyünün davranışı | sert bir yüzeye çarpan büyü geri dönebilir | taşın ve camın yakınında büyü risklidir |
+| Büyünün davranışı | büyünün unsuru ters döner: ateş dondurur, buz yakar | düşmanın dirençleri ters işler |
+| Büyünün davranışı | her büyü çevresinde bitki ve küçük canlılar büyütür | büyü yapılan savaş alanı ormana döner |
+| Büyünün davranışı | her büyünün uzakta bir yerde bir ikizi olur | başka bir yerde istenmeyen bir etki doğar |
+| Beden ve kan | bir topluluk yaralarını paylaşır | birini yaralamak herkesi yaralar |
+| Beden ve kan | kalıntının yakınında uzun yaşayanlar yavaş yavaş değişir | uzun kalan partide işaretler belirir |
+| Beden ve kan | hayvanlar yalanı sezer, yalancıya yaklaşmaz | at ve köpek bir yalanı ele verir |
+| Beden ve kan | kan bağı büyüyü güçlendirir; bir akrabanın büyüsü iki kat işler | aileler güçlü, akraba düşman tehlikeli |
+| Beden ve kan | her büyü, yapanın teninde bir iz bırakır | kimin ne kadar büyü yaptığı bedeninden okunur |
+| Yer ve yol | büyü görünür yollar boyunca akar | yolların kesiştiği yerler değerli ve çekişmeli |
+| Yer ve yol | aynalar belli koşullarda kapıdır | kaçış ve baskın yolları |
+| Yer ve yol | yollar yürüyeni istediği yere değil, gitmesi gereken yere götürür | yolculuk bir yön arayışına döner |
+| Yer ve yol | mesafeler gece değişir; gece yolculuğu kısa da sürebilir uzun da | gece yürüyüşü bir kumar |
+| Yer ve yol | bazı kapılar her açılışta başka bir yere açılır | kapılar bir harita olur |
+| Madde | kalıntının maddesi (cam, taş, kemik) büyüyü emer | o maddeden zırh büyüye karşı korur |
+| Madde | bir taş ağırlığını kaybeder, havada durur | uçan yapılar, düşen şeyler |
+| Madde | su bir kez aktığı yolu hatırlar ve oraya geri döner | su yönlendirilebilir, kuruyan yataklar geri gelir |
+| Madde | metal bir ustanın elinde canlanır | dökülen şeyler kendiliğinden kıpırdar |
+| Madde | ateş yaktığı şeyin şeklini dumanında gösterir | duman okunur, iz sürülür |
+| Zaman | kalıntının yakınında zaman farklı akar | içeride bir gün, dışarıda bir hafta |
+| Zaman | olacak bir şeyin gölgesi önceden düşer | pusu ve tuzak önceden sezilebilir |
+| Zaman | belli bir yerde bir an her gün yeniden yaşanır | tekrar eden an bir bilmecedir |
+| Zaman | büyüler geç tutar; etkisi bir süre sonra gelir | büyü bir plan gerektirir |
+| Zaman | büyü, yapanı yaşlandırır | büyücüler yaşlarından yaşlı görünür |
+| Söz ve işaret | birinin gerçek adını bilen ona emredebilir | adlar saklanır (halkın "çocukluk adı" âdetiyle birleşebilir) |
+| Söz ve işaret | doğru çizilen her işaret küçük bir büyüdür | duvarlarda işaretler, herkeste biraz büyü |
+| Söz ve işaret | büyü sözle değil hareketle yapılır; eli bağlı biri büyü yapamaz | büyücüyü susturmak değil, bağlamak gerekir |
+| Söz ve işaret | bir halkın dili büyünün dilidir; onu konuşan küçük büyüler yapar | dil öğrenmek güç kazanmaktır |
+| Söz ve işaret | ad konan bir yer yavaş yavaş adına benzer | yer adları bir silahtır |
+| Doğa ve canlılar | güçlü bir duygu havayı değiştirir | öfkeli bir kalabalık fırtına getirir |
+| Doğa ve canlılar | canavarlar büyünün kokusuna gelir | her büyü bir karşılaşma riskidir |
+| Doğa ve canlılar | mevsimler bir canlıya bağlıdır; dev bir hayvanın uykusu kışı getirir | o canlıya dokunmak mevsimi bozar |
+| Doğa ve canlılar | toprak can damarını korur; damara zarar veren toprağın öfkesiyle karşılaşır | doğa bir taraf olur |
+| Doğa ve canlılar | gölgeler kendi başına hareket eder | bir gölge casus olabilir |
+| Kırılmadan doğan | kırılmadan beri büyü tek yönde çalışır (kalpten dışarı ya da yukarıdan aşağı) | nerede durduğun, ne yapabileceğini belirler |
+| Kırılmadan doğan | her büyü kırılmayı biraz daha büyütür | büyücüler sorumlu tutulur |
+| Kırılmadan doğan | kırılmadan beri bazı insanlar büyüyle doğuyor | yeni yeteneklilerden korkulur |
+| Kırılmadan doğan | büyü kırılmanın hedefine yakınken güçlü, uzakta zayıf | gücün bir coğrafyası olur |
+| Kırılmadan doğan | her büyünün yarısı başka bir yerde çıkar | büyü tam kontrol edilemez |
+
+**Belirti (16):** havada bir renk · bir koku (ozon, bakır, yanık şeker) · bir uğultu ya da çıtırtı · yerde bir titreşim · camda ve suda kırağı desenleri · bedende işaretler · hayvanların huzursuzluğu · pusulaların sapması · geç kalan yansımalar · ters düşen gölgeler · durgun suda halkalar · bitkilerin bir yöne eğilmesi · ağızda metal tadı · dikleşen saçlar · havada asılı kalan toz · ani bir serinlik.
+
+**Sınır (12):** demir onu keser · akan suyu geçemez · kalıntıdan bir günlük yolun ötesinde biter · yalnızca yeraltında işler · uyuyanlara işlemez · ateş onu dağıtır · soğukta güçlenir, sıcakta zayıflar · yüksekte güçlenir, alçakta zayıflar · bir soyun kanı ona karşı koyar (halk imzasına bağlanabilir) · kurumun işareti onu durdurur (kurum imzasına bağlanabilir) · kalıntının maddesi onu emer · bir kez tetiklenince bir gün bekler.
+
+**Kim kullanır (8):** herkes · kimse, olgu kendiliğinden olur · yalnızca imza halkı · yalnızca imza kurumunun eğitimlileri · yalnızca kırılmanın dokundukları · yalnızca çocuklar · yalnızca büyücüler · yalnızca o toprakta doğanlar.
+
+**Kadran:** büyü low → 1, 6 ve 8. ailelerin ağırlığı düşer; medium ve high → hepsi açık (none yok). İmza mekaniği ölçeğin zarına bağlı kalır; short'ta çıkmaz, çıkarsa bu kuralın üstüne kurulur.
+
+**Vaadi:** P2 büyü sistemi bu kuralla tutarlı · P3 kuralın güçlü ve zayıf olduğu yerler · P5 onu kullanan NPC'ler · P6 kuralın en güçlü olduğu mekân, sınamaları kuralı kullanır · P8 yerlilerin bildikleri · masada DM kuralı dövüşte ve yolculukta uygular.
+
+**Kurallar:** atılan eski satırlar: maddede yaşayan anı, gelgit büyüsü, günah çıkarma bedeli, kan defteri, "hush" bölgeleri, bir saatliğine görünen ölüler, sesi saklayan taş, rüya sızıntısı. Zamana kilitli doğaüstü saatler yok (dry-1'in Wakelight'ı, dry-3'ün Nightwake'i). Hiçbir satır büyüye sahip olmayı ya da onu satmayı anlatmaz. Başka bir kampanyanın çektiği kural satırı bir daha çekilmez; belirti, sınır ve kullanan tekrar edebilir.
+
+## 11. Soru (tension)
+
+Kuruluş: **ev** çekişme (zarın ağırlığı çekişmenin ailesinden) · çekişmenin A ve B tarafları sorunun iki kutbunu taşır (yazar atar, kapı ikisinin de kutup taşıdığını denetler) · kötü bir kutbu korkunç uç noktasına taşır (gizli zar, #22) · soru sayısı çekişme sayısına eşit: short ve standard 1, epic 2 (`scale.yaml` `tensions`, bugün [1, 2], buna göre değişir; d2 ile ikinci soru zarı kalkar) · soru tırmanışla büyür: her basamak soruyu kendi ölçeğinde sorar (P7'ye söz) · yazar soyut kutbu kampanyanın terimleriyle somut bir soruya çevirir. **Tabloda örnek soru yok** (örnekler doğumları kendine çeker); YAML'da yalnızca kutuplar ve aile ağırlıkları.
+
+Aileler: 1 Aynı şeye iki el · 2 Eski ve yeni · 3 Güçlü ve zayıf · 4 Açanlar ve kapayanlar · 5 Yarış · 6 Kardeş kavgası · 7 İnsan ve insan-dışı · 8 Görünmeyen el.
+
+| # | Kutuplar | Aileler |
+|---|---|---|
+| 1 | miras ve özgürlük | 2, 6 |
+| 2 | düzen ve merhamet | 3, 8 |
+| 3 | bilgi ve akıl sağlığı | 4 |
+| 4 | inanç ve kanıt | 2, 4 |
+| 5 | güç ve benlik | 3, 5 |
+| 6 | hatırlamak ve kurtulmak | 2, 6 |
+| 7 | sadakat ve gerçek | 6, 8 |
+| 8 | ilerleme ve bedeli | 2, 4 |
+| 9 | hayatta kalmak ve onur | 1, 3 |
+| 10 | adalet ve barış | 3, 6 |
+| 11 | ait olmak ve dönüşmek | 2, 7 |
+| 12 | görev ve arzu | 5, 6 |
+| 13 | doğa ve egemenlik | 1, 7 |
+| 14 | gizlilik ve açıklık | 4, 8 |
+| 15 | intikam ve bırakmak | 3, 6 |
+| 16 | saflık ve karışım | 2, 7 |
+| 17 | kalıcılık ve değişim | 2 |
+| 18 | bir kişi ve çoğunluk | 1, 3 |
+| 19 | hırs ve kanaat | 5 |
+| 20 | misafirlik ve kuşku | 2, 7 |
+| 21 | fedakârlık ve değer | 3, 5 |
+| 22 | yasa ve vicdan | 3 |
+| 23 | doğuştan hak ve emekle hak | 1, 5 |
+| 24 | ustalık ve hayret | 4, 7 |
+| 25 | yurt ve ufuk | 2, 4 |
+| 26 | affetmek ve hesap sormak | 2, 6 |
+| 27 | beden ve ruh | 4, 7 |
+| 28 | son ve devam | 2, 4 |
+| 29 | güvenlik ve özgürlük (yeni) | 3, 4 |
+| 30 | umut ve gerçek (yeni) | 4, 8 |
+| 31 | kan bağı ve seçilmiş aile (yeni) | 6, 7 |
+| 32 | sahip olmak ve paylaşmak (yeni) | 1, 5 |
+| 33 | kazanmak ve haklı olmak (yeni) | 5, 8 |
+
+Atılanlar: sessizlik ve tanıklık, borç ve lütuf. Yasa ve vicdan, adalet ve barış, affetmek ve hesap sormak kalır (mahkeme artık kurumda da çekişmede de yok).
+
+**Vaadi:** P4 her tarafın öğretisi kendi kutbunu taşır, ilişkilerin gerekçeleri sorudan gelir · P5 NPC'ler soruda bir yerde durur, kötünün cevabı dm-only · P7 sonlar sorunun olası cevaplarıdır, her basamak soruyu kendi ölçeğinde sorar · P8 primer yerlilerin soruyu nasıl tartıştığını anlatır · P9 her oyuncu karakterinin hikâyesi soruya bir yerden dokunur.
+
+**Kurallar:** başka bir kampanyanın çektiği kutup satırı bir daha çekilmez. "Hükümdarlar kurayla seçilir" trope break'i ile "doğuştan hak ve emekle hak" birlikte çıkmaz.
+
+## 12. Trope break
+
+Kuruluş: **bağ** (zar: can damarı, yıkıntı, çekişme, kırılma, halk, kurum ya da olgu; yazar tersine dönen kuralı o parçayla açıklar, kapı bağın kimliğini denetler) · yara "yeni bir yasak ya da tabu" ise trope break'lerden biri yasak satırlarından (haritalar yasak, silah yasağı) · sayı: short 1, standard ve epic 2, ikisi farklı ailelerden. Tutulan satırlar mevcut yükümlülüklerini (P2, P3, P5, P6 `hooks`) taşır; yeni satırlara inşada aynı biçimde yazılır; hepsi söz defterine girer.
+
+| Aile | Trope break | Masada |
+|---|---|---|
+| Yönetim ve güç | hükümdarlar kurayla seçilir | her kura bir siyasi kriz |
+| Yönetim ve güç | lordlar yoktur; loncalar yönetir | güç, zanaat ve para demek |
+| Yönetim ve güç | savaşları ordular değil şampiyonlar yapar | parti bir ülkenin şampiyonu olabilir |
+| Yönetim ve güç | (yeni) silah taşımak yalnızca bir sınıfa açıktır | silahlı bir parti ya ayrıcalıklıdır ya suçlu |
+| Yönetim ve güç | (yeni) büyü soyluluktur; büyüsüz soylu yoktur | büyücü bir PC doğuştan bir statüye sahiptir |
+| Yönetim ve güç | (yeni) ülkeleri ejderhalar yönetir | hükümdarla konuşmak bir ejderhayla konuşmak demek |
+| Halklar ve canlılar | elfler geçen yüzyıl geldi | elfler yeni, yabancı ve kuşkuyla karşılanan bir halktır |
+| Halklar ve canlılar | devler köylüdür; toprağı onlar işler | devler dost, hatta işveren olabilir |
+| Halklar ve canlılar | canavarların antlaşmaları vardır | her canavar karşılaşması önce bir pazarlıktır |
+| Halklar ve canlılar | hayvanlar konuşur ve toprak sahibidir | ormanın bir sahibi, bir sözü vardır |
+| Halklar ve canlılar | (yeni) insanlar azınlıktır; dünya başka soyların | insan bir PC yabancıdır |
+| Halklar ve canlılar | (yeni) soyların yurtları alışılmışın tersidir (cüceler denizci, elfler bozkır göçebesi) | beklenti her soyda bozulur |
+| Halklar ve canlılar | (yeni) dünyanın tüccarları goblinlerdir | her pazar onlarındır |
+| Tanrılar ve gök | tanrılar tapınma değil tanık ister | bir mucizeyi görmek bir görevdir |
+| Tanrılar ve gök | tanrıların ölümlü ataların ruhları olduğunu herkes bilir | din bir aile işidir |
+| Tanrılar ve gök | ayda yaşayanlar vardır ve ticaret yaparlar | gökten gelen mallar ve yabancılar |
+| Tanrılar ve gök | (yeni) tanrıların büyüsü yalnızca kutsal yerlerde işler | rahip bir PC kutsal yerden uzaklaştıkça güç kaybeder |
+| Tehlikenin yeri | gece güvenli, gündüz tehlikelidir | yolculuk ve baskın gece yapılır |
+| Tehlikenin yeri | (yeni) şehirler tehlikeli, vahşi doğa güvenlidir | sığınak ormandır, tuzak şehir |
+| Tehlikenin yeri | (yeni) zindanlar boş değildir; her harabe birilerinin evidir ve kapısı çalınır | zindana girmek önce bir ziyarettir |
+| Tehlikenin yeri | (yeni) büyük bir canavarı öldüren onun yükünü devralır | zafer bir bedel getirir, öldürmek bir karardır |
+| Zaman ve tarih | dünya genç; yazılı tarih üç yüz yıllık | kadim sırlar yok, yakın geçmişin sırları var |
+| Zaman ve tarih | eski düşman kazandı ve herkes iyi | "kötülerin" dünyası sıradan bir dünyadır |
+| Zaman ve tarih | yılda bir ay büyü çalışmaz | büyücüler o ay için hazırlanır |
+| Bilgi, madde ve yaşam | demir kutsal ve nadirdir | demir silah bir hazinedir |
+| Bilgi, madde ve yaşam | haritalar yasaktır | yol bilgisi en değerli şeydir |
+| Bilgi, madde ve yaşam | doğumlar nadirdir ve herkesin önünde olur | her çocuk bir olaydır |
+| Bilgi, madde ve yaşam | (yeni) kimse doğrudan yalan söyleyemez; herkes lafı dolandırır | her konuşma bir bilmecedir |
+| Bilgi, madde ve yaşam | (yeni) yazı bilinmez; bilgi ezberde taşınır, söz el sıkışmaktır | tanıklar ve ezberciler değerlidir |
+
+**Atılan 25 satır:** ölüler (ölüler uygar olanlar, ölülerin oyu, sıradan diriliş, hatırlanan yeniden doğuş, öbür dünya yok) · para ve defter (yıllarla ödenen borç, iblislerin bankaları, tanrıların darp ettiği para, satılan anılar, satılan adlar, yazı tekeli) · mahkeme ve yasa (tanrılar yargılanıyor, yasa bir şarkı) · ışık (güneş yeni yakıldı) · büyü bir meta (hava bir kaynak, büyü bir kamu hizmeti) · temelle ya da imzalarla çakışan (kara bir halka, şehir devletleri ve tek yol, hareket eden başkent, yürüyen orman, yıldızlar yok, kimse yaşlılıktan ölmez, hastalar büyücü, yarayı taşıyan iyileştirme, ejderha kemiğinden para).
+
+**Kurallar:** kurayla hükümdar ile "doğuştan hak ve emekle hak" birlikte çıkmaz; "tanrılar ataların ruhları" ile sır "tanrılar insandı" birlikte çıkmaz. Goblinler kötü değil; ejderha hükümdarlar bir kara kule efendisi değil; "eski düşman kazandı" `forbidden_monolithic_empire`'ın tek istisnası. Başka bir kampanyanın çektiği satır bir daha çekilmez.
+
+## 13. Çakışmaların hakemi: script (owner ruling 2026-09-28)
+
+Model hiçbir tablo kuralının hakemi değildir.
+1. **Çakışma veridir.** Her satır `conflicts_with` (birlikte çıkamayacağı satırlar, başka tablolardan da) ve `requires` (çıkması için şart: "palette ince yer", "büyü high", "yeraltı") taşır. Tablolarda "ağır" diye yazılanlar ağırlıktır, "gerekir" ya da "yalnızca" diye yazılanlar şarttır.
+2. **İki yönlü:** tablo okunurken çakışmalar simetrik yapılır; A B'yi yasaklıyorsa B de A'yı yasaklamış sayılır.
+3. **Havuz zardan önce süzülür:** başka kampanyada kullanılmış, o ana kadar atılmış herhangi bir zarla iki yönden biriyle çakışan ve şartı sağlanmayan satırlar çıkarılır, zar sonra atılır. "Atıp beğenmezsen yeniden at" kalkar.
+4. **Havuz boşalırsa durur:** preroll hata verir, doğum başlamaz; asla "yine de tut" demez.
+5. **Her dışlama kayda geçer:** zar kaydı dışlanan satırı ve nedenini yazar.
+6. **Kapı son kez denetler:** öncül kayıt olurken çekilen bütün satır kimlikleri çakışma listesine karşı yeniden denetlenir.
+7. **Test:** model kullanmayan bir test binlerce tohumla bütün P1 zarlarını atar ve tek bir çakışan set çıkmadığını kanıtlar.
+8. **Yazının kendi çelişkileri:** satırlar tersine dönen kuralın "asla" cümlelerini taşır; kelimeyle yakalanabilenleri kapı yakalar (`forbidden.yaml`'ın kelime kalıpları gibi), kalanında eleştirmen her söz için bir hüküm yazar ve kararı söz defteri ile kapı verir.
+
+Bugün bulunan iki delik (aynı iş kaleminde kapanır): `designer.py` `table_until` sekiz denemeden sonra çakışan satırı sessizce tutuyor; trope break çekilirken adayın kendi `conflicts_with` listesi daha önce atılmış zarlarla (soru) karşılaştırılmıyor, bu yüzden "kurayla hükümdar" ile "doğuştan hak ve emekle hak" bugün birlikte çıkabilir.
+
+İnşada her tablonun çakışma ve şart listesi satırlar gibi sahibine onaylatılır.
+
+## 14. Sır — yalnızca yapı (owner ruling 2026-09-28: the development tab builds the rows; the owner, who is also the player, does not see them)
+
+**Ev: kırılma.** Sır kırılmanın gerçek nedenidir: neden oldu, kim seçti. Her kırılmanın arkasındaki yaşayan birinin kararını sır taşır.
+
+Dört parça, hepsi gizli zar, satırlar dm-only:
+- **Arketip** (gerçekte neler oluyor): bugünkü 24 satırdan çekim alanındaki 2'si çıkar; temelde zaten açık olan bir şeyi sır yapan satırlar çakışma kuralıyla dışlanır (ör. yıkıntı "hapsedilmiş tanrı" ise "tanrılar tutsak" sır olamaz); ağırlık kırılmanın eyleminden ve zamanından gelir.
+- **Seçen** (yeni): kırılmayı kim seçti: kötü, çekişmenin bir rolü, imza kurumu, imza halkı, sıradan biri (ölmüş ya da unutulmuş) ya da bir güçle pazarlık eden bir ölümlü. Seçen her zaman bir kişidir.
+- **Dönüş** (twist): bugünkü 12 satır kalır; 3 yeni: seçen ne yaptığını bilmiyordu; seçen şimdi geri almaya çalışıyor; halk sırrı biliyor ama kimse inanmıyor.
+- **İz** (trail): çekim alanındaki 1 satır çıkar; yaklaşık 10 satıra çıkar (ör. iz, yara ve hayatta kalan; nesne, yapan ve sahibi; av izi ve in; ele geçirilen mektup ve hain).
+
+**İpuçları ve tırmanış:** ipuçları perde perde açılır, son ipucu tırmanışın en üst basamağındadır. Her ipucunun yeri (NPC, mekân, yerleşim) söz defterine vadeli söz olarak girer; dry-4'ün "`clue_unplaced` ama kapı açık" durumu kapanır.
+
+**Vaadi:** P2 sırrın bağlandığı tanrı ve kırılmanın tarihli olayı · P5 ve P6 ipuçlarını taşıyanlar · P4 sırrı bilen faksiyon (dönüş öyleyse) · P7 sonlar sırrın açılmasına göre dallanır (geri alınabilir ya da alınamaz) · kart yalnızca spoiler'sız özeti gösterir (arketip sınıfı, yeni mi, perde başına ipucu sayısı, eleştirmenlerin uyumu).
+
+**Kurallar:** çakışmaların hakemi script; başka bir kampanyanın çektiği arketip bir daha çekilmez.
+
+## 15. Kötü — yalnızca yapı (owner ruling 2026-09-28: the development tab builds the rows, the owner does not see them)
+
+Görünürlük, biçim ve köken P4'ten P1'in gizli zarlarına taşınır (#22); P4 cepheyi, kıyamet saatini, teğmenleri ve kötünün faksiyon arketipini tutar ve taşınan zarları okur. **Ev: kırılma ve soru.**
+
+Altı parça, hepsi gizli zar:
+- **Görünürlük** (5 satır, temiz).
+- **Biçim** (12 kullanılabilir; kara kule efendisi, fısıldayan danışman, gizlice kötü hükümdar havuza hiç girmez; birkaç yeni satır eklenecek).
+- **Köken** (9 kullanılabilir; uyanan kadim kötülük havuza girmez; "olgu onu aldı" olgu imzasına bağlanır).
+- **Kırılmayla bağ** (yeni, 6): onu yarattı · ondan yararlanıyor · onu tamamlamak istiyor · korkunç bir bedelle geri çevirmek istiyor · onu durdurmaya çalıştı, başaramadı ve şimdi öfkeli · kırılmanın ürünü, onunla doğdu.
+- **Kutup** (yeni): script A'nın ya da B'nin kutbunu seçer; kötü onu uç noktasına taşır, dünyanın çoğunluğu öbür kutba yakındır.
+- **Seçenle uyum** (kural): sırrın seçeni "kötü" ise bağ "onu yarattı" olmak zorundadır; hakem script.
+
+Kötü varsayılan olarak açık çekişmede bir taraf değildir; görünürlük nerede durduğunu belirler (bir rolün arkasında, görünmeyen elin arkasında, çekişmenin dışında ya da bir süreç olarak). **Tırmanış:** her basamakta farklı bir yüzle vardır; 1. katmanda işleri ve adamları, son katmanda kendisi (P7 ve P4'e söz).
+
+**Vaadi:** P4 faksiyon, cephe, kıyamet saati, teğmenler · P5 dosyası iki bağımsız eleştirmenle (24.6 #6) · P6 ini; boss kontrol listesi v2 ve kötünün kendi imza silahı ile direnç eşyası gerçek ganimet · P7 son basamak kötüyle yüzleşme · kart yalnızca spoiler'sız özet.
+
+**Kurallar:** yasaklı biçimler ve köken havuza girmez; çakışmaların hakemi script; başka bir kampanyanın çektiği biçim ve köken çifti bir daha çekilmez.
+
+## 16. Adlar ve kökler
+
+1. **Diller ve evleri:** short 2, standard ve epic 3 dil. 1. dil imza halkının dili; 2. dil ortak dil ya da çekişmenin öbür tarafının dili; 3. dil (standard ve üstü) kurumun ya da ikinci bir halkın dili. Kurum işareti "yalnızca kendi dillerini konuşurlar" çıkarsa kurumun dili ayrı bir dil olur.
+2. **Ses ailesi:** `naming.yaml#family` 10 satırdan 20-24'e genişler. Ailenin değiştirilmesini (bir ses bankası değişir, bir ses kümesi yasaklanır) yazar değil script zarla yapar.
+3. **Kökler (#20, kesinleşti):** zarla, ağırlık temelin konu alanlarından (palet toprak ve su, can damarı zanaat, canlı ve bitki); dil başına short 8-10, standard 12, epic 15. Sözlük 115 kökten 300-400'e genişler, açıklamalar nötrleşir. Çekim alanındaki kökler (candle, hush, still, wake…) sözlükte kalır (#18); bir kampanya onları ancak zarla çekerse kullanabilir.
+4. **Kalıplar:** bütün kalıplardan örnekler silinir, yalnızca biçim kalır; "Court of…", "…Assize" ve ay kalıbı "…tide" çıkar. Kurum kalıplarının biçim kelimeleri (Order, Guild, Company, House, Council, League, Brotherhood…) kurum imzasının biçim tablosundan gelir.
+5. **Ad havuzu, yer ve kurum için de:** script her yer, kurum, imza, ay ve gün adı için kalıp × zarla gelen köklerden 3-5 aday üretir; yazar birini seçer. Yazar hiçbir özel adı icat etmez; naming.json'daki örnek adlar da havuzdan gelir. Kişi ve tanrı adları bugünkü gibi `design_names.py` havuzundan.
+6. **Kapı:** her özel ad havuzda olmalı. Sahibinin yasak listesi, modelin sevdiği adlar, mitoloji yasağı, Türkçe kelimenin ad olamaması, başka kampanyaların kaydettiği adların tekrar edilememesi ve Türkçe ek alabilme şartı aynen kalır.
+
+**Vaadi:** P2 tanrı adları, aylar, günler havuzdan · P3 yer adları havuzdan, bölgelerin dilleri · P4 faksiyon adları biçim kelimeleri ve köklerden · P5 kişi adları havuzdan · P8 primerin diller bölümü.
+
+## 17. Temel cümlesi, yazarın yazdıkları, kapı ve kart
+
+**Şablon (script):** script hiçbir parçaya ek eklemez; her satırın Türkçe parçası kendi başına duran bir isim öbeği ya da tam cümle olarak yazılır, bağlantı ayrı kelimelerle ("ile", "arasında") kurulur. Eylemin üç zaman biçimi vardır (az önce ve bir kuşak önce → "tersine döndü"; şimdi oluyor → "tersine dönüyor"; yaklaşıyor → "tersine dönmek üzere"); her eylem satırı üçünü taşır, eksiğini bir test yakalar. Beş cümle:
+1. Dünya [omurga]: kalbi [kalp], bir ucunda [uç], öbür ucunda [uç].
+2. Çok önce [yıkıntı, ne oldu]; geride [kalıntı] kaldı.
+3. Bugün halk [can damarı] ile yaşıyor.
+4. [A] ile [B] arasında eski bir gerilim var; üçüncüsü [üçüncü rol].
+5. [Zaman], [hedef] [eylem]. Yarası: [yara]. Bundan güçlü çıkan: [kazanan].
+
+Cümle kimliğin girdisidir, okuyucunun metni değil; kartta tırmanışın basamak sayısıyla birlikte görünür.
+
+**2. adımın zar sırası (script):** halk (soy, iki özellik, tavır) → kurum (halkın almadığı rol, biçim, uygulama, işaret, güç) → olgu (kural, belirti, sınır, kullanan) → soru → trope break (bağ) → sır (arketip, seçen, dönüş, iz; gizli) → kötü (görünürlük, biçim, köken, bağ, kutup; gizli) → adlar (aileler, değişimleri, kökler, havuzlar). Çakışma süzgeci her zardan önce.
+
+**Yazar (tek ajan) yazar:**
+- *açık öncül:* somut soru; üç imza (havuzdan ad, yerlinin ağzından bir paragraf: kural, görünüşü, gündelik hayata dokunuşu); trope break'ler bağlarıyla; diller (hangi halk hangisini konuşur); oyuncu pitch'i (üç cümle, sır yok); yalnızca bu dünyada doğru olabilecek üç cümle;
+- *gizli ayna (dm-only):* sır (kırılmanın gerçek nedeni, seçen, dönüş); ipuçları (perde ve basamak, tür, yer sözü); kötü (biçim, köken, bağ, sorunun cevabı); DM pitch'i; zar çıkarsa imza mekaniği taslağı;
+- *notlar:* her imzanın hangi varlıklarda görüneceği (söz defterine girer).
+
+**Yazar yapamaz:** temeli değiştirmek; zar seçmek ya da yeniden atmak; özel ad icat etmek; örnek ad yazmak. "Önceki kampanyalar" listesini görmez (eleştirmende).
+
+**Kapı (script):** her imza evinin kimliğini taşır; temelin damgaları değişmemiştir; satırlar arası çakışma yoktur; bütün özel adlar havuzdadır; sözler deftere yazılmıştır; açık dosyaya sır sızmamıştır.
+
+**Eleştirmenler (zanaat):** iki eleştirmen ve faz eleştirmeni; yeni ölçütler: soru somut mu; üç cümle gerçekten yalnızca bu dünyada mı doğru; öncül önceki kampanyalardan farklı mı; her söz için bir hüküm.
+
+**Kart:** temel cümlesi, oyuncu pitch'i, imzaların birer satırı, trope break'ler, sırrın spoiler'sız özeti, açık söz sayısı.
