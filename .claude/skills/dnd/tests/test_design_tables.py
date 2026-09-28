@@ -131,7 +131,9 @@ class Convention(unittest.TestCase):
                                 "forbidden": "forbidden", "era": "dials", "pantheon": "pantheon",
                                 "sig": "signatures", "mix": "dials", "tone": "dials",
                                 "land": "foundation", "spine": "foundation", "ruin": "foundation",
-                                "life": "foundation", "contest": "foundation"}.get(table)
+                                "life": "foundation", "contest": "foundation", "act": "foundation",
+                                "scar": "foundation", "time": "foundation", "tier": "foundation",
+                                "target": "foundation"}.get(table)
                 if prefix_table in present:
                     with self.subTest(table=name, row=r["id"], ref=ref):
                         self.assertIn(ref, ids)

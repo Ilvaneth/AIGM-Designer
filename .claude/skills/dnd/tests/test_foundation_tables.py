@@ -325,6 +325,88 @@ class Contest(unittest.TestCase):
             self.assertEqual(arb.weight_of(by[cid], arb.Context(rolled={life: False})), base * 2)
 
 
+ACTIONS = dt.rows("foundation.yaml#action")
+SCARS = dt.rows("foundation.yaml#scar")
+PIECES = ("lifeline", "remnant", "key_place", "heart", "role", "thin_place")
+
+
+class Break(unittest.TestCase):
+
+    def test_six_targets_the_thin_place_only_with_the_palette(self):
+        targets = {r["piece"]: r for r in dt.rows("foundation.yaml#break_target")}
+        self.assertEqual(set(targets), set(PIECES))
+        self.assertEqual(targets["thin_place"]["requires"], {"any_of": ["land_thin_place"]})
+
+    def test_twenty_one_actions_each_with_three_forms(self):
+        """Item 25 step 1 #7: every action carries its past, present and imminent form; a missing one is caught."""
+        self.assertEqual(len(ACTIONS), 21)
+        for r in ACTIONS:
+            with self.subTest(action=r["id"]):
+                self.assertEqual(set(r["forms"]), {"past", "present", "imminent"})
+                for f in r["forms"].values():
+                    self.assertTrue(f.strip())
+                    self.assertFalse(f[0].isupper(), "a predicate the sentence places after the target")
+                self.assertTrue(set(r["targets"]) <= set(PIECES))
+
+    def test_the_compatibility_tables(self):
+        """Review #8: per lifeline family, remnant kind and key-place kind; each listed exactly when the action can
+        strike that piece, and every value from its closed list."""
+        closed = {"lifeline": {r["family"] for r in LIFE}, "remnant": set(DOC["remnant_kinds"]), "key_place": set(DOC["key_kinds"])}
+        for r in ACTIONS:
+            with self.subTest(action=r["id"]):
+                fits = r["fits"]
+                self.assertEqual(set(fits), {t for t in r["targets"] if t in closed})
+                for piece, values in fits.items():
+                    self.assertTrue(values)
+                    self.assertFalse(set(values) - closed[piece])
+                self.assertTrue(set(r.get("destroys") or []) <= set(r["targets"]))
+        for piece, values in closed.items():
+            reach = set().union(*(set(r["fits"].get(piece) or []) for r in ACTIONS))
+            self.assertEqual(reach, values, f"every {piece} kind can be struck by some action")
+
+    def test_no_table_row_carries_an_example(self):
+        """Owner, 2026-09-28: examples anchor births; they stay in docs/p1-foundation-rows.md only."""
+        for sub, rows in dt.all_row_lists(DOC).items():
+            for r in rows:
+                self.assertFalse({k for k in r if "example" in k}, r["id"])
+
+    def test_the_owner_rules_on_the_actions(self):
+        by = {r["id"]: r for r in ACTIONS}
+        self.assertIn("treaty", by["act_corrupted"]["fits"]["lifeline"])
+        self.assertTrue(by["act_rose"]["winner_is_target_role"])
+        self.assertEqual(by["act_closed"]["bars_scars_on_target"], {"thin_place": ["scar_plane_thinned"]})
+        self.assertEqual({r["id"] for r in ACTIONS if r.get("concretise")}, {"act_fell_from_sky", "act_gave_birth"})
+        leads = {r["id"]: r["tr"]["lead"] for r in dt.rows("foundation.yaml#time")}
+        self.assertEqual(leads["time_coming"], "işaretler belli:")
+
+    def test_actions_and_scars_are_grammar(self):
+        """A used verb or scar waits three births; they are never exhausted."""
+        for ref in ("foundation.yaml#action", "foundation.yaml#scar"):
+            head = dt.roll_header(ref)
+            self.assertEqual(head.get("row_wait"), 3)
+            self.assertFalse(head.get("avoid_used") or head.get("family_wait"))
+
+    def test_eighteen_scars_each_a_column(self):
+        self.assertEqual(len(SCARS), 18)
+        self.assertEqual(DOC["tables"]["scar"]["roll"]["count_by_scale"], {"short": 1, "standard": 2, "epic": 3})
+        for r in SCARS:
+            with self.subTest(scar=r["id"]):
+                self.assertTrue(r["floors"])
+                self.assertEqual({h["phase"] for h in r["hooks"]}, set(r["floors"]))
+                self.assertNotRegex(r["tr"]["name"], r"ölü|ölüm", "the dead returning is left out on purpose")
+        new_land = next(r for r in SCARS if r["id"] == "scar_new_land_kind")
+        self.assertTrue(new_land["needs_fantastic_room"])
+
+    def test_four_times_with_their_tense(self):
+        times = {r["id"]: r["tense"] for r in dt.rows("foundation.yaml#time")}
+        self.assertEqual(times, {"time_just_now": "past", "time_generation_ago": "past", "time_unfolding": "present",
+                                 "time_coming": "imminent"})
+
+    def test_the_escalation_is_the_four_tiers_of_play(self):
+        tiers = dt.rows("foundation.yaml#escalation_tier")
+        self.assertEqual([t["levels"] for t in tiers], [[1, 4], [5, 10], [11, 16], [17, 20]])
+
+
 class Attractors(unittest.TestCase):
 
     def test_no_attractor_cluster_in_any_row(self):

@@ -1538,3 +1538,339 @@ tables:
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
         tr: {name: "kılık değiştiren"}
+
+  # ── 6. the break: built last, strikes one of the pieces (target · action · scars · time · winner) ─────
+  break_target:
+    roll: {avoid_used: false, note: "the target is a load-bearing piece; the thin place only when the palette holds it; the action must fit the target (the action's `targets` and its fit lists)"}
+    hooks_common:
+      - {phase: P7, must: "the opening meets the break through its target"}
+    rows:
+      - {id: target_lifeline, label: The lifeline, piece: lifeline, tr: {name: "can damarı"}, hooks: [{phase: P3, must: "the lifeline's weak point is where the break struck"}]}
+      - {id: target_remnant, label: The ruin's remnant, piece: remnant, tr: {name: "yıkıntının kalıntısı"}, hooks: [{phase: P6, must: "the remnant's site shows the break"}]}
+      - {id: target_key_place, label: The spine's key place, piece: key_place, tr: {name: "omurganın kilit yeri"}, hooks: [{phase: P3, must: "the key place's node shows the break"}]}
+      - {id: target_heart, label: The heart, piece: heart, tr: {name: "kalp"}, hooks: [{phase: P3, must: "the heart shows the break; a destroyed heart moves the start to its ruins or the nearest end"}]}
+      - {id: target_role, label: A contest role, piece: role, tr: {name: "çekişmenin bir rolü"}, hooks: [{phase: P4, must: "the struck role's faction carries the break"}]}
+      - {id: target_thin_place, label: The thin place, piece: thin_place, requires: {any_of: [land_thin_place]}, tr: {name: "ince yer"}, hooks: [{phase: P2, must: "the thin place's plane carries the break"}]}
+
+  action:
+    roll:
+      avoid_used: false
+      row_wait: 3                       # grammar: a verb the last three births used waits; a target + action pair never repeats
+      note: >-
+        `forms` are past (just now, a generation ago), present (unfolding) and imminent (coming), each a
+        self-standing predicate the foundation sentence places after the target's phrase with no suffix.
+        `fits` are the compatibility tables (review #8): lifeline families, remnant kinds and key-place kinds the
+        action can strike; the heart, a role and the thin place need only the action's `targets`. `destroys`
+        names the pieces the action destroys (a destroyed role cannot be the winner; a destroyed heart moves
+        the start). The illustrations stay in docs/p1-foundation-rows.md only; examples anchor births.
+    hooks_common:
+      - {phase: P2, must: "a dated event of the history is the break, told with this action"}
+      - {phase: P8, must: "the day-0 news carries the break's latest sign"}
+    rows:
+      - id: act_vanished
+        label: "Vanished"
+        targets: [lifeline, remnant, key_place, heart, role]
+        fits: {"lifeline": ["water", "passage", "creatures", "mine", "crop", "craft", "treaty"], "remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
+        destroys: [heart, role]
+        forms: {past: "yok oldu", present: "yok oluyor", imminent: "yok olmak üzere"}
+      - id: act_seized
+        label: "Was seized"
+        targets: [lifeline, remnant, key_place, heart, thin_place]
+        fits: {"lifeline": ["water", "passage", "creatures", "mine", "crop", "craft"], "remnant": ["network", "structure", "city", "body", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
+        forms: {past: "ele geçirildi", present: "ele geçiriliyor", imminent: "ele geçirilmek üzere"}
+      - id: act_reversed
+        label: "Turned backwards"
+        targets: [lifeline, key_place]
+        fits: {"lifeline": ["water", "passage", "creatures", "treaty"], "key_place": ["water", "descent", "network"]}
+        forms: {past: "tersine döndü", present: "tersine dönüyor", imminent: "tersine dönmek üzere"}
+      - id: act_split
+        label: "Split in two"
+        targets: [lifeline, key_place, heart, role]
+        fits: {"lifeline": ["water", "passage", "creatures", "treaty"], "key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
+        destroys: [role]
+        forms: {past: "ikiye bölündü", present: "ikiye bölünüyor", imminent: "ikiye bölünmek üzere"}
+      - id: act_corrupted
+        label: "Was corrupted"
+        targets: [lifeline, remnant, key_place, heart]
+        fits: {"lifeline": ["water", "creatures", "mine", "crop", "craft", "treaty"], "remnant": ["network", "structure", "city", "body", "wasteland", "source", "rift"], "key_place": ["crossing", "water", "gate", "network", "landmark"]}
+        forms: {past: "bozuldu", present: "bozuluyor", imminent: "bozulmak üzere"}
+      - id: act_awakened
+        label: "Came alive"
+        targets: [remnant, key_place]
+        fits: {"remnant": ["body", "machine", "structure", "object", "network"], "key_place": ["bridge", "gate", "descent", "landmark"]}
+        forms: {past: "canlandı", present: "canlanıyor", imminent: "canlanmak üzere"}
+      - id: act_fell_from_sky
+        concretise: true                # owner, 2026-09-28: step 2's writer names what fell / what was born (a promise)
+        label: "Crushed by what fell from the sky"
+        targets: [lifeline, key_place, heart]
+        fits: {"lifeline": ["water", "passage", "mine", "crop"], "key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
+        destroys: [heart]
+        forms: {past: "gökten düşen bir şeyin altında kaldı", present: "gökten düşen bir şeyin altında kalıyor", imminent: "gökten düşecek bir şeyin altında kalmak üzere"}
+      - id: act_stopped
+        label: "Stopped"
+        targets: [lifeline, key_place, heart]
+        fits: {"lifeline": ["water", "passage", "creatures", "crop"], "key_place": ["crossing", "water", "crossroad", "network"]}
+        forms: {past: "durdu", present: "duruyor", imminent: "durmak üzere"}
+      - id: act_opened
+        label: "Opened"
+        targets: [remnant, key_place, thin_place]
+        fits: {"remnant": ["city", "structure", "body", "object", "source", "rift"], "key_place": ["gate", "descent", "network", "landmark"]}
+        forms: {past: "açıldı", present: "açılıyor", imminent: "açılmak üzere"}
+      - id: act_closed
+        label: "Closed"
+        bars_scars_on_target: {thin_place: [scar_plane_thinned]}   # owner, 2026-09-28: all ways closed, no thinner border
+        targets: [lifeline, key_place, thin_place]
+        fits: {"lifeline": ["water", "passage", "mine"], "key_place": ["crossing", "bridge", "gate", "descent", "network"]}
+        forms: {past: "kapandı", present: "kapanıyor", imminent: "kapanmak üzere"}
+      - id: act_merged_with_plane
+        label: "Merged with a plane"
+        targets: [key_place, heart, thin_place]
+        fits: {"key_place": ["gate", "descent", "crossroad", "network", "landmark"]}
+        forms: {past: "bir düzlemle birleşti", present: "bir düzlemle birleşiyor", imminent: "bir düzlemle birleşmek üzere"}
+      - id: act_true_face
+        label: "Showed its true face"
+        targets: [lifeline, remnant, key_place]
+        fits: {"lifeline": ["water", "creatures", "mine", "treaty"], "remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["bridge", "water", "gate", "descent", "landmark"]}
+        forms: {past: "gerçek yüzünü gösterdi", present: "gerçek yüzünü gösteriyor", imminent: "gerçek yüzünü göstermek üzere"}
+      - id: act_turned_on_keepers
+        label: "Turned on its keepers"
+        targets: [lifeline, remnant, role]
+        fits: {"lifeline": ["creatures", "treaty"], "remnant": ["network", "structure", "body", "machine", "object"]}
+        forms: {past: "bekçilerine döndü", present: "bekçilerine dönüyor", imminent: "bekçilerine dönmek üzere"}
+      - id: act_spread_unbounded
+        label: "Spread without bound"
+        targets: [lifeline, remnant, thin_place]
+        fits: {"lifeline": ["water", "creatures", "crop"], "remnant": ["wasteland", "source", "rift"]}
+        forms: {past: "sınırsız yayıldı", present: "sınırsız yayılıyor", imminent: "sınırsız yayılmak üzere"}
+      - id: act_migrated
+        label: "Moved away"
+        targets: [lifeline, heart, role]
+        fits: {"lifeline": ["passage", "creatures", "treaty"]}
+        destroys: [heart, role]
+        forms: {past: "göçüp gitti", present: "göçüp gidiyor", imminent: "göçüp gitmek üzere"}
+      - id: act_burned
+        label: "Burned"
+        targets: [lifeline, key_place, heart]
+        fits: {"lifeline": ["passage", "mine", "crop", "craft"], "key_place": ["crossing", "bridge", "gate", "crossroad", "network", "landmark"]}
+        destroys: [heart]
+        forms: {past: "yandı", present: "yanıyor", imminent: "yanmak üzere"}
+      - id: act_rose
+        label: "Rose"
+        winner_is_target_role: true     # owner, 2026-09-28: a role that rose is the break's winner
+        targets: [remnant, key_place, heart, role]
+        fits: {"remnant": ["city", "structure", "body", "machine", "object"], "key_place": ["crossing", "water", "crossroad", "landmark"]}
+        forms: {past: "yükseldi", present: "yükseliyor", imminent: "yükselmek üzere"}
+      - id: act_sank
+        label: "Sank"
+        targets: [remnant, key_place, heart]
+        fits: {"remnant": ["network", "structure", "city", "body", "object"], "key_place": ["crossing", "bridge", "gate", "crossroad", "landmark"]}
+        destroys: [heart]
+        forms: {past: "battı", present: "batıyor", imminent: "batmak üzere"}
+      - id: act_twinned
+        label: "Was twinned"
+        targets: [lifeline, heart, thin_place]
+        fits: {"lifeline": ["water", "passage", "mine"]}
+        forms: {past: "ikizlendi", present: "ikizleniyor", imminent: "ikizlenmek üzere"}
+      - id: act_forgotten
+        label: "Was forgotten"
+        targets: [remnant, heart, role]
+        fits: {"remnant": ["network", "structure", "city", "object", "source"]}
+        destroys: [heart, role]
+        forms: {past: "unutuldu", present: "unutuluyor", imminent: "unutulmak üzere"}
+      - id: act_gave_birth
+        concretise: true                # owner, 2026-09-28: step 2's writer names what fell / what was born (a promise)
+        label: "Gave birth to something new"
+        targets: [lifeline, remnant, thin_place]
+        fits: {"lifeline": ["water", "creatures", "mine"], "remnant": ["body", "wasteland", "source", "rift"]}
+        forms: {past: "yeni bir şey doğurdu", present: "yeni bir şey doğuruyor", imminent: "yeni bir şey doğurmak üzere"}
+
+  scar:
+    roll:
+      avoid_used: false
+      row_wait: 3
+      count_by_scale: {short: 1, standard: 2, epic: 3}
+      note: "every scar is a column: `floors` are the phases it lands on; a scar that brings a fantastic kind counts toward the palette's cap and is excluded when the cap is full (owner, 2026-09-28)"
+    rows:
+      - id: scar_new_land_kind
+        label: "A new kind of land on the map"
+        floors: [P1, P3]
+        requires: {dial: {magic: [medium, high]}}
+        needs_fantastic_room: true
+        tr: {name: "haritada yeni bir yer türü (fantastik paletten)"}
+        hooks:
+          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+      - id: scar_roads_changed
+        label: "The roads changed"
+        floors: [P3]
+        tr: {name: "yolların değişmesi"}
+        hooks:
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+      - id: scar_cursed_belt
+        label: "A poisoned or cursed belt"
+        floors: [P3, P6]
+        tr: {name: "zehirli ya da lanetli bir kuşak"}
+        hooks:
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P6, must: "creatures or sites carry this scar"}
+      - id: scar_unreachable_region
+        label: "An unreachable region"
+        floors: [P3, P7]
+        note: "a later act opens it (P7)"
+        tr: {name: "erişilmez bir bölge"}
+        hooks:
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P7, must: "the arc carries this scar"}
+      - id: scar_magic_rule_changed
+        label: "A rule of magic changed"
+        floors: [P1, P2]
+        note: "the phenomenon signature is this rule: its home becomes the break and its rule comes from family 8 (review #6)"
+        tr: {name: "büyünün bir kuralı değişti"}
+        hooks:
+          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
+          - {phase: P2, must: "the cosmos carries this scar"}
+      - id: scar_god_changed
+        label: "A god changed"
+        floors: [P2]
+        tr: {name: "bir tanrı değişti"}
+        hooks:
+          - {phase: P2, must: "the cosmos carries this scar"}
+      - id: scar_plane_thinned
+        label: "The border with a plane grew thin"
+        floors: [P2]
+        tr: {name: "bir düzlemle sınır inceldi"}
+        hooks:
+          - {phase: P2, must: "the cosmos carries this scar"}
+      - id: scar_sky_changed
+        label: "The sky changed"
+        floors: [P2]
+        tr: {name: "gökyüzü değişti"}
+        hooks:
+          - {phase: P2, must: "the cosmos carries this scar"}
+      - id: scar_seasons_broken
+        label: "The seasons broke"
+        floors: [P2]
+        tr: {name: "mevsimler bozuldu"}
+        hooks:
+          - {phase: P2, must: "the cosmos carries this scar"}
+      - id: scar_time_flow_changed
+        label: "Time's flow changed in a region"
+        floors: [P2, P3]
+        tr: {name: "zamanın akışı değişti (bir bölgede hızlı ya da yavaş)"}
+        hooks:
+          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+      - id: scar_people_displaced
+        label: "A people was driven from its home"
+        floors: [P3, P5]
+        tr: {name: "bir halk yerinden oldu"}
+        hooks:
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P5, must: "a people or NPCs carry this scar"}
+      - id: scar_new_people
+        label: "A new people appeared"
+        floors: [P1, P5]
+        note: "the people signature may be this people (its home becomes the scar)"
+        tr: {name: "yeni bir halk ortaya çıktı (kırılmanın dönüştürdükleri)"}
+        hooks:
+          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
+          - {phase: P5, must: "a people or NPCs carry this scar"}
+      - id: scar_state_fell
+        label: "A state fell and left a void"
+        floors: [P3, P4]
+        tr: {name: "bir devlet yıkıldı, yerinde boşluk kaldı"}
+        hooks:
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P4, must: "a faction or the contest carries this scar"}
+      - id: scar_creatures_changed
+        label: "Living things changed"
+        floors: [P6]
+        tr: {name: "canlılar değişti"}
+        hooks:
+          - {phase: P6, must: "creatures or sites carry this scar"}
+      - id: scar_new_resource
+        label: "A new resource was born"
+        floors: [P3, P4]
+        note: "a contest with a 'new' prize may take it"
+        tr: {name: "yeni bir kaynak doğdu"}
+        hooks:
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P4, must: "a faction or the contest carries this scar"}
+      - id: scar_lost_knowledge
+        label: "A knowledge or craft was lost"
+        floors: [P3, P6]
+        note: "P6's ruins keep it"
+        tr: {name: "bir bilgi ya da zanaat kayboldu"}
+        hooks:
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P6, must: "creatures or sites carry this scar"}
+      - id: scar_new_taboo
+        label: "A new law or taboo"
+        floors: [P1, P2, P3]
+        note: "one trope break is drawn from the prohibition rows (step 2)"
+        tr: {name: "yeni bir yasak ya da tabu"}
+        hooks:
+          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
+          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+      - id: scar_new_belief
+        label: "A new belief"
+        floors: [P2, P4]
+        note: "a side, never the forbidden evil cult; the institution practice 'they interpret the break' may join it"
+        tr: {name: "yeni bir inanç (yasaklı \"kötü tarikat\" değil, bir taraf)"}
+        hooks:
+          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P4, must: "a faction or the contest carries this scar"}
+
+  time:
+    roll: {avoid_used: false}
+    hooks_common:
+      - {phase: P2, must: "the break's dated event sits at this time"}
+      - {phase: P7, must: "the arc's opening follows the break's time"}
+    rows:
+      - id: time_just_now
+        label: "Just now"
+        tense: past
+        meaning: "the game begins right after the break"
+        tr: {name: "az önce (oyun kırılmanın hemen ardında başlar)", lead: "az önce"}
+      - id: time_generation_ago
+        label: "A generation ago"
+        tense: past
+        meaning: "the world has been rebuilt around the wound"
+        tr: {name: "bir kuşak önce (dünya yaranın etrafında yeniden kurulmuş)", lead: "bir kuşak önce"}
+      - id: time_unfolding
+        label: "Unfolding"
+        tense: present
+        meaning: "the break unfolds through the campaign"
+        tr: {name: "şimdi oluyor (kırılma kampanya boyunca açılır)", lead: "şimdi"}
+      - id: time_coming
+        label: "Coming"
+        tense: imminent
+        meaning: "signs are seen; the campaign is a race against it"
+        tr: {name: "yaklaşıyor (işaretler görülüyor, kampanya ona karşı bir yarış)", lead: "işaretler belli:"}
+
+  # ── 7. the escalation: D&D's four tiers of play are the break's steps ───────────────────────────
+  escalation_tier:
+    roll:
+      avoid_used: false
+      note: "not rolled: the steps are the tiers the campaign's level band touches (short 1-2, standard 3, epic 4)"
+    hooks_common:
+      - {phase: P7, must: "the arc climbs one step per tier: the party meets the break as a local symptom and ends at its heart"}
+      - {phase: P1, must: "the secret's last clue sits on the top step; the villain shows its works and people at the first step, itself at the top"}
+    rows:
+      - id: tier_local
+        label: "Local (levels 1-4)"
+        levels: [1, 4]
+        tr: {name: "yerel"}
+      - id: tier_regional
+        label: "Regional (levels 5-10)"
+        levels: [5, 10]
+        tr: {name: "bölgesel"}
+      - id: tier_continental
+        label: "Continental (levels 11-16)"
+        levels: [11, 16]
+        tr: {name: "kıtasal"}
+      - id: tier_world
+        label: "The world and the planes (levels 17-20)"
+        levels: [17, 20]
+        tr: {name: "dünya ve düzlemler"}
