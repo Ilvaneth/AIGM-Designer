@@ -57,6 +57,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dice as dice_mod  # noqa: E402
+import design_arbiter as arb  # noqa: E402
 import design_dice as dd  # noqa: E402
 import design_manifest as dm  # noqa: E402
 import design_prompts as dp  # noqa: E402
@@ -138,7 +139,9 @@ def design_commit(campaign: str, message: str) -> str | None:
 # ── rolling: the same derivation as design_dice, batched ─────────────────────────
 
 class Roller:
-    """Batched, labelled, seeded draws; public records go to design.json, secret ones to dm-only."""
+    """Batched, labelled, seeded draws; public records go to design.json, secret ones to dm-only. Every table draw
+    goes through design_arbiter: the pool is filtered against every roll the campaign stands on (the earlier
+    phases' latest attempts and this batch), then the die is thrown; the redraw-until-ok loop is gone."""
 
     def __init__(self, campaign: str, phase: str, attempt: int = 1):
         self.campaign, self.phase, self.attempt = campaign, phase, attempt
@@ -146,38 +149,41 @@ class Roller:
         self.master = self.manifest["seed"]["master"]
         self.public: list[dict] = []
         self.secret: list[dict] = []
+        self.secret_notes: list[dict] = []
         self.by_label: dict[str, dict] = {}
+        self.ctx = dd.context(campaign, skip_phase=phase)
 
     def _record(self, label: str, table: str | None) -> dict:
         return {"phase": self.phase, "table": table or "dice", "label": label, "notation": None, "raw": None,
                 "row_id": None, "excluded": [], "attempt": self.attempt, "ts": now_iso()}
 
-    def table(self, label: str, ref: str, secret: bool = False, avoid: bool = True,
-              exclude: set | None = None, tries: int = 1) -> dict:
+    def table(self, label: str, ref: str, secret: bool = False, avoid: bool = True, exclude: set | None = None,
+              where=None, why: str = "where", also_used: set | None = None, used_keys: dict | None = None) -> dict:
+        """One draw. `exclude` and `where` (with its reason `why`) are constraints; `also_used` marks values spent
+        like rows used elsewhere (a pair that never repeats); `used_keys` go to used.json at approve."""
         rows = dt.rows(ref)
         if not rows:
             raise SystemExit(f"designer: no rows in {ref}")
-        rng = dd.derive(self.master, self.phase, ref, label, self.attempt if tries == 1 else self.attempt + tries - 1)
-        gone = dd.rows_used_elsewhere(self.campaign, ref) if avoid else set()
+        rng = dd.derive(self.master, self.phase, ref, label, self.attempt)
+        use = dd.usage(self.campaign, ref, avoid)
+        if also_used:
+            use["pair"] = set(also_used)
+        try:
+            res = arb.arbitrate(ref, rows, self.ctx, exclude=exclude, where=where, why=why, usage=use, secret=secret)
+        except arb.EmptyPool as exc:
+            raise SystemExit(f"designer: {self.phase} {label}: {exc}" if not secret else
+                             f"designer: {self.phase} {label} (secret): the pool is empty after the constraints — a table fault")
         rec = self._record(label, ref)
-        rec.update(dd.draw(rng, rows, gone, exclude))
-        rec["excluded"] = rec.pop("excluded_rows")
-        if tries > 1:
-            rec["attempt"] = self.attempt + tries - 1
+        rec.update(arb.pick(rng, res["pool"], res["weights"]))
+        rec["excluded"] = res["excluded"]
+        if res["usage_fallback"]:
+            rec["usage_fallback"] = res["usage_fallback"]
+        if used_keys:
+            rec["used_keys"] = dict(used_keys)
+        if res["excluded_secret"]:
+            self.secret_notes.append({"phase": self.phase, "label": label, "attempt": self.attempt,
+                                      "excluded": res["excluded_secret"]})
         self._keep(rec, secret)
-        return rec
-
-    def table_until(self, label: str, ref: str, ok, secret: bool = False, avoid: bool = True,
-                    exclude: set | None = None, max_tries: int = 8) -> dict:
-        """Redraw with the attempt suffix until `ok(row)` holds; the last try is kept regardless."""
-        rows = {r["id"]: r for r in dt.rows(ref)}
-        rec = None
-        for t in range(1, max_tries + 1):
-            if rec is not None:
-                self._drop(rec)
-            rec = self.table(label, ref, secret=secret, avoid=avoid, exclude=exclude, tries=t)
-            if ok(rows.get(rec["row_id"], {})):
-                break
         return rec
 
     def notation(self, label: str, notation: str, secret: bool = False) -> dict:
@@ -188,6 +194,10 @@ class Roller:
         return rec
 
     def forced(self, label: str, ref: str, row_id: str, reason: str, secret: bool = False) -> dict:
+        try:
+            arb.check_forced(row_id, self.ctx)
+        except arb.EmptyPool as exc:
+            raise SystemExit(f"designer: {self.phase} {label}: {exc}")
         rec = self._record(label, ref)
         rec.update({"notation": "forced", "raw": None, "row_id": row_id, "forced_by": reason})
         self._keep(rec, secret)
@@ -196,12 +206,7 @@ class Roller:
     def _keep(self, rec: dict, secret: bool) -> None:
         (self.secret if secret else self.public).append(rec)
         self.by_label[rec["label"]] = rec
-
-    def _drop(self, rec: dict) -> None:
-        for lst in (self.public, self.secret):
-            if rec in lst:
-                lst.remove(rec)
-        self.by_label.pop(rec["label"], None)
+        self.ctx.add(rec.get("row_id"), secret)
 
     def row(self, label: str):
         rec = self.by_label.get(label)
@@ -234,6 +239,7 @@ class Roller:
             for rec in self.secret:
                 if rec["label"] not in dls["labels"]:
                     dls["labels"].append(rec["label"])
+        dd.append_secret_exclusions(self.campaign, self.secret_notes)
         dm.save(self.campaign, data, f"designer.py preroll --phase {self.phase}")
         return len(self.public), len(self.secret)
 
@@ -251,8 +257,11 @@ def rolled_rows(manifest: dict, table_prefix: str) -> list[str]:
     return [r["row_id"] for r in manifest["dice_log"] if r.get("table", "").startswith(table_prefix) and r.get("row_id")]
 
 
-def not_forbidden(row: dict) -> bool:
-    return not row.get("forbidden")
+def spread_exclude(uses: dict, n_rows: int) -> set:
+    """Rows spent for an even spread: unique while the table has unused rows, then at most twice, and so on
+    (the old caps fell back to the whole table once every row was spent; the arbiter stops on an empty pool)."""
+    cap = sum(uses.values()) // max(1, n_rows) + 1
+    return {x for x, c in uses.items() if c >= cap}
 
 
 # ── preroll plans per phase ───────────────────────────────────────────────────
@@ -263,23 +272,15 @@ def preroll_p1(R: Roller, m: dict) -> None:
     if R.notation("tension.second", "d2")["raw"] == 2:
         R.table("tension.2", "tensions.yaml", exclude={R.row("tension.1")})
     breaks: list[str] = []
-    conflicts: set = set()
-    for n in range(1, int(sc["trope_breaks"]) + 1):
-        rec = R.table_until(f"break.{n}", "trope-breaks.yaml",
-                            lambda row: row.get("id") not in conflicts and row.get("id") not in breaks,
-                            exclude=set(breaks))
-        breaks.append(rec["row_id"])
-        row = dt.row("trope-breaks.yaml", rec["row_id"]) or {}
-        conflicts |= set(row.get("conflicts_with") or [])
+    for n in range(1, int(sc["trope_breaks"]) + 1):     # conflicts with the tensions and earlier breaks: the arbiter
+        breaks.append(R.table(f"break.{n}", "trope-breaks.yaml", exclude=set(breaks))["row_id"])
     for sub in ("phenomenon", "people", "institution"):
         R.table(f"sig_{sub}", f"signatures.yaml#{sub}")
     fams: list[str] = []
     for n in range(1, int(dt.load("naming.yaml")["roll"]["count_by_scale"][dials_of(m)["scale"]]) + 1):
         rec = R.table(f"naming_family.{n}", "naming.yaml#family", exclude=set(fams))
         fams.append(rec["row_id"])
-    arche = R.table_until("secret_archetype", "secrets.yaml#archetype",
-                          lambda row: not (set(row.get("conflicts_with") or []) & set(breaks)) and row.get("id") not in conflicts,
-                          secret=True)
+    R.table("secret_archetype", "secrets.yaml#archetype", secret=True)
     R.table("secret_twist", "secrets.yaml#twist", secret=True)
     R.table("secret_trail", "secrets.yaml#trail", secret=True)
     chance = int(sc["signature_mechanic_chance"])
@@ -342,8 +343,8 @@ def preroll_p3(R: Roller, m: dict) -> None:
     regions = R.count("regions_count", sc["regions"])
     idents: list[str] = []
     for i in range(1, regions + 1):
-        R.table_until(f"region.{i}.biome", "regions.yaml#biome",
-                      lambda row: climate is None or climate in (row.get("climates") or []))
+        R.table(f"region.{i}.biome", "regions.yaml#biome",
+                where=lambda row: climate is None or climate in (row.get("climates") or []), why="climate")
         idents.append(R.table(f"region.{i}.identity", "regions.yaml#identity", exclude=set(idents))["row_id"])
         for k in range(1, R.count(f"region.{i}.landmarks_count", [2, 4]) + 1):
             R.table(f"region.{i}.landmark.{k}", "regions.yaml#landmark_kind", avoid=False)
@@ -387,15 +388,15 @@ def preroll_p4(R: Roller, m: dict) -> None:
         if n <= len(slots):
             R.forced(f"faction.{n}.archetype", "factions.yaml#archetype", slots[n - 1], "scale.yaml quota")
         elif pool:
-            R.table_until(f"faction.{n}.archetype", "factions.yaml#archetype", lambda row: row.get("id") in pool, avoid=False)
+            R.table(f"faction.{n}.archetype", "factions.yaml#archetype", avoid=False,
+                    where=lambda row: row.get("id") in pool, why="quota_pool")
         else:
             R.table(f"faction.{n}.archetype", "factions.yaml#archetype", avoid=False)
-        R.table_until(f"faction.{n}.fracture", "factions.yaml#fracture", not_forbidden, exclude={"fracture_none"})
+        R.table(f"faction.{n}.fracture", "factions.yaml#fracture")      # fracture_none is forbidden
         R.table(f"faction.{n}.endgame", "factions.yaml#endgame")
         R.table(f"faction.{n}.secret", "factions.yaml#secret_kind", secret=True)
         if R.row(f"faction.{n}.archetype") == "archetype_cult":
-            R.table_until(f"faction.{n}.cult_doctrine", "factions.yaml#cult_doctrine", not_forbidden,
-                          exclude={"cultdoc_evil_for_its_own_sake", "cultdoc_unspecified"})
+            R.table(f"faction.{n}.cult_doctrine", "factions.yaml#cult_doctrine")   # the forbidden doctrines never enter
         rungs: list[str] = []
         for k in range(1, R.count(f"faction.{n}.rungs_count", [3, 4]) + 1):
             excl = set(rungs) | ({"rung_war"} if k == 1 else set())
@@ -405,19 +406,10 @@ def preroll_p4(R: Roller, m: dict) -> None:
             links.append(R.table(f"faction.{n}.link.{k}", "factions.yaml#access_link", avoid=False, exclude=set(links))["row_id"])
     # antagonists — every roll secret
     R.table("bbeg_visibility", "antagonists.yaml#visibility", secret=True)
-    R.table_until("bbeg_shape", "antagonists.yaml#villain_shape", not_forbidden, secret=True,
-                  exclude={"shape_dark_lord", "shape_whispering_advisor", "shape_secretly_evil_ruler"})
-    R.table_until("bbeg_origin", "antagonists.yaml#origin", not_forbidden, secret=True, exclude={"origin_awakened_ancient"})
-    allowed_religious = set(rolled_rows(m, "secrets.yaml") + rolled_rows(m, "trope-breaks.yaml"))
-    secret_rows = [r["row_id"] for r in (read_json(dm_only_dir(R.campaign) / "dice-log.json") or {}).get("rolls", []) if r.get("row_id")]
-    allowed_religious |= set(secret_rows)
-    bfa_rows = {r["id"]: r for r in dt.rows("antagonists.yaml#bbeg_faction_archetype")}
-
-    def bfa_ok(row: dict) -> bool:
-        if not row.get("forbidden"):
-            return True
-        return bool(set(row.get("allowed_via") or []) & allowed_religious)
-    R.table_until("bbeg_faction_archetype", "antagonists.yaml#bbeg_faction_archetype", bfa_ok, secret=True, avoid=False)
+    R.table("bbeg_shape", "antagonists.yaml#villain_shape", secret=True)       # the forbidden shapes never enter
+    R.table("bbeg_origin", "antagonists.yaml#origin", secret=True)             # nor the awakened ancient evil
+    # religious only when a rolled secret or break admits it (`allowed_via`): the arbiter reads every rolled row
+    R.table("bbeg_faction_archetype", "antagonists.yaml#bbeg_faction_archetype", secret=True, avoid=False)
     R.table("front_template", "antagonists.yaml#front_template", secret=True)
     R.table("doom_shape", "antagonists.yaml#doom_shape", secret=True)
     roles: list[str] = []
@@ -460,19 +452,16 @@ def preroll_p5(R: Roller, m: dict) -> None:
             R.notation(f"npc.{n}.axis.{axis}", "d5")
         # the secret kind is dm-only (tuning birth 1: P5 printed all 14 to the conductor as public);
         # no kind twice while the table still has unused rows, never more than twice
-        cap = 1 if len(secret_uses) < secret_rows else 2
-        spent_secrets = {s for s, c in secret_uses.items() if c >= cap}
+        spent_secrets = spread_exclude(secret_uses, secret_rows)
         srec = R.table(f"npc.{n}.secret", "npcs.yaml#secret", secret=True, avoid=False, exclude=spent_secrets)
         secret_uses[srec["row_id"]] = secret_uses.get(srec["row_id"], 0) + 1
         # a tic twice needs a differentiator the writers rarely give (rubric_p5_voice_distinct failed 9 of 18 times):
         # unique while npcs.yaml#speech_tic has unused rows, never more than twice
-        tic_cap = 1 if len(tic_uses) < len(dt.rows("npcs.yaml#speech_tic")) else 2
-        spent = {t for t, c in tic_uses.items() if c >= tic_cap}
+        spent = spread_exclude(tic_uses, len(dt.rows("npcs.yaml#speech_tic")))
         rec = R.table(f"npc.{n}.tic", "npcs.yaml#speech_tic", avoid=False, exclude=spent)
         tic_uses[rec["row_id"]] = tic_uses.get(rec["row_id"], 0) + 1
         # the voice's register, unique while the table has rows (every birth's P5 phase critic flagged shared registers)
-        reg_cap = 1 if len(reg_uses) < len(dt.rows("npcs.yaml#voice_register")) else 2
-        spent_reg = {x for x, c in reg_uses.items() if c >= reg_cap}
+        spent_reg = spread_exclude(reg_uses, len(dt.rows("npcs.yaml#voice_register")))
         reg = R.table(f"npc.{n}.register", "npcs.yaml#voice_register", avoid=False, exclude=spent_reg)
         reg_uses[reg["row_id"]] = reg_uses.get(reg["row_id"], 0) + 1
         R.notation(f"npc.{n}.species", "d100")
@@ -490,7 +479,8 @@ def preroll_p6(R: Roller, m: dict) -> None:
             R.forced(f"site.{n}.role", "sites.yaml#role_band", f"role_{role}", "scale.yaml sites.roles")
             R.table(f"site.{n}.type", "sites.yaml#site_type", avoid=False)
             for d in ("far", "near", "threshold"):
-                R.table_until(f"site.{n}.telegraph.{d}", "sites.yaml#telegraph", lambda row, d=d: row.get("distance") == d, avoid=False)
+                R.table(f"site.{n}.telegraph.{d}", "sites.yaml#telegraph", avoid=False,
+                        where=lambda row, d=d: row.get("distance") == d, why="distance")
             R.table(f"site.{n}.escape", "sites.yaml#escape", avoid=False)
             R.table(f"site.{n}.attitude", "sites.yaml#attitude", avoid=False)
             R.table(f"site.{n}.payoff", "sites.yaml#payoff", avoid=False)
@@ -516,11 +506,14 @@ def preroll_p7(R: Roller, m: dict) -> None:
     _, new = net_count(R, "seeds_count", sc["quest_seeds"], existing, "seeds")
     for k in range(1, stubs + new + 1):      # a shape for every seed stub to fill and every new seed; filled seeds keep theirs
         R.table(f"seed.{k}", "arc.yaml#seed_shape", avoid=False)
-    R.table_until("opening", "arc.yaml#opening_scene_type", not_forbidden, avoid=False, exclude={"open_tavern", "open_stranger_job"})
-    R.table_until("plot_engine", "arc.yaml#plot_engine", not_forbidden, avoid=False, exclude={"engine_prophecy", "engine_collect_pieces"})
-    sockets: list[str] = []
+    R.table("opening", "arc.yaml#opening_scene_type", avoid=False)       # the tavern and the stranger are forbidden
+    R.table("plot_engine", "arc.yaml#plot_engine", avoid=False)          # prophecy and collect-the-pieces are forbidden
+    socket_uses: dict[str, int] = {}
+    n_sockets = len(dt.rows("threads.yaml#socket_type"))
     for k in range(1, int(dials_of(m)["party_size"]) * int(sc["sockets_per_pc"]) + 1):
-        sockets.append(R.table(f"socket.{k}", "threads.yaml#socket_type", avoid=False, exclude=set(sockets))["row_id"])
+        sid = R.table(f"socket.{k}", "threads.yaml#socket_type", avoid=False,
+                      exclude=spread_exclude(socket_uses, n_sockets))["row_id"]
+        socket_uses[sid] = socket_uses.get(sid, 0) + 1
 
 
 def preroll_p8(R: Roller, m: dict) -> None:
@@ -531,10 +524,9 @@ def preroll_p9(R: Roller, m: dict) -> None:
     party = int(dials_of(m)["party_size"])
     sc = scale_of(m)
     for n in range(1, party + 1):
-        R.table_until(f"pc.{n}.truth", "threads.yaml#truth_kind", not_forbidden, secret=True, avoid=False,
-                      exclude={"truth_chosen", "truth_destined", "truth_amnesia"})
+        R.table(f"pc.{n}.truth", "threads.yaml#truth_kind", secret=True, avoid=False)   # chosen, destined, amnesia: forbidden
         R.table(f"pc.{n}.antagonist", "threads.yaml#antagonist_binding", secret=True, avoid=False)
-        R.table_until(f"pc.{n}.mission_verb", "threads.yaml#mission_verb", not_forbidden, avoid=False, exclude={"verb_find_out_who"})
+        R.table(f"pc.{n}.mission_verb", "threads.yaml#mission_verb", avoid=False)   # find-out-who is forbidden
     if party > 1:
         for act in range(1, int(sc["acts"]) + 1):
             R.table(f"crossing.{act}", "threads.yaml#crossing", avoid=False)
@@ -1174,38 +1166,39 @@ def phase_card(campaign: str, phase: str) -> int:
     return 0
 
 
-def avoid_used_files() -> set:
-    """The table files whose roll header says `avoid_used: true`: their rows are a campaign's felt identity."""
-    from paths import skill_root
-    out = set()
-    for f in (skill_root() / "data" / "design").glob("*.yaml"):
-        if (dt.load(f.name).get("roll") or {}).get("avoid_used"):
-            out.add(f.name)
-    return out
-
-
 def record_used(campaign: str, phase: str) -> int:
-    """The rows an approved phase rolled from the avoid-used tables go to used.json, so the next campaign avoids them
-    (dry-3: design_compare read NOT DISTINCT because no birth ever wrote used.json; only a hand verb did). A secret
-    roll's row is kept as a hash. The hand-written fixture records nothing."""
+    """The rows an approved phase rolled from the tables that record usage (`avoid_used`, `family_wait`,
+    `row_wait`) go to used.json, so the next campaigns avoid them or let them wait (dry-3: design_compare read NOT
+    DISTINCT because no birth ever wrote used.json). Only the phase's current attempt counts. A secret roll's row
+    is kept as a hash, and so are its `used_keys`. The first approval stamps the birth order the waits count in.
+    The hand-written fixture records nothing."""
     m = dm.load(campaign)
     if m["_meta"].get("fixture"):
         return 0
-    avoid = avoid_used_files()
+    attempt = int((m["phases"].get(phase) or {}).get("attempt") or 1)
     recs = [(r, False) for r in m.get("dice_log") or [] if r.get("phase") == phase]
     recs += [(r, True) for r in (read_json(dm_only_dir(campaign) / "dice-log.json") or {}).get("rolls", []) if r.get("phase") == phase]
+    recs = [(r, sec) for r, sec in recs if int(r.get("attempt") or 1) == attempt]
     used = dd.load_used()
-    mine = used["campaigns"].setdefault(campaign, {})
+    mine = used["campaigns"].get(campaign) or {}
+    born = used.setdefault("births", {})
+    stamped = campaign not in born
+    born.setdefault(campaign, {"first_approved": now_iso()})
     added = 0
+
+    def put(key: str, entry) -> None:
+        nonlocal added
+        if entry not in mine.setdefault(key, []):
+            mine[key].append(entry)
+            used["campaigns"][campaign] = mine
+            added += 1
     for r, secret in recs:
         ref, row = r.get("table"), r.get("row_id")
-        if not row or not ref or str(ref).split("#")[0] not in avoid:
-            continue
-        entry = dd.hashed(row) if secret else row
-        if entry not in mine.setdefault(ref, []):
-            mine[ref].append(entry)
-            added += 1
-    if added:
+        if row and ref and dt.records_usage(ref):
+            put(ref, dd.hashed(row) if secret else row)
+        for key, value in (r.get("used_keys") or {}).items():
+            put(key, dd.hashed(value) if secret else value)
+    if added or stamped:
         dd.save_used(used)
     return added
 
@@ -1455,6 +1448,7 @@ def abandon(campaign: str, reason: str) -> int:
     dm.save(campaign, data, "designer.py abandon")
     used = dd.load_used()
     dropped = len(used.get("campaigns", {}).pop(campaign, {}) or {})
+    (used.get("births") or {}).pop(campaign, None)
     dd.save_used(used)
     retired = 0
     try:

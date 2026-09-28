@@ -99,7 +99,7 @@ class Rolls(unittest.TestCase):
                 rec = self.roll("--phase", "P1", "--label", f"tension.{n}", "--table", "_test_tensions.yaml",
                                 "--avoid-used")
                 hits.add(rec["row_id"])
-                self.assertEqual(rec["excluded"], ["t3"])
+                self.assertEqual(rec["excluded"], [{"row": "t3", "why": "used_elsewhere"}])
             self.assertNotIn("t3", hits)
             self.assertGreater(len(hits), 2)
             proc = self.c.run("design_dice.py", "log", check=True)

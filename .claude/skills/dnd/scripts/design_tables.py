@@ -109,6 +109,67 @@ def row(ref: str, row_id: str) -> dict | None:
     return next((r for r in rows(ref) if r["id"] == row_id), None)
 
 
+# ── the arbiter's indexes (plan item 25: the script is the only arbiter of conflicts) ──
+
+def _signature() -> tuple:
+    """Committed table files and their mtimes: an index is rebuilt when any table changes."""
+    return tuple((n, (tables_dir() / n).stat().st_mtime_ns) for n in list_tables())
+
+
+def _every_row():
+    for name in list_tables():
+        doc = load(name)
+        for key, lst in all_row_lists(doc).items():
+            ref = f"{name}#{key}" if key else name
+            for r in lst:
+                yield ref, r
+
+
+@lru_cache(maxsize=4)
+def _conflicts_for(sig: tuple) -> dict:
+    idx: dict[str, set] = {}
+    for _, r in _every_row():
+        for other in r.get("conflicts_with") or []:
+            idx.setdefault(r["id"], set()).add(other)
+            idx.setdefault(other, set()).add(r["id"])
+    return {k: frozenset(v) for k, v in idx.items()}
+
+
+def conflict_index() -> dict:
+    """Row id → the rows it may not appear with, made symmetric: A listing B also bars B after A."""
+    return _conflicts_for(_signature())
+
+
+def roll_header(ref: str) -> dict:
+    """The `roll` header a reference draws under: the file's, overlaid by the sub-table's own."""
+    file_part, _, key = ref.partition("#")
+    try:
+        doc = load(file_part)
+    except FileNotFoundError:
+        return {}
+    head = dict(doc.get("roll") or {})
+    node = (doc.get("tables") or {}).get(key) if key else None
+    if isinstance(node, dict):
+        head.update(node.get("roll") or {})
+    return head
+
+
+def records_usage(ref: str) -> bool:
+    """Does an approved phase write this table's rows to used.json? (avoid-used, family waits, row waits)."""
+    head = roll_header(ref)
+    return bool(head.get("avoid_used") or head.get("family_wait") or head.get("row_wait"))
+
+
+@lru_cache(maxsize=4)
+def _secret_for(sig: tuple) -> frozenset:
+    return frozenset(r["id"] for ref, r in _every_row() if roll_header(ref).get("secret"))
+
+
+def secret_row_ids() -> frozenset:
+    """Rows of the tables whose roll header says `secret: true`: a public log never names them."""
+    return _secret_for(_signature())
+
+
 # ── the values other scripts derive from the tables ─────────────────────────────
 
 def dial_values(dial: str) -> tuple:

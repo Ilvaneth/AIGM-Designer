@@ -193,6 +193,8 @@ class NewBirth(unittest.TestCase):
 
     def test_abandon_disarms_and_drops_used_rows(self):
         name, _ = self.birth(seed="ABAN-0004")
+        born = json.loads(USED.read_text(encoding="utf-8"))["births"][name]
+        self.assertTrue(born["first_approved"], "P0's approval stamps the birth order the waits count in")
         run("-c", name, "preroll", "--phase", "P1", check=True)
         subprocess.run([sys.executable, str(SCRIPTS / "design_dice.py"), "-c", name, "used", "add", "--table", "tensions.yaml",
                         "--row", "tension_power_self"], capture_output=True)
@@ -201,7 +203,22 @@ class NewBirth(unittest.TestCase):
         self.assertFalse(MARKER.is_file())
         used = json.loads(USED.read_text(encoding="utf-8")) if USED.is_file() else {"campaigns": {}}
         self.assertNotIn(name, used.get("campaigns", {}))
+        self.assertNotIn(name, used.get("births", {}))
         self.assertEqual(self.manifest(name)["_meta"]["mode"], "abandoned")
+
+    def test_the_worst_case_prerolls_every_phase_without_an_empty_pool(self):
+        """Epic with six PCs asks the most of the small pools (sockets, tics, registers, telegraph distances,
+        the quota pool, the climate's biomes): every constraint must leave a row (owner, correction C)."""
+        name, _ = self.birth(seed="WIDE-0005", scale="epic", magic="high", party_size="6")
+        for phase in ("P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9"):
+            run("-c", name, "preroll", "--phase", phase, check=True)
+        m = self.manifest(name)
+        sockets = [r["row_id"] for r in m["dice_log"] if r["label"].startswith("socket.")]
+        self.assertEqual(len(sockets), 18)
+        self.assertEqual(len(set(sockets)), len(dt.rows("threads.yaml#socket_type")), "every socket type before any repeats")
+        regs = [r["row_id"] for r in m["dice_log"] if r["label"].endswith(".register")]
+        self.assertLessEqual(max(regs.count(x) for x in set(regs)) - min(regs.count(x) for x in set(regs)), 1,
+                             "registers spread evenly when the NPCs outnumber them")
 
 
 class FixturePhase(unittest.TestCase):

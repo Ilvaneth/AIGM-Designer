@@ -14,9 +14,14 @@ only their labels and count. Agents never roll: the conductor pre-rolls a
 phase, and the results travel in the agents' inputs.
 
 Table rolls read data/design/<table>.yaml (or <table>.yaml#subtable) through design_tables.py and roll
-one row by weight; until then, or for a plain notation, --notation rolls dice.
-`--avoid-used` excludes rows that earlier campaigns in this root drew, as
-recorded in <root>/used.json; the exclusions are logged on the record.
+one row by weight, after design_arbiter.py has filtered the pool against the campaign's earlier rolls
+(conflicts both ways, requirements, forbidden rows); for a plain notation, --notation rolls dice.
+`--avoid-used` excludes rows that earlier campaigns in this root drew, as recorded in <root>/used.json;
+a table's `family_wait: N` / `row_wait: N` make a family / a row wait N births. Every exclusion is logged
+on the record with its reason.
+
+used.json keeps, beside each campaign's rows, the birth order (`births`: the time a campaign's first
+phase was approved), which the waits count in; a real campaign never counts the `_test-*` births.
 
 CLI:
   design_dice.py -c CAMP roll --phase P1 --label tension.1 [--table tensions.yaml] [--notation d30]
@@ -37,6 +42,8 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dice as dice_mod  # noqa: E402
+import design_arbiter as arb  # noqa: E402
+import design_tables as dt  # noqa: E402
 from design_io import dm_only_dir, now_iso, read_json, stamp_meta, write_json_atomic  # noqa: E402
 from design_manifest import append_roll, load as load_manifest  # noqa: E402
 from design_tables import rows as table_rows  # noqa: E402
@@ -74,17 +81,109 @@ def hashed(row_id: str) -> str:
 def rows_used_elsewhere(campaign: str, table: str) -> set:
     """Rows other campaigns used from `table`; a real campaign ignores the `_test-*` births, a test birth sees all."""
     used = load_used()
-    real = not campaign.startswith("_test-")
-    out: set = set()
-    hashes: set = set()
-    for camp, tables in used["campaigns"].items():
-        if camp == campaign or (real and camp.startswith("_test-")):
-            continue
-        for x in tables.get(table, []):
-            (hashes if str(x).startswith("h:") else out).add(x)
+    return rows_used_by([c for c in used["campaigns"] if _visible(campaign, c)], table, used)
+
+
+def _visible(campaign: str, other: str) -> bool:
+    """Another campaign's rows count for `campaign`: never itself, and a real campaign ignores the test births."""
+    return other != campaign and not (not campaign.startswith("_test-") and other.startswith("_test-"))
+
+
+def _resolve(entries, table: str) -> set:
+    """Row ids from used.json entries, a secret row's hash matched against the table's rows."""
+    plain = {x for x in entries if not str(x).startswith("h:")}
+    hashes = {x for x in entries if str(x).startswith("h:")}
     if hashes:
-        out |= {r["id"] for r in load_table(table) if hashed(r["id"]) in hashes}
+        plain |= {r["id"] for r in load_table(table) if hashed(r["id"]) in hashes}
+    return plain
+
+
+def birth_order(used: dict | None = None) -> list[str]:
+    """Campaigns in birth order: the archived births used.json kept before the order existed come first, in the
+    order they were written; every later birth by the time its first phase was approved."""
+    used = used or load_used()
+    births = used.get("births") or {}
+    names = list(dict.fromkeys(list(used["campaigns"]) + list(births)))
+    unstamped = [n for n in names if not (births.get(n) or {}).get("first_approved")]
+    stamped = sorted((n for n in names if n not in unstamped), key=lambda n: births[n]["first_approved"])
+    return unstamped + stamped
+
+
+def recent_births(campaign: str, n: int, used: dict | None = None) -> list[str]:
+    """The last `n` births before `campaign` that count for it (a real campaign skips the test births)."""
+    used = used or load_used()
+    order = birth_order(used)
+    if campaign in order:
+        order = order[:order.index(campaign)]
+    return [c for c in order if _visible(campaign, c)][-n:] if n > 0 else []
+
+
+def rows_used_by(campaigns: list[str], table: str, used: dict | None = None) -> set:
+    used = used or load_used()
+    out: set = set()
+    for camp in campaigns:
+        out |= _resolve((used["campaigns"].get(camp) or {}).get(table, []), table)
     return out
+
+
+def usage(campaign: str, table: str, avoid: bool = True) -> dict:
+    """The usage exclusions of one draw: rows used elsewhere (when `avoid`), and the table's own waits."""
+    used = load_used()
+    head = dt.roll_header(table)
+    out: dict = {}
+    if avoid:
+        out["used_elsewhere"] = rows_used_elsewhere(campaign, table)
+    if head.get("row_wait"):
+        out["row_wait"] = rows_used_by(recent_births(campaign, int(head["row_wait"]), used), table, used)
+    if head.get("family_wait"):
+        fams = {r["id"]: r.get("family") for r in load_table(table)}
+        rows = rows_used_by(recent_births(campaign, int(head["family_wait"]), used), table, used)
+        out["family_wait"] = {fams[r] for r in rows if fams.get(r) is not None}
+    return out
+
+
+def used_values(campaign: str, key: str, window: int | None = None) -> set:
+    """Values other campaigns recorded under a used.json key that is no table (a target + action pair);
+    `window` limits them to the last N births."""
+    used = load_used()
+    camps = recent_births(campaign, window, used) if window else [c for c in used["campaigns"] if _visible(campaign, c)]
+    out: set = set()
+    for camp in camps:
+        out |= set((used["campaigns"].get(camp) or {}).get(key, []))
+    return out
+
+
+def prior_rolls(campaign: str, skip_phase: str | None = None) -> dict:
+    """Row id -> rolled secretly, for every roll the campaign stands on: each phase's latest attempt only (a
+    rerun's earlier draws are superseded), `skip_phase` left out (the phase being prerolled now)."""
+    m = load_manifest(campaign)
+    recs = [(r, False) for r in m.get("dice_log") or []]
+    recs += [(r, True) for r in (read_json(dm_only_dir(campaign) / "dice-log.json") or {}).get("rolls", [])]
+    latest: dict = {}
+    for r, _ in recs:
+        latest[r.get("phase")] = max(latest.get(r.get("phase"), 0), int(r.get("attempt") or 1))
+    out: dict = {}
+    for r, secret in recs:
+        ph = r.get("phase")
+        if ph == skip_phase or int(r.get("attempt") or 1) != latest.get(ph) or not r.get("row_id"):
+            continue
+        out[r["row_id"]] = out.get(r["row_id"], False) or secret
+    return out
+
+
+def context(campaign: str, skip_phase: str | None = None) -> arb.Context:
+    return arb.Context(dials=dict(load_manifest(campaign).get("dials") or {}), rolled=prior_rolls(campaign, skip_phase))
+
+
+def append_secret_exclusions(campaign: str, notes: list[dict]) -> None:
+    """Exclusions of public draws that name the secret layer: kept in dm-only, never in design.json."""
+    if not notes:
+        return
+    path = dm_only_dir(campaign) / "dice-log.json"
+    log = read_json(path) or {"_meta": {"schema_version": 1, "campaign": campaign}, "rolls": []}
+    log.setdefault("exclusions", []).extend(notes)
+    stamp_meta(log, campaign, "design_dice.py (secret exclusions)")
+    write_json_atomic(path, log)
 
 
 def load_table(table: str) -> list[dict]:
@@ -109,9 +208,17 @@ def roll(campaign: str, phase: str, label: str, table: str | None, notation: str
 
     rows = load_table(table) if table else []
     if rows:
-        gone = rows_used_elsewhere(campaign, table) if avoid_used else set()
-        record.update(draw(rng, rows, gone))
-        excluded.extend(record.pop("excluded_rows"))
+        try:
+            res = arb.arbitrate(table, rows, context(campaign), usage=usage(campaign, table, avoid_used), secret=secret)
+        except arb.EmptyPool as exc:
+            raise SystemExit(f"design_dice: {label}: {exc}")
+        record.update(arb.pick(rng, res["pool"], res["weights"]))
+        excluded.extend(res["excluded"])
+        if res["usage_fallback"]:
+            record["usage_fallback"] = res["usage_fallback"]
+        if res["excluded_secret"]:
+            append_secret_exclusions(campaign, [{"phase": phase, "label": label, "attempt": attempt,
+                                                 "excluded": res["excluded_secret"]}])
     else:
         if not notation:
             raise SystemExit(f"design_dice: no table rows for {table!r} and no --notation given")
@@ -121,24 +228,23 @@ def roll(campaign: str, phase: str, label: str, table: str | None, notation: str
     return record
 
 
-def draw(rng: random.Random, rows: list[dict], gone: set | None = None, exclude: set | None = None) -> dict:
-    """One weighted draw from `rows`, skipping ids in `gone` (used elsewhere, logged) and `exclude`
-    (a caller's own constraint, not logged); the pool falls back to every row when nothing is left."""
-    gone = gone or set()
-    exclude = exclude or set()
-    excluded_rows = sorted(r["id"] for r in rows if r["id"] in gone)
-    pool = [r for r in rows if r["id"] not in gone and r["id"] not in exclude] or            [r for r in rows if r["id"] not in exclude] or rows
-    weights = [float(r.get("weight", 1)) for r in pool]
-    total = sum(weights)
-    raw = rng.uniform(0, total)
-    acc, chosen = 0.0, pool[-1]
-    for r, w in zip(pool, weights):
-        acc += w
-        if raw <= acc:
-            chosen = r
-            break
-    return {"notation": f"d{len(pool)}", "raw": pool.index(chosen) + 1, "row_id": chosen["id"],
-            "row_label": chosen.get("label"), "excluded_rows": excluded_rows}
+def draw(rng: random.Random, rows: list[dict], exclude: set | None = None) -> dict:
+    """One weighted draw with no campaign behind it (P0's blank dials): the dial tables carry no conflicts,
+    so only the caller's own exclusions apply."""
+    res = arb.arbitrate("dials", rows, arb.Context(), exclude=exclude)
+    return arb.pick(rng, res["pool"], res["weights"])
+
+
+def excluded_text(entries) -> str:
+    """A record's exclusions for the log: `t3 (used_elsewhere)`."""
+    out = []
+    for e in entries or []:
+        if isinstance(e, dict):
+            extra = e.get("with") or e.get("family")
+            out.append(f"{e.get('row')} ({e.get('why', '')}{': ' + extra if extra else ''})")
+        else:
+            out.append(str(e))
+    return ", ".join(out)
 
 
 def show_log(campaign: str, secret: bool) -> int:
@@ -150,7 +256,7 @@ def show_log(campaign: str, secret: bool) -> int:
     for r in rolls:
         what = r.get("row_id") or r.get("raw")
         print(f"  {r['phase']:<3} {r['table']:<28} {r['label']:<24} {r['notation']:<8} → {what}"
-              + (f"  (excluded {', '.join(r['excluded'])})" if r.get("excluded") else ""))
+              + (f"  (excluded {excluded_text(r['excluded'])})" if r.get("excluded") else ""))
     print(f"  {len(rolls)} {'secret ' if secret else ''}rolls")
     return 0
 

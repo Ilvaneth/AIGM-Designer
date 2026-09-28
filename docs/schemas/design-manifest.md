@@ -46,7 +46,7 @@ Written only by `design_manifest.py init | reconcile | pending | mark | approve 
   ],
   "dice_log": [
     {"phase": "P0", "table": "dials.yaml#content_mix", "label": "content_mix.1", "notation": "d5", "raw": 5, "row_id": "mix_mystery", "excluded": [], "ts": "2026-09-24T18:01:10Z"},
-    {"phase": "P1", "table": "tensions.yaml", "label": "tension.1", "notation": "d30", "raw": 22, "row_id": "tension_memory_salvation", "excluded": ["tension_legacy_freedom"], "ts": "2026-09-24T18:03:02Z"},
+    {"phase": "P1", "table": "tensions.yaml", "label": "tension.1", "notation": "d30", "raw": 22, "row_id": "tension_memory_salvation", "excluded": [{"row": "tension_legacy_freedom", "why": "used_elsewhere"}], "ts": "2026-09-24T18:03:02Z"},
     {"phase": "P1", "table": "trope-breaks.yaml", "label": "break.1", "notation": "d40", "raw": 11, "row_id": "break_no_afterlife_known", "excluded": [], "ts": "2026-09-24T18:03:02Z"},
     {"phase": "P2", "table": "pantheon.yaml#type", "label": "pantheon_type", "notation": "d5", "raw": 4, "row_id": "pantheon_silent_gods", "excluded": [], "ts": "2026-09-24T18:20:44Z"}
   ],
@@ -100,7 +100,7 @@ The fixture carries all ten phases in the real file; the two shown here are the 
 - `phases[N].status`: `pending` / `prerolled` / `running` / `generated` / `merged` / `validated` / `critiqued` / `awaiting_approval` / `approved` / `partial` / `failed` / `stale` / `needs-check` (in play, after a phase-scope revise).
 - `entities[id].status`: `pending` / `staged` / `merged` / `validated` / `critiqued` / `failed`.
 - `approval.rounds[].scope`: `fact` / `entity` / `phase` / `direction` (item 19.6). Max three rounds per phase.
-- `dice_log[].table`: `<file>#<subtable>`; `row_id` the table row rolled; `excluded[]` the rows `used.json` made the dice skip.
+- `dice_log[].table`: `<file>#<subtable>`; `row_id` the table row rolled; `excluded[]` every row the arbiter kept out of the pool, each `{row, why}` (`caller`, a `where` reason such as `climate`, `forbidden`, `requires`, `conflict` with `with`, `weight_zero`, `used_elsewhere`, `family_wait` with `family`, `row_wait`, `pair`); an exclusion that names the secret layer goes to `dm-only/dice-log.json#exclusions` instead; `usage_fallback` when a table was exhausted and the draw fell back to used rows; `used_keys` the non-row values approve writes to `used.json` (a target + action pair). `used.json` also keeps `births`: each campaign's first approval time, the order the waits count in (`design_arbiter.py`, plan item 25).
 
 ## Rules the fixture demonstrates
 

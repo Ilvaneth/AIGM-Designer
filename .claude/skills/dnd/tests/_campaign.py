@@ -24,17 +24,38 @@ FIXTURE = HERE / "fixtures" / "salt-lantern"
 CAMPAIGNS = PROJECT / "campaigns"
 
 
+USED = PROJECT / "used.json"
+
+
 class TestCampaign:
-    """Copy the fixture under campaigns/_test-*/; `run` drives a script against it."""
+    """Copy the fixture under campaigns/_test-*/; `run` drives a script against it. The project's used.json is
+    snapshotted when the first live test campaign is made and restored when the last is removed: an approve a
+    test drives stamps the birth order there, and a test must leave the owner's store as it found it."""
+
+    _live = 0
+    _used_snapshot = None
 
     def __init__(self, label: str):
         self.name = f"_test-{label}-{os.getpid()}-{uuid.uuid4().hex[:6]}"
         self.dir = CAMPAIGNS / self.name
+        if TestCampaign._live == 0:
+            TestCampaign._used_snapshot = USED.read_bytes() if USED.is_file() else None
+        TestCampaign._live += 1
+        self._removed = False
         shutil.copytree(FIXTURE, self.dir)
         self.env = {k: v for k, v in os.environ.items() if not k.startswith(("DND_", "CLAUDE_"))}
 
     def remove(self):
         shutil.rmtree(self.dir, ignore_errors=True)
+        if self._removed:
+            return
+        self._removed = True
+        TestCampaign._live -= 1
+        if TestCampaign._live == 0:
+            if TestCampaign._used_snapshot is not None:
+                USED.write_bytes(TestCampaign._used_snapshot)
+            elif USED.is_file():
+                USED.unlink()
 
     def run(self, script: str, *args: str, check: bool = False) -> subprocess.CompletedProcess:
         proc = subprocess.run([sys.executable, str(SCRIPTS / script), "-c", self.name, *args],

@@ -105,6 +105,11 @@ class Convention(unittest.TestCase):
             refs = []
             for key in ("conflicts_with", "allowed_via"):
                 refs += r.get(key) or []
+            conds = [r.get("requires")] + [w.get("when") for w in r.get("weight_by") or []]
+            for c in conds:
+                for m in (c if isinstance(c, list) else [c]):
+                    for key in ("any_of", "all_of", "none_of"):
+                        refs += (m or {}).get(key) or []
             for key in ("secret_archetype_bias", "pantheon_type_bias", "era_bias"):
                 refs += (r.get("effects") or {}).get(key) or []
             refs += r.get("touch_bias") or []
