@@ -25,7 +25,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_manifest as dm  # noqa: E402
 from design_io import design_dir, read_json  # noqa: E402
 
-UNIQUE_TABLES = ("tensions.yaml", "secrets.yaml", "trope-breaks.yaml", "signatures.yaml", "naming.yaml", "pantheon.yaml")
+# tables (a whole file, or `file#subtable`) whose rows must not repeat between two campaigns; the foundation's
+# palette may repeat, its actions and scars only wait (plan item 25)
+UNIQUE_TABLES = ("tensions.yaml", "secrets.yaml", "trope-breaks.yaml", "signatures.yaml", "naming.yaml", "pantheon.yaml",
+                 "foundation.yaml#spine", "foundation.yaml#ruin_source")
+
+
+def is_unique_table(ref: str) -> bool:
+    return ref in UNIQUE_TABLES or ref.split("#")[0] in UNIQUE_TABLES
 
 
 def projection(campaign: str) -> dict:
@@ -48,7 +55,7 @@ def rows_of(campaign: str) -> set[tuple[str, str]]:
         table, row = r.get("table") or "", r.get("row_id")
         if not row or table in ("dice", "") or r.get("notation") in ("forced", "fixed") or str(r.get("label", "")).startswith(("dial.", "content_mix.")):
             continue
-        out.add((table.split("#")[0], row))
+        out.add((table, row))
     return out
 
 
@@ -86,7 +93,7 @@ def compare(a: str, b: str) -> dict:
     shared_names = sorted(set(na) & set(nb))
     ra, rb = rows_of(a), rows_of(b)
     shared_rows = sorted(ra & rb)
-    unique_shared = [r for r in shared_rows if r[0] in UNIQUE_TABLES]
+    unique_shared = [r for r in shared_rows if is_unique_table(r[0])]
     ga, gb = graph_shape(a), graph_shape(b)
     da_, db_ = demographics(pa), demographics(pb)
     verdicts = {

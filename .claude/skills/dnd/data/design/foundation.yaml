@@ -1,0 +1,637 @@
+# foundation.yaml — P1's first step, the foundation (plan item 25; the owner-approved rows in
+# docs/p1-foundation-rows.md, sections 1-6 and 18). A script builds it from these sub-tables with no
+# model: the spine first (it forces the landform kinds it needs), then the palette, the ruin source,
+# the lifeline, the contest, the break and the escalation. Every seed is a column: its sub-table's
+# hooks_common are the promises the later floors inherit (errata 24.2 #23, the promise ledger).
+#
+# English ids and labels; the approved Turkish phrases are the rows' `tr` fields, self-standing noun
+# phrases or clauses the foundation sentence joins with separate words (item 25, step 1 #7).
+# The arbiter's fields (conflicts_with, requires, weight_by, family, the roll headers) are described
+# in README.md; design_arbiter.py is their only judge.
+schema_version: 1
+table: foundation
+consumed_by: [P1, P2, P3, P4, P5, P6, P7, P8]
+plan: "item 25; errata 24.2 #20-25"
+
+# closed lists the rows name (tests/test_foundation_tables.py checks them)
+phenomenon_rule_families: [magic_behaviour, body_blood, place_path, matter, time, word_sign, nature_creatures, born_of_break]
+key_kinds: [crossing, bridge, water, gate, descent, crossroad, network, landmark]
+remnant_kinds: [network, structure, city, body, wasteland, machine, object, source, rift]
+
+tables:
+
+  # ── 1. the palette: the landform kinds (22) ────────────────────────────────────────────────
+  palette:
+    roll:
+      avoid_used: false                 # palettes are never excluded across campaigns
+      count_by_scale: {short: [4, 5], standard: [6, 8], epic: [9, 12]}
+      fantastic_cap_by_magic: {low: 0, medium: 1, high: 2}   # the thin place is outside the cap at low
+      needs: [height, water]            # at least one of each
+      note: >-
+        the spine's forced kinds come first; the rest are drawn without replacement. One fantastic kind
+        born of the ruin source or a scar is exempt from the cap and comes on top of the count (item 25
+        review #4).
+    hooks_common:
+      - {phase: P3, must: "every palette kind lives on at least one map node (short has 1-2 regions against 4-5 kinds)"}
+      - {phase: P3, must: "a region's biomes come from its palette kinds' biomes"}
+    rows:
+      - {id: land_mountain, label: Mountains, height: true, biomes: [biome_high_mountains, biome_foothills], tr: {name: "dağ"}}
+      - {id: land_highland, label: Highlands, height: true, biomes: [biome_pine_uplands, biome_grazing_hills, biome_moor], tr: {name: "yayla"}}
+      - {id: land_plain, label: Plains, biomes: [biome_river_valley], tr: {name: "ova"}}
+      - {id: land_steppe, label: Steppe, biomes: [biome_steppe], tr: {name: "bozkır"}}
+      - {id: land_forest, label: Forest, biomes: [biome_old_forest, biome_jungle], tr: {name: "orman"}}
+      - {id: land_marsh, label: Marsh, biomes: [biome_fen, biome_salt_marsh], tr: {name: "bataklık"}}
+      - {id: land_desert, label: Desert, biomes: [biome_sand_desert, biome_stone_desert, biome_dunes, biome_salt_flats], tr: {name: "çöl"}}
+      - {id: land_cold, label: Cold lands, biomes: [biome_tundra], tr: {name: "soğuk topraklar"}}
+      - {id: land_volcanic, label: Volcanic land, height: true, biomes: [biome_volcanic], tr: {name: "volkanik"}}
+      - {id: land_river, label: River, water: true, biomes: [biome_river_delta, biome_river_valley], tr: {name: "nehir"}}
+      - {id: land_lake, label: Lakes, water: true, biomes: [biome_lake_country], tr: {name: "göl"}}
+      - id: land_coast
+        label: Coast and sea
+        water: true
+        biomes: [biome_sea_cliffs, biome_salt_marsh]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 2}]
+        tr: {name: "kıyı ve deniz"}
+      - id: land_island
+        label: Islands
+        implies: [land_coast]
+        biomes: [biome_sea_cliffs, biome_salt_marsh]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 2}]
+        tr: {name: "ada"}
+      - id: land_underground
+        label: The underground
+        biomes: [biome_caverns, biome_fungus_deeps]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "yeraltı"}
+      # fantastic (8): gated by the magic dial; only the thin place at low
+      - {id: land_floating_isles, label: Floating isles, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "yüzen adalar", what: "havada asılı kayalar ve üstlerindeki köyler"}}
+      - {id: land_crystal_forest, label: Crystal forest, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "kristal orman", what: "ağaçları kristalden bir orman"}}
+      - {id: land_stone_sea, label: Petrified sea, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "taşlaşmış deniz", what: "dalgaları taş kesilmiş, üstünde yürünen bir deniz"}}
+      - {id: land_giant_bones, label: Giant's bones, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "dev kemikleri", what: "bir titanın iskeletinin üstünde ve içinde kurulmuş toprak"}}
+      - {id: land_sky_river, label: River into the sky, fantastic: true, water: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "göğe akan nehir", what: "yukarı doğru akan, havada bir su yolu"}}
+      - {id: land_glass_desert, label: Glass desert, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "cam çölü", what: "eski bir büyü savaşının camlaştırdığı kum"}}
+      - {id: land_giant_fungus, label: Giant fungus forest, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "dev mantar ormanı", what: "yüzeyde, ağaç boyu mantarlar"}}
+      - id: land_thin_place
+        label: Thin place
+        fantastic: true
+        thin_place: true
+        tr: {name: "ince yer", what: "bir düzlemin dünyaya değdiği yer; düzlemi P2 seçer"}
+        hooks:
+          - {phase: P2, must: "the thin place's plane is chosen and touched"}
+
+  # ── 2. the spine: the world's skeleton (6 families, 30) ─────────────────────────────────────
+  spine:
+    roll:
+      avoid_used: true
+      family_wait: 3
+      note: "rolled before the palette; `forces` puts the kinds it needs into the palette (item 25 review #2); `forces_one_of` puts one of them"
+    hooks_common:
+      - {phase: P3, must: "the map's main line follows the spine's travel; the heart, both ends and the key place are map nodes"}
+      - {phase: P3, must: "the palette's kinds are spread over the spine's pieces; the two ends take different kinds"}
+      - {phase: P4, must: "the contest's two sides sit at the spine's two ends unless the contest row places them"}
+      - {phase: P6, must: "the site distribution follows the spine: the key place and the ends each hold or border a site"}
+    rows:
+      # 1. single line
+      - id: spine_river_to_sea
+        label: A river from source to sea
+        family: line
+        key_kind: crossing
+        forces: [land_river, land_mountain, land_coast]
+        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        tr: {name: "kaynaktan denize bir nehir", heart: "orta akıştaki köprü-şehir", ends: ["kaynaktaki dağ halkları", "deltadaki liman"], key_place: "nehrin tek geçilebilir sığlığı", travel: "nehir boyunca aşağı ve yukarı, mavnayla ve yoldan"}
+      - id: spine_great_rift
+        label: A great rift
+        family: line
+        key_kind: descent
+        forces: [land_highland]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "dev bir yarık", heart: "iki yakayı bağlayan köprü", ends: ["yarığın tabanı", "kenarlardaki yaylalar"], key_place: "köprü ya da tabana inen merdiven", travel: "kenarlar boyunca ve aşağıya iniş"}
+      - id: spine_mountain_passes
+        label: Passes along a range
+        family: line
+        key_kind: crossing
+        forces: [land_mountain]
+        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        tr: {name: "sıradağ boyunca geçitler", heart: "en büyük geçitteki kale-şehir", ends: ["dağın yağmur alan yamacı", "kurak yamacı"], key_place: "ana geçit", travel: "geçitten geçide, mevsime bağlı"}
+      - id: spine_long_coast
+        label: A long coastline
+        family: line
+        key_kind: landmark
+        forces: [land_coast]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
+        tr: {name: "uzun bir kıyı şeridi", heart: "büyük liman", ends: ["bir uçta buzul fiyortları", "öbür uçta sıcak koylar"], key_place: "kıyıyı ikiye bölen burun", travel: "gemiyle kıyı boyunca; kara yolunu dağlar keser"}
+      - id: spine_barren_corridor
+        label: A barren corridor
+        family: line
+        key_kind: water
+        forces_one_of: [land_desert, land_steppe]
+        tr: {name: "çorak koridor", heart: "koridorun ortasındaki han-şehir", ends_both: "koridorun iki ucundaki iki uygarlık", key_place: "yoldaki tek su kaynağı", travel: "konaktan konağa, suya bağlı"}
+      # 2. centred
+      - id: spine_lake_basin
+        label: A mountain-ringed basin with a lake
+        family: centred
+        key_kind: gate
+        forces: [land_mountain, land_lake]
+        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        tr: {name: "dağlarla çevrili çanak, ortasında göl", heart: "göldeki ada-şehir", ends: ["verimli havza", "dağların ötesindeki bilinmeyen"], key_place: "havzadan çıkan tek geçit", travel: "göl üstünden ve kıyı yollarından içeri doğru"}
+      - id: spine_lone_mountain
+        label: One giant mountain
+        family: centred
+        key_kind: descent
+        forces: [land_mountain]
+        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        tr: {name: "tek dev dağ", heart: "yamaçtaki en büyük şehir", ends: ["zirve", "etek"], key_place: "zirveye çıkan yol ya da dağın içine inen ağız", travel: "halkalar halinde yukarı ve aşağı"}
+      - id: spine_star_crater
+        label: The crater of a fallen stone
+        family: centred
+        key_kind: descent
+        landmark: crater                 # a P3 landmark, not a palette kind (review #4)
+        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        tr: {name: "gökten düşen bir taşın krateri", heart: "kraterin ortasındaki taş", ends: ["krater içi (değişmiş)", "krater dışı"], key_place: "kenardan inen tek yol", travel: "kenardan merkeze"}
+        hooks:
+          - {phase: P3, must: "the crater is a landmark and the heart's node"}
+      - id: spine_oasis_ring
+        label: An oasis and its ring
+        family: centred
+        key_kind: water
+        forces: [land_desert]
+        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        tr: {name: "vaha ve çevresindeki halka", heart: "vaha", ends: ["vaha", "çölün öbür yakası"], key_place: "vahanın suyu", travel: "vahadan dışa seferler; geri dönmek zorunlu"}
+      - id: spine_crossroads
+        label: Four roads meeting
+        family: centred
+        key_kind: crossroad
+        tr: {name: "dört yol ağzı", heart: "kavşak şehri", ends_both: "dört yöndeki dört farklı iklim ve ülke", key_place: "kavşağın kendisi", travel: "merkezden dışa, dört koldan"}
+      # 3. fragmented
+      - id: spine_archipelago
+        label: An archipelago
+        family: fragmented
+        key_kind: crossing
+        forces: [land_island, land_coast]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
+        tr: {name: "takımadalar", heart: "en büyük ada", ends: ["iç adalar", "uzak ve vahşi dış adalar"], key_place: "adaları bağlayan tek güvenli boğaz", travel: "adadan adaya gemiyle, mevsime bağlı"}
+      - id: spine_valley_maze
+        label: A maze of valleys
+        family: fragmented
+        key_kind: network
+        forces: [land_mountain]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "vadiler labirenti", heart: "en geniş vadi", ends_both: "birbirinden dağlarla ayrılmış, her biri başka bir halkın vadisi", key_place: "vadileri bağlayan tüneller ve geçitler", travel: "geçitlerden; her vadi ayrı bir dünya"}
+      - id: spine_forest_clearings
+        label: Clearings in an endless forest
+        family: fragmented
+        key_kind: network
+        forces: [land_forest]
+        tr: {name: "sonsuz ormanın açıklıkları", heart: "en büyük açıklık", ends: ["açıklıklar", "ormanın derinliği"], key_place: "açıklıkları bağlayan patikalar", travel: "açıklıktan açıklığa, yolsuz"}
+      - id: spine_mesa_land
+        label: A land of mesas
+        family: fragmented
+        key_kind: bridge
+        forces_one_of: [land_desert, land_highland]
+        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        tr: {name: "mesa ülkesi", heart: "en büyük masa dağın üstündeki şehir", ends: ["yaşanan mesa tepeleri", "aradaki vahşi kanyonlar"], key_place: "mesaları bağlayan köprüler ve ip yollar", travel: "mesadan mesaya, kanyonlara iniş"}
+      - id: spine_lake_chain
+        label: A chain of lakes
+        family: fragmented
+        key_kind: crossing
+        forces: [land_lake]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "göller zinciri", heart: "iki gölü bağlayan boğazdaki şehir", ends_both: "zincirin iki ucundaki göller", key_place: "göller arasındaki boğaz", travel: "gölden göle, suyla"}
+      # 4. layered
+      - id: spine_three_depths
+        label: Surface, middle depth and the deep
+        family: layered
+        key_kind: descent
+        forces: [land_underground]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "yüzey, orta derinlik ve derin", heart: "orta katmandaki şehir", ends: ["yüzey", "en derin katman"], key_place: "katmanları bağlayan büyük kuyu ya da kaldırgaç", travel: "aşağı ve yukarı"}
+      - id: spine_terraces
+        label: Terraces
+        family: layered
+        key_kind: descent
+        forces: [land_highland, land_plain]
+        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        tr: {name: "basamaklar", heart: "orta terastaki şehir", ends: ["en üstteki yayla", "en alttaki ova"], key_place: "teraslar arası merdivenler ve şelaleler", travel: "basamak basamak"}
+      - id: spine_two_worlds
+        label: Two worlds, one over the other
+        family: layered
+        key_kind: network
+        forces: [land_thin_place]
+        requires: {dial: {magic: [medium, high]}}
+        tr: {name: "üst üste iki dünya", heart: "iki dünyanın örtüştüğü şehir", ends: ["bizim dünya", "öbür düzlem"], key_place: "geçiş noktaları", travel: "iki katman arasında gidip gelme"}
+      - id: spine_mountain_within
+        label: The mountain's inside and outside
+        family: layered
+        key_kind: gate
+        forces: [land_mountain, land_underground]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "dağın içi ve dışı", heart: "dağın içindeki şehir", ends: ["dağın dışı", "dağın içi"], key_place: "dağın kapıları", travel: "kapılardan içeri ve dışarı"}
+      - id: spine_above_below_sea
+        label: Above and below the sea
+        family: layered
+        key_kind: network
+        forces: [land_coast]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
+        tr: {name: "deniz üstü ve deniz altı", heart: "kıyı şehri ya da bir resif", ends: ["kıyı halkı", "deniz altı halkları"], key_place: "sualtı mağaraları", travel: "dalış ve sualtı yolları"}
+      # 5. frontier
+      - id: spine_peninsula
+        label: A peninsula
+        family: frontier
+        key_kind: crossing
+        forces: [land_coast]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [short]}}, x: 2}]
+        tr: {name: "yarımada", heart: "boyuna yakın şehir", ends: ["yarımadanın ucu", "anakara"], key_place: "boyun, tek kara geçişi", travel: "yarımadanın içinde; dışarı boyundan ya da denizden"}
+      - id: spine_strait_two_continents
+        label: A strait and two continents
+        family: frontier
+        key_kind: crossing
+        forces: [land_coast]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [epic]}}, x: 2}]
+        tr: {name: "boğaz ve iki kıta", heart: "iki yakadaki ikiz şehir", ends_both: "iki kıta", key_place: "boğaz", travel: "boğazı geçmek, iki kıyı boyunca gitmek"}
+      - id: spine_long_wall
+        label: A border along a long wall
+        family: frontier
+        key_kind: gate
+        tr: {name: "uzun bir sur boyunca sınır", heart: "surun ana kapısı", ends: ["surun içi", "dışı"], key_place: "kapılar", travel: "sur boyunca ve kapılardan dışarı"}
+      - id: spine_climate_belt
+        label: A climate belt
+        family: frontier
+        key_kind: crossing
+        forces: [land_cold, land_desert]
+        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        tr: {name: "iklim kuşağı", heart: "kuşağın ortasındaki şehir", ends: ["donmuş kuzey", "kavrulan güney"], key_place: "kuşağın daraldığı yer", travel: "kuşak boyunca doğu-batı, kenarlara seferler"}
+      - id: spine_edge_of_civilisation
+        label: The edge of civilisation
+        family: frontier
+        key_kind: gate
+        weight_by: [{when: {dial: {scale: [epic]}}, x: 2}]
+        tr: {name: "uygarlığın kenarı", heart: "son büyük şehir", ends: ["bilinen topraklar", "haritasız vahşi"], key_place: "sınır kalesi ya da son köprü", travel: "sınırdan vahşiye doğru"}
+      # 6. fantastic
+      - id: spine_titan_back
+        label: A titan's back
+        family: fantastic
+        key_kind: descent
+        requires: {dial: {magic: [high]}}
+        tr: {name: "bir titanın sırtı", heart: "sırttaki şehir", ends: ["baş", "kuyruk"], key_place: "canlının içine inen yol", travel: "sırt boyunca"}
+      - id: spine_floating_archipelago
+        label: A floating archipelago
+        family: fantastic
+        key_kind: network
+        forces: [land_floating_isles]
+        requires: {dial: {magic: [high]}}
+        tr: {name: "yüzen takımada", heart: "en büyük yüzen ada", ends: ["yüksek adalar", "yere yakın adalar"], key_place: "adaları bağlayan zincirler ve rüzgâr yolları", travel: "uçan gemiler ve köprüler"}
+      - id: spine_void_ring
+        label: A ring around a bottomless void
+        family: fantastic
+        key_kind: bridge
+        requires: {dial: {magic: [medium, high]}}
+        tr: {name: "dipsiz bir boşluğun çevresindeki halka", heart: "boşluğa bakan şehir", ends_both: "halkanın iki karşı yakası", key_place: "boşluğun üstündeki tek köprü", travel: "halka boyunca ya da köprüden"}
+      - id: spine_giant_tree
+        label: One giant tree, mountain-tall
+        family: fantastic
+        key_kind: landmark
+        forces: [land_forest]
+        requires: {dial: {magic: [medium, high]}}
+        tr: {name: "tek dev ağaç (dağ boyunda)", heart: "gövdedeki şehir", ends: ["dallardaki ülke", "köklerdeki ülke"], key_place: "gövde", travel: "yukarı dallara, aşağı köklere"}
+        hooks:
+          - {phase: validator, must: "the giant tree is no 'world tree'; nothing in it refers to a real-world mythology (errata #19)"}
+      - id: spine_world_edge
+        label: The edge of the world
+        family: fantastic
+        key_kind: descent
+        requires: {dial: {magic: [medium, high]}}
+        tr: {name: "dünyanın kenarı", heart: "uçurumun kenarındaki şehir", ends: ["iç topraklar", "uçurumun ötesindeki bulut denizi"], key_place: "kenardan aşağı inen tek yol", travel: "kenara doğru ve aşağıya"}
+
+  # ── 3. the ruin source: what left the dangerous places (8 families, 40) ────────────────────
+  ruin_source:
+    roll:
+      avoid_used: true
+      family_wait: 3
+      note: >-
+        `sites` are sites.yaml's types the remnant yields (P6); `olgu_families` are the 2-3 families of
+        the phenomenon rule its strangeness fits (item 25 review #6; family 8, born of the break, only
+        with the scar); `remnant_kind` feeds the break's compatibility; `adds_palette` / `adds_biome` /
+        `landmark` are what the row brings to the map.
+    hooks_common:
+      - {phase: P2, must: "one age of the history is this fall, told from its `what` line"}
+      - {phase: P6, must: "the remnant's sites come from the row's `sites` types; at least one site stands in the remnant"}
+      - {phase: P1, must: "unless the scar changed a magic rule, the phenomenon signature's home is this strangeness"}
+    rows:
+      # 1. fallen kingdoms
+      - id: ruin_road_kingdom
+        label: The road-building kingdom
+        family: fallen_kingdoms
+        remnant_kind: network
+        sites: [site_stronghold, site_dungeon_ruin, site_dungeon_planned]
+        olgu_families: [place_path, word_sign]
+        tr: {name: "yol yapan krallık", what: "ülkeyi taş yollarla ve kalelerle ören krallık iç savaşla çöktü", remnant: "taş yol ağı ve yol kaleleri", sites: "yol kaleleri, köprü kuleleri, gömülü hazine odaları", strangeness: "eski yollar yürüyeni hâlâ bir yere götürüyor"}
+      - id: ruin_water_kingdom
+        label: The water kingdom
+        family: fallen_kingdoms
+        remnant_kind: network
+        sites: [site_dungeon_planned, site_dungeon_ruin]
+        olgu_families: [matter, magic_behaviour, place_path]
+        tr: {name: "su krallığı", what: "sarnıçlar ve su kemerleri kuran krallık suyunu kaybedince dağıldı", remnant: "su kemerleri ve sarnıçlar", sites: "sarnıçlar, kanallar, bent odaları", strangeness: "suyu yönlendiren eski büyü hâlâ çalışıyor"}
+      - id: ruin_sorcerer_kings
+        label: The sorcerer-king dynasty
+        family: fallen_kingdoms
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_dungeon_ruin]
+        olgu_families: [body_blood, word_sign]
+        tr: {name: "büyücü-krallar hanedanı", what: "büyüyle yöneten hanedan kendi büyüsüyle yıkıldı", remnant: "saray-kuleler", sites: "kuleler, deney mahzenleri, bekçi golemleri", strangeness: "büyü hâlâ hanedanın kanını tanıyor"}
+      - id: ruin_city_states
+        label: The city-states
+        family: fallen_kingdoms
+        remnant_kind: city
+        adds_biome: biome_dead_city_lands
+        sites: [site_urban, site_dungeon_ruin, site_dungeon_planned]
+        olgu_families: [magic_behaviour, word_sign]
+        tr: {name: "şehir devletleri", what: "birbirine düşen şehirler birbirini bitirdi", remnant: "surlu, boş şehirler", sites: "terk edilmiş şehirler, tüccar mahzenleri, sur kuleleri", strangeness: "şehirlerin koruma büyüleri hâlâ yabancıyı uzaklaştırıyor"}
+      - id: ruin_steppe_union
+        label: The steppe union
+        family: fallen_kingdoms
+        remnant_kind: city
+        requires: {any_of: [land_steppe]}
+        sites: [site_dungeon_ruin, site_dungeon_tomb, site_stronghold]
+        olgu_families: [place_path, word_sign]
+        tr: {name: "bozkır birliği", what: "dev bir göçebe birliği dağıldı", remnant: "saray-kentler ve taş anıtlar", sites: "terk edilmiş saray-kentler, han mezarları, at kaleleri", strangeness: "anıtlar birliğin sınırlarını hâlâ çiziyor; sınırı geçen bunu hisseder"}
+        hooks:
+          - {phase: validator, must: "the only tomb the foundation brings is the khans' tombs (owner-approved)"}
+      # 2. wars
+      - id: ruin_mage_war
+        label: The mage war
+        family: wars
+        remnant_kind: wasteland
+        adds_palette: land_glass_desert
+        sites: [site_dungeon_ruin, site_wilderness, site_dungeon_lair]
+        olgu_families: [matter, magic_behaviour]
+        tr: {name: "büyü savaşı", what: "iki büyücü okulunun savaşı toprağı camlaştırdı", remnant: "cam çölü ve savaş kuleleri", sites: "yarı gömülü kuleler, büyü tuzakları, kaçmış savaş yaratıkları", strangeness: "cam kum büyüyü kırıyor ve yansıtıyor"}
+      - id: ruin_giants_and_dragons
+        label: Giants against dragons
+        family: wars
+        remnant_kind: body
+        sites: [site_stronghold, site_dungeon_lair, site_wilderness]
+        olgu_families: [matter, nature_creatures]
+        tr: {name: "devler ve ejderhalar", what: "iki büyük soy arasında savaş", remnant: "ejderha kemikleri ve dev kaleleri", sites: "dev kaleleri, ejderha inleri, savaş alanları", strangeness: "kemiklerin yakınında ateş başka türlü yanıyor"}
+      - id: ruin_besieged_land
+        label: The besieged land
+        family: wars
+        remnant_kind: structure
+        sites: [site_stronghold, site_dungeon_planned, site_dungeon_ruin]
+        olgu_families: [magic_behaviour, time]
+        tr: {name: "kuşatılmış ülke", what: "yüz yıl kuşatılan bir ülke sonunda düştü", remnant: "iç içe surlar ve kuşatma tünelleri", sites: "surlar, lağım tünelleri, cephanelikler", strangeness: "kuşatma büyüleri hâlâ tetikte"}
+      - id: ruin_kin_war
+        label: The kin war
+        family: wars
+        remnant_kind: structure
+        sites: [site_stronghold, site_dungeon_planned]
+        olgu_families: [body_blood, magic_behaviour]
+        tr: {name: "kardeş savaşı", what: "bir halkın iki kolu birbirini bitirdi", remnant: "iki yakada ikiz kaleler", sites: "ikiz kaleler, gizli sığınaklar, ortak ama yasaklı tapınak", strangeness: "iki kolun kanı birbirine değince bir şey oluyor"}
+      - id: ruin_celestial_war
+        label: The celestial war
+        family: wars
+        remnant_kind: machine
+        landmark: crater
+        sites: [site_planar, site_dungeon_ruin, site_wilderness]
+        olgu_families: [magic_behaviour, nature_creatures]
+        weight_by: [{when: {dial: {tone: [cosmic]}}, x: 2}]
+        tr: {name: "göksel savaş", what: "düzlemler arası bir savaş bu dünyada çarpıştı", remnant: "düşmüş savaş makineleri, yaralı toprak", sites: "çarpma kraterleri, düşmüş gök kaleleri, düzlem yarıkları", strangeness: "savaş alanında iyilik ve kötülük elle tutulur hale geliyor"}
+      # 3. gods
+      - id: ruin_dead_god
+        label: A dead god
+        family: gods
+        remnant_kind: body
+        adds_palette: land_giant_bones
+        sites: [site_dungeon_natural, site_urban, site_dungeon_planned]
+        olgu_families: [word_sign, time, body_blood]
+        tr: {name: "ölmüş bir tanrı", what: "bir tanrı öldü, bedeni toprağa düştü", remnant: "dağ gibi bir tanrı bedeni", sites: "bedenin içindeki mağaralar, çevresindeki tapınak-kentler", strangeness: "tanrının son dileği bedenin yakınında gerçekleşmeye çalışıyor"}
+      - id: ruin_gods_quarrel
+        label: The gods' quarrel
+        family: gods
+        remnant_kind: object
+        sites: [site_wilderness, site_stronghold]
+        olgu_families: [place_path, magic_behaviour]
+        tr: {name: "tanrıların kavgası", what: "tanrıların savaşı bir ülkeyi yarıp geçti", remnant: "toprağa saplı tanrı silahları", sites: "silahların çevresindeki yarıklar, tapınak kaleleri", strangeness: "silahın yakınında o tanrının alanı güçlü"}
+      - id: ruin_departed_god
+        label: The god who left
+        family: gods
+        remnant_kind: city
+        sites: [site_dungeon_planned, site_dungeon_ruin]
+        olgu_families: [word_sign, nature_creatures]
+        tr: {name: "terk eden tanrı", what: "bir tanrı halkını bırakıp gitti", remnant: "boş tapınaklar ve kutsal kentler", sites: "tapınak labirentleri, kutsal hazineler, bekçi yaratıklar", strangeness: "tapınaklar hâlâ ibadet bekliyor, dua edeni dinliyor"}
+      - id: ruin_imprisoned_god
+        label: The imprisoned god
+        family: gods
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_stronghold]
+        olgu_families: [body_blood, place_path]
+        tr: {name: "hapsedilmiş tanrı", what: "ölümlüler bir tanrıyı hapsetti ve bedelini ödedi", remnant: "hapishane-tapınak", sites: "mühür odaları, bekçi tarikatının kaleleri", strangeness: "hapishanenin çevresine tanrının gücü sızıyor"}
+      - id: ruin_failed_apotheosis
+        label: The mortal who failed to become a god
+        family: gods
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_dungeon_ruin]
+        olgu_families: [word_sign, time]
+        tr: {name: "tanrılaşamayan ölümlü", what: "bir büyücü tanrılığa yükselmeye çalıştı ve başaramadı", remnant: "yükseliş kulesi", sites: "kule, ayin mahzenleri, yarı tanrılaşmış hizmetkârlar", strangeness: "kulede dilekler yarım gerçekleşiyor"}
+      # 4. magic
+      - id: ruin_age_of_mages
+        label: The age of mages
+        family: magic
+        remnant_kind: city
+        sites: [site_urban, site_dungeon_planned]
+        olgu_families: [magic_behaviour, time]
+        weight_by: [{when: {dial: {magic: [low]}}, x: 2}]
+        tr: {name: "büyücüler çağı", what: "büyünün bol olduğu çağ bir gecede bitti", remnant: "büyüyle çalışan, şimdi durmuş bir şehir", sites: "durmuş büyü makineleri, akademi mahzenleri", strangeness: "bazı büyüler hâlâ kendi kendine çalışıyor"}
+      - id: ruin_failed_experiment
+        label: The failed experiment
+        family: magic
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_dungeon_lair]
+        olgu_families: [body_blood, nature_creatures]
+        weight_by: [{when: {dial: {tone: [horror]}}, x: 3}]
+        tr: {name: "başarısız deney", what: "bir akademinin deneyi bir bölgeyi dönüştürdü", remnant: "deney merkezi", sites: "laboratuvar-zindanlar, kaçan yaratıkların inleri", strangeness: "bölgede canlılar birbirine karışıyor"}
+      - id: ruin_made_peoples
+        label: The made peoples
+        family: magic
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_stronghold]
+        olgu_families: [word_sign, body_blood]
+        tr: {name: "yaratılmış halklar", what: "büyücülerin yarattığı hizmetkâr halklar isyan etti", remnant: "yaratım havuzları", sites: "yaratım salonları, isyan kaleleri", strangeness: "torunlar yaratıcılarının komutlarını hâlâ içlerinde duyuyor"}
+      - id: ruin_golem_army
+        label: The golem army
+        family: magic
+        remnant_kind: machine
+        sites: [site_dungeon_planned, site_wilderness]
+        olgu_families: [word_sign, matter]
+        tr: {name: "golem ordusu", what: "savaş için kurulan golemler emir veren kalmayınca durdu", remnant: "bekleyen golem ordusu", sites: "dökümhaneler, ordunun beklediği ovalar", strangeness: "golemler doğru sözü bekliyor"}
+      - id: ruin_dried_source
+        label: The spring that ran dry
+        family: magic
+        remnant_kind: source
+        sites: [site_dungeon_ruin, site_dungeon_natural]
+        olgu_families: [magic_behaviour, place_path]
+        tr: {name: "kuruyan kaynak", what: "bir büyü pınarı tükendi, ona bağlı uygarlık çöktü", remnant: "kurumuş kaynak", sites: "kaynağın çevresindeki kuleler, kaynağa inen tüneller", strangeness: "kaynağın yakınında büyü tuhaf davranıyor"}
+      # 5. nature and catastrophe
+      - id: ruin_great_flood
+        label: The great flood
+        family: catastrophe
+        remnant_kind: city
+        adds_biome: biome_drowned_lands
+        sites: [site_dungeon_ruin, site_dungeon_natural]
+        olgu_families: [matter, nature_creatures]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
+        tr: {name: "büyük sel", what: "sel bir ovayı yuttu", remnant: "sular altındaki şehirler", sites: "batık şehirler, sudan çıkan kuleler, sualtı mahzenleri", strangeness: "batık şehirlerde hava cepleri; sualtı halkları yerleşmiş"}
+      - id: ruin_eruption
+        label: The eruption
+        family: catastrophe
+        remnant_kind: city
+        requires: {any_of: [land_volcanic]}
+        sites: [site_dungeon_ruin, site_dungeon_natural, site_dungeon_lair]
+        olgu_families: [nature_creatures, matter]
+        tr: {name: "püskürme", what: "bir yanardağ bir ülkeyi lav altına gömdü", remnant: "lavın dondurduğu şehir", sites: "lav altındaki şehir, lav tüpleri, ateş yaratıklarının inleri", strangeness: "lav tüplerinde ateş yaratıkları hâlâ yaşıyor"}
+      - id: ruin_ice_age
+        label: The ice age
+        family: catastrophe
+        remnant_kind: city
+        requires: {any_of: [land_cold, land_mountain]}
+        sites: [site_dungeon_natural, site_stronghold]
+        olgu_families: [time, nature_creatures]
+        tr: {name: "buz çağı", what: "buzullar bir uygarlığı örttü", remnant: "buzun altındaki şehir", sites: "buz mağaraları, donmuş kaleler", strangeness: "buzda donmuş canlılar çözülmeyi bekliyor"}
+      - id: ruin_plague
+        label: The plague
+        family: catastrophe
+        remnant_kind: city
+        sites: [site_urban, site_dungeon_planned, site_wilderness]
+        olgu_families: [body_blood, nature_creatures]
+        weight_by: [{when: {dial: {tone: [horror]}}, x: 3}]
+        tr: {name: "salgın", what: "bir salgın bir ülkeyi boşalttı", remnant: "karantina şehirleri, hastane-kaleler", sites: "boş şehirler, hastane zindanları, yasak vadiler", strangeness: "salgının bıraktığı bağışıklık bir halkta güce dönüştü"}
+      - id: ruin_fallen_star
+        label: The stone that fell from the sky
+        family: catastrophe
+        remnant_kind: object
+        landmark: crater
+        sites: [site_wilderness, site_dungeon_natural, site_urban]
+        olgu_families: [body_blood, matter]
+        tr: {name: "gökten düşen taş", what: "bir yıldız ya da ay parçası düştü", remnant: "krater ve gök taşı", sites: "krater, gök taşının içi, çevresindeki kasabalar", strangeness: "gök taşının yakınında canlılar değişiyor"}
+      # 6. toil and greed
+      - id: ruin_mine_rush
+        label: The mine rush
+        family: toil
+        remnant_kind: city
+        requires: {any_of: [land_mountain, land_underground, land_highland]}
+        sites: [site_dungeon_natural, site_dungeon_planned]
+        olgu_families: [matter, place_path]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "maden hücumu", what: "bir cevher için dağlar delindi, cevher bitince herkes gitti", remnant: "terk edilmiş maden şehri", sites: "galeriler, dökümhaneler, derine inen kuyular", strangeness: "madenciler derinde bir şeye ulaşmıştı"}
+      - id: ruin_endless_building
+        label: The building that never ended
+        family: toil
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_urban]
+        olgu_families: [matter, time]
+        tr: {name: "bitmeyen yapı", what: "bir hükümdarın dev yapısı halkını tüketti", remnant: "yarım kalmış dev yapı", sites: "yapının içi, taş ocakları, işçi köyleri", strangeness: "yapı kendi kendine büyümeye devam ediyor"}
+      - id: ruin_merchant_hoards
+        label: The merchant hoards
+        family: toil
+        remnant_kind: structure
+        sites: [site_stronghold, site_dungeon_planned, site_urban]
+        olgu_families: [word_sign, matter]
+        tr: {name: "tüccar hazineleri", what: "bir tüccar birliği hazinelerini tek yerde topladı, sonra dağıldı", remnant: "hazine kasaları", sites: "kasa-zindanlar, tuzaklı depolar, liman mahzenleri", strangeness: "kilitler yalnızca eski birliğin mühürlerini tanıyor"}
+      - id: ruin_returning_forest
+        label: The forest that came back
+        family: toil
+        remnant_kind: city
+        requires: {any_of: [land_forest]}
+        sites: [site_dungeon_ruin, site_wilderness, site_dungeon_lair]
+        olgu_families: [nature_creatures, place_path]
+        tr: {name: "geri dönen orman", what: "bir krallık ormanı tüketti; orman geri geldi ve krallığı yuttu", remnant: "ormanın içindeki şehir", sites: "ağaçların yuttuğu saraylar, orman ruhlarının inleri", strangeness: "orman eski şehrin sakinlerine kin tutuyor"}
+      - id: ruin_alchemy_spill
+        label: The alchemy spill
+        family: toil
+        remnant_kind: wasteland
+        sites: [site_dungeon_planned, site_wilderness, site_dungeon_lair]
+        olgu_families: [matter, nature_creatures, body_blood]
+        tr: {name: "simya taşkını", what: "bir simya loncasının üretimi toprağı ve suyu değiştirdi", remnant: "simya işlikleri", sites: "işlikler, zehirli bataklık, dönüşmüş canlıların inleri", strangeness: "bölgenin bitkileri iksir etkisi taşıyor"}
+      # 7. old peoples
+      - id: ruin_dwarf_city
+        label: The abandoned dwarf city
+        family: old_peoples
+        remnant_kind: city
+        requires: {any_of: [land_mountain, land_underground]}
+        sites: [site_dungeon_planned, site_dungeon_natural]
+        olgu_families: [word_sign, matter]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        tr: {name: "terk edilmiş cüce şehri", what: "cüceler derinden gelen bir şeyden kaçtı", remnant: "derin şehir ve büyük kapısı", sites: "yeraltı şehri, dökümhaneler, mühürlü derin kapı", strangeness: "cüce runeleri yabancılara karşı hâlâ çalışıyor"}
+      - id: ruin_elven_withdrawal
+        label: The forest the elves left
+        family: old_peoples
+        remnant_kind: city
+        requires: {any_of: [land_forest]}
+        sites: [site_dungeon_ruin, site_planar, site_wilderness]
+        olgu_families: [time, place_path]
+        tr: {name: "elflerin çekildiği orman", what: "elfler başka bir düzleme çekildi", remnant: "boş ağaç-şehirler", sites: "ağaç-saraylar, fey geçitleri, bekçi yaratıklar", strangeness: "ormanda zaman farklı akıyor"}
+      - id: ruin_giants_land
+        label: The land of giants
+        family: old_peoples
+        remnant_kind: structure
+        sites: [site_stronghold, site_dungeon_ruin]
+        olgu_families: [word_sign, matter]
+        weight_by: [{when: {dial: {tone: [heroic]}}, x: 3}]
+        tr: {name: "devlerin ülkesi", what: "devler bir zamanlar bu toprağı yönetiyordu", remnant: "insana göre dev yapılar", sites: "dev kaleleri, dev merdivenler, dev hazineleri", strangeness: "devlerin taşları hâlâ onların sözünü dinliyor"}
+      - id: ruin_age_of_dragons
+        label: The age of dragons
+        family: old_peoples
+        remnant_kind: structure
+        sites: [site_dungeon_lair, site_dungeon_natural, site_dungeon_planned]
+        olgu_families: [body_blood, nature_creatures]
+        weight_by: [{when: {dial: {tone: [heroic]}}, x: 3}]
+        tr: {name: "ejderhalar çağı", what: "ejderhalar hüküm sürdü, sonra birbirini yok etti", remnant: "inler ve hazineler", sites: "inler, hazine mağaraları, ejderha tapınakları", strangeness: "ejderha soyundan gelenler hâlâ hak iddia ediyor"}
+      - id: ruin_winged_mountains
+        label: The winged people's mountains
+        family: old_peoples
+        remnant_kind: city
+        requires: {any_of: [land_mountain, land_highland]}
+        sites: [site_dungeon_ruin, site_wilderness]
+        olgu_families: [place_path, nature_creatures]
+        tr: {name: "kanatlı halkın dağları", what: "kanatlı bir halk ortadan kayboldu", remnant: "yalnızca uçarak ulaşılan tepe şehirleri", sites: "tepe şehirleri, yuvalar, rüzgâr kuleleri", strangeness: "rüzgâr onların yollarını hâlâ taşıyor"}
+      # 8. planes and sky
+      - id: ruin_planar_rift
+        label: The planar rift
+        family: planes
+        remnant_kind: rift
+        sites: [site_planar, site_wilderness, site_stronghold]
+        olgu_families: [magic_behaviour, place_path, time]
+        tr: {name: "düzlem yarığı", what: "bir düzlemin kapısı açıldı, sonra kapandı", remnant: "yarığın izi", sites: "yarık çevresindeki dönüşmüş toprak, düzlem yaratıklarının kaleleri", strangeness: "yarık bölgesinde o düzlemin bir kuralı geçerli"}
+        hooks:
+          - {phase: P2, must: "the rift's plane is chosen and its one rule written"}
+      - id: ruin_fallen_sky_city
+        label: The sky city that fell
+        family: planes
+        remnant_kind: structure
+        landmark: floating_fragments
+        sites: [site_dungeon_ruin, site_dungeon_planned]
+        olgu_families: [matter, place_path]
+        tr: {name: "düşen gök şehri", what: "havada uçan bir şehir düştü", remnant: "şehrin parçaları", sites: "parçalanmış saraylar, hâlâ havada duran parçalar", strangeness: "parçalar yeniden havalanmak istiyor"}
+      - id: ruin_planar_invasion
+        label: The planar invasion
+        family: planes
+        remnant_kind: structure
+        sites: [site_stronghold, site_planar, site_dungeon_lair]
+        olgu_families: [nature_creatures, body_blood]
+        tr: {name: "düzlem istilası", what: "başka bir düzlemden gelen ordu geri püskürtüldü", remnant: "istilacıların kaleleri", sites: "istilacı kaleleri, esir kampları, kapı kalıntıları", strangeness: "istilacıların bıraktığı yaratıklar çoğalıyor"}
+      - id: ruin_broken_time
+        label: Where time broke
+        family: planes
+        remnant_kind: city
+        sites: [site_urban, site_planar]
+        olgu_families: [time, place_path]
+        weight_by: [{when: {dial: {tone: [cosmic]}}, x: 3}]
+        tr: {name: "zamanın kırıldığı yer", what: "bir büyü zamanı kırdı", remnant: "zamanı donmuş bir şehir", sites: "zamanın farklı aktığı sokaklar", strangeness: "şehirde geçmişten ve gelecekten parçalar dolaşıyor"}
+      - id: ruin_star_kingdom
+        label: The kingdom that reached for the stars
+        family: planes
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_planar, site_dungeon_lair]
+        olgu_families: [time, magic_behaviour]
+        weight_by: [{when: {dial: {tone: [cosmic]}}, x: 3}]
+        tr: {name: "yıldızlara uzanan krallık", what: "bir gözlemevi-krallık yıldızlardan bir şey çağırdı", remnant: "gözlemevleri", sites: "gözlemevleri, çağrı odaları, yıldız yaratıklarının inleri", strangeness: "belli gecelerde gökyüzü yaklaşıyor"}

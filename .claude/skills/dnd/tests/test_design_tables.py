@@ -27,7 +27,7 @@ PLANNED = {
     "dials", "scale", "tensions", "secrets", "trope-breaks", "forbidden", "signatures", "naming",
     "pantheon", "planes", "magic", "history", "calendar", "regions", "settlements", "factions",
     "antagonists", "simulation", "npcs", "monster-ecology", "loot-budget", "sites", "arc", "threads",
-    "rubrics",
+    "rubrics", "foundation",
 }
 
 
@@ -36,6 +36,13 @@ def every_row():
         for sub, rows in dt.all_row_lists(dt.load(name)).items():
             for r in rows:
                 yield name, sub, r
+
+
+def common_hooks(name: str, sub: str) -> list:
+    """The hooks every row of a (sub-)table inherits: the file's hooks_common and the sub-table's own."""
+    doc = dt.load(name)
+    node = (doc.get("tables") or {}).get(sub) if sub else None
+    return list(doc.get("hooks_common") or []) + list((node or {}).get("hooks_common") or [] if isinstance(node, dict) else [])
 
 
 class Convention(unittest.TestCase):
@@ -66,9 +73,10 @@ class Convention(unittest.TestCase):
                 self.assertRegex(r["id"], r"^[a-z][a-z0-9_]*$")
                 self.assertIsInstance(r.get("label"), str)
                 self.assertTrue(r["label"].strip())
-                hooks = r.get("hooks")
+                hooks = r.get("hooks", [])
                 self.assertIsInstance(hooks, list, "hooks must be a list")
-                self.assertTrue(hooks, "a row needs at least one hook")
+                self.assertTrue(hooks or common_hooks(name, sub),
+                                "a row needs at least one hook, its own or its table's hooks_common")
                 for h in hooks:
                     self.assertIn(h.get("phase"), dt.HOOK_TARGETS, h)
                     self.assertTrue(str(h.get("must", "")).strip(), h)
@@ -84,7 +92,8 @@ class Convention(unittest.TestCase):
 
     def test_hooks_common_name_known_phases(self):
         for name in dt.list_tables():
-            for h in dt.load(name).get("hooks_common") or []:
+            subs = [""] + list((dt.load(name).get("tables") or {}))
+            for h in [h for sub in subs for h in common_hooks(name, sub)]:
                 self.assertIn(h.get("phase"), dt.HOOK_TARGETS, (name, h))
                 self.assertTrue(h.get("must"))
 
@@ -120,7 +129,8 @@ class Convention(unittest.TestCase):
                 table = ref.split("_", 1)[0]
                 prefix_table = {"secret": "secrets", "break": "trope-breaks", "tension": "tensions",
                                 "forbidden": "forbidden", "era": "dials", "pantheon": "pantheon",
-                                "sig": "signatures", "mix": "dials", "tone": "dials"}.get(table)
+                                "sig": "signatures", "mix": "dials", "tone": "dials",
+                                "land": "foundation", "spine": "foundation", "ruin": "foundation"}.get(table)
                 if prefix_table in present:
                     with self.subTest(table=name, row=r["id"], ref=ref):
                         self.assertIn(ref, ids)
