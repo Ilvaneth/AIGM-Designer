@@ -22,6 +22,9 @@ SPINE = dt.rows("foundation.yaml#spine")
 RUIN = dt.rows("foundation.yaml#ruin_source")
 BIOMES = {r["id"] for r in dt.rows("regions.yaml#biome")}
 SITE_TYPES = {r["id"] for r in dt.rows("sites.yaml#site_type")}
+LIFE = dt.rows("foundation.yaml#lifeline")
+CONTEST = dt.rows("foundation.yaml#contest")
+ARCHETYPES = {r["id"][len("archetype_"):] for r in dt.rows("factions.yaml#archetype")}
 
 # the attractor clusters item 25 keeps out of every foundation table: a table decision, not a word ban (#18)
 ATTRACTORS = re.compile(r"\b(mum|balmumu|lamba|fener|kandil|don yağı|çan(?!ak)|sessiz|defter|geçiş ücreti|haraç|"
@@ -222,12 +225,112 @@ class RuinSource(unittest.TestCase):
         self.assertEqual(head["family_wait"], 3)
 
 
+class Lifeline(unittest.TestCase):
+
+    def test_sixty_in_seven_families(self):
+        self.assertEqual(len(LIFE), 60)
+        self.assertEqual(Counter(r["family"] for r in LIFE),
+                         {"water": 8, "passage": 9, "creatures": 9, "mine": 9, "crop": 9, "craft": 8, "treaty": 8})
+
+    def test_every_lifeline_carries_its_columns(self):
+        for r in LIFE:
+            with self.subTest(life=r["id"]):
+                for col in ("name", "who", "yields", "weak_point"):
+                    self.assertTrue(r["tr"].get(col))
+                self.assertEqual(bool(r["tr"].get("sense")), r["family"] != "treaty", "only the treaties have no sense line")
+
+    def test_only_rows_the_palette_can_hold_are_drawn(self):
+        """The rows file: the script draws only lifelines whose `where` kinds the palette brought; 'everywhere' rows
+        need none."""
+        for r in LIFE:
+            with self.subTest(life=r["id"]):
+                where = r.get("where") or []
+                self.assertFalse(set(where) - set(PALETTE))
+                req = r.get("requires")
+                if not where:
+                    self.assertIsNone(req)
+                    continue
+                conds = req if isinstance(req, list) else [req]
+                for c in conds:
+                    self.assertTrue(set(c.get("any_of") or c.get("all_of") or []) == set(where))
+
+    def test_the_magic_gates(self):
+        by = {r["id"]: r for r in LIFE}
+        gi = by["life_giant_insects"]["requires"]
+        self.assertEqual([c["dial"] for c in gi], [{"magic": ["medium", "high"]}, {"era": ["underground"]}])
+        self.assertEqual(by["life_griffon_eyries"]["requires"][0]["dial"], {"magic": ["medium", "high"]})
+
+    def test_the_family_waits_three_births(self):
+        self.assertEqual(dt.roll_header("foundation.yaml#lifeline")["family_wait"], 3)
+
+
+class Contest(unittest.TestCase):
+
+    def test_forty_in_eight_families_of_five(self):
+        self.assertEqual(len(CONTEST), 40)
+        self.assertEqual(Counter(r["family"] for r in CONTEST),
+                         {f: 5 for f in ("two_hands", "old_new", "strong_weak", "open_close", "race", "kin", "nonhuman",
+                                         "hidden_hand")})
+
+    def test_every_contest_carries_its_roles_prize_and_escalation(self):
+        for r in CONTEST:
+            with self.subTest(contest=r["id"]):
+                self.assertEqual(set(r["roles"]), {"a", "b", "third", "fourth"})
+                for role in r["roles"].values():
+                    self.assertTrue(role["tr"])
+                    self.assertTrue(role["hint"] is None or role["hint"] in ARCHETYPES, role)
+                self.assertIn(r["prize"], ("lifeline", "heart", "remnant", "new", "thin_place"))
+                self.assertGreaterEqual(len(r["escalation"]), 2)
+                for k, v in (r.get("seats") or {}).items():
+                    self.assertIn(k, ("a", "b", "third", "fourth", "prize"))
+                    self.assertIn(v, ("heart", "end", "key_place", "beside_key_place", "thin_place"))
+
+    def test_roles_by_scale_and_the_epic_second_contest(self):
+        head = DOC["tables"]["contest"]["roll"]
+        self.assertEqual(head["roles_by_scale"], {"short": ["a", "b", "third"], "standard": ["a", "b", "third", "fourth"],
+                                                  "epic": ["a", "b", "third", "fourth"]})
+        self.assertEqual(head["contests_by_scale"], {"short": 1, "standard": 1, "epic": 2})
+        self.assertEqual(head["family_wait"], 3)
+
+    def test_the_owner_rules(self):
+        by = {r["id"]: r for r in CONTEST}
+        self.assertEqual(by["contest_open_close_gate"]["requires"], {"any_of": ["land_thin_place"]})
+        self.assertTrue(all(r.get("third_is_rumour") for r in CONTEST if r["family"] == "hidden_hand"))
+        self.assertFalse(any(r.get("third_is_rumour") for r in CONTEST if r["family"] != "hidden_hand"))
+        for r in CONTEST:
+            flat = " ".join(texts(r))
+            self.assertNotRegex(flat, r"kötü tarikat|fısıldayan|doğuştan kötü", r["id"])
+
+    def test_every_role_hint_is_a_faction_archetype_the_institution_can_take(self):
+        """Review #5: the institution is drawn only from a hinted role; every contest has one inside the scale's role
+        count, short included (owner, 2026-09-28: the shapeshifter's village or family sides are state, the hunter martial)."""
+        roles = DOC["tables"]["contest"]["roll"]["roles_by_scale"]
+        for scale, keys in roles.items():
+            for r in CONTEST:
+                with self.subTest(scale=scale, contest=r["id"]):
+                    self.assertTrue(any(r["roles"][k]["hint"] for k in keys))
+
+    def test_the_thin_place_prize_needs_the_thin_place(self):
+        for r in CONTEST:
+            if r["prize"] == "thin_place":
+                self.assertEqual(r.get("requires"), {"any_of": ["land_thin_place"]}, r["id"])
+        self.assertEqual({r["id"] for r in CONTEST if r["prize"] == "thin_place"}, {"contest_open_close_gate"})
+
+    def test_the_treaty_lifelines_weigh_their_contests_double(self):
+        """Owner, 2026-09-28: a weight bond, no forcing."""
+        by = {r["id"]: r for r in CONTEST}
+        for cid, life in (("contest_humans_giants", "life_giant_peace"), ("contest_humans_dragon", "life_dragon_protection"),
+                          ("contest_humans_fey", "life_fey_bargain")):
+            base = arb.weight_of(by[cid], arb.Context())
+            self.assertEqual(arb.weight_of(by[cid], arb.Context(rolled={life: False})), base * 2)
+
+
 class Attractors(unittest.TestCase):
 
     def test_no_attractor_cluster_in_any_row(self):
         for sub, rows in dt.all_row_lists(DOC).items():
             for r in rows:
-                for t in texts(r.get("tr")):
+                for t in texts({k: v for k, v in r.items() if k not in ("id", "label", "hooks")}):
                     with self.subTest(row=r["id"]):
                         self.assertIsNone(ATTRACTORS.search(t), t)
 

@@ -651,3 +651,890 @@ tables:
         olgu_families: [time, magic_behaviour]
         weight_by: [{when: {dial: {tone: [cosmic]}}, x: 3}]
         tr: {name: "yıldızlara uzanan krallık", what: "bir gözlemevi-krallık yıldızlardan bir şey çağırdı", remnant: "gözlemevleri", sites: "gözlemevleri, çağrı odaları, yıldız yaratıklarının inleri", strangeness: "belli gecelerde gökyüzü yaklaşıyor"}
+
+  # ── 4. the lifeline: what they live on, what they cannot lose (7 families, 60) ──────────────────────
+  lifeline:
+    roll:
+      avoid_used: true
+      family_wait: 3
+      note: "only rows whose `where` kinds the palette holds are drawn (requires); the script places the lifeline on the spine; `who` go to P5's trades, `yields` to P3's goods, `weak_point` is the break's D target"
+    hooks_common:
+      - {phase: P3, must: "the lifeline's yields are the economy's main goods; its place is a map node on the spine"}
+      - {phase: P5, must: "the lifeline's trades are NPC trades; at least one NPC lives by it"}
+      - {phase: P4, must: "the contest's prize, when it is the lifeline, is this row"}
+      - {phase: P1, must: "the people signature's home is the lifeline (unless the new-people scar rolled)"}
+    rows:
+      - id: life_snowmelt
+        label: "Snowmelt from the mountains"
+        family: water
+        where: [land_mountain, land_plain, land_river]
+        requires: {any_of: ["land_mountain", "land_plain", "land_river"]}
+        tr: {"name": "dağlardan inen kar suyu", "who": "sulama ustaları, çiftçiler", "yields": "tahıl, sebze", "weak_point": "tek bir kaynaktan geliyor", "sense": "taşlarda soğuk su şırıltısı"}
+      - id: life_river_flood
+        label: "The river's yearly flood"
+        family: water
+        where: [land_river, land_plain]
+        requires: {any_of: ["land_river", "land_plain"]}
+        tr: {"name": "nehrin yıllık taşkını", "who": "taşkın bekçileri, çiftçiler", "yields": "tahıl, keten", "weak_point": "taşkın gelmezse ya da fazla gelirse", "sense": "ıslak balçık kokusu"}
+      - id: life_deep_lake
+        label: "A deep underground lake"
+        family: water
+        where: [land_underground, land_desert]
+        requires: {any_of: ["land_underground", "land_desert"]}
+        tr: {"name": "derin yeraltı gölü", "who": "kuyucular, su taşıyıcılar", "yields": "su, kör balık", "weak_point": "tek bir göl; kirlenirse biter", "sense": "mağara serinliği, damla sesi"}
+      - id: life_oasis_springs
+        label: "Oasis springs"
+        family: water
+        where: [land_desert]
+        requires: {any_of: ["land_desert"]}
+        tr: {"name": "vaha pınarları", "who": "pınar bekçileri, hurmacılar", "yields": "su, hurma", "weak_point": "pınarlar birbirine bağlı; biri kurursa hepsi kurur", "sense": "hurma şerbeti kokusu"}
+      - id: life_hot_springs
+        label: "Hot springs"
+        family: water
+        where: [land_volcanic, land_mountain, land_cold]
+        requires: {any_of: ["land_volcanic", "land_mountain", "land_cold"]}
+        tr: {"name": "sıcak su kaynakları", "who": "şifacılar, seracılar", "yields": "kış sebzesi, şifa", "weak_point": "ısıları yanardağa bağlı", "sense": "kükürt ve buhar"}
+      - id: life_rain_season
+        label: "The rainy season"
+        family: water
+        where: [land_forest, land_plain, land_marsh]
+        requires: {any_of: ["land_forest", "land_plain", "land_marsh"]}
+        tr: {"name": "yağmur mevsimi", "who": "çeltikçiler", "yields": "pirinç", "weak_point": "yağmur gecikirse", "sense": "yağmur öncesi toprak kokusu"}
+      - id: life_glacier
+        label: "The glacier"
+        family: water
+        where: [land_cold, land_mountain]
+        requires: {any_of: ["land_cold", "land_mountain"]}
+        tr: {"name": "buzul", "who": "buz kesiciler", "yields": "buz, temiz su", "weak_point": "buzul çekiliyor", "sense": "buzun çatırtısı"}
+      - id: life_fog_nets
+        label: "Nets that gather water from fog"
+        family: water
+        where: [land_coast, land_desert]
+        requires: {any_of: ["land_coast", "land_desert"]}
+        tr: {"name": "sisten su toplayan ağlar", "who": "ağ örücüler", "yields": "su", "weak_point": "sis gelmezse", "sense": "ıslak ağların serinliği"}
+      - id: life_winter_pass
+        label: "The one pass open in winter"
+        family: passage
+        where: [land_mountain]
+        requires: {any_of: ["land_mountain"]}
+        tr: {"name": "kışın açık kalan tek geçit", "who": "rehberler, hancılar, katırcılar", "yields": "konak, hizmet", "weak_point": "çığ ve kar", "sense": "donmuş nefes, katır teri"}
+      - id: life_river_ford
+        label: "The river's one shallow ford"
+        family: passage
+        where: [land_river]
+        requires: {any_of: ["land_river"]}
+        tr: {"name": "nehrin tek sığ geçidi", "who": "salcılar, köprücüler", "yields": "geçiş, pazar", "weak_point": "nehir yatak değiştirirse", "sense": "ıslak halat ve katran"}
+      - id: life_natural_harbour
+        label: "A natural harbour"
+        family: passage
+        where: [land_coast, land_island]
+        requires: {any_of: ["land_coast", "land_island"]}
+        tr: {"name": "doğal liman", "who": "liman işçileri, kılavuzlar", "yields": "ticaret, balık", "weak_point": "tek bir girişi var", "sense": "katran ve balık kokusu"}
+      - id: life_caravan_inn
+        label: "The halt midway on the caravan road"
+        family: passage
+        where: [land_desert, land_steppe]
+        requires: {any_of: ["land_desert", "land_steppe"]}
+        tr: {"name": "kervan yolunun ortasındaki konak", "who": "hancılar, deveciler", "yields": "hizmet, takas", "weak_point": "yol değişirse", "sense": "baharat ve deve kokusu"}
+      - id: life_rift_bridge
+        label: "The bridge over the rift"
+        family: passage
+        where: [land_mountain]
+        requires: {any_of: ["land_mountain"]}
+        tr: {"name": "yarığın üstündeki köprü", "who": "köprü bakıcıları", "yields": "geçiş", "weak_point": "tek bir taşıyıcı ayağı var", "sense": "rüzgârın uğultusu"}
+      - id: life_strait_crossing
+        label: "The crossing of the strait"
+        family: passage
+        where: [land_coast]
+        requires: {any_of: ["land_coast"]}
+        tr: {"name": "boğazdaki geçit", "who": "kürekçiler, kılavuzlar", "yields": "geçiş, balık", "weak_point": "akıntılar", "sense": "deniz esintisi"}
+      - id: life_deep_mouth
+        label: "Where the underground opens to the surface"
+        family: passage
+        where: [land_underground]
+        requires: {any_of: ["land_underground"]}
+        tr: {"name": "yeraltının yüzeye açılan ağzı", "who": "kaldırgaç ustaları, taşıyıcılar", "yields": "yüzey ile derin arasında takas", "weak_point": "tek bir ağzı var", "sense": "yukarı vuran ılık hava, pas kokusu"}
+      - id: life_marsh_boardwalk
+        label: "The boardwalk across the marsh"
+        family: passage
+        where: [land_marsh]
+        requires: {any_of: ["land_marsh"]}
+        tr: {"name": "bataklığı geçen tahta yol", "who": "yol ustaları, sazcılar", "yields": "geçiş", "weak_point": "tahtalar çürür", "sense": "çürük saz ve mantar"}
+      - id: life_ice_road
+        label: "The ice road"
+        family: passage
+        where: [land_lake, land_cold]
+        requires: {any_of: ["land_lake", "land_cold"]}
+        tr: {"name": "buz yolu (kışın donan göl ya da nehir)", "who": "kızakçılar", "yields": "kış ticareti", "weak_point": "erken çözülme", "sense": "kızak demirinin buzda sürtünmesi"}
+      - id: life_yak_herds
+        label: "Yak herds"
+        family: creatures
+        where: [land_mountain, land_highland, land_cold]
+        requires: {any_of: ["land_mountain", "land_highland", "land_cold"]}
+        tr: {"name": "yak sürüleri", "who": "çobanlar, keçeciler", "yields": "süt, yün, keçe", "weak_point": "sürü hastalığı, otlak", "sense": "yağlı yün kokusu"}
+      - id: life_fish_run
+        label: "The yearly fish run"
+        family: creatures
+        where: [land_river, land_coast, land_lake]
+        requires: {any_of: ["land_river", "land_coast", "land_lake"]}
+        tr: {"name": "yılda bir gelen balık göçü", "who": "balıkçılar, kurutucular", "yields": "kuru balık, yağ", "weak_point": "göç yolu değişirse", "sense": "duman ve balık"}
+      - id: life_silk_gardens
+        label: "Silkworm gardens"
+        family: creatures
+        where: [land_plain, land_forest]
+        requires: {any_of: ["land_plain", "land_forest"]}
+        tr: {"name": "ipekböceği bahçeleri", "who": "dut bahçıvanları, dokumacılar", "yields": "ipek", "weak_point": "ipekböceği hastalığı", "sense": "dut yaprağı, kaynayan koza"}
+      - id: life_bee_forests
+        label: "Bee forests"
+        family: creatures
+        where: [land_forest, land_highland]
+        requires: {any_of: ["land_forest", "land_highland"]}
+        tr: {"name": "arı ormanları", "who": "arıcılar", "yields": "bal, polen, ilaç", "weak_point": "arılar ölürse", "sense": "bal ve reçine"}
+      - id: life_horse_herds
+        label: "Horse herds"
+        family: creatures
+        where: [land_steppe, land_plain]
+        requires: {any_of: ["land_steppe", "land_plain"]}
+        tr: {"name": "at sürüleri", "who": "at yetiştiricileri, süvariler", "yields": "at, kımız", "weak_point": "otlak, at hırsızları", "sense": "ter ve deri"}
+      - id: life_deer_migration
+        label: "The deer migration"
+        family: creatures
+        where: [land_cold, land_forest]
+        requires: {any_of: ["land_cold", "land_forest"]}
+        tr: {"name": "geyik göçü", "who": "avcılar, göçebeler", "yields": "et, deri, boynuz", "weak_point": "göç yolu", "sense": "kar ve reçine"}
+      - id: life_oyster_beds
+        label: "Oyster beds"
+        family: creatures
+        where: [land_coast]
+        requires: {any_of: ["land_coast"]}
+        tr: {"name": "istiridye yatakları", "who": "dalgıçlar", "yields": "inci, istiridye", "weak_point": "yataklar hastalanırsa", "sense": "deniz yosunu"}
+      - id: life_giant_insects
+        label: "Tamed giant insects"
+        family: creatures
+        where: [land_underground, land_desert]
+        requires: [{dial: {magic: ["medium", "high"]}, any_of: ["land_underground", "land_desert"]}, {dial: {era: ["underground"]}, any_of: ["land_underground", "land_desert"]}]
+        tr: {"name": "evcil dev böcekler", "who": "böcek terbiyecileri", "yields": "taşıma, ipek, kitin", "weak_point": "kraliçe ölürse", "sense": "ekşi kitin kokusu"}
+      - id: life_griffon_eyries
+        label: "Griffon eyries"
+        family: creatures
+        where: [land_mountain, land_highland]
+        requires: [{dial: {magic: ["medium", "high"]}, any_of: ["land_mountain", "land_highland"]}]
+        tr: {"name": "grifon yuvaları", "who": "grifon terbiyecileri", "yields": "binek, haberci", "weak_point": "yumurta hırsızları", "sense": "tüy ve kan"}
+      - id: life_copper_mine
+        label: "The copper mine"
+        family: mine
+        where: [land_mountain]
+        requires: {any_of: ["land_mountain"]}
+        tr: {"name": "bakır madeni", "who": "madenciler, dökümcüler", "yields": "bakır, tunç", "weak_point": "damar tükenirse, madeni su basarsa", "sense": "yanık metal, yeşil pas"}
+      - id: life_iron_coal
+        label: "Iron and coal"
+        family: mine
+        where: [land_mountain, land_highland]
+        requires: {any_of: ["land_mountain", "land_highland"]}
+        tr: {"name": "demir ve kömür", "who": "madenciler, kömürcüler, demirciler", "yields": "demir, silah", "weak_point": "ormanlar kömür için tükeniyor", "sense": "kömür dumanı"}
+      - id: life_timber_forest
+        label: "The timber forest"
+        family: mine
+        where: [land_forest]
+        requires: {any_of: ["land_forest"]}
+        tr: {"name": "kereste ormanı", "who": "ormancılar, gemi ustaları", "yields": "kereste, gemi", "weak_point": "orman tükenirse", "sense": "talaş ve reçine"}
+      - id: life_peat_bog
+        label: "The peat bog"
+        family: mine
+        where: [land_marsh, land_cold]
+        requires: {any_of: ["land_marsh", "land_cold"]}
+        tr: {"name": "turba bataklığı", "who": "turba kesiciler", "yields": "kışlık yakacak", "weak_point": "bataklık kuruyor", "sense": "turba dumanı"}
+      - id: life_quarry
+        label: "The quarry (marble, granite)"
+        family: mine
+        where: [land_mountain, land_highland]
+        requires: {any_of: ["land_mountain", "land_highland"]}
+        tr: {"name": "taş ocağı (mermer, granit)", "who": "taşçılar, heykeltıraşlar", "yields": "yapı taşı", "weak_point": "ocak çökerse", "sense": "taş tozu"}
+      - id: life_gemstones
+        label: "Gemstones"
+        family: mine
+        where: [land_underground, land_mountain]
+        requires: {any_of: ["land_underground", "land_mountain"]}
+        tr: {"name": "değerli taşlar", "who": "kazıcılar, kuyumcular", "yields": "mücevher", "weak_point": "tükenme, sahtecilik", "sense": "keskinin tıkırtısı"}
+      - id: life_dye_sources
+        label: "Dye sources (sea snail, madder)"
+        family: mine
+        where: [land_coast, land_plain]
+        requires: {any_of: ["land_coast", "land_plain"]}
+        tr: {"name": "boya kaynakları (deniz salyangozu, kök boyaları)", "who": "boyacılar", "yields": "boya, kumaş", "weak_point": "kaynak tükenirse", "sense": "keskin boya kokusu"}
+      - id: life_pitch_tar
+        label: "Pitch and tar"
+        family: mine
+        where: [land_forest, land_coast]
+        requires: {any_of: ["land_forest", "land_coast"]}
+        tr: {"name": "katran ve zift", "who": "zift ustaları", "yields": "gemi katranı", "weak_point": "orman yangını", "sense": "katran kokusu"}
+      - id: life_amber_shores
+        label: "Amber shores"
+        family: mine
+        where: [land_coast, land_cold]
+        requires: {any_of: ["land_coast", "land_cold"]}
+        tr: {"name": "kehribar kıyıları", "who": "toplayıcılar", "yields": "kehribar", "weak_point": "fırtınalar", "sense": "reçine ve deniz"}
+      - id: life_terrace_rice
+        label: "Terrace rice"
+        family: crop
+        where: [land_mountain, land_highland, land_forest]
+        requires: {any_of: ["land_mountain", "land_highland", "land_forest"]}
+        tr: {"name": "teras pirinci", "who": "çeltikçiler", "yields": "pirinç", "weak_point": "teraslar çökerse, su gelmezse", "sense": "çamur ve pirinç"}
+      - id: life_olive_groves
+        label: "Olive groves"
+        family: crop
+        where: [land_coast, land_highland]
+        requires: {any_of: ["land_coast", "land_highland"]}
+        tr: {"name": "zeytinlikler", "who": "zeytinciler", "yields": "zeytin, yemeklik yağ, sabun", "weak_point": "kuraklık, zeytin sineği", "sense": "ezilen zeytin"}
+      - id: life_vineyards
+        label: "Vineyards"
+        family: crop
+        where: [land_highland, land_plain]
+        requires: {any_of: ["land_highland", "land_plain"]}
+        tr: {"name": "bağlar", "who": "bağcılar, şarapçılar", "yields": "şarap", "weak_point": "bağ hastalığı", "sense": "mayalanan üzüm"}
+      - id: life_flax_fields
+        label: "Flax fields"
+        family: crop
+        where: [land_plain, land_river]
+        requires: {any_of: ["land_plain", "land_river"]}
+        tr: {"name": "keten tarlaları", "who": "ketenciler, dokumacılar", "yields": "keten, yelken bezi", "weak_point": "taşkın olmazsa", "sense": "ıslatılan keten"}
+      - id: life_wheat_plain
+        label: "The wheat plain (the region's granary)"
+        family: crop
+        where: [land_plain]
+        requires: {any_of: ["land_plain"]}
+        tr: {"name": "buğday ovası (bölgenin ambarı)", "who": "çiftçiler, değirmenciler", "yields": "tahıl", "weak_point": "kuraklık, çekirge", "sense": "un ve saman"}
+      - id: life_date_fig_gardens
+        label: "Date and fig gardens"
+        family: crop
+        where: [land_desert]
+        requires: {any_of: ["land_desert"]}
+        tr: {"name": "hurma ve incir bahçeleri", "who": "bahçıvanlar", "yields": "hurma, incir", "weak_point": "pınar kurursa", "sense": "olgun hurma"}
+      - id: life_spice_gardens
+        label: "Spice gardens"
+        family: crop
+        where: [land_forest, land_coast]
+        requires: {any_of: ["land_forest", "land_coast"]}
+        tr: {"name": "baharat bahçeleri", "who": "baharatçılar", "yields": "baharat", "weak_point": "hastalık, korsanlar", "sense": "karanfil ve biber"}
+      - id: life_mushroom_fields
+        label: "Mushroom fields"
+        family: crop
+        where: [land_underground]
+        requires: {any_of: ["land_underground"]}
+        tr: {"name": "mantar tarlaları", "who": "mantarcılar", "yields": "yiyecek, ilaç", "weak_point": "küf, spor hastalığı", "sense": "toprak ve küf"}
+      - id: life_tea_slopes
+        label: "Tea slopes"
+        family: crop
+        where: [land_mountain, land_highland]
+        requires: {any_of: ["land_mountain", "land_highland"]}
+        tr: {"name": "çay yamaçları", "who": "çaycılar", "yields": "çay", "weak_point": "don", "sense": "yaş çay yaprağı"}
+      - id: life_famous_steel
+        label: "Famous steel (swordsmithing)"
+        family: craft
+        where: [land_mountain]
+        requires: {any_of: ["land_mountain"]}
+        tr: {"name": "ünlü çelik (kılıç dövme)", "who": "demirciler", "yields": "silah", "weak_point": "ustaların sırrı; bir usta ölürse", "sense": "örs sesi"}
+      - id: life_glassblowing
+        label: "Glassblowing"
+        family: craft
+        where: [land_coast, land_desert]
+        requires: {any_of: ["land_coast", "land_desert"]}
+        tr: {"name": "cam üfleme", "who": "camcılar", "yields": "cam, mercek", "weak_point": "kum ve odun", "sense": "erimiş camın sıcağı"}
+      - id: life_carpet_weaving
+        label: "Carpet weaving"
+        family: craft
+        where: [land_highland, land_steppe]
+        requires: {any_of: ["land_highland", "land_steppe"]}
+        tr: {"name": "halı dokuma", "who": "dokumacılar, boyacılar", "yields": "halı", "weak_point": "yün ve boya", "sense": "yün ve kök boyası"}
+      - id: life_shipbuilding
+        label: "Shipbuilding"
+        family: craft
+        where: [land_coast]
+        requires: {any_of: ["land_coast"]}
+        tr: {"name": "gemi yapımı", "who": "gemi ustaları", "yields": "gemiler", "weak_point": "kereste", "sense": "talaş ve katran"}
+      - id: life_tile_ceramics
+        label: "Tile and ceramics"
+        family: craft
+        where: [land_plain, land_river]
+        requires: {any_of: ["land_plain", "land_river"]}
+        tr: {"name": "çini ve seramik", "who": "çömlekçiler", "yields": "çini", "weak_point": "kil yatağı", "sense": "pişen kil"}
+      - id: life_leather_armour
+        label: "Leather and armour work"
+        family: craft
+        where: [land_steppe, land_plain]
+        requires: {any_of: ["land_steppe", "land_plain"]}
+        tr: {"name": "deri ve zırh işçiliği", "who": "tabaklar, zırhçılar", "yields": "deri, zırh", "weak_point": "sürüler", "sense": "tabakhane kokusu"}
+      - id: life_potions_medicine
+        label: "Potions and medicine"
+        family: craft
+        where: [land_forest, land_marsh]
+        requires: {any_of: ["land_forest", "land_marsh"]}
+        tr: {"name": "iksir ve ilaç", "who": "şifacılar, simyacılar", "yields": "ilaç, iksir", "weak_point": "bitkiler tükenirse", "sense": "acı otlar"}
+      - id: life_bowyery
+        label: "Bowyery"
+        family: craft
+        where: [land_forest]
+        requires: {any_of: ["land_forest"]}
+        tr: {"name": "yay yapımı", "who": "yaycılar", "yields": "yay, ok", "weak_point": "akçaağaç ve boynuz", "sense": "reçine ve tutkal"}
+      - id: life_giant_peace
+        label: "Peace with the giants"
+        family: treaty
+        where: [land_mountain, land_plain]
+        requires: {"all_of": ["land_mountain", "land_plain"]}
+        tr: {"name": "devlerle barış (devler dağda, insanlar ovada)", "who": "sınır elçileri", "yields": "güvenlik, takas", "weak_point": "söz bozulursa"}
+      - id: life_dragon_protection
+        label: "The dragon's protection"
+        family: treaty
+        tr: {"name": "ejderhanın koruması (ejderha korur, bölge besler)", "who": "ejderha hizmetkârları", "yields": "koruma", "weak_point": "ejderha yaşlanıyor"}
+      - id: life_fey_bargain
+        label: "The bargain with the fey"
+        family: treaty
+        where: [land_forest]
+        requires: {any_of: ["land_forest"]}
+        tr: {"name": "fey ile pazarlık (orman bereket verir, halk karşılığını öder)", "who": "pazarlıkçılar", "yields": "bereket", "weak_point": "karşılık aksarsa"}
+      - id: life_sea_folk_hunt
+        label: "The shared hunt with the sea folk"
+        family: treaty
+        where: [land_coast]
+        requires: {any_of: ["land_coast"]}
+        tr: {"name": "deniz halkıyla ortak av", "who": "balıkçılar", "yields": "balık", "weak_point": "anlaşma"}
+      - id: life_hired_guard
+        label: "Hired guards"
+        family: treaty
+        tr: {"name": "paralı muhafızlar (bir birlik bölgeyi korur, bölge öder)", "who": "muhafızlar", "yields": "güvenlik", "weak_point": "ödeme aksarsa"}
+      - id: life_binding_marriage
+        label: "The marriage that binds two kingdoms"
+        family: treaty
+        tr: {"name": "iki krallığı bağlayan evlilik", "who": "elçiler", "yields": "barış", "weak_point": "bir ölüm"}
+      - id: life_shared_water_right
+        label: "The shared water right"
+        family: treaty
+        where: [land_river, land_plain]
+        requires: {any_of: ["land_river", "land_plain"]}
+        tr: {"name": "ortak su hakkı (yukarı ve aşağı köyler suyu sırayla kullanır)", "who": "su bekçileri", "yields": "sulama", "weak_point": "kuraklık"}
+      - id: life_pilgrim_road
+        label: "The pilgrim road"
+        family: treaty
+        tr: {"name": "hac yolu (hacılar gelir, bölge onlarla yaşar)", "who": "hancılar, rehberler", "yields": "hizmet", "weak_point": "hacılar gelmezse"}
+
+  # ── 5. the contest: the campaign's old fault line (8 families, 40) ────────────────────────────────
+  contest:
+    roll:
+      avoid_used: true
+      family_wait: 3
+      roles_by_scale: {short: [a, b, third], standard: [a, b, third, fourth], epic: [a, b, third, fourth]}
+      contests_by_scale: {short: 1, standard: 1, epic: 2}
+      note: >-
+        epic draws a second contest of three roles (a, b, third) from another family, seated on another part
+        of the spine. `seats` override the default (a and b at the spine's two ends); `hint` is the P4 faction
+        archetype a role suggests (the institution signature is drawn only from a hinted role, review #5);
+        `prize` is lifeline, heart, remnant, new, or the thin place (only with the thin place in the palette); the villain is no side by default.
+    hooks_common:
+      - {phase: P4, must: "each role is a faction of its hinted archetype; every other faction takes a stance on the contest"}
+      - {phase: P4, must: "the escalation's steps are the factions' provocation rungs, first spark to the hardest form"}
+      - {phase: P1, must: "the question's two poles sit on sides a and b; the break's winner is one of the roles"}
+      - {phase: P7, must: "the contest's escalation climbs with the arc"}
+    rows:
+      - id: contest_two_heirs
+        label: "Two heirs, a regent at the heart"
+        family: two_hands
+        prize: heart
+        seats: {"third": "heart"}
+        roles:
+          a: {tr: "büyük varis", hint: state}
+          b: {tr: "küçük varis ve ordusu", hint: martial}
+          third: {tr: "tacı ve hazineyi tutan naip", hint: state}
+          fourth: {tr: "tahtı isteyen yabancı bir krallık", hint: null}
+        escalation: ["taç giyme tarihi", "iç savaş"]
+        tr: {name: "iki varis (naip kalpte)"}
+      - id: contest_one_harbour
+        label: "Two cities, one harbour"
+        family: two_hands
+        prize: lifeline
+        seats: {"a": "beside_key_place", "b": "beside_key_place"}
+        roles:
+          a: {tr: "eski liman şehri", hint: guild}
+          b: {tr: "yeni kurulan rakip şehir", hint: trade}
+          third: {tr: "limanı kullanan kaçakçılar", hint: criminal}
+          fourth: {tr: "denizciler loncası", hint: null}
+        requires: {any_of: ["land_coast"]}
+        escalation: ["gemilere el koyma", "kıyı savaşı"]
+        tr: {name: "aynı limanı isteyen iki şehir (kilit yerin iki yanında)"}
+      - id: contest_one_pasture
+        label: "Two peoples, one pasture"
+        family: two_hands
+        prize: lifeline
+        roles:
+          a: {tr: "sürü sahibi yayla klanları", hint: martial}
+          b: {tr: "tarlasını genişleten ova köyleri", hint: state}
+          third: {tr: "iki tarafa da at ve silah satan tüccarlar", hint: trade}
+          fourth: {tr: "otlağın ortasındaki kutsal yerin bekçileri", hint: religious}
+        requires: {any_of: ["land_highland", "land_plain", "land_steppe"]}
+        escalation: ["sürü baskınları", "kan davası"]
+        tr: {name: "iki halk, bir otlak"}
+      - id: contest_one_shrine
+        label: "Two faiths, one holy place"
+        family: two_hands
+        prize: remnant
+        seats: {"prize": "key_place"}
+        roles:
+          a: {tr: "kutsal yerin eski bekçileri", hint: religious}
+          b: {tr: "aynı yeri kendi tanrısının sayan yeni inanç", hint: religious}
+          third: {tr: "hacılarla geçinen kasaba", hint: guild}
+          fourth: {tr: "yeri kazmak isteyen bilginler", hint: scholarly}
+        escalation: ["hacıların yolunun kesilmesi", "kutsal yerde kan"]
+        tr: {name: "iki inanç, bir kutsal yer (kutsal yer kilit yerde)"}
+      - id: contest_two_banks
+        label: "One river, two banks"
+        family: two_hands
+        prize: lifeline
+        roles:
+          a: {tr: "yukarı akıştakiler", hint: state}
+          b: {tr: "aşağı akıştakiler", hint: state}
+          third: {tr: "suyu yönlendiren bent ustaları", hint: guild}
+          fourth: {tr: "nehirde yaşayan bir halk", hint: null}
+        requires: {any_of: ["land_river"]}
+        escalation: ["suyu kesme", "bent yıkma"]
+        tr: {name: "bir nehir, iki yaka"}
+      - id: contest_settlers_newcomers
+        label: "Settled folk and newcomers"
+        family: old_new
+        prize: lifeline
+        seats: {"b": "end"}
+        roles:
+          a: {tr: "toprağın eski sahipleri", hint: state}
+          b: {tr: "toprağın ihtiyacı olan şeyi getiren yeni gelenler", hint: trade}
+          third: {tr: "ikisinden de kazanan tüccarlar", hint: trade}
+          fourth: {tr: "korkan halkı örgütleyen biri", hint: resistance}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["yasaklar", "mahalle yangınları"]
+        tr: {name: "yerleşikler ve yeni gelenler (gelenler bir uçta)"}
+      - id: contest_old_order_reform
+        label: "The old order and the reformers"
+        family: old_new
+        prize: heart
+        roles:
+          a: {tr: "eski soylular", hint: state}
+          b: {tr: "reform isteyen genç hükümdar ya da meclis", hint: state}
+          third: {tr: "reformdan kazanacak loncalar", hint: guild}
+          fourth: {tr: "eski düzenin askerleri", hint: martial}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["yeni yasalar", "darbe girişimi"]
+        tr: {name: "eski düzen ve reformcular"}
+      - id: contest_old_new_craft
+        label: "Old craft, new craft"
+        family: old_new
+        prize: lifeline
+        roles:
+          a: {tr: "eski yöntemle üreten loncalar", hint: guild}
+          b: {tr: "yeni bir alaşım ya da makine getirenler", hint: scholarly}
+          third: {tr: "işsiz kalan işçiler", hint: resistance}
+          fourth: {tr: "yeni yöntemi silah olarak isteyen bir devlet", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["boykot", "makine kırma", "kan"]
+        tr: {name: "eski zanaat, yeni zanaat"}
+      - id: contest_old_gods_new_faith
+        label: "Old gods, a new faith"
+        family: old_new
+        prize: heart
+        roles:
+          a: {tr: "eski tapınaklar", hint: religious}
+          b: {tr: "hızla yayılan yeni inanç", hint: religious}
+          third: {tr: "taraf seçmeye zorlanan hükümdar", hint: state}
+          fourth: {tr: "iki inancı da reddeden büyücüler", hint: scholarly}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["vaazlar", "tapınak yakma"]
+        tr: {name: "eski tanrılar, yeni inanç"}
+      - id: contest_returners_stayers
+        label: "Those who return and those who stayed"
+        family: old_new
+        prize: heart
+        roles:
+          a: {tr: "yıllar önce sürülüp geri dönen halk", hint: martial}
+          b: {tr: "onların topraklarına yerleşmiş olanlar", hint: state}
+          third: {tr: "dönüşü destekleyen yabancı bir güç", hint: state}
+          fourth: {tr: "iki taraftan da evlenmiş karışık aileler", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["eski evlerin kapısını çalmak", "silahlı dönüş"]
+        tr: {name: "dönenler ve kalanlar"}
+      - id: contest_occupier_resistance
+        label: "The occupier and the resistance"
+        family: strong_weak
+        prize: heart
+        seats: {"a": "heart"}
+        roles:
+          a: {tr: "bölgeyi tutan dış güç", hint: martial}
+          b: {tr: "dağlardaki direniş", hint: resistance}
+          third: {tr: "işbirlikçi yerel soylular", hint: state}
+          fourth: {tr: "iki taraftan da kazanan kaçakçılar", hint: criminal}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["vergiler ve askerler", "ayaklanma"]
+        tr: {name: "işgalci ve direniş (işgalci kalpte)"}
+      - id: contest_capital_marches
+        label: "The capital and the marches"
+        family: strong_weak
+        prize: lifeline
+        seats: {"a": "heart"}
+        roles:
+          a: {tr: "başkent", hint: state}
+          b: {tr: "sınır lordları ve korucular", hint: martial}
+          third: {tr: "sınırın öbür yanındaki halk", hint: null}
+          fourth: {tr: "iki tarafa da asker kiralayan paralı birlik", hint: martial}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["yardımın kesilmesi", "sınırın kopması"]
+        tr: {name: "başkent ve sınır boyu (başkent kalpte)"}
+      - id: contest_lords_peasants
+        label: "Lords and peasants"
+        family: strong_weak
+        prize: lifeline
+        roles:
+          a: {tr: "toprak sahibi beyler", hint: state}
+          b: {tr: "köylü birliği", hint: resistance}
+          third: {tr: "köylülere silah vermeyi düşünen bir din önderi", hint: religious}
+          fourth: {tr: "beylerin paralı muhafızları", hint: martial}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["angarya", "köylü ayaklanması"]
+        tr: {name: "beyler ve köylüler"}
+      - id: contest_mine_owners_miners
+        label: "Mine owners and miners"
+        family: strong_weak
+        prize: lifeline
+        roles:
+          a: {tr: "madeni elinde tutan aile", hint: guild}
+          b: {tr: "madenciler", hint: resistance}
+          third: {tr: "cevheri alan dış tüccarlar", hint: trade}
+          fourth: {tr: "madenin genişlemesine öfkelenen derin bir halk", hint: null}
+        requires: {any_of: ["land_mountain", "land_highland", "land_underground"]}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["grev", "maden baskını"]
+        tr: {name: "maden sahipleri ve madenciler"}
+      - id: contest_casters_casterless
+        label: "Casters and the casterless"
+        family: strong_weak
+        prize: heart
+        roles:
+          a: {tr: "büyüyü tekelinde tutan bir soy ya da kurum", hint: scholarly}
+          b: {tr: "büyüsüz çoğunluk", hint: resistance}
+          third: {tr: "gizlice büyü öğreten kaçak ustalar", hint: criminal}
+          fourth: {tr: "büyüyü tümden yasaklamak isteyen bir inanç", hint: religious}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["yasaklar", "büyücü avı"]
+        tr: {name: "büyücüler ve büyüsüzler"}
+      - id: contest_sealed_remnant
+        label: "The sealed remnant"
+        family: open_close
+        prize: remnant
+        seats: {"prize": "key_place"}
+        roles:
+          a: {tr: "kalıntıyı açmak isteyenler", hint: scholarly}
+          b: {tr: "kapalı tutmak isteyen bekçiler", hint: religious}
+          third: {tr: "gizlice parça çıkaran yağmacılar", hint: criminal}
+          fourth: {tr: "açılırsa kazanacak dış bir güç", hint: null}
+        escalation: ["izin istekleri", "gece kazıları", "bekçilerle çatışma"]
+        tr: {name: "kapalı kalıntı (kalıntı kilit yerde)"}
+      - id: contest_open_close_road
+        label: "Those who open the road and those who close it"
+        family: open_close
+        prize: lifeline
+        roles:
+          a: {tr: "yolu ticarete açmak isteyenler", hint: trade}
+          b: {tr: "yabancıyı dışarıda tutmak isteyenler", hint: state}
+          third: {tr: "kapalı yolda kaçakçılık yapanlar", hint: criminal}
+          fourth: {tr: "yolun öbür ucundaki ülke", hint: null}
+        escalation: ["kervan yasakları", "kervan yakma"]
+        tr: {name: "yolu açanlar ve kapayanlar"}
+      - id: contest_forbidden_lands
+        label: "The forbidden lands"
+        family: open_close
+        prize: remnant
+        roles:
+          a: {tr: "yasak toprakları keşfetmek isteyenler", hint: scholarly}
+          b: {tr: "girişi engelleyenler", hint: martial}
+          third: {tr: "oradan gelen şeyleri satanlar", hint: criminal}
+          fourth: {tr: "yasak topraklarda yaşayanlar", hint: null}
+        escalation: ["devriyeler", "sınır ötesine seferler"]
+        tr: {name: "yasak topraklar"}
+      - id: contest_share_keep_knowledge
+        label: "Those who spread knowledge and those who keep it"
+        family: open_close
+        prize: lifeline
+        roles:
+          a: {tr: "bir zanaatı ya da büyüyü herkese açmak isteyenler", hint: scholarly}
+          b: {tr: "onu sır tutan lonca", hint: guild}
+          third: {tr: "bilgiyi çalıp satan casuslar", hint: criminal}
+          fourth: {tr: "bilgiyi silaha çevirmek isteyen bir devlet", hint: null}
+        escalation: ["kopyalama", "suikast"]
+        tr: {name: "bilgiyi yayanlar ve saklayanlar"}
+      - id: contest_open_close_gate
+        label: "Those who open the gate and those who close it"
+        family: open_close
+        prize: thin_place
+        seats: {"prize": "thin_place"}
+        roles:
+          a: {tr: "düzlem geçidini açık tutmak isteyenler", hint: trade}
+          b: {tr: "kapatmak isteyenler", hint: religious}
+          third: {tr: "öbür düzlemden gelenler", hint: null}
+          fourth: {tr: "geçidin yanındaki köyler", hint: null}
+        requires: {any_of: ["land_thin_place"]}
+        escalation: ["ayinler", "geçitte savaş"]
+        tr: {name: "kapıyı açanlar ve kapayanlar"}
+      - id: contest_treasure_race
+        label: "Companies racing for a treasure"
+        family: race
+        prize: remnant
+        roles:
+          a: {tr: "kraliyetin resmî seferi", hint: state}
+          b: {tr: "paralı bir birlik", hint: martial}
+          third: {tr: "yerli halkın avcıları", hint: null}
+          fourth: {tr: "bir büyücünün gizli seferi", hint: scholarly}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["haritaların çalınması", "yolda pusu"]
+        tr: {name: "hazineye koşan gruplar"}
+      - id: contest_empty_throne
+        label: "An empty throne, three houses"
+        family: race
+        prize: heart
+        roles:
+          a: {tr: "en güçlü ev", hint: state}
+          b: {tr: "en zengin ev", hint: trade}
+          third: {tr: "en eski ev", hint: religious}
+          fourth: {tr: "halkın sevdiği bir yabancı", hint: resistance}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["evlilik ittifakları", "zehir", "açık savaş"]
+        tr: {name: "boş taht, üç ev"}
+      - id: contest_first_settlers
+        label: "The first to settle the new land"
+        family: race
+        prize: new
+        roles:
+          a: {tr: "bir krallığın yerleşimcileri", hint: state}
+          b: {tr: "özgür yerleşimciler", hint: resistance}
+          third: {tr: "toprağın yerli halkı", hint: null}
+          fourth: {tr: "toprak satan dolandırıcılar", hint: criminal}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["sınır taşları", "yerleşim yakma"]
+        tr: {name: "yeni toprağa ilk yerleşen"}
+      - id: contest_monster_bounty
+        label: "A bounty on a monster"
+        family: race
+        prize: heart
+        roles:
+          a: {tr: "bir şövalye tarikatı", hint: martial}
+          b: {tr: "avcılar loncası", hint: guild}
+          third: {tr: "canavarı koruyan köylüler", hint: null}
+          fourth: {tr: "canavarın parçalarını isteyen simyacılar", hint: scholarly}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["tuzaklar", "rakibi canavara yem etmek"]
+        tr: {name: "canavar için ödül"}
+      - id: contest_new_resource
+        label: "Who takes the new resource first"
+        family: race
+        prize: new
+        roles:
+          a: {tr: "devlet", hint: state}
+          b: {tr: "loncalar", hint: guild}
+          third: {tr: "kaynağın üstünde yaşayan halk", hint: null}
+          fourth: {tr: "kaçakçılar", hint: criminal}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        escalation: ["hak iddiaları", "kaynağın başında kan"]
+        tr: {name: "yeni kaynağı ilk kim alacak"}
+      - id: contest_two_branches
+        label: "Two branches of one people"
+        family: kin
+        prize: heart
+        roles:
+          a: {tr: "kırılmayı bir ceza sayan kol", hint: religious}
+          b: {tr: "onu bir fırsat sayan kol", hint: trade}
+          third: {tr: "iki kolu birleştirmeye çalışan yaşlılar", hint: null}
+          fourth: {tr: "kollardan birini kullanan dış bir güç", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["ayrı pazarlar", "ayrı ordular"]
+        tr: {name: "bir halkın iki kolu"}
+      - id: contest_order_schism
+        label: "An order splits"
+        family: kin
+        prize: remnant
+        roles:
+          a: {tr: "eski önderlik", hint: religious}
+          b: {tr: "kopan genç kol", hint: resistance}
+          third: {tr: "tarikatın hazinesini tutan kâhya", hint: guild}
+          fourth: {tr: "bölünmeden kazanan rakip bir inanç", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["tarikattan kovma", "kardeş kanı"]
+        tr: {name: "bir tarikatın bölünmesi"}
+      - id: contest_divided_city
+        label: "A city cut in two"
+        family: kin
+        prize: heart
+        seats: {"a": "heart", "b": "heart"}
+        roles:
+          a: {tr: "şehrin bir yarısı", hint: state}
+          b: {tr: "öbür yarısı", hint: state}
+          third: {tr: "iki yarıyı bağlayan kapının bekçileri", hint: null}
+          fourth: {tr: "yeniden birleşmek isteyen gençler", hint: resistance}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["kapıların kapanması", "köprüde çatışma"]
+        tr: {name: "ikiye bölünmüş şehir (kalp ikiye bölünmüş)"}
+      - id: contest_sibling_rulers
+        label: "Sibling rulers"
+        family: kin
+        prize: heart
+        roles:
+          a: {tr: "ülkenin yarısını yöneten büyük kardeş", hint: state}
+          b: {tr: "öbür yarısını yöneten küçük kardeş", hint: state}
+          third: {tr: "hâlâ yaşayan eski hükümdar, anneleri ya da babaları", hint: null}
+          fourth: {tr: "iki kardeşe de kız vermiş komşu krallık", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["sınır anlaşmazlığı", "kardeş savaşı"]
+        tr: {name: "kardeş hükümdarlar"}
+      - id: contest_split_family
+        label: "A family splits"
+        family: kin
+        prize: lifeline
+        roles:
+          a: {tr: "aile reisinin kolu", hint: guild}
+          b: {tr: "ayrılan kol", hint: trade}
+          third: {tr: "aile zanaatının sırrını bilen tek usta", hint: null}
+          fourth: {tr: "rakip bir lonca", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["müşteri çalma", "sabotaj", "cinayet"]
+        tr: {name: "bölünen aile"}
+      - id: contest_humans_giants
+        label: "Humans and giants"
+        family: nonhuman
+        prize: lifeline
+        roles:
+          a: {tr: "ovaya yayılan krallık", hint: state}
+          b: {tr: "dağlarda eski haklarını savunan dev klanları", hint: null}
+          third: {tr: "iki tarafla da ticaret yapanlar", hint: trade}
+          fourth: {tr: "devlerle yaşamayı öğrenmiş sınır köyleri", hint: null}
+        requires: {any_of: ["land_mountain"]}
+        weight_by: [{when: {any_of: [life_giant_peace]}, x: 2}]   # owner, 2026-09-28: the lifeline's treaty feeds this contest
+        escalation: ["sınır taşları", "dev baskınları", "savaş"]
+        hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
+        tr: {name: "insanlar ve devler"}
+      - id: contest_humans_dragon
+        label: "Humans and a dragon"
+        family: nonhuman
+        prize: lifeline
+        roles:
+          a: {tr: "kasabalar birliği", hint: state}
+          b: {tr: "bölgeyi yurdu sayan ejderha ve hizmetkârları", hint: null}
+          third: {tr: "ejderhaya boyun eğip korunan bir inanç", hint: religious}
+          fourth: {tr: "ejderha avcıları", hint: martial}
+        weight_by: [{when: {any_of: [life_dragon_protection]}, x: 2}]   # owner, 2026-09-28: the lifeline's treaty feeds this contest
+        escalation: ["sürü kayıpları", "ejderha avı"]
+        hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
+        tr: {name: "insanlar ve ejderha"}
+      - id: contest_humans_fey
+        label: "Humans and the fey"
+        family: nonhuman
+        prize: lifeline
+        roles:
+          a: {tr: "ormanı açan köyler", hint: state}
+          b: {tr: "ormanın fey sahipleri", hint: null}
+          third: {tr: "iki dünya arasında aracılık eden druidler", hint: religious}
+          fourth: {tr: "fey ile gizlice pazarlık eden bir soylu", hint: null}
+        requires: {any_of: ["land_forest"]}
+        weight_by: [{when: {any_of: [life_fey_bargain]}, x: 2}]   # owner, 2026-09-28: the lifeline's treaty feeds this contest
+        escalation: ["ağaç kesimi", "kaybolan çocuklar", "orman savaşı"]
+        hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
+        tr: {name: "insanlar ve fey"}
+      - id: contest_surface_deep
+        label: "Surface and deep"
+        family: nonhuman
+        prize: lifeline
+        roles:
+          a: {tr: "yüzeydeki madenciler", hint: guild}
+          b: {tr: "derinlerde yaşayan halk", hint: null}
+          third: {tr: "iki dünya arasında taşıyıcılık yapanlar", hint: trade}
+          fourth: {tr: "derin halktan kaçıp yüzeye sığınanlar", hint: null}
+        requires: {any_of: ["land_underground"]}
+        weight_by: [{when: {dial: {era: ["underground"]}}, x: 3}]
+        escalation: ["tünel kapatma", "tünel savaşı"]
+        hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
+        tr: {name: "yüzey ve derin"}
+      - id: contest_land_sea_folk
+        label: "Land folk and sea folk"
+        family: nonhuman
+        prize: lifeline
+        roles:
+          a: {tr: "kıyı şehirleri", hint: state}
+          b: {tr: "deniz halkı (tritonlar, balık halkları)", hint: null}
+          third: {tr: "iki halktan evlenmiş kıyı aileleri", hint: null}
+          fourth: {tr: "denizin dibini kazmak isteyen tüccarlar", hint: null}
+        requires: {any_of: ["land_coast"]}
+        weight_by: [{when: {dial: {era: ["nautical"]}}, x: 3}]
+        escalation: ["ağlar ve mızraklar", "kıyı akınları"]
+        hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
+        tr: {name: "kara ve deniz halkı"}
+      - id: contest_merchant_house_divides
+        label: "The merchant house that sets two sides at each other"
+        family: hidden_hand
+        prize: lifeline
+        roles:
+          a: {tr: "bir rakip", hint: state}
+          b: {tr: "öbür rakip", hint: state}
+          third: {tr: "ikisine de silah ve para veren tüccar evi", hint: trade}
+          fourth: {tr: "gerçeği bilen bir kaçak", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["küçük saldırılar", "büyük savaş; sonunda tüccar ikisini de alır"]
+        third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
+        hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
+        tr: {name: "iki tarafı birbirine düşüren tüccar evi"}
+      - id: contest_foreign_envoy
+        label: "The foreign envoy"
+        family: hidden_hand
+        prize: heart
+        roles:
+          a: {tr: "yerel bir güç", hint: state}
+          b: {tr: "öbür yerel güç", hint: state}
+          third: {tr: "ikisine de dost görünen uzak bir krallığın elçisi", hint: state}
+          fourth: {tr: "elçinin planını sezen bir casus şebekesi", hint: criminal}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["armağanlar", "suikastlar", "işgal bahanesi"]
+        third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
+        hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
+        tr: {name: "yabancı elçi"}
+      - id: contest_war_fed_company
+        label: "The company that feeds on the war"
+        family: hidden_hand
+        prize: lifeline
+        roles:
+          a: {tr: "bir ülke", hint: state}
+          b: {tr: "komşusu", hint: state}
+          third: {tr: "iki tarafa da kiralanıp savaşı uzatan paralı birlik", hint: martial}
+          fourth: {tr: "barış isteyen tüccarlar", hint: trade}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["sınır olayları", "bitmeyen savaş"]
+        third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
+        hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
+        tr: {name: "savaştan beslenen birlik"}
+      - id: contest_fallen_state_remnant
+        label: "The remnant of a fallen state"
+        family: hidden_hand
+        prize: heart
+        roles:
+          a: {tr: "yeni güçlerden biri", hint: state}
+          b: {tr: "öbürü", hint: state}
+          third: {tr: "eski devleti yeniden kurmak isteyen gizli hayranları", hint: null}
+          fourth: {tr: "mirasçı olduğunu bilmeyen biri", hint: null}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["eski simgeler", "darbe"]
+        third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
+        hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
+        tr: {name: "yıkılmış devletin artığı"}
+      - id: contest_shapeshifter
+        label: "The shapeshifter"
+        family: hidden_hand
+        prize: lifeline
+        roles:
+          a: {tr: "bir köy ya da aile", hint: state}
+          b: {tr: "öbürü", hint: state}
+          third: {tr: "iki tarafı birbirine düşüren kılık değiştirmiş bir yaratık ya da fey", hint: null}
+          fourth: {tr: "ondan şüphelenen bir avcı", hint: martial}
+        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        escalation: ["suçlamalar", "kan davası"]
+        third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
+        hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
+        tr: {name: "kılık değiştiren"}

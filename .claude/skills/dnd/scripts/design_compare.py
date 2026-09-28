@@ -28,7 +28,8 @@ from design_io import design_dir, read_json  # noqa: E402
 # tables (a whole file, or `file#subtable`) whose rows must not repeat between two campaigns; the foundation's
 # palette may repeat, its actions and scars only wait (plan item 25)
 UNIQUE_TABLES = ("tensions.yaml", "secrets.yaml", "trope-breaks.yaml", "signatures.yaml", "naming.yaml", "pantheon.yaml",
-                 "foundation.yaml#spine", "foundation.yaml#ruin_source")
+                 "foundation.yaml#spine", "foundation.yaml#ruin_source", "foundation.yaml#lifeline",
+                 "foundation.yaml#contest")
 
 
 def is_unique_table(ref: str) -> bool:
