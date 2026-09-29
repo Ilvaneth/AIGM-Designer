@@ -17,6 +17,13 @@ plan: "item 25; errata 24.2 #20-25"
 phenomenon_rule_families: [magic_behaviour, body_blood, place_path, matter, time, word_sign, nature_creatures, born_of_break]
 key_kinds: [crossing, bridge, water, gate, descent, crossroad, network, landmark]
 remnant_kinds: [network, structure, city, body, wasteland, machine, object, source, rift]
+# the palette kinds a key place of each kind can stand on (build item 6b); crossroad, network and landmark take any
+key_kind_lands:
+  crossing: [land_river, land_lake, land_coast, land_island, land_mountain, land_highland, land_sky_river]
+  bridge: [land_mountain, land_highland, land_river, land_volcanic, land_desert, land_floating_isles]
+  water: [land_river, land_lake, land_coast, land_desert, land_steppe, land_sky_river]
+  gate: [land_mountain, land_highland, land_underground, land_volcanic, land_plain, land_steppe, land_river]   # a river gate, the last bridge
+  descent: [land_mountain, land_highland, land_underground, land_volcanic, land_river]   # waterfall stairs
 
 tables:
 
@@ -88,7 +95,13 @@ tables:
     roll:
       avoid_used: true
       family_wait: 3
-      note: "rolled before the palette; `forces` puts the kinds it needs into the palette (item 25 review #2); `forces_one_of` puts one of them"
+      note: >-
+        rolled before the palette; `forces` puts the kinds it needs into the palette (item 25 review #2);
+        `forces_one_of` puts one of them. `parts` are the kinds each piece prefers (an empty list takes any);
+        the script lays the palette on them: the key place on a kind its key_kind stands on, the two ends on
+        different kinds, the rest along the spine; within a part's list a kind no part holds yet comes first
+        (build item 6b). A part's kind is the land around it: two ends of one kind in the prose (the lake chain's
+        two lakes) take different lands, and the prose keeps the row's picture (owner, 2026-09-29).
     hooks_common:
       - {phase: P3, must: "the map's main line follows the spine's travel; the heart, both ends and the key place are map nodes"}
       - {phase: P3, must: "the palette's kinds are spread over the spine's pieces; the two ends take different kinds"}
@@ -100,6 +113,7 @@ tables:
         label: A river from source to sea
         family: line
         key_kind: crossing
+        parts: {heart: [land_river, land_plain], end_a: [land_mountain], end_b: [land_coast], key_place: [land_river]}
         forces: [land_river, land_mountain, land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "kaynaktan denize bir nehir", heart: "orta akıştaki köprü-şehir", ends: ["kaynaktaki dağ halkları", "deltadaki liman"], key_place: "nehrin tek geçilebilir sığlığı", travel: "nehir boyunca aşağı ve yukarı, mavnayla ve yoldan"}
@@ -107,6 +121,7 @@ tables:
         label: A great rift
         family: line
         key_kind: descent
+        parts: {heart: [land_highland], end_a: [land_underground, land_forest, land_river, land_marsh], end_b: [land_highland], key_place: [land_highland, land_mountain]}
         forces: [land_highland]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "dev bir yarık", heart: "iki yakayı bağlayan köprü", ends: ["yarığın tabanı", "kenarlardaki yaylalar"], key_place: "köprü ya da tabana inen merdiven", travel: "kenarlar boyunca ve aşağıya iniş"}
@@ -114,6 +129,7 @@ tables:
         label: Passes along a range
         family: line
         key_kind: crossing
+        parts: {heart: [land_mountain], end_a: [land_forest, land_highland, land_plain], end_b: [land_desert, land_steppe], key_place: [land_mountain]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "sıradağ boyunca geçitler", heart: "en büyük geçitteki kale-şehir", ends: ["dağın yağmur alan yamacı", "kurak yamacı"], key_place: "ana geçit", travel: "geçitten geçide, mevsime bağlı"}
@@ -121,6 +137,7 @@ tables:
         label: A long coastline
         family: line
         key_kind: landmark
+        parts: {heart: [land_coast], end_a: [land_cold, land_mountain], end_b: [land_coast], key_place: [land_coast, land_mountain]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         tr: {name: "uzun bir kıyı şeridi", heart: "büyük liman", ends: ["bir uçta buzul fiyortları", "öbür uçta sıcak koylar"], key_place: "kıyıyı ikiye bölen burun", travel: "gemiyle kıyı boyunca; kara yolunu dağlar keser"}
@@ -128,6 +145,7 @@ tables:
         label: A barren corridor
         family: line
         key_kind: water
+        parts: {heart: [land_desert, land_steppe], end_a: [land_plain, land_river, land_highland, land_forest], end_b: [land_plain, land_river, land_highland, land_forest], key_place: [land_desert, land_steppe]}
         forces_one_of: [land_desert, land_steppe]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "çorak koridor", heart: "koridorun ortasındaki han-şehir", ends_both: "koridorun iki ucundaki iki uygarlık", key_place: "yoldaki tek su kaynağı", travel: "konaktan konağa, suya bağlı"}
@@ -136,6 +154,7 @@ tables:
         label: A mountain-ringed basin with a lake
         family: centred
         key_kind: gate
+        parts: {heart: [land_lake], end_a: [land_plain, land_lake, land_forest], end_b: [land_forest, land_steppe, land_cold, land_desert], key_place: [land_mountain]}
         forces: [land_mountain, land_lake]
         weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "dağlarla çevrili çanak, ortasında göl", heart: "göldeki ada-şehir", ends: ["verimli havza", "dağların ötesindeki bilinmeyen"], key_place: "havzadan çıkan tek geçit", travel: "göl üstünden ve kıyı yollarından içeri doğru"}
@@ -143,6 +162,7 @@ tables:
         label: One giant mountain
         family: centred
         key_kind: descent
+        parts: {heart: [land_mountain, land_highland], end_a: [land_mountain], end_b: [land_plain, land_forest, land_highland, land_steppe], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "tek dev dağ", heart: "yamaçtaki en büyük şehir", ends: ["zirve", "etek"], key_place: "zirveye çıkan yol ya da dağın içine inen ağız", travel: "halkalar halinde yukarı ve aşağı"}
@@ -150,6 +170,7 @@ tables:
         label: The crater of a fallen stone
         family: centred
         key_kind: descent
+        parts: {heart: [], end_a: [land_glass_desert, land_crystal_forest, land_marsh, land_forest], end_b: [], key_place: [land_highland, land_mountain]}
         landmark: crater                 # a P3 landmark, not a palette kind (review #4)
         weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
         merges_with:                     # owner, 2026-09-28: one crater, the spine's heart
@@ -162,6 +183,7 @@ tables:
         label: An oasis and its ring
         family: centred
         key_kind: water
+        parts: {heart: [land_desert], end_a: [land_desert], end_b: [land_plain, land_steppe, land_mountain, land_coast], key_place: [land_desert]}
         forces: [land_desert]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "vaha ve çevresindeki halka", heart: "vaha", ends: ["vaha", "çölün öbür yakası"], key_place: "vahanın suyu", travel: "vahadan dışa seferler; geri dönmek zorunlu"}
@@ -169,12 +191,14 @@ tables:
         label: Four roads meeting
         family: centred
         key_kind: crossroad
+        parts: {heart: [land_plain, land_steppe], end_a: [], end_b: [], end_c: [], end_d: [], key_place: [land_plain, land_steppe]}
         tr: {name: "dört yol ağzı", heart: "kavşak şehri", ends_both: "dört yöndeki dört farklı iklim ve ülke", key_place: "kavşağın kendisi", travel: "merkezden dışa, dört koldan"}
       # 3. fragmented
       - id: spine_archipelago
         label: An archipelago
         family: fragmented
         key_kind: crossing
+        parts: {heart: [land_island], end_a: [land_island], end_b: [land_volcanic, land_forest, land_mountain, land_coast], key_place: [land_coast]}
         forces: [land_island, land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         tr: {name: "takımadalar", heart: "en büyük ada", ends: ["iç adalar", "uzak ve vahşi dış adalar"], key_place: "adaları bağlayan tek güvenli boğaz", travel: "adadan adaya gemiyle, mevsime bağlı"}
@@ -182,6 +206,7 @@ tables:
         label: A maze of valleys
         family: fragmented
         key_kind: network
+        parts: {heart: [land_plain, land_river], end_a: [land_forest, land_plain, land_river, land_highland, land_lake], end_b: [land_forest, land_plain, land_river, land_highland, land_lake], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "vadiler labirenti", heart: "en geniş vadi", ends_both: "birbirinden dağlarla ayrılmış, her biri başka bir halkın vadisi", key_place: "vadileri bağlayan tüneller ve geçitler", travel: "geçitlerden; her vadi ayrı bir dünya"}
@@ -189,6 +214,7 @@ tables:
         label: Clearings in an endless forest
         family: fragmented
         key_kind: network
+        parts: {heart: [land_plain, land_forest], end_a: [land_plain, land_highland, land_lake, land_marsh], end_b: [land_forest], key_place: [land_forest]}
         forces: [land_forest]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "sonsuz ormanın açıklıkları", heart: "en büyük açıklık", ends: ["açıklıklar", "ormanın derinliği"], key_place: "açıklıkları bağlayan patikalar", travel: "açıklıktan açıklığa, yolsuz"}
@@ -196,6 +222,7 @@ tables:
         label: A land of mesas
         family: fragmented
         key_kind: bridge
+        parts: {heart: [land_highland], end_a: [land_highland, land_mountain], end_b: [land_desert, land_river], key_place: [land_highland, land_mountain]}
         forces_one_of: [land_desert, land_highland]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "mesa ülkesi", heart: "en büyük masa dağın üstündeki şehir", ends: ["yaşanan mesa tepeleri", "aradaki vahşi kanyonlar"], key_place: "mesaları bağlayan köprüler ve ip yollar", travel: "mesadan mesaya, kanyonlara iniş"}
@@ -203,6 +230,7 @@ tables:
         label: A chain of lakes
         family: fragmented
         key_kind: crossing
+        parts: {heart: [land_lake], end_a: [land_lake], end_b: [land_marsh, land_river, land_forest, land_cold], key_place: [land_lake, land_river]}
         forces: [land_lake]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "göller zinciri", heart: "iki gölü bağlayan boğazdaki şehir", ends_both: "zincirin iki ucundaki göller", key_place: "göller arasındaki boğaz", travel: "gölden göle, suyla"}
@@ -211,6 +239,7 @@ tables:
         label: Surface, middle depth and the deep
         family: layered
         key_kind: descent
+        parts: {heart: [land_underground], end_a: [land_plain, land_forest, land_highland, land_mountain], end_b: [land_underground], key_place: [land_underground]}
         forces: [land_underground]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "yüzey, orta derinlik ve derin", heart: "orta katmandaki şehir", ends: ["yüzey", "en derin katman"], key_place: "katmanları bağlayan büyük kuyu ya da kaldırgaç", travel: "aşağı ve yukarı"}
@@ -218,6 +247,7 @@ tables:
         label: Terraces
         family: layered
         key_kind: descent
+        parts: {heart: [land_highland, land_plain], end_a: [land_highland], end_b: [land_plain], key_place: [land_river, land_highland, land_mountain]}
         forces: [land_highland, land_plain]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "basamaklar", heart: "orta terastaki şehir", ends: ["en üstteki yayla", "en alttaki ova"], key_place: "teraslar arası merdivenler ve şelaleler", travel: "basamak basamak"}
@@ -225,6 +255,7 @@ tables:
         label: Two worlds, one over the other
         family: layered
         key_kind: network
+        parts: {heart: [land_thin_place, land_plain], end_a: [], end_b: [land_thin_place], key_place: [land_thin_place]}
         forces: [land_thin_place]
         requires: {dial: {magic: [medium, high]}}
         merges_with:                     # owner, 2026-09-28: the rift is no separate place
@@ -234,6 +265,7 @@ tables:
         label: The mountain's inside and outside
         family: layered
         key_kind: gate
+        parts: {heart: [land_underground], end_a: [land_mountain], end_b: [land_underground], key_place: [land_mountain]}
         forces: [land_mountain, land_underground]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "dağın içi ve dışı", heart: "dağın içindeki şehir", ends: ["dağın dışı", "dağın içi"], key_place: "dağın kapıları", travel: "kapılardan içeri ve dışarı"}
@@ -241,6 +273,7 @@ tables:
         label: Above and below the sea
         family: layered
         key_kind: network
+        parts: {heart: [land_coast], end_a: [land_coast], end_b: [land_island, land_underground, land_marsh], key_place: [land_coast, land_underground]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         tr: {name: "deniz üstü ve deniz altı", heart: "kıyı şehri ya da bir resif", ends: ["kıyı halkı", "deniz altı halkları"], key_place: "sualtı mağaraları", travel: "dalış ve sualtı yolları"}
@@ -249,6 +282,7 @@ tables:
         label: A peninsula
         family: frontier
         key_kind: crossing
+        parts: {heart: [land_coast, land_plain], end_a: [land_coast, land_highland, land_forest], end_b: [land_plain, land_mountain, land_forest, land_steppe], key_place: [land_coast]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "yarımada", heart: "boyuna yakın şehir", ends: ["yarımadanın ucu", "anakara"], key_place: "boyun, tek kara geçişi", travel: "yarımadanın içinde; dışarı boyundan ya da denizden"}
@@ -256,6 +290,7 @@ tables:
         label: A strait and two continents
         family: frontier
         key_kind: crossing
+        parts: {heart: [land_coast], end_a: [land_plain, land_mountain, land_forest, land_desert, land_steppe, land_highland], end_b: [land_plain, land_mountain, land_forest, land_desert, land_steppe, land_highland], key_place: [land_coast]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "boğaz ve iki kıta", heart: "iki yakadaki ikiz şehir", ends_both: "iki kıta", key_place: "boğaz", travel: "boğazı geçmek, iki kıyı boyunca gitmek"}
@@ -263,12 +298,14 @@ tables:
         label: A border along a long wall
         family: frontier
         key_kind: gate
+        parts: {heart: [land_plain, land_steppe], end_a: [land_plain, land_river, land_forest], end_b: [land_steppe, land_desert, land_cold, land_forest, land_marsh], key_place: [land_mountain, land_highland, land_plain, land_steppe]}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "uzun bir sur boyunca sınır", heart: "surun ana kapısı", ends: ["surun içi", "dışı"], key_place: "kapılar", travel: "sur boyunca ve kapılardan dışarı"}
       - id: spine_climate_belt
         label: A climate belt
         family: frontier
         key_kind: crossing
+        parts: {heart: [land_plain, land_steppe, land_highland], end_a: [land_cold], end_b: [land_desert], key_place: [land_mountain, land_coast, land_highland]}
         forces: [land_cold, land_desert]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "iklim kuşağı", heart: "kuşağın ortasındaki şehir", ends: ["donmuş kuzey", "kavrulan güney"], key_place: "kuşağın daraldığı yer", travel: "kuşak boyunca doğu-batı, kenarlara seferler"}
@@ -276,6 +313,7 @@ tables:
         label: The edge of civilisation
         family: frontier
         key_kind: gate
+        parts: {heart: [land_plain, land_river], end_a: [land_plain, land_river, land_highland], end_b: [land_forest, land_marsh, land_mountain, land_cold, land_desert], key_place: [land_river, land_mountain, land_highland]}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "uygarlığın kenarı", heart: "son büyük şehir", ends: ["bilinen topraklar", "haritasız vahşi"], key_place: "sınır kalesi ya da son köprü", travel: "sınırdan vahşiye doğru"}
       # 6. fantastic
@@ -283,6 +321,7 @@ tables:
         label: A titan's back
         family: fantastic
         key_kind: descent
+        parts: {heart: [land_highland, land_forest], end_a: [], end_b: [], key_place: [land_underground, land_mountain]}
         requires: {dial: {magic: [high]}}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "bir titanın sırtı", heart: "sırttaki şehir", ends: ["baş", "kuyruk"], key_place: "canlının içine inen yol", travel: "sırt boyunca"}
@@ -290,6 +329,7 @@ tables:
         label: A floating archipelago
         family: fantastic
         key_kind: network
+        parts: {heart: [land_floating_isles], end_a: [land_floating_isles], end_b: [land_mountain, land_highland, land_forest, land_plain], key_place: [land_floating_isles]}
         forces: [land_floating_isles]
         requires: {dial: {magic: [high]}}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
@@ -298,12 +338,14 @@ tables:
         label: A ring around a bottomless void
         family: fantastic
         key_kind: bridge
+        parts: {heart: [land_highland, land_mountain, land_plain], end_a: [], end_b: [], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
         tr: {name: "dipsiz bir boşluğun çevresindeki halka", heart: "boşluğa bakan şehir", ends_both: "halkanın iki karşı yakası", key_place: "boşluğun üstündeki tek köprü", travel: "halka boyunca ya da köprüden"}
       - id: spine_giant_tree
         label: One giant tree, mountain-tall
         family: fantastic
         key_kind: landmark
+        parts: {heart: [land_forest], end_a: [land_forest], end_b: [land_underground, land_marsh], key_place: [land_forest]}
         forces: [land_forest]
         requires: {dial: {magic: [medium, high]}}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
@@ -314,6 +356,7 @@ tables:
         label: The edge of the world
         family: fantastic
         key_kind: descent
+        parts: {heart: [land_mountain, land_highland], end_a: [land_plain, land_forest, land_steppe, land_highland], end_b: [land_mountain, land_highland, land_coast], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "dünyanın kenarı", heart: "uçurumun kenarındaki şehir", ends: ["iç topraklar", "uçurumun ötesindeki bulut denizi"], key_place: "kenardan aşağı inen tek yol", travel: "kenara doğru ve aşağıya"}

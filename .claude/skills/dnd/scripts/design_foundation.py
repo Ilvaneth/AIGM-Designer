@@ -123,15 +123,10 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
                  f"brought by {ruin_id}: on top of the count, exempt from the cap and the kind's magic requirement")
         out["palette_extra"].append(ruin["adds_palette"])
 
-    # 4. the lifeline, seated on the spine
+    # 4. the lifeline (seated by the layout, build item 6b)
     life_id = R.table("foundation.lifeline", ref("lifeline"))["row_id"]
     life = rows_by_id("lifeline")[life_id]
     out["lifeline"] = life_id
-    if life["family"] == "passage":
-        out["lifeline_seat"] = "key_place"
-    else:
-        seats = ["heart", "end_a", "end_b", "key_place"]
-        out["lifeline_seat"] = seats[int(R.notation("foundation.lifeline.seat", f"d{len(seats)}")["raw"]) - 1]
 
     # 5. the contest
     roles_by_scale = header("contest")["roles_by_scale"]
@@ -141,7 +136,7 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
         fam1 = rows_by_id("contest")[c1]["family"]
         c2 = R.table("foundation.contest.2", ref("contest"), exclude={c1},
                      where=lambda r: r["family"] != fam1, why="another family")["row_id"]
-        out["contests"].append({"id": c2, "roles": ["a", "b", "third"], "seat": "another part of the spine"})
+        out["contests"].append({"id": c2, "roles": ["a", "b", "third"]})
     main = rows_by_id("contest")[c1]
     main_roles = out["contests"][0]["roles"]
 
@@ -205,11 +200,118 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
     else:
         out["start"] = "heart"
 
+    # the layout: the palette on the spine's parts, the lifeline and the contests' roles seated on them
+    out["layout"] = lay_out(R, spine, palette + out["palette_extra"], life, out["contests"], out)
+
     # 7. the escalation
     out["escalation"] = tiers_touched(dials["level_band"])
     for n, tier in enumerate(out["escalation"], 1):
         R.forced(f"foundation.escalation.{n}", ref("escalation_tier"), tier, "the tiers the level band touches")
     return out
+
+
+# ── the layout (build item 6b; owner, 2026-09-29) ────────────────────────────────────────────────────────────
+
+END_PARTS = ("end_a", "end_b", "end_c", "end_d")
+
+
+def _choose(R, label: str, options: list):
+    if len(options) == 1:
+        return options[0]
+    return options[int(R.notation(label, f"d{len(options)}")["raw"]) - 1]
+
+
+def lay_out(R, spine: dict, kinds: list[str], life: dict, contests: list[dict], out: dict) -> dict:
+    """The palette's kinds on the spine's parts: the key place on a kind its key_kind stands on, the ends on
+    different kinds, the heart on its preference; every other kind along the spine. The lifeline sits on a part (or
+    an along node) whose kind its `where` holds; an everywhere row on any part. The contests' roles: a on end_a, b on
+    end_b, the third on the heart, the fourth along, unless the row's `seats` say otherwise; epic's second contest
+    on the parts the first left free, else along. The ruin's remnant: by a merge rule, else where the ruin's own kind
+    lies, else an end or an along node, never the heart without a merge. The break lies where its target is; a prize
+    lies on its piece, a new resource where the break struck (owner, 2026-09-29)."""
+    doc = dt.load(F)
+    wanted = spine["parts"]
+    order = ["key_place"] + [p for p in END_PARTS if p in wanted] + ["heart"]
+    lands = (doc.get("key_kind_lands") or {}).get(spine["key_kind"])
+    parts: dict[str, str] = {}
+    for part in order:
+        def allowed(k, part=part):
+            if part == "key_place" and lands is not None and k not in lands:
+                return False
+            if part.startswith("end_") and k in [parts[p] for p in parts if p.startswith("end_")]:
+                return False
+            return True
+        cand = [k for k in (wanted.get(part) or []) if k in kinds and allowed(k)]
+        fresh = [k for k in cand if k not in parts.values()]      # variety: a kind no part holds yet comes first
+        cand = fresh or cand
+        if not cand:
+            placed = set(parts.values())
+            free = [k for k in kinds if allowed(k)]
+            cand = [k for k in free if k not in placed] or free
+        if not cand:
+            raise SystemExit(f"design_foundation: no palette kind for the spine's {part} — a table fault")
+        parts[part] = _choose(R, f"foundation.layout.{part}", cand)
+    along = [k for k in kinds if k not in parts.values()]
+
+    # the lifeline
+    where = set(life.get("where") or [])
+    seats = [p for p in order if not where or parts[p] in where]
+    seats += [f"along:{k}" for k in along if where and k in where]
+    if life["family"] == "passage" and "key_place" in seats:
+        life_seat = "key_place"
+    else:
+        if not seats:
+            raise SystemExit(f"design_foundation: the lifeline {life['id']} finds no part of its kind — a table fault")
+        life_seat = _choose(R, "foundation.layout.lifeline", seats)
+
+    # the ruin's remnant
+    ruin = rows_by_id("ruin_source")[out["ruin"]]
+    merged = merges(out["spine"], out["ruin"])
+    if merged:
+        remnant = "key_place" if out["ruin"] == "ruin_planar_rift" else "heart"
+    else:
+        own = ([ruin["adds_palette"]] if ruin.get("adds_palette") else []) + list((ruin.get("requires") or {}).get("any_of") or [])
+        spots = [p for p in order if p != "heart" and parts[p] in own] + [f"along:{k}" for k in along if k in own]
+        spots = spots or [p for p in order if p.startswith("end_")] + [f"along:{k}" for k in along]
+        remnant = _choose(R, "foundation.layout.remnant", spots)
+
+    # the contests
+    rows = rows_by_id("contest")
+    seated: list[dict] = []
+    taken: set = set()
+    for n, c in enumerate(contests):
+        row = rows[c["id"]]
+        if n == 0:
+            seat = {"a": "end_a", "b": "end_b", "third": "heart", "fourth": "along"}
+            for role, where_to in (row.get("seats") or {}).items():
+                if role == "prize":
+                    continue
+                seat[role] = {"end": "end_a" if role == "a" else "end_b", "beside_key_place": "key_place"}.get(where_to, where_to)
+            if "third" in seat and seat["third"] in (seat.get("a"), seat.get("b")):
+                seat["third"] = next((p for p in ("end_a", "end_b", "key_place") if p not in (seat["a"], seat["b"])), "along")
+        else:
+            free = [p for p in order if p not in taken]
+            seat = {r: (free.pop(0) if free else "along") for r in ("a", "b", "third")}
+        seat = {r: p for r, p in seat.items() if r in c["roles"]}
+        taken |= {p for p in seat.values() if p != "along"}
+        prize = row["prize"]
+        at = (row.get("seats") or {}).get("prize")
+        if at == "thin_place":
+            at = next((p for p, k in parts.items() if k == "land_thin_place"), "along:land_thin_place")
+        elif at is None:
+            at = {"lifeline": life_seat, "heart": "heart"}.get(prize)
+        seated.append({"contest": c["id"], "seats": seat, "prize": {"kind": prize, "at": at}})
+
+    # where the break struck, from its target; then the prizes a place follows from
+    piece = PIECE_OF_TARGET[out["target"]]
+    thin = next((p for p, k in parts.items() if k == "land_thin_place"), "along:land_thin_place")
+    break_at = {"lifeline": life_seat, "remnant": remnant, "key_place": "key_place", "heart": "heart",
+                "role": seated[0]["seats"].get(out.get("target_role")), "thin_place": thin}[piece]
+    for c in seated:
+        if c["prize"]["at"] is None:
+            c["prize"]["at"] = {"remnant": remnant, "new": break_at}[c["prize"]["kind"]]
+    return {"parts": parts, "along": along, "lifeline": life_seat, "remnant": remnant, "break_at": break_at,
+            "contests": seated}
 
 
 # ── the build: merges, start, the sentence ───────────────────────────────────────────────────────────────────
@@ -293,7 +395,8 @@ def build(out: dict, level_band) -> dict:
         "palette": list(out["palette"]),
         "palette_extra": list(out["palette_extra"]),
         "ruin_source": ruin_id,
-        "lifeline": {"id": out["lifeline"], "seat": out["lifeline_seat"]},
+        "lifeline": {"id": out["lifeline"], "seat": out["layout"]["lifeline"]},
+        "layout": out["layout"],
         "contests": out["contests"],
         "break": {"target": out["target"], "target_role": out.get("target_role"), "action": out["action"],
                   "scars": out["scars"], "time": out["time"], "winner": out["winner"]},

@@ -162,6 +162,110 @@ class ManySeeds(unittest.TestCase):
                 self.assertIn("foundation.palette.scar", R.by_label)
                 self.assertLessEqual(sum(1 for k in f["palette"] if fd.is_capped(PAL[k])), CAP[d["magic"]])
 
+    def test_the_layout(self):
+        """Build item 6b: the ends on different kinds, the key place on its key kind, every kind placed once, the
+        lifeline on a part of its kind, the contests' seats."""
+        lands = dt.load("foundation.yaml")["key_kind_lands"]
+        for d, R, out, f in self.runs:
+            with self.subTest(seed=R.master):
+                lay = f["layout"]
+                parts, along = lay["parts"], lay["along"]
+                spine = SPINE[f["spine"]]
+                ends = [parts[p] for p in parts if p.startswith("end_")]
+                self.assertEqual(len(ends), len(set(ends)), "the ends take different kinds")
+                self.assertEqual(len(ends), 4 if f["spine"] == "spine_crossroads" else 2)
+                if spine["key_kind"] in lands:
+                    self.assertIn(parts["key_place"], lands[spine["key_kind"]])
+                every = f["palette"] + f["palette_extra"]
+                self.assertEqual(set(parts.values()) | set(along), set(every), "every kind on a part or along")
+                self.assertFalse(set(parts.values()) & set(along))
+                life = LIFE[f["lifeline"]["id"]]
+                seat = lay["lifeline"]
+                kind = seat.split(":", 1)[1] if seat.startswith("along:") else parts[seat]
+                if life.get("where"):
+                    self.assertIn(kind, life["where"], "the lifeline sits on a kind its where holds")
+                else:
+                    self.assertFalse(seat.startswith("along:"), "an everywhere row sits on a part")
+                if life["family"] == "passage" and parts["key_place"] in (life.get("where") or []):
+                    self.assertEqual(seat, "key_place")
+                main = lay["contests"][0]
+                row = CONTEST[main["contest"]]
+                over = {k: v for k, v in (row.get("seats") or {}).items() if k != "prize"}
+                default = {"a": "end_a", "b": "end_b", "third": "heart", "fourth": "along"}
+                for role, where in main["seats"].items():
+                    if role in over:
+                        want = {"end": "end_a" if role == "a" else "end_b", "beside_key_place": "key_place"}.get(over[role], over[role])
+                        self.assertEqual(where, want, (row["id"], role))
+                    elif role != "third":
+                        self.assertEqual(where, default[role], (row["id"], role))
+                if "third" not in over:
+                    self.assertNotIn(main["seats"]["third"], (main["seats"]["a"], main["seats"]["b"]))
+                if row.get("seats", {}).get("prize") == "thin_place":
+                    at = main["prize"]["at"]
+                    self.assertEqual(at.split(":", 1)[1] if at.startswith("along:") else parts[at], "land_thin_place")
+                if len(lay["contests"]) == 2:
+                    first = {p for p in main["seats"].values() if p != "along"}
+                    second = {p for p in lay["contests"][1]["seats"].values() if p != "along"}
+                    self.assertFalse(first & second, "epic's second contest sits where the first did not")
+
+    def test_the_variety_rule(self):
+        """Owner, 2026-09-29: within a part's list, a kind no part holds yet comes first; never outside the list."""
+        lands = dt.load("foundation.yaml")["key_kind_lands"]
+        for d, R, out, f in self.runs:
+            spine = SPINE[f["spine"]]
+            parts = f["layout"]["parts"]
+            every = f["palette"] + f["palette_extra"]
+            placed: list = []
+            order = ["key_place"] + [p for p in ("end_a", "end_b", "end_c", "end_d") if p in spine["parts"]] + ["heart"]
+            for part in order:
+                ends = [parts[p] for p in order[:order.index(part)] if p.startswith("end_")]
+                ok = lambda k: not (part == "key_place" and spine["key_kind"] in lands and k not in lands[spine["key_kind"]])                     and not (part.startswith("end_") and k in ends)
+                cand = [k for k in spine["parts"][part] if k in every and ok(k)]
+                if cand:
+                    self.assertIn(parts[part], cand, (R.master, part, "never outside the list when it has a kind"))
+                    if any(k not in placed for k in cand):
+                        self.assertNotIn(parts[part], placed, (R.master, part))
+                placed.append(parts[part])
+
+    def test_the_remnant_the_break_and_every_prize_have_a_place(self):
+        """Owner, 2026-09-29: the remnant sits by the merge rules, else where the ruin's kind lies, else an end or an
+        along node, never the heart without a merge; the break lies where its target is; no prize is placeless."""
+        seen_merge = 0
+        for d, R, out, f in self.runs:
+            with self.subTest(seed=R.master):
+                lay = f["layout"]
+                parts = lay["parts"]
+                ruin = RUIN[f["ruin_source"]]
+                rem = lay["remnant"]
+                if f["merges"]:
+                    seen_merge += 1
+                    self.assertEqual(rem, "key_place" if f["ruin_source"] == "ruin_planar_rift" else "heart")
+                else:
+                    self.assertNotEqual(rem, "heart", "the heart takes the remnant only by a merge")
+                    own = ([ruin["adds_palette"]] if ruin.get("adds_palette") else []) + list((ruin.get("requires") or {}).get("any_of") or [])
+                    kind = rem.split(":", 1)[1] if rem.startswith("along:") else parts[rem]
+                    if any(k in own for k in [v for p, v in parts.items() if p != "heart"] + lay["along"]):
+                        self.assertIn(kind, own)
+                    else:
+                        self.assertTrue(rem.startswith(("end_", "along:")))
+                b = f["break"]
+                piece = fd.PIECE_OF_TARGET[b["target"]]
+                want = {"lifeline": lay["lifeline"], "remnant": rem, "key_place": "key_place", "heart": "heart",
+                        "role": lay["contests"][0]["seats"].get(b.get("target_role"))}.get(piece)
+                if piece == "thin_place":
+                    at = lay["break_at"]
+                    self.assertEqual(at.split(":", 1)[1] if at.startswith("along:") else parts[at], "land_thin_place")
+                else:
+                    self.assertEqual(lay["break_at"], want)
+                self.assertTrue(lay["break_at"])
+                for c in lay["contests"]:
+                    self.assertTrue(c["prize"]["at"], (c["contest"], c["prize"]))
+                    if c["prize"]["kind"] == "remnant" and not (CONTEST[c["contest"]].get("seats") or {}).get("prize"):
+                        self.assertEqual(c["prize"]["at"], rem)
+                    if c["prize"]["kind"] == "new":
+                        self.assertEqual(c["prize"]["at"], lay["break_at"])
+        self.assertGreater(seen_merge, 0, "the sweep reaches a merge")
+
     def test_the_escalation_follows_the_level_band(self):
         for d, R, out, f in self.runs:
             lo, hi = d["level_band"]

@@ -159,6 +159,24 @@ class Spine(unittest.TestCase):
         for m in merges.values():
             self.assertFalse(m - ruins)
 
+    def test_every_spine_names_its_parts(self):
+        """Build item 6b: each part's preferred kinds; the crossroads has four ends; the key place's kinds stand on
+        its key kind; every forced kind is some part's preference."""
+        lands = DOC["key_kind_lands"]
+        self.assertFalse(set(lands) - set(DOC["key_kinds"]))
+        for r in SPINE:
+            with self.subTest(spine=r["id"]):
+                parts = r["parts"]
+                want = {"heart", "end_a", "end_b", "key_place"} | ({"end_c", "end_d"} if r["id"] == "spine_crossroads" else set())
+                self.assertEqual(set(parts), want)
+                for kinds in parts.values():
+                    self.assertFalse(set(kinds) - set(PALETTE))
+                if r["key_kind"] in lands:
+                    self.assertFalse(set(parts["key_place"]) - set(lands[r["key_kind"]]))
+                preferred = set().union(*(set(v) for v in parts.values()))
+                for k in list(r.get("forces") or []) + list(r.get("forces_one_of") or []):
+                    self.assertIn(k, preferred, f"{r['id']} forces {k} but no part wants it")
+
     def test_the_family_waits_three_births(self):
         head = dt.roll_header("foundation.yaml#spine")
         self.assertTrue(head["avoid_used"])
