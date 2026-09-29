@@ -3599,7 +3599,7 @@ rows:
     reskin: "the gilded dead seed; a civic servant when the break says so"
     curated: true
     hooks:
-      - {phase: P6, must: "a T1 minion; citizens under break_undead_civilised"}
+      - {phase: P6, must: "a T1 minion"}
   - id: eco_solar
     label: "Solar"
     srd: solar

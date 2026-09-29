@@ -158,7 +158,7 @@ tables:
         owner_role: guild_master
         era: era_any
         hooks:
-          - {phase: P2, must: "only when the magic dial is high or break_magic_is_municipal is rolled"}
+          - {phase: P2, must: "only when the magic dial is high"}
 
   district_type:
     notation: d16

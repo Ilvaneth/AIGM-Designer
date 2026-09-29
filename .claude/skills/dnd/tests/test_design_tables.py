@@ -131,7 +131,7 @@ class Convention(unittest.TestCase):
                                 "forbidden": "forbidden", "era": "dials", "pantheon": "pantheon",
                                 "sig": "signatures", "mix": "dials", "tone": "dials",
                                 "land": "foundation", "spine": "foundation", "ruin": "foundation",
-                                "life": "foundation", "contest": "foundation", "act": "foundation",
+                                "life": "foundation", "contest": "foundation", "act": "foundation", "tie": "trope-breaks",
                                 "scar": "foundation", "time": "foundation", "tier": "foundation",
                                 "target": "foundation"}.get(table)
                 if prefix_table in present:
@@ -214,14 +214,23 @@ class PlanNumbers(unittest.TestCase):
 class Floors(unittest.TestCase):
     """Risk 24.1 #18: tiny felt-identity tables repeat by campaign three to five."""
 
-    def test_tensions_at_least_30(self):
-        self.assertGreaterEqual(len(dt.rows("tensions.yaml")), 30)
-        for r in dt.rows("tensions.yaml"):
-            self.assertEqual(len(r["poles"]), 2, r["id"])
-            self.assertGreaterEqual(len(r["question_seeds"]), 2, r["id"])
-            self.assertIn(r["villain_answer"]["pole"], r["poles"], r["id"])
-            self.assertIn(r["world_default"]["pole"], r["poles"], r["id"])
-            self.assertNotEqual(r["villain_answer"]["pole"], r["world_default"]["pole"], r["id"])
+    def test_the_question_rows(self):
+        """Item 25 step 2 #4: 33 pole pairs with their contest families and Turkish poles; no example question
+        (examples anchor births); silence/witness and debt/grace are gone."""
+        rows = dt.rows("tensions.yaml")
+        self.assertEqual(len(rows), 33)
+        families = {r["family"] for r in dt.rows("foundation.yaml#contest")}
+        for r in rows:
+            with self.subTest(row=r["id"]):
+                self.assertEqual(len(r["poles"]), 2)
+                self.assertEqual(len(r["tr"]["poles"]), 2)
+                self.assertTrue(r["families"])
+                self.assertFalse(set(r["families"]) - families)
+                self.assertFalse({"question_seeds", "villain_answer", "world_default"} & set(r), "no example, no fixed villain pole")
+        ids = {r["id"] for r in rows}
+        self.assertFalse({"tension_silence_witness", "tension_debt_grace"} & ids)
+        for s in dt.rows("scale.yaml"):
+            self.assertEqual(s["tensions"], {"short": 1, "standard": 1, "epic": 2}[s["value"]], "one question per contest")
 
     def test_secrets_floor_and_shape(self):
         self.assertGreaterEqual(len(dt.rows("secrets.yaml#archetype")), 20)
@@ -232,9 +241,26 @@ class Floors(unittest.TestCase):
             self.assertEqual(set(r["clue_shape"]), {"act1", "act2", "act3"}, r["id"])
             self.assertTrue(set(r["villain_relation"]) <= {"knows", "is", "serves", "hunts", "denies"}, r["id"])
 
-    def test_trope_breaks_at_least_40_and_touch_two_phases(self):
+    def test_trope_breaks_and_touch_two_phases(self):
+        """Item 25 step 2 #5: 33 rows in six families (17 kept, 16 added), each touching two phases; four ties; six
+        prohibition rows for the new-taboo scar (owner, 2026-09-29)."""
         breaks = dt.rows("trope-breaks.yaml")
-        self.assertGreaterEqual(len(breaks), 40)
+        self.assertEqual(len(breaks), 33)
+        from collections import Counter
+        self.assertEqual(Counter(r["family"] for r in breaks),
+                         {"governance": 7, "peoples": 8, "gods": 5, "danger": 5, "time": 3, "knowledge": 5})
+        self.assertEqual({r["piece"] for r in dt.rows("trope-breaks.yaml#tie")}, {"lifeline", "ruin_source", "contest", "break"})
+        self.assertEqual({r["id"] for r in breaks if r.get("prohibition")}, {"break_maps_are_illegal", "break_weapons_one_class", "break_god_name_forbidden",
+                                                                                 "break_sacred_beast", "break_underground_forbidden",
+                                                                                 "break_border_forbidden"})
+        self.assertTrue(dt.load("trope-breaks.yaml")["roll"]["families_distinct"])
+        conflicts = {r["id"]: r.get("conflicts_with") for r in breaks if r.get("conflicts_with")}
+        self.assertEqual(conflicts, {"break_rule_by_lottery": ["tension_inheritance_merit"],
+                                     "break_elves_are_new": ["ruin_elven_withdrawal"]},
+                         "a conflict only where two sentences contradict literally (owner, 2026-09-29)")
+        for r in breaks:
+            self.assertTrue(r["tr"]["name"] and r["tr"]["at_table"], r["id"])
+            self.assertNotIn("(", r["tr"]["name"], r["id"])
         for r in breaks:
             phases = {h["phase"] for h in r["hooks"]}
             self.assertGreaterEqual(len(phases), 2, r["id"])

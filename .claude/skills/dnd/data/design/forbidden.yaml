@@ -58,7 +58,7 @@ rows:
     why: "the religious faction as villain by reflex; it spends the pantheon on a cliché"
     structural: {field: bbeg_faction_archetype, table: antagonists.yaml#bbeg_faction_archetype, forbidden_values: [religious]}
     lexical: {en: ["corrupt (church|priesthood|clergy)"], tr: ["yozlaşmış (kilise|tapınak|rahip)"]}
-    allowed_via: [secret_cure_is_the_cause, secret_gods_are_prisoners, break_gods_on_trial]
+    allowed_via: [secret_cure_is_the_cause, secret_gods_are_prisoners]
     hooks:
       - {phase: P4, must: "the BBEG's faction is religious only through an allowed secret or break, stated in the DM pitch"}
   - id: forbidden_amnesiac_hero
@@ -66,7 +66,7 @@ rows:
     why: "a past that can be anything is no past"
     structural: {field: truth_kind, table: threads.yaml#truth_kind, forbidden_values: [amnesia]}
     lexical: {en: ["lost (his|her|their) memory", "cannot remember who (he|she|they) (is|are|was|were)", "amnesia"], tr: ["hafızasını kaybet", "kim olduğunu hatırlam"]}
-    allowed_via: [break_memory_is_sold]
+    allowed_via: []   # break_memory_is_sold left the trope breaks (item 25)
     hooks:
       - {phase: P9, must: "a PC's truth is something they do not know about a past they remember"}
   - id: forbidden_tavern_opening

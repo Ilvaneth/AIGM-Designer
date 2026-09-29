@@ -32,8 +32,11 @@ UNIQUE_TABLES = ("tensions.yaml", "secrets.yaml", "trope-breaks.yaml", "signatur
                  "foundation.yaml#contest")
 
 
+REPEATABLE = ("trope-breaks.yaml#tie",)      # sub-tables of a unique file that may repeat
+
+
 def is_unique_table(ref: str) -> bool:
-    return ref in UNIQUE_TABLES or ref.split("#")[0] in UNIQUE_TABLES
+    return ref not in REPEATABLE and (ref in UNIQUE_TABLES or ref.split("#")[0] in UNIQUE_TABLES)
 
 
 def projection(campaign: str) -> dict:

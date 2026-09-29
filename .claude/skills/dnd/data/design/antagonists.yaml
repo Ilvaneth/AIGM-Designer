@@ -100,7 +100,7 @@ tables:
       - {id: bfa_resistance, value: resistance, label: Resistance, hooks: [{phase: P4, must: "the villain's answer is the resistance's endgame"}]}
       - {id: bfa_cult, value: cult, label: Cult, hooks: [{phase: P4, must: "the cult doctrine is the villain's answer"}]}
       - {id: bfa_trade, value: trade, label: Trade, hooks: [{phase: P4, must: "the doom is a monopoly or a debt"}]}
-      - {id: bfa_religious, value: religious, label: Religious (forbidden by default), forbidden: true, allowed_via: [secret_cure_is_the_cause, secret_gods_are_prisoners, break_gods_on_trial], hooks: [{phase: validator, must: "an error unless an allowed_via id is in the campaign's rolls"}]}
+      - {id: bfa_religious, value: religious, label: Religious (forbidden by default), forbidden: true, allowed_via: [secret_cure_is_the_cause, secret_gods_are_prisoners], hooks: [{phase: validator, must: "an error unless an allowed_via id is in the campaign's rolls"}]}
 
   front_template:
     note: "4-6 portents as operation steps; `at` is the fraction of the doom clock each portent lands at; kinds are factions.yaml step kinds"

@@ -51,7 +51,7 @@ rows:
     antagonists: {bbeg: 1, lieutenants: 1, regional: 0}
     quest_seeds: [6, 8]
     sockets_per_pc: 2
-    tensions: [1, 2]
+    tensions: 1                  # one question per contest (item 25 step 2 #4)
     trope_breaks: 1
     signature_mechanic_chance: 0
     history: {ages: [3, 5], dated_events: [8, 12], years_covered: 200, deep_past_events: [3, 5]}
@@ -82,7 +82,7 @@ rows:
     antagonists: {bbeg: 1, lieutenants: [2, 3], regional: 2}
     quest_seeds: [15, 20]
     sockets_per_pc: 3
-    tensions: [1, 2]
+    tensions: 1                  # one question per contest (item 25 step 2 #4)
     trope_breaks: 2
     signature_mechanic_chance: 50
     history: {ages: [3, 5], dated_events: [8, 12], years_covered: 200, deep_past_events: [3, 5]}
@@ -113,7 +113,7 @@ rows:
     antagonists: {bbeg: 1, lieutenants: [3, 4], regional: [4, 6]}
     quest_seeds: [30, 40]
     sockets_per_pc: 3
-    tensions: [1, 2]
+    tensions: 2                  # one question per contest (item 25 step 2 #4)
     trope_breaks: 2
     signature_mechanic_chance: 100
     history: {ages: [3, 5], dated_events: [8, 12], years_covered: 500, deep_past_events: [3, 5]}
