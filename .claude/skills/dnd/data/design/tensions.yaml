@@ -1,5 +1,6 @@
 # tensions.yaml — the question (plan item 25, step 2 #4; docs/p1-foundation-rows.md §11).
-# The question's home is the contest: the roll is weighted by the contest's family (`families`), the contest's
+# The question's home is the contest: a question is drawn only from the rows of its contest's family (`families`,
+# the heading since build item 10; the old ×3 weight is gone), the contest's
 # sides a and b carry the two poles (the writer assigns them; the door checks both carry one), and the villain
 # carries one pole to its terrible extreme (a secret roll). One question per contest: short and standard 1, epic 2
 # (scale.yaml `tensions`). The question grows with the escalation. No example question: examples anchor births;
@@ -8,7 +9,7 @@ schema_version: 1
 table: tensions
 consumed_by: [P1, P4, P5, P7, P8, P9]
 plan: "item 4.1, 17 #3, item 25 step 2 #4"
-roll: {avoid_used: true, family_weight: 3, note: "a row whose families hold the contest's family weighs ×family_weight"}
+roll: {avoid_used: true, note: "one per contest, drawn only from the rows whose families hold that contest's family; the second excludes the first"}
 hooks_common:
   - {phase: P1, must: "the writer turns the abstract poles into one concrete question in the campaign's own terms; the player pitch carries the question, never an answer"}
   - {phase: P4, must: "each side's doctrine carries its pole; the relations' reasons come from the question"}

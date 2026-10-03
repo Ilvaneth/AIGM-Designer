@@ -308,7 +308,7 @@ class ManySeeds(unittest.TestCase):
         bad = 0
         for p1, p4 in self.runs:
             rolled = [r["row_id"] for R in (p1, p4) for r in R.public + R.secret if r.get("row_id")]
-            bad += bool(arb.conflicting_pairs(rolled, tokens=list(p4.ctx.tokens)))
+            bad += bool(arb.conflicting_pairs(rolled, tokens=list(p4.ctx.tokens), exempt=p1.exempt))
         self.assertEqual(bad, 0, f"{bad} seed(s) rolled a conflicting set")
 
     def test_no_forbidden_row_was_rolled(self):

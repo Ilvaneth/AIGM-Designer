@@ -90,6 +90,7 @@ rows:
     overrides: [{"default": "state_leader", "to": "a dragon"}]
     weight_by: [{"when": {"any_of": ["life_dragon_protection"]}, "x": 2}]
     merges_with: {"contest_humans_dragon": "role b takes the hint state (the sovereign dragon and its household); role a takes resistance; third and fourth stay"}
+    merge_role_hints: {"contest_humans_dragon": {"a": "resistance", "b": "state"}}     # the merge above, for the script (build item 10)
     tr: {"name": "ülkeleri ejderhalar yönetir", "at_table": "hükümdarla konuşmak bir ejderhayla konuşmak demek"}
     hooks:
       - {phase: P4, must: "each polity's ruler is a dragon and its household a faction"}

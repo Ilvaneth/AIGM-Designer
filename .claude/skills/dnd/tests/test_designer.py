@@ -124,10 +124,23 @@ class NewBirth(unittest.TestCase):
         m = self.manifest(name)
         pub = {r["label"]: r for r in m["dice_log"] if r["phase"] == "P1"}
         self.assertIn("tension.1", pub)
-        self.assertIn("tension.second", pub)
+        self.assertNotIn("tension.second", pub, "one question per contest: the d2 went with build item 10")
+        self.assertNotIn("tension.2", pub, "short has one contest")
         self.assertEqual(sum(1 for l in pub if l.startswith("break.")), 1, "short rolls one trope break")
-        for sub in ("phenomenon", "people", "institution"):
-            self.assertTrue(pub[f"sig_{sub}"]["row_id"].startswith("sig_"))
+        self.assertTrue(pub["break_tie.1"]["row_id"].startswith("tie_"))
+        for label, prefix in (("people.lineage", "lineage_"), ("people.trait.visible", "trait_"), ("people.trait.behaving", "trait_"),
+                              ("people.attitude", "stranger_"), ("institution.practice", "practice_"), ("institution.form", "form_"),
+                              ("institution.power", "power_"), ("institution.sign", "isign_"), ("phenomenon.rule", "rule_"),
+                              ("phenomenon.sign", "psign_"), ("phenomenon.limit", "limit_"), ("phenomenon.user", "user_")):
+            self.assertTrue(pub[label]["row_id"].startswith(prefix), label)
+        self.assertFalse(any(l.startswith("sig_") for l in pub), "the old signature rolls are gone")
+        identity = m["identity"]
+        self.assertTrue(identity["stamped"])
+        self.assertEqual(identity["people"]["lineage"], pub["people.lineage"]["row_id"])
+        self.assertEqual(identity["institution"]["practice"], pub["institution.practice"]["row_id"])
+        self.assertEqual(identity["phenomenon"]["rule"], pub["phenomenon.rule"]["row_id"])
+        self.assertEqual([q["id"] for q in identity["questions"]], [pub["tension.1"]["row_id"]])
+        self.assertIn("designer: identity", proc.stdout)
         fams = [r["row_id"] for l, r in pub.items() if l.startswith("naming_family.")]
         self.assertEqual(len(fams), 2)
         self.assertEqual(len(set(fams)), 2)

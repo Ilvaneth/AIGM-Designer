@@ -197,10 +197,11 @@ def _names_secret(entry: dict, row: dict, ctx: Context, secret_ids: set) -> bool
 
 def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=None, why: str = "where",
               usage: dict | None = None, secret: bool = False, conflicts: dict | None = None,
-              secret_ids=None) -> dict:
+              secret_ids=None, weigh=None) -> dict:
     """The pool a draw is thrown on: {'pool', 'weights', 'excluded', 'excluded_secret', 'usage_fallback',
     'visible'}. `visible` are the rows a public record may count (not publicly excluded), in table order.
-    `conflicts` and `secret_ids` default to the committed tables' (tests pass their own)."""
+    `conflicts` and `secret_ids` default to the committed tables' (tests pass their own). `weigh(row, ctx)` replaces
+    the rows' own weights for this draw (the people's lineage under a role's weights or inverted homes)."""
     exclude = set(exclude or ())
     usage = usage or {}
     if conflicts is None or secret_ids is None:
@@ -238,7 +239,7 @@ def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=N
         else:
             public.append(e)
     shown = {e["row"] for e in public}
-    return {"pool": pool, "weights": [weight_of(r, ctx) for r in pool], "excluded": public,
+    return {"pool": pool, "weights": [(weigh or weight_of)(r, ctx) for r in pool], "excluded": public,
             "excluded_secret": hidden, "usage_fallback": fallback, "allowed": len(allowed),
             "visible": [r for r in rows if r["id"] not in shown]}
 
@@ -276,10 +277,12 @@ def check_forced(row_id: str, ctx: Context, conflicts: dict | None = None) -> No
         raise EmptyPool(f"the forced row {row_id} conflicts with a row already rolled — a table fault")
 
 
-def conflicting_pairs(row_ids, conflicts: dict | None = None, tokens=()) -> list[tuple[str, str]]:
+def conflicting_pairs(row_ids, conflicts: dict | None = None, tokens=(), exempt=()) -> list[tuple[str, str]]:
     """Every conflicting pair inside a set of rolled rows (the door's recheck and the many-seeds test). The rows'
     claims are expanded to tokens, and `tokens` adds the ones no row carries (the dials', a seated role's, the
-    layout's): a row beside a token its claims clash with is a pair too."""
+    layout's): a row beside a token its claims clash with is a pair too. `exempt` holds the pairs a forced roll was
+    allowed to stand in (the Roller's `exempt`: the scar's prohibition tied to a break still coming)."""
+    exempt = {frozenset(p) for p in exempt}
     rows_in = set(x for x in row_ids if x)
     index = dt.row_tokens()
     expanded = set(tokens)
@@ -288,4 +291,5 @@ def conflicting_pairs(row_ids, conflicts: dict | None = None, tokens=()) -> list
     ids = sorted(rows_in | expanded)
     idx = dt.conflict_index() if conflicts is None else conflicts
     clash = dt.clash_map()
-    return [(a, b) for i, a in enumerate(ids) for b in ids[i + 1:] if b in idx.get(a, ()) or b in clash.get(a, ())]
+    return [(a, b) for i, a in enumerate(ids) for b in ids[i + 1:]
+            if (b in idx.get(a, ()) or b in clash.get(a, ())) and frozenset((a, b)) not in exempt]

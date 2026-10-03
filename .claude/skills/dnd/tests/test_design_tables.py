@@ -268,15 +268,14 @@ class Floors(unittest.TestCase):
             self.assertGreaterEqual(len(phases), 2, r["id"])
             self.assertTrue(r.get("statement"))
 
-    def test_signatures_at_least_15_per_type(self):
-        for sub in ("phenomenon", "people", "institution"):
-            rows = dt.rows(f"signatures.yaml#{sub}")
-            self.assertGreaterEqual(len(rows), 15, sub)
-            for r in rows:
-                self.assertTrue(r.get("seed"), r["id"])
-                self.assertGreaterEqual(len(r.get("mutations") or []), 2, r["id"])
-        for r in dt.rows("signatures.yaml#people"):
-            self.assertTrue(r.get("srd_reskin"), r["id"])
+    def test_signatures_hold_only_the_identitys_sub_tables(self):
+        """Build item 10: the old `phenomenon`, `people` and `institution` sub-tables went with the old rolls;
+        test_identity_tables holds the counts of the eleven that remain."""
+        subs = set(dt.load("signatures.yaml")["tables"])
+        self.assertFalse(subs & {"phenomenon", "people", "institution"})
+        self.assertEqual(len(subs), 11)
+        for name in dt.list_tables():
+            self.assertNotRegex((dt.tables_dir() / name).read_text(encoding="utf-8"), r"\bsig_(phen|people|inst)_", name)
 
     # --- batch B: cosmos -------------------------------------------------------
 
@@ -841,8 +840,6 @@ class Naming(unittest.TestCase):
             for p in pats:
                 names += p["examples"]
         names += [ex["name"] for ex in doc["rules"]["turkish_suffixing"]["examples"]]
-        for sub in ("phenomenon", "people", "institution"):
-            names += [r["label"] for r in dt.rows(f"signatures.yaml#{sub}")]
         for n in names:
             low = n.lower()
             with self.subTest(name=n):

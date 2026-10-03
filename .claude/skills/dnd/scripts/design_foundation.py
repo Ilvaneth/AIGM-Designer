@@ -14,7 +14,8 @@ docs/p1-foundation-rows.md §1-6 and §18; the owner's rulings on items 3-5 of t
 4. the lifeline, seated on the spine;
 5. the contest (epic: a second one from another family, three roles, on another part of the spine);
 6. the break: target (a role target names the role), action (it must strike that target and fit its family or kind;
-   a target + action pair another birth used waits as usage), scars (the new-land scar needs room in the cap and adds
+   a target + action pair another birth used waits as usage; an action that destroys a role never strikes the last
+   seated role that can house the institution), scars (the new-land scar needs room in the cap and adds
    a fantastic kind; a closed thin place bars the thinner-border scar), time, winner (the scale's roles of the main
    contest, never the role the break destroyed; the struck role when a role rose);
 7. the escalation: the tiers of play the level band touches.
@@ -48,6 +49,11 @@ def rows_by_id(sub: str) -> dict:
 
 def header(sub: str) -> dict:
     return dt.roll_header(ref(sub))
+
+
+def institution_homes(contest: dict, seated: list[str]) -> list[str]:
+    """The seated roles of a contest that can house the signature institution: an archetype hint, no people's role."""
+    return [k for k in seated if (contest["roles"].get(k) or {}).get("hint") and not (contest["roles"].get(k) or {}).get("people_role")]
 
 
 def is_capped(row: dict) -> bool:
@@ -182,8 +188,16 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
         role = main_roles[int(R.notation("foundation.break.role", f"d{len(main_roles)}")["raw"]) - 1]
         out["target_role"] = role
     spent = {a for a in actions if f"{piece}|{a}" in (used_pairs or set())}
-    rec = R.table("foundation.break.action", ref("action"), where=lambda r: fits(r, piece), why="fits the target",
+    # the institution is never left homeless (owner, 2026-10-03): the break does not destroy the last seated role of
+    # the main contest that carries an archetype hint and is no people's role
+    homes = institution_homes(main, main_roles)
+    last_home = role if (role is not None and homes == [role]) else None
+    rec = R.table("foundation.break.action", ref("action"),
+                  where=lambda r: fits(r, piece) and not (last_home and "role" in (r.get("destroys") or [])),
+                  why=f"fits the target; never destroys role {last_home}, the institution's last home" if last_home else "fits the target",
                   also_used=spent)
+    if last_home:
+        rec["protected_role"] = {"role": last_home, "why": "the last seated role with an archetype hint that is no people's role"}
     act_id = rec["row_id"]
     rec["used_keys"] = {PAIR_KEY: f"{piece}|{act_id}"}     # approve writes it; the pair never repeats
     act = actions[act_id]

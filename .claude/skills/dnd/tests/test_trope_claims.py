@@ -196,7 +196,7 @@ class ManySeeds(unittest.TestCase):
         seen = set()
         for dials, R in self.runs:
             rows = [r["row_id"] for r in R.public + R.secret if r.get("row_id")]
-            self.assertEqual(arb.conflicting_pairs(rows, tokens=R.ctx.tokens), [], R.master)
+            self.assertEqual(arb.conflicting_pairs(rows, tokens=R.ctx.tokens, exempt=R.exempt), [], R.master)
             b = set(self.breaks(R))
             seen |= b
             if dials["era"] == "underground":

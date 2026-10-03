@@ -153,6 +153,8 @@ class Roller:
         self.by_label: dict[str, dict] = {}
         self.ctx = dd.context(campaign, phase)        # the phases before this one, each at its latest attempt
         self.foundation: dict | None = None
+        self.identity: dict | None = None
+        self.exempt: set = set()                      # conflict pairs a forced roll was allowed to stand in
         self.pools: dict[str, int] = {}               # table → its smallest pool after the constraints (the floor)
         self.pool_of: dict[str, int] = {}             # label → that draw's pool after the constraints
 
@@ -164,7 +166,7 @@ class Roller:
         R.manifest = {"dials": dials, "dice_log": []}
         R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
         R.ctx = arb.Context(dials=dict(dials))
-        R.foundation = None
+        R.foundation, R.identity, R.exempt = None, None, set()
         R.pools, R.pool_of = {}, {}
         return R
 
@@ -176,9 +178,11 @@ class Roller:
                 "row_id": None, "excluded": [], "attempt": self.attempt, "ts": now_iso()}
 
     def table(self, label: str, ref: str, secret: bool = False, avoid: bool = True, exclude: set | None = None,
-              where=None, why: str = "where", also_used: set | None = None, used_keys: dict | None = None) -> dict:
+              where=None, why: str = "where", also_used: set | None = None, used_keys: dict | None = None,
+              weigh=None) -> dict:
         """One draw. `exclude` and `where` (with its reason `why`) are constraints; `also_used` marks values spent
-        like rows used elsewhere (a pair that never repeats); `used_keys` go to used.json at approve."""
+        like rows used elsewhere (a pair that never repeats); `used_keys` go to used.json at approve; `weigh(row,
+        ctx)` replaces the rows' own weights for this draw."""
         rows = dt.rows(ref)
         if not rows:
             raise SystemExit(f"designer: no rows in {ref}")
@@ -190,7 +194,8 @@ class Roller:
         drawn = [r["row_id"] for r in self.public + self.secret if r.get("table") == ref and r.get("row_id")]
         where, why = dd.distinct_filter(ref, drawn, where, why)
         try:
-            res = arb.arbitrate(ref, rows, self.ctx, exclude=exclude, where=where, why=why, usage=use, secret=secret)
+            res = arb.arbitrate(ref, rows, self.ctx, exclude=exclude, where=where, why=why, usage=use, secret=secret,
+                                weigh=weigh)
         except arb.EmptyPool as exc:
             raise SystemExit(f"designer: {self.phase} {label}: {exc}" if not secret else
                              f"designer: {self.phase} {label} (secret): the pool is empty after the constraints — a table fault")
@@ -232,13 +237,23 @@ class Roller:
             self.ctx.add_token(t, secret)
         return rec
 
-    def forced(self, label: str, ref: str, row_id: str, reason: str, secret: bool = False) -> dict:
+    def forced(self, label: str, ref: str, row_id: str, reason: str, secret: bool = False, exempt: set | None = None) -> dict:
+        """A row the tables set without a die. It is held to the conflicts too; `exempt` names the rolled rows it
+        may stand beside all the same (one case: the scar's prohibition is tied to the break even when the break is
+        still coming). The pair is kept on `self.exempt` and on the record."""
+        waived = sorted(x for x in dt.conflict_index().get(row_id, ()) if x in (exempt or ()) and self.ctx.has(x))
         try:
-            arb.check_forced(row_id, self.ctx)
+            if not waived:
+                arb.check_forced(row_id, self.ctx)
+            elif any(self.ctx.has(x) and x not in waived for x in dt.conflict_index().get(row_id, ())):
+                raise arb.EmptyPool(f"the forced row {row_id} conflicts with a row already rolled — a table fault")
         except arb.EmptyPool as exc:
             raise SystemExit(f"designer: {self.phase} {label}: {exc}")
         rec = self._record(label, ref)
         rec.update({"notation": "forced", "raw": None, "row_id": row_id, "forced_by": reason})
+        if waived:
+            rec["conflict_exempt"] = waived
+            self.exempt |= {frozenset((row_id, x)) for x in waived}
         self._keep(rec, secret)
         return rec
 
@@ -293,7 +308,9 @@ def scale_of(manifest: dict) -> dict:
 
 def rolled_rows(manifest: dict, table_prefix: str) -> list[str]:
     """Row ids already rolled from a table (public log), for cross-phase constraints."""
-    return [r["row_id"] for r in manifest["dice_log"] if r.get("table", "").startswith(table_prefix) and r.get("row_id")]
+    return [r["row_id"] for r in manifest["dice_log"]
+            if (r.get("table") == table_prefix or r.get("table", "").startswith(table_prefix + "#")) and r.get("row_id")
+            and not (table_prefix == "trope-breaks.yaml" and r.get("table") != table_prefix)]     # never the breaks' ties
 
 
 def spread_exclude(uses: dict, n_rows: int) -> set:
@@ -306,21 +323,17 @@ def spread_exclude(uses: dict, n_rows: int) -> set:
 # ── preroll plans per phase ───────────────────────────────────────────────────
 
 def preroll_p1(R: Roller, m: dict) -> None:
-    """Step 1, the foundation (design_foundation.py), then the identity's rolls (items 7-10 of the build replace
-    the old ones below)."""
+    """Step 1, the foundation (design_foundation.py); step 2, the identity (design_identity.py): the trope breaks,
+    the people, the institution, the phenomenon and the question(s), then the naming families, the secret and the
+    signature-mechanic gate."""
     import design_foundation as fd
+    import design_identity as di
     used_pairs = dd.used_values(R.campaign, fd.PAIR_KEY) if R.campaign else set()
     out = fd.roll(R, dials_of(m), used_pairs)
     R.foundation = fd.build(out, dials_of(m)["level_band"])
     sc = scale_of(m)
-    R.table("tension.1", "tensions.yaml")
-    if R.notation("tension.second", "d2")["raw"] == 2:
-        R.table("tension.2", "tensions.yaml", exclude={R.row("tension.1")})
-    breaks: list[str] = []
-    for n in range(1, int(sc["trope_breaks"]) + 1):     # conflicts with the tensions and earlier breaks: the arbiter
-        breaks.append(R.table(f"break.{n}", "trope-breaks.yaml", exclude=set(breaks))["row_id"])
-    for sub in ("phenomenon", "people", "institution"):
-        R.table(f"sig_{sub}", f"signatures.yaml#{sub}")
+    ident = di.roll(R, dials_of(m), R.foundation)
+    R.identity = di.build(ident, [r["row_id"] for r in R.public if r.get("row_id")])
     fams: list[str] = []
     for n in range(1, int(dt.load("naming.yaml")["roll"]["count_by_scale"][dials_of(m)["scale"]]) + 1):
         rec = R.table(f"naming_family.{n}", "naming.yaml#family", exclude=set(fams))
@@ -607,6 +620,12 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         dm.save(campaign, data, f"designer.py preroll --phase {phase} (foundation)")
         print(f"designer: foundation — {R.foundation['sentence_tr']}")
         print(f"designer: escalation — {R.foundation['escalation']['steps']} step(s)")
+    if R.identity is not None:
+        import design_identity as di
+        data = dm.load(campaign)
+        data["identity"] = R.identity            # public and stamped, like the foundation
+        dm.save(campaign, data, f"designer.py preroll --phase {phase} (identity)")
+        print(f"designer: identity — {di.line(R.identity)}")
     if phase not in ("P0", "P1"):
         # root-cause analysis 1, RC-13: person and god names are rolled, never invented; P1 writes the languages
         import design_names as dn

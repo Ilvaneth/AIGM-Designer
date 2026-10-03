@@ -382,7 +382,7 @@ tables:
         label: A mirror or a reflection
         rule: "still water, a polished shield, a mirror kept shrouded"
         hooks:
-          - {phase: P1, must: "sig_phen_mirror_doors, if rolled, is this way"}
+          - {phase: P1, must: "rule_mirror_doors, if rolled, is this way"}
       - id: way_phenomenon
         label: Through the signature phenomenon
         rule: "the phenomenon at full strength is the door"

@@ -136,7 +136,7 @@ class Institution(unittest.TestCase):
                 self.assertFalse(set(r["hints"]) - set(HEADINGS), r["id"])
                 self.assertEqual(len(r["hints"]), len(set(r["hints"])), r["id"])
         self.assertEqual(per_heading("institution_practice"),
-                         {"guild": 18, "religious": 12, "trade": 12, "martial": 10, "state": 9, "scholarly": 9, "criminal": 7,
+                         {"guild": 18, "religious": 12, "trade": 10, "martial": 10, "state": 9, "scholarly": 9, "criminal": 6,
                           "resistance": 5})
         for sub, floor in (("institution_practice", 5), ("institution_form", 3), ("institution_power", 3)):
             got = per_heading(sub)
@@ -173,6 +173,13 @@ class Institution(unittest.TestCase):
         self.assertEqual({k: r["form"] for k, r in pr.items() if r.get("form")},
                          {"practice_players": "form_travelling", "practice_free_company": "form_company",
                           "practice_smugglers_union": "form_society", "practice_foreign_house": "form_house"})
+        forms = {r["id"]: r for r in rows("institution_form")}
+        for k, r in pr.items():
+            if r.get("form"):
+                self.assertFalse(set(r["hints"]) - set(forms[r["form"]]["hints"]),
+                                 f"{k}: the form it names stands under every archetype the practice fits")
+        self.assertEqual(sorted(pr["practice_free_company"]["hints"]), ["martial"])
+        self.assertEqual(sorted(pr["practice_smugglers_union"]["hints"]), ["criminal"])
 
     def test_the_practice_weights_and_texts(self):
         pr = {r["id"]: r for r in rows("institution_practice")}
@@ -287,12 +294,10 @@ class Rules(unittest.TestCase):
     def every(self):
         doc = dt.load("signatures.yaml")
         for sub in doc["tables"]:
-            if sub in ("phenomenon", "people", "institution"):
-                continue                      # the old P1 tables, removed in item 10
             yield from rows(sub)
 
-    def test_the_eleven_new_sub_tables(self):
-        self.assertEqual(set(dt.load("signatures.yaml")["tables"]) - {"phenomenon", "people", "institution"}, set(NEW))
+    def test_the_eleven_sub_tables(self):
+        self.assertEqual(set(dt.load("signatures.yaml")["tables"]), set(NEW), "the old three went with build item 10")
 
     def test_the_removed_ids_are_gone(self):
         """Nothing in the committed data names a row the tag review removed or renamed."""
@@ -340,8 +345,6 @@ class Rules(unittest.TestCase):
             self.assertIn(S + sub, dt.REVIEWED_TABLES)
             for r in rows(sub):
                 self.assertEqual(covered.get(r["id"]), dt.row_hash(r), r["id"])
-        for sub in ("phenomenon", "people", "institution"):
-            self.assertFalse({r["id"] for r in rows(sub)} & set(covered), "the old tables leave with item 10, unstamped")
 
     def test_design_compare_reads_the_same_usage(self):
         for sub in NEW:
@@ -368,8 +371,6 @@ class Rules(unittest.TestCase):
         """A trait, a practice, a rule another campaign drew is not drawn again; the rest may repeat."""
         unique = {"people_trait", "institution_practice", "phenomenon_rule"}
         for sub in dt.load("signatures.yaml")["tables"]:
-            if sub in ("phenomenon", "people", "institution"):
-                continue
             self.assertEqual(bool(dt.roll_header(S + sub).get("avoid_used")), sub in unique, sub)
 
 
