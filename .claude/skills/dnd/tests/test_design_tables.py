@@ -133,6 +133,9 @@ class Convention(unittest.TestCase):
                                 "sig": "signatures", "mix": "dials", "tone": "dials",
                                 "land": "foundation", "spine": "foundation", "ruin": "foundation",
                                 "life": "foundation", "contest": "foundation", "act": "foundation", "tie": "trope-breaks",
+                                "lineage": "signatures", "trait": "signatures", "stranger": "signatures", "form": "signatures",
+                                "practice": "signatures", "isign": "signatures", "power": "signatures", "rule": "signatures",
+                                "psign": "signatures", "limit": "signatures", "user": "signatures",
                                 "scar": "foundation", "time": "foundation", "tier": "foundation",
                                 "target": "foundation"}.get(table)
                 if prefix_table in present:

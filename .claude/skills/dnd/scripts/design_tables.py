@@ -238,7 +238,13 @@ def own_roll_header(ref: str) -> dict:
 
 # ── the reviewed stamp (build item 7c: a row of a P0 or P1 table is stamped after the audit) ──
 
-REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.yaml", "tensions.yaml")
+REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.yaml", "tensions.yaml",
+                   # build item 8: the signatures' new sub-tables (the old three leave with item 10, unstamped)
+                   "signatures.yaml#people_lineage", "signatures.yaml#people_trait", "signatures.yaml#people_attitude",
+                   "signatures.yaml#institution_form", "signatures.yaml#institution_practice",
+                   "signatures.yaml#institution_sign", "signatures.yaml#institution_power",
+                   "signatures.yaml#phenomenon_rule", "signatures.yaml#phenomenon_sign",
+                   "signatures.yaml#phenomenon_limit", "signatures.yaml#phenomenon_user")
 
 
 def reviewed_path() -> Path:
@@ -254,8 +260,8 @@ def row_hash(row: dict) -> str:
 def reviewed_rows() -> dict:
     """Row id → the hash of its content, for every row of the P0 and P1 tables as they stand."""
     out = {}
-    for name in REVIEWED_TABLES:
-        for lst in all_row_lists(load(name)).values():
+    for name in REVIEWED_TABLES:                 # a whole file, or one sub-table as file#sub
+        for lst in ([rows(name)] if "#" in name else all_row_lists(load(name)).values()):
             for r in lst:
                 out[r["id"]] = row_hash(r)
     return out

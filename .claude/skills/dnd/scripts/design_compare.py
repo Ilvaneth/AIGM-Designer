@@ -32,7 +32,10 @@ UNIQUE_TABLES = ("tensions.yaml", "secrets.yaml", "trope-breaks.yaml", "signatur
                  "foundation.yaml#contest")
 
 
-REPEATABLE = ("trope-breaks.yaml#tie",)      # sub-tables of a unique file that may repeat
+REPEATABLE = ("trope-breaks.yaml#tie", "signatures.yaml#people_lineage", "signatures.yaml#people_attitude",
+              "signatures.yaml#institution_form", "signatures.yaml#institution_sign", "signatures.yaml#institution_power",
+              "signatures.yaml#phenomenon_sign", "signatures.yaml#phenomenon_limit", "signatures.yaml#phenomenon_user")
+# sub-tables of a unique file that may repeat (the traits, the practice and the rule stay unique)
 
 
 def is_unique_table(ref: str) -> bool:
