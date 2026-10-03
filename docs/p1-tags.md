@@ -650,3 +650,18 @@ Four small points were open; the owner ruled on them the same day (below).
 What is left is exactly what item 10 builds, the rolls of step 2: the people's role forcing the lineage (the 4.1 %), the archetype heading of the institution, the user rolled for usable rules only, the question drawn under its contest's family. The data for all four is in the tables; the script still rolls them the old way. The measurement is repeated after item 10.
 
 **The secret and villain tables: how the owner is assured without seeing a row (approved 2026-10-03).** (a) Seven criteria the owner set, which the rows are written and audited against (`docs/p1-build-9.md` section 1). (b) A burn sample: three archetypes and three villain shapes written to the tables' standard, shown to the owner, never in the tables. (c) The development tab reads every row and reports counts per criterion. (d) The owner may ask one-sentence questions answered only yes, no, or "not answerable without a spoiler".
+
+**Build item 9, audited 2026-10-03 (every row of the secret and villain sub-tables read against the seven criteria; the suite run: 569 tests, exit code 0). Counts only; the row-level notes are in `docs/reports/item9-audit-SPOILER.md`, which the owner does not open.**
+
+| Sub-table | Rows | Pass every criterion | To correct |
+|---|---|---|---|
+| secret: archetype | 26 | 25 | 1 (one word of the attractor in a clue shape) |
+| secret: chooser | 6 | 6 | 0 |
+| secret: twist | 15 | 15 | 0 |
+| secret: trail | 10 | 10 | 0 |
+| villain: visibility | 5 | 5 | 0 |
+| villain: shape (usable) | 16 | 14 | 2 (the defensible reason is not stated in the row) |
+| villain: origin (usable) | 9 | 9 | 0 |
+| villain: tie to the break | 6 | 6 | 0 |
+
+Every archetype is told as the break's true cause with a person who chose it, and carries three clue stages; no row protects the party. Two conflicts with public rows are added (a secret the foundation already half shows). The visibility table may repeat (the approved rule is that the shape and origin pair is not drawn again). The coding tab's own decisions are accepted (four archetypes removed, not two; one twist replaced; hashed stamp keys for the secret tables). The burn sample (`docs/reports/item9-burn-sample.md`: three archetypes, three shapes, in no table) is for the owner to read.
