@@ -1,0 +1,84 @@
+
+==== today_code (intended waits=False) S=40 B=40: births ok 1600, empty pools {}, 34s
+table                                       1st fallback: median / % seqs repeat any%  rep<=3%   rep% b1-10/11-20/21+
+foundation.yaml#spine                              28.0 /   100%             26.1      2.9                 0/0/52
+foundation.yaml#ruin_source                        39.0 /    80%              2.1      0.1                  0/0/4
+foundation.yaml#lifeline                             40 /     2%              0.0      0.0                  0/0/0
+foundation.yaml#contest                            34.0 /   100%             13.2      1.2                 0/0/26
+foundation.yaml#action                             18.0 /   100%             47.5      7.3                0/20/85
+foundation.yaml#scar                               11.0 /   100%             75.1     20.5               6/95/100
+trope-breaks.yaml                                  20.0 /   100%             50.2      6.7                 0/7/96
+tensions.yaml                                      29.0 /   100%             28.3      3.7                 0/0/57
+signatures.yaml#people_lineage                     17.0 /   100%             60.0     12.4               0/40/100
+signatures.yaml#institution_form                   None /     0%             67.2     20.3               29/65/87
+signatures.yaml#people_trait                       23.0 /   100%             37.5      4.7                 0/0/75
+signatures.yaml#institution_practice               None /     0%              0.0      0.0                  0/0/0
+signatures.yaml#phenomenon_rule                    35.0 /    95%              6.6      0.5                 0/0/13
+secrets.yaml#archetype                             25.0 /   100%             40.0      5.1                 0/0/80
+naming.yaml#family                                  4.0 /   100%             90.6     55.3             62/100/100
+   same contest family -> shares tensions.yaml: 3.0% of 3363 pairs
+   same contest family -> shares trope-breaks.yaml: 6.9% of 3363 pairs
+   same contest family -> shares signatures.yaml#institution_form: 6.4% of 3363 pairs
+
+==== today_intended (intended waits=True) S=40 B=40: births ok 1600, empty pools {}, 38s
+table                                       1st fallback: median / % seqs repeat any%  rep<=3%   rep% b1-10/11-20/21+
+foundation.yaml#spine                              28.0 /   100%             26.1      2.9                 0/0/52
+foundation.yaml#ruin_source                        39.0 /    80%              2.1      0.1                  0/0/4
+foundation.yaml#lifeline                             40 /     2%              0.0      0.0                  0/0/0
+foundation.yaml#contest                            34.0 /   100%             13.2      1.2                 0/0/26
+foundation.yaml#action                             29.0 /    85%             52.2      0.9               10/46/77
+foundation.yaml#scar                               None /     0%             75.6      0.0               24/83/98
+trope-breaks.yaml                                  20.0 /   100%             50.2      7.2                 0/7/96
+tensions.yaml                                      29.0 /   100%             28.3      3.7                 0/0/57
+signatures.yaml#people_lineage                     None /     0%             64.4     12.9               22/64/85
+signatures.yaml#institution_form                   None /     0%             67.2     20.3               29/65/87
+signatures.yaml#people_trait                       23.0 /   100%             37.5      4.6                 0/0/75
+signatures.yaml#institution_practice               None /     0%              0.0      0.0                  0/0/0
+signatures.yaml#phenomenon_rule                    35.0 /   100%              6.4      0.6                 0/0/13
+secrets.yaml#archetype                             25.0 /   100%             40.0      5.1                 0/0/80
+naming.yaml#family                                  4.0 /   100%             90.6     55.3             62/100/100
+   same contest family -> shares tensions.yaml: 3.0% of 3363 pairs
+   same contest family -> shares trope-breaks.yaml: 7.3% of 3363 pairs
+   same contest family -> shares signatures.yaml#institution_form: 6.4% of 3363 pairs
+
+==== hard_all_f25 (intended waits=True) S=40 B=40: births ok 1547, empty pools {'identity_empty:trope-breaks.yaml': 53}, 37s
+table                                       1st fallback: median / % seqs repeat any%  rep<=3%   rep% b1-10/11-20/21+
+foundation.yaml#spine                              29.0 /   100%             23.8      2.2                 0/0/48
+foundation.yaml#ruin_source                        39.5 /    40%              1.0      0.0                  0/0/2
+foundation.yaml#lifeline                           None /     0%              0.0      0.0                  0/0/0
+foundation.yaml#contest                              35 /    98%             10.4      0.8                 0/0/21
+foundation.yaml#action                               30 /    82%             51.1      0.9               10/45/75
+foundation.yaml#scar                               None /     0%             74.7      0.0               23/82/97
+trope-breaks.yaml                                  12.0 /   100%             48.7      6.4                2/25/84
+tensions.yaml                                      24.0 /   100%             26.3      2.1                 0/2/52
+signatures.yaml#people_lineage                       14 /    12%             75.1     21.8               34/79/94
+signatures.yaml#institution_form                   None /     0%             71.2     27.3               32/73/90
+signatures.yaml#people_trait                       23.0 /   100%             35.4      3.9                 0/0/71
+signatures.yaml#institution_practice               None /     0%              0.0      0.0                  0/0/0
+signatures.yaml#phenomenon_rule                    36.5 /    90%              4.7      0.4                  0/0/9
+secrets.yaml#archetype                             25.0 /   100%             37.9      4.2                 0/0/76
+naming.yaml#family                                  4.0 /   100%             90.2     53.7             61/100/100
+   same contest family -> shares tensions.yaml: 7.0% of 3118 pairs
+   same contest family -> shares trope-breaks.yaml: 26.2% of 3118 pairs
+   same contest family -> shares signatures.yaml#institution_form: 12.8% of 3118 pairs
+
+==== soft_all_x3 (intended waits=True) S=40 B=40: births ok 1600, empty pools {}, 35s
+table                                       1st fallback: median / % seqs repeat any%  rep<=3%   rep% b1-10/11-20/21+
+foundation.yaml#spine                              28.0 /   100%             26.1      2.9                 0/0/52
+foundation.yaml#ruin_source                        39.0 /    80%              2.1      0.1                  0/0/4
+foundation.yaml#lifeline                             40 /     2%              0.0      0.0                  0/0/0
+foundation.yaml#contest                            34.0 /   100%             13.2      1.2                 0/0/26
+foundation.yaml#action                             29.0 /    85%             52.2      0.9               10/46/77
+foundation.yaml#scar                               None /     0%             75.6      0.0               24/83/98
+trope-breaks.yaml                                  20.0 /   100%             50.2      7.3                 0/6/97
+tensions.yaml                                      29.0 /   100%             28.3      3.5                 0/0/57
+signatures.yaml#people_lineage                     None /     0%             64.2     13.0               22/64/85
+signatures.yaml#institution_form                   None /     0%             67.2     20.3               29/65/87
+signatures.yaml#people_trait                       23.0 /   100%             37.5      4.6                 0/0/75
+signatures.yaml#institution_practice               None /     0%              0.0      0.0                  0/0/0
+signatures.yaml#phenomenon_rule                    40.0 /    10%              0.2      0.0                  0/0/0
+secrets.yaml#archetype                             25.0 /   100%             40.0      5.1                 0/0/80
+naming.yaml#family                                  4.0 /   100%             90.6     55.3             62/100/100
+   same contest family -> shares tensions.yaml: 2.9% of 3363 pairs
+   same contest family -> shares trope-breaks.yaml: 8.4% of 3363 pairs
+   same contest family -> shares signatures.yaml#institution_form: 6.4% of 3363 pairs

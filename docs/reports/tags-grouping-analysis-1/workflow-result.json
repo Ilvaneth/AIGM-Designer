@@ -1,0 +1,966 @@
+{
+  "summary": "Evaluate the owner idea of tags + grouping (earlier tags as group headings for later rolls) against the real P1 tables",
+  "agentCount": 6,
+  "logs": [
+    "4/4 lenses returned"
+  ],
+  "result": {
+    "analyses": [
+      {
+        "lens": "structure",
+        "verdict": "The owner's idea works, and most of it is already built. The geography chain in foundation.yaml groups its rows exactly this way: `requires any_of` palette kinds on 56 of the 60 lifelines, 8 of 40 ruins, 9 of 40 contests and 9 of 50 traits; `olgu_families` on the ruin rows; `families` on the tensions; the role `hint`s; the action `fits` matrix. design_arbiter.py filters on these before the die is thrown, which is why the landform, lifeline and action chain never contradicts itself. The contradictions the audit found all sit on edges that have no heading at all. Those edges are trope↔dials, trope↔contest, trope↔lifeline, trope↔spine, trope↔ruin, and one dial↔ruin edge (magic high vs age of mages). The trope break is the one roll in P1 with no key. It has no `requires`, only 2 rows have `conflicts_with`, and its `tags` field (polity, society, ...) is read by no script. The idea has to be built as membership tags (each row lists every heading it fits or refuses), not as physical sections. The palette is a set of 4-12 kinds, most keyed rows fit several headings, and the clash topics run across the parent tables' families. Measured over 3000 seeds, a small set of claim tags (topic: value) removes every modelled clash with no empty pool. The rate falls from 5.7% (the audit pairs) or 7.2% (the extended set) to 0%, and the smallest pool stays 19 rows or more. The rule that must not be taken literally is \"every roll drawn only from inside its heading\" applied to the current soft weights: several groups collapse to 0-1 rows and variety dies. So the tags should be hard where they state a contradiction and stay soft weights where they only express affinity. No complete rewrite is needed. What is missing is a claim vocabulary, one generic clash check in the arbiter, and a key for the trope, which could be keyed on the dials alone if it moves ahead of the foundation.",
+        "findings": [
+          {
+            "title": "Group key per P1 roll (the nearest parent that matters)",
+            "detail": "P0 dials: the root. The owner may set them, so they are never re-keyed and every child adapts to them. Step 1: spine <- {magic, era} (magic is a hard requirement; era is only a weight today). Palette <- spine (`forces`/`forces_one_of`, a fixed lookup), magic (fantastic cap) and era (forces underground). Ruin <- the palette set (membership) plus a MISSING magic claim. Lifeline <- the palette set (membership). Contest <- the palette set plus the lifeline (weights), with rulers/nobility/deep/war claims MISSING. Break target <- the pieces that exist. Action <- target piece x lifeline family / remnant kind / key kind (`fits`). Scars <- action (`bars_scars_on_target`) plus the magic cap. Time: no key. Winner <- the contest roles and the action. Escalation and layout are deterministic. Step 2: trope <- today nothing (only family, by header). Its smallest real key is the dials (era, magic) if it moves ahead of the foundation. Otherwise it needs a union of claims from up to four parents. Tie: no key (4 rows). Lineage <- palette, lifeline and ruin (soft). Traits <- palette (hard), break time (`after_the_break`) and magic. Attitude: no key. Institution role <- contest roles with a hint. Form <- the role's hint (keep it soft). Practice <- lifeline, ruin and scar (soft), plus trope claims later. Sign <- scale. Power: no key. Phenomenon rule <- the ruin's `olgu_families`, or `scar_magic_rule_changed` -> born_of_break. Limit <- palette. User <- time. Question <- contest family. Secret <- the break, plus exclusion of anything the foundation already shows. Villain <- the secret's chooser (the chooser-tie equivalence) plus a question pole. Names <- people, contest and institution.",
+            "evidence": "scripts/design_foundation.py roll() and lay_out(); data/design/foundation.yaml (spine forces/requires/weight_by, palette forces_by_dial and fantastic_cap_by_magic, lifeline where/requires, action fits); signatures.yaml sub-table fields; tensions.yaml `families`; plan item 25 step 2 and review #1-#10."
+          },
+          {
+            "title": "Physical sections do not fit this data; membership tags do (and already exist)",
+            "detail": "The palette is a set, so a child keyed on it draws from the union of its headings. Physical sections would need an extra die to choose which kind is 'the' heading, and would copy most rows into several sections. Taking the lifeline under single palette-kind headings: 38 of the 56 keyed rows fit 2 or more headings (1.79 memberships per keyed row), 13 of 22 headings hold fewer than 5 rows of their own, and the 8 fantastic kinds hold 0 (only the 4 universal treaty rows). Today's union pool is a median of 39 rows and a minimum of 11. The physical groups that exist today are the families (spine 6x5, ruin 8x5, contest 8x5, lifeline 7x8-9, rule 8x5, practice 8x5, trope 6 families of 3-8). They serve variety (family_wait, families_distinct), not dependency, with one exception: the phenomenon rule's families are the heading, and each ruin row lists the 2-3 it fits.",
+            "evidence": "Static count (scratchpad groups.py): lifeline headings by own rows, smallest first: volcanic 1, island 1, lake 2, steppe 4, marsh 4, underground 5 ... mountain 15; fits-count histogram {1:18, 2:32, 3:6, all:4}. Ruin: 32 of 40 fit every kind. Contest: 31 of 40. Traits: 41 of 50."
+          },
+          {
+            "title": "The clash topics run across parent families, so family-level headings cannot catch them",
+            "detail": "'Hereditary rule' rows sit in three contest families (two_hands, kin, race) and in lifeline/treaty. 'Nobility present' rows sit in three contest families. 'Lived underground' rows sit in 5 families across 3 tables plus the era dial. Only a per-row tag (topic: value) captures these. Seen from the trope side, break_underground_forbidden has four parents (spine, lifeline, contest, the era dial). The rulers tropes clash with contest and lifeline rows. break_iron_is_sacred clashes with lifeline rows. break_no_writing, break_moon_trades and break_night_is_safe clash with the era dial only. break_world_is_young clashes with ruin rows (extended set).",
+            "evidence": "Scratchpad spread.py over the modelled claims. Rows: contest_two_heirs, contest_sibling_rulers, contest_empty_throne, life_binding_marriage (hereditary); contest_lords_peasants, contest_old_order_reform ('eski soylular'), contest_occupier_resistance, contest_capital_marches ('sınır lordları'), contest_humans_fey (a noble); spine_three_depths, spine_mountain_within, life_deep_lake, life_deep_mouth, life_mushroom_fields, contest_surface_deep; life_iron_coal, life_famous_steel; ruin_age_of_mages ('büyünün bol olduğu çağ bir gecede bitti')."
+          },
+          {
+            "title": "The trope break is the one unkeyed roll; its trope-trope clashes are covered only by a family rule that is not enforced",
+            "detail": "No trope row has `requires`; 2 have `conflicts_with`. The 33 `tags` are topic labels, not claims, have spelling drift (people/peoples, creature/creatures) and are never read. The governance family (7 rows: lottery, guilds, dragons, magic_is_nobility and three more) is the physical group that keeps rulers tropes apart. The header's `families_distinct: true` is only asserted in tests/test_design_tables.py:259, and designer.py preroll_p1 draws `break.{n}` with only `exclude=set(breaks)`. So standard and epic births can draw two governance rows today: about 4.0%, of which about 0.8% are clashing pairs such as lottery+guilds. (This preroll is flagged in its docstring to be replaced by build items 7-10.)",
+            "evidence": "scripts/designer.py lines 294-297: `breaks.append(R.table(f\"break.{n}\", \"trope-breaks.yaml\", exclude=set(breaks))[\"row_id\"])`, with no family filter. A grep for families_distinct in scripts/ finds nothing."
+          },
+          {
+            "title": "Measured: claim tags remove every modelled clash at a small pool cost, in either order",
+            "detail": "Two orders were modelled with an arbiter-side claims filter. AFTER: the trope keyed on the foundation plus the dials (today's order). FIRST: the trope drawn right after the dials, so it becomes the heading for spine, lifeline, contest and ruin. Both give 0 clashes and 0 empty pools over 3000 births. The keyed side pays in frequency. AFTER (extended set) moves these tropes, per 1000 births: no_kings 46.7->35.3, underground_forbidden 54.3->44.3, no_writing 49.3->39.3, world_is_young 49.7->42.7. FIRST moves contests instead: two_heirs 26.3->22.3, empty_throne 38.0->30.0, sibling_rulers 34.7->29.0. The dial-keyed clashes (writing, sky, magic) cost the same in both orders. FIRST fits the owner's wording ('earlier tags are headings') and the plan's own reason for the trope ('it inverts defaults the later rolls read'). It gives the trope a one-parent key (the dials) and spreads the cost over the 40-60-row foundation tables. It does change the owner-approved order (review #1), and the tie would still be rolled after the foundation.",
+            "evidence": "Scratchpad claims.py, 3000 seeds, dials drawn with the dials.yaml weights. Core set, ORDER=none: 172 of 3000 births (5.73%) hold a clash (rulers 57, sky 36, writing 35, deep 25, magic_now 8, nobility 7, iron 5). Extended set: 216 (7.20%). AFTER: trope pool min 19, p5 23, median 30. FIRST: contest pool min 24, p5 31; spine min 22; ruin min 30."
+          },
+          {
+            "title": "Turning today's soft weights into hard headings would destroy variety",
+            "detail": "If 'draw only inside your heading' were applied to the existing weight_by and hint rules: the institution form for the role's hint would have 1 row in the median (fully determined). The spine rows the dials boost would be 0 in 34% of births (medieval, renaissance and ancient boost nothing at standard scale). The lineages a weight favours would be fewer than 5 in 27% of births. The tension group per contest family is 5-11 rows, which is fine. So hard membership should be reserved for contradictions (claims) and for the fits that are already hard (palette kinds, `fits`, olgu). Affinity stays a weight.",
+            "evidence": "Scratchpad hard.py over the 3000 births. institution_form per hint: criminal, guild and scholarly 1 row each, martial 3, the rest 2. Lineage favoured group: min 1, p5 3, median 6. Spine boosted group: 0 in 34.2% of births."
+          },
+          {
+            "title": "Existing groups under 5 rows, and what cross-birth exclusion does to them",
+            "detail": "Action per (lifeline, craft) = 4 rows and (remnant, wasteland) = 5, with `row_wait 3` and a target+action pair that never repeats. It is hit in 1.8% of births; the sim's action pool has min 4 and p5 6. Phenomenon rule under scar_magic_rule_changed = born_of_break, 5 rows (3 when time_coming, because two rows are after_the_break). It is hit in 11% of births, and with `avoid_used: true` the group runs dry after about 45 births, after which the usage fallback brings repeats back. The palette's 'a height' and 'a water' draws are 3 rows each, and palettes are never excluded across births, so that is harmless. Time has 4 rows and break_target 5-6 (avoid_used false). The tension groups hidden_hand and two_hands have 5 rows each (soft). No foundation draw fell below 11 rows except those listed.",
+            "evidence": "Scratchpad act.py and sim.py pool sizes (dN): action min 4 / p5 6 / median 9; sig.rule min 3 / p5 5 / median 10; lifeline min 11; contest min 30; ruin min 33; spine min 24; trope min 25; trait.visible min 14; limit min 11; user min 7."
+          },
+          {
+            "title": "Tags scale better than id lists",
+            "detail": "The modelled coverage needs 40 claim assignments on 9 topics (extended set), or 40 pairwise conflict entries in `conflicts_with` form. The counts are similar today, but a new row costs one tag instead of an edit to every opposing row, and pairs grow multiplicatively as tables grow. The arbiter needs one generic rule: a row is excluded when a topic it claims already holds a different value, unless the topic declares the two values compatible. Dial values carry claims too (era=underground: deep lived, sky none; era=renaissance: writing print; magic=high: magic plentiful). The existing `requires: {dial: ...}` machinery can already express those.",
+            "evidence": "Scratchpad count.py. Only 4 conflicts_with lines exist today across foundation.yaml (1), trope-breaks.yaml (2) and tensions.yaml (1)."
+          }
+        ],
+        "numbers": [
+          {
+            "what": "Births holding a modelled clash today (audit pairs / extended set), 3000 seeds",
+            "value": "5.73% / 7.20%"
+          },
+          {
+            "what": "Births holding a clash with claim tags, trope after or first",
+            "value": "0% / 0%, no empty pool"
+          },
+          {
+            "what": "Trope pool with claims, trope after the foundation (min / p5 / median)",
+            "value": "19 / 23 / 30 of 33"
+          },
+          {
+            "what": "Contest pool with claims, trope first (min / p5 / median)",
+            "value": "24 / 31 / 36 of 40"
+          },
+          {
+            "what": "Lifeline rows keyed on palette kinds; fitting 2+ kinds",
+            "value": "56 of 60; 38 of 56"
+          },
+          {
+            "what": "Lifeline palette headings with fewer than 5 rows of their own (0 rows for the fantastic kinds)",
+            "value": "13 of 22 (8 at 0)"
+          },
+          {
+            "what": "Lifeline union pool today (min / p5 / median)",
+            "value": "11 / 24 / 39"
+          },
+          {
+            "what": "Trope rows carrying any modelled claim",
+            "value": "10 of 33 (23 fit every heading)"
+          },
+          {
+            "what": "Parents break_underground_forbidden clashes with",
+            "value": "4 (spine, lifeline, contest, era dial)"
+          },
+          {
+            "what": "Smallest action group (lifeline craft) and its hit rate",
+            "value": "4 rows; 1.8% of births"
+          },
+          {
+            "what": "born_of_break rule group, hit rate, births until dry under avoid_used",
+            "value": "5 rows (3 when coming); 11% of births; about 45 births"
+          },
+          {
+            "what": "Institution form group per role hint if weights became hard (median)",
+            "value": "1 row"
+          },
+          {
+            "what": "Births with 0 dial-boosted spines if weights became hard",
+            "value": "34.2%"
+          },
+          {
+            "what": "Standard/epic births drawing two governance tropes today (families_distinct unenforced)",
+            "value": "about 4.0% (about 0.8% a clashing pair)"
+          },
+          {
+            "what": "Claim assignments / topics / equivalent conflict pairs (extended model)",
+            "value": "40 / 9 / 40"
+          }
+        ],
+        "risks": [
+          "The modelled claims are my reading of the audit pairs plus a few additions (more nobility contests, mass war, a young world against the old_peoples ruins). A real vocabulary needs the owner's row-by-row review, and contradictions hidden in sub-row text (for example contest escalation lines such as 'iç savaş' or 'haritaların çalınması') are only caught when the row as a whole is tagged.",
+          "Over-tagging turns affinity into law. Each hard tag lowers the tagged rows' frequency (break_no_kings_only_guilds -35% after the foundation), which works against the owner's wish for variety and multiplies usage fallbacks under used.json.",
+          "Moving the trope ahead of the foundation changes an owner-approved order (plan item 25 review #1). The tie still has to come after the foundation, and the trope's inversions of the foundation (lineage homes, weapons) would then have to be honoured by the foundation's draws.",
+          "Small groups plus avoid_used or row_wait (born_of_break 3-5 rows, action/craft 4) run dry and fall back to reuse, so repetition returns without anyone seeing it. Every hard group under about 8 rows needs a check on how fast it is used up.",
+          "The secret and villain tables could not be modelled here beyond counts (archetype 24 rows, 2 with conflicts; villain_shape 15, 3 forbidden; origin 10, 1 forbidden). Their clash surface against the foundation's claims is unmeasured.",
+          "families_distinct for trope breaks is declared but not enforced in designer.py preroll_p1; until build items 7-10 replace it, governance tropes can co-occur."
+        ],
+        "recommendation": "Implement the owner's idea as membership tags inside the existing arbiter, not as physical sections, and not as a rewrite. (1) Add a `claims: {topic: value}` field to rows and to dial values, plus a small topics file that declares each topic's values and any compatible pairs. Add one generic arbiter check: exclude a row when one of its topics already holds a different value, logged as reason 'claim'. Retire the trope `tags` field or rename its values into claims. (2) Tag hard only what is a literal contradiction: rulers, nobility, iron, deep, sky, writing, magic abundance, mass war, history depth, as a start. Keep every affinity (lineage by palette, form by hint, tension by contest family, era and tone boosts) as weight_by, because hard versions collapse to 0-1 rows. (3) Give the trope a key. The structurally cleaner option is to roll it right after P0, so it is keyed on the dials alone and becomes a heading for spine, lifeline, contest and ruin (cost: contest pool min 24). The option that keeps the approved order is to key it on the claims union (cost: trope pool min 19). The owner should choose, and the tie stays after the foundation in both. (4) Enforce families_distinct in the trope draw. (5) Extend the model-free many-seeds test so it asserts zero claim clashes, reports every group under 5 rows, and reports how many births each small group lasts under avoid_used. Watch born_of_break (3-5 rows) and the action/craft group (4 rows) first."
+      },
+      {
+        "lens": "coverage",
+        "verdict": "Grouping by earlier tags removes contradictions of one class by construction: a later roll clashing with an earlier roll it can see (a, parent to child). That holds only when each draw is filtered by the tags of every earlier roll, not by one heading. All nine audited contradictions are class (a), because the trope break and the ruin are rolled after the dials and the foundation they clash with. But the trope table's rows clash with five different parent pieces at once: the era dial, the spine or palette, the lifeline, the main contest, and epic's second contest. So one heading per table cannot cover them. In a 3000-seed simulation, the best single heading (the dials) would prevent 94 of 151 clashes (62%), and the contest heading 28 (19%). Grouping the trope table as a tree of heading-to-row-list would need about 295 distinct heading combinations for these nine keys alone. Drawn instead from \"rows whose tags fit every tag rolled so far\", the owner's grouping becomes exactly the proposed claims check, run by the arbiter, which already filters the pool before the die. Grouping does not solve the other four classes by construction. (b) Siblings: two later rolls that don't see each other, e.g. the lottery trope against the question \"inheritance vs merit\", or a trope keyed to contest 1 missing contest 2. (c) Two rows from the same table: both draws share the same heading. Today's `families_distinct` flag is read by no script, and cross-family pairs like world_is_young with no_writing slip past it anyway. (d) Later phases: P2 and later prerolls see P1 only through the one pantheon override. (e) Prose: the writer's text and the script's own sentence templates. So the owner's idea works as the authoring model: rows carry tags, and later draws come from the compatible group. But it needs a compatibility check underneath: claims with incompatible values and a scope, applied against all rolled tags, inside the same table, across phases, and at the door. Grouping is not a replacement for that check; the two are one mechanism seen from two sides.",
+        "findings": [
+          {
+            "title": "All nine audited contradictions are parent-to-child (class a), and grouping prevents each one only if the right key is present",
+            "detail": "The trope break is step 2's first roll, so it sits after the dials and the whole foundation; the ruin sits after the dials. Key needed per case: (1) lottery vs two_heirs/sibling_rulers: a contest key (succession: hereditary), from contest 1 AND contest 2. (2) no_kings_only_guilds vs two_heirs/empty_throne/lords_peasants/old_order_reform plus life_binding_marriage: nobility: exists, from contest and lifeline (two parents). (3) iron_is_sacred vs life_iron_coal/life_famous_steel: lifeline key (iron: plentiful), one parent. (4) underground_forbidden vs era underground, spine_three_depths/mountain_within, life_deep_lake/deep_mouth/mushroom_fields, contest_surface_deep: four parents, but one palette key (land_underground) covers 97%. (5) magic high vs ruin_age_of_mages: dial magic, one key, on the ruin table. (6) renaissance vs no_writing, (7) underground vs moon_trades, (8) underground vs night_is_safe: dial era, one key each. (9) dragons_rule vs two_heirs: a contest key (ruler: mortal, hereditary). Several single-key cases, but they fall on the same table (the trope), so that table needs every key at once.",
+            "evidence": "3000-seed sim (scratchpad/coverage/sim.py): 151 hits. Offending row by parent piece: dial alone 88, spine alone 16, lifeline alone 5, main contest 27, epic's second contest 9, two pieces at once 6. Prevented by a single heading: dials 94/151 (62%), main contest 28 (19%), spine 21, lifeline 6, second contest 9. Only all five together give 151/151."
+          },
+          {
+            "title": "A heading tree is combinatorial; a per-row tag filter is not",
+            "detail": "Taking 'the earlier tags are the group headings' literally, with each heading owning its own row list, the trope table would need one hand-built group per combination of the keys the clashes turn on. Letting each row carry tags and filtering by compatibility with everything rolled gives the same coverage for 1-3 tags per row. That filter is the claims proposal.",
+            "evidence": "295 distinct combinations of (era, magic, underground in palette, relevant lifeline, relevant contest) in 3000 births; the theoretical product is 5x3x2x7x7 = 1470. Filter cost measured: mean trope pool 33 -> 32.05, minimum 26; at least one trope row barred in 1609/3000 births (54%)."
+          },
+          {
+            "title": "The gap is authoring, not mechanism: the trope table has no conditions at all",
+            "detail": "design_arbiter.py already filters the pool before the die against every rolled row (requires any_of/all_of/none_of, dial, symmetric conflicts_with). The lifeline already works the owner's way: it is grouped by palette tags. The trope table is where 8 of the 9 audited clashes land, and it has zero requires and zero weight_by. What's missing is a vocabulary: today a clash has to name every row id. no_kings would need 5 ids, underground_forbidden 7, and each new row breaks the list. The trope `tags` field (polity, society...) holds topics, not claims.",
+            "evidence": "cond.py counts. lifeline: 56/60 rows require palette kinds. contest: 9/40 require, 30 weight_by. ruin_source: 8/40 require. trope-breaks.yaml: 33 rows, 0 requires, 0 weight_by, own conflicts on 2 rows. tensions.yaml: 0 requires (family weight x3 only). magic.yaml#regulator: 9 rows, 0 requires, 0 conflicts."
+          },
+          {
+            "title": "(b) Siblings are not solved by grouping each table under its own parent",
+            "detail": "The question's home is the contest (tensions.yaml header, family weight x3). The contest two_hands (e.g. contest_one_harbour) fits both the lottery trope and tension_inheritance_merit, so neither heading sees the other; only the explicit conflicts_with stops the pair. Likewise, a trope keyed to the main contest misses epic's second contest.",
+            "evidence": "With the question drawn by contest family only (no conflict), break_rule_by_lottery with tension_inheritance_merit appears in 2/3000 births. 9/151 audited hits come through foundation.contest.2 (K1: 4, K2: 5)."
+          },
+          {
+            "title": "(c) Same-table pairs: grouping gives nothing; the family flag is unenforced and too coarse",
+            "detail": "Two draws from one table share the same heading. trope-breaks.yaml declares `families_distinct: true`, but no script reads it. designer.py preroll_p1 draws break.2 with exclude=set(breaks) only. Enforcing the family flag stops the governance clashes, but not cross-family ones such as world_is_young ('written history is three hundred years old') with no_writing ('writing is unknown'). Epic's second contest only needs another family, so two succession contests can meet.",
+            "evidence": "grep 'families_distinct' scripts/ finds nothing. Current code: 320/1977 standard/epic births draw two tropes of one family. 20 are contradictory ruler pairs: dragons_rule+lottery 6, magic_is_nobility+lottery 6, dragons+magic_is_nobility 4, dragons+no_kings 2, magic_is_nobility+no_kings 2. Cross-family world_is_young+no_writing: 2/1977. Two of two_heirs/empty_throne/sibling_rulers in one epic birth: 4/3000."
+          },
+          {
+            "title": "(d) Cross-phase: later prerolls do not see P1 tags, except one override",
+            "detail": "preroll_p2 (designer.py ~319-327) is the only live case of 'an earlier tag decides the next roll': a trope's overrides.pantheon_type forces the pantheon. Everything else in P2 rolls freely. break_magic_is_nobility's P2 hook says 'magic's regulator is the nobility itself', yet magic.yaml#regulator is drawn from 9 rows with no condition; at most regulator_crown_office fits. Headings also flow only forward: break_moon_trades carries overrides.era_bias (trope-breaks.yaml line 201), which no script reads. The era is rolled in P0, so a later row cannot steer it; the clash has to be a condition on the trope instead.",
+            "evidence": "trope-breaks.yaml lines 191 and 201; grep era_bias scripts/ finds nothing; magic.yaml#regulator requires 0, conflicts 0."
+          },
+          {
+            "title": "(e) Prose-level clashes are outside grouping; the script's own templates are one source",
+            "detail": "sentence() in design_foundation.py prints contest role texts verbatim, and s2 always opens with 'Çok önce'. 11 of 40 contest rows print ruler, noble or kingdom nouns into the sentence (the audit named 5). The world_is_young trope ('no ancient secrets') meets an old-age ruin source. Grouping cannot reach the writer or the templates. Claims can feed the door's word patterns (rows-doc section 13 #8). The kingdom texts also show why claims need a scope: contest_foreign_envoy's kingdom is abroad and should not trip a local nobility: none.",
+            "evidence": "Role-text grep hits: two_heirs, old_order_reform, old_gods_new_faith, occupier_resistance, lords_peasants, treasure_race, first_settlers, sibling_rulers, humans_giants, humans_fey, foreign_envoy. world_is_young with a ruin of family old_peoples/gods/fallen_kingdoms: 65/3000 births (unaudited)."
+          },
+          {
+            "title": "A well-chosen key on a common ancestor covers many clashes at once",
+            "detail": "era underground forces land_underground (foundation.yaml line 37), and the offending spines, lifelines and contest either force or require that kind. So one key, 'palette holds land_underground', replaces seven row ids for underground_forbidden. This supports tags over row lists, placed on the piece every later roll descends from.",
+            "evidence": "Of 660 births where the underground_forbidden bar applies, 641 (97%) carry land_underground in the palette; the other 19 come from life_deep_lake seated on land_desert."
+          }
+        ],
+        "numbers": [
+          {
+            "what": "Births with at least one audited clash (3000 seeds, P0 dials sampled by table weight, families distinct)",
+            "value": "149 (4.97%); 151 hits. The audit's 3.5% used different sampling"
+          },
+          {
+            "what": "Audited clashes by class",
+            "value": "9 of 9 are parent-to-child (a); 8 land on the trope table, 1 on the ruin table"
+          },
+          {
+            "what": "Hits by largest count: K6 renaissance x no_writing / K4 underground / K8 night / K1 lottery / K7 moon / K2 no_kings / K5 age of mages / K9 dragons / K3 iron",
+            "value": "36 / 32 / 21 / 17 / 16 / 15 / 7 / 4 / 3"
+          },
+          {
+            "what": "Share prevented by one heading on the trope table: dials / main contest / spine / lifeline / second contest",
+            "value": "62% / 19% / 14% / 4% / 6%; all five keys together: 100%"
+          },
+          {
+            "what": "Distinct heading combinations a tree would need for the trope table (5 keys)",
+            "value": "295 observed in 3000 births (1470 possible)"
+          },
+          {
+            "what": "Trope pool after a multi-key (claims) filter",
+            "value": "mean 32.05 of 33, minimum 26; a row barred in 54% of births"
+          },
+          {
+            "what": "Conditions already authored: lifeline / contest / ruin / trope / tensions (rows requiring an earlier row or dial)",
+            "value": "56 of 60 / 9 of 40 / 8 of 40 / 0 of 33 / 0 of 33"
+          },
+          {
+            "what": "Same-family trope pairs under current code (families_distinct unread)",
+            "value": "320 of 1977 standard/epic births; 20 are contradictory ruler pairs"
+          },
+          {
+            "what": "Cross-family same-table clash (world_is_young x no_writing)",
+            "value": "2 of 1977"
+          },
+          {
+            "what": "Sibling clash (lottery trope x inheritance_merit question), without the conflicts_with row",
+            "value": "2 of 3000"
+          },
+          {
+            "what": "Contest rows whose role texts print ruler, noble or kingdom nouns into the sentence",
+            "value": "11 of 40 (the audit named 5)"
+          },
+          {
+            "what": "Unaudited candidate: world_is_young x an old-age ruin source",
+            "value": "65 of 3000 births"
+          },
+          {
+            "what": "Public P1 rows that would need tags (foundation 241 + trope 33 + new signature sub-tables 230 + tensions 33)",
+            "value": "537"
+          }
+        ],
+        "risks": [
+          "A partition (each heading owns its own row list) would multiply authoring about 295-fold for the trope table alone. Small groups would also empty the pool: the arbiter raises EmptyPool and stops the birth when the constraints leave no row.",
+          "Smaller groups exhaust avoid_used faster. The trope table never repeats a row another campaign drew, so a small group drops into usage_fallback, which repeats rows. That is the cross-birth repetition the owner dislikes.",
+          "Positive membership ('this row fits heading X') fails safe but costs variety. Negative claims ('clashes with Y') keep variety, but a forgotten tag lets a clash through. Either way the many-seeds test must assert zero clashing claim pairs.",
+          "Tags without scope over-exclude: 'a distant kingdom's envoy' should not trip a local nobility: none.",
+          "Headings flow only forward. Whichever of two clashing tables is rolled later must carry the key; an earlier table cannot be steered (the dead era_bias override).",
+          "The nine audited pairs are a sample. Contest role texts, the 'Çok önce' template and world_is_young show more, so the 3.5-5% rate is a floor.",
+          "The prose (writer and templates) and P2+ prerolls stay exposed unless the same claims reach the door and the later prerolls."
+        ],
+        "recommendation": "Adopt the owner's idea as the authoring model, but build it as one mechanism with two faces. Every row gets tags, and every draw is filtered by compatibility with all tags rolled so far, not by a single heading. Implement this in design_arbiter.py as claims: topic and value, incompatible values declared per topic, a scope (local or abroad). Keep today's families, requires and weight_by for thematic fit. Order of work: (1) Tag the dials and the trope table first; the trope table has no conditions today and takes 8 of the 9 audited clashes. Put the underground claim on the palette kind land_underground, which covers 97% of that case. (2) Tag the foundation rows the trope clashes with: the contests' ruler, nobility and succession claims, including their role texts, and the lifelines' material claims. (3) Enforce families_distinct, which no script reads today, and apply claims inside a table for the second trope and epic's second contest. (4) Pass the same claims into the P2+ prerolls, starting with magic.yaml#regulator against break_magic_is_nobility, and to the door's word patterns for the prose. (5) Extend the model-free many-seeds test to assert zero clashing claim pairs over all rolled rows. Tell the owner plainly: grouping alone fixes only the parent-to-child clashes, and only when a table is grouped by every earlier piece at once. Siblings, same-table pairs, later phases and prose still need the compatibility check."
+      },
+      {
+        "lens": "variety",
+        "verdict": "From the variety side, the owner's \"tags + grouping\" idea is workable if a group means \"every row that does not contradict what is already rolled\" (membership by exclusion: a row is in unless a claim rules it out). It is costly if a group means \"only the rows listed under the earlier roll's heading\" (membership by inclusion: a row is out unless listed). I measured both on the committed tables with the real arbiter and foundation roller, plus a model of step 2, over 2,000 single births and 40 sequences of 40 births with used.json simulated. Exclusion-style tags (the audit's claims) cut births with a literal clash from 5.0% to 0.35%. They cost about 0.8 of the 33 trope-break rows (effective pool 27.3 to 26.5) and 0.1 bits out of about 153 per birth, so variety is practically unchanged. Hard inclusion groups at the density the owner's own affinity lists already have (a row listed under about a quarter of the headings: tensions 0.235, olgu 0.263) cut the per-table effective pools by 4 to 7 times: trope break 27.7 to 6.9, question 28.6 to 7.5, institution form 12.6 to 1.8, lineage 13.5 to 4.1. They make 4% of births hit an empty pool. Among campaigns with the same contest family, the share that draw the same trope break rises from 7% to 26%. They also fix only the clashes whose partner is that one heading. 57% of clash occurrences are against the era dial, 20% the contest, 11% the spine, 8% the lifeline and 5% the ruin against the magic dial. Intersecting four headings to cover them all leaves 2.3 effective rows and empties the pool in 22.5% of births. Recommendation: use tags to exclude everywhere, and use hard inclusion groups only under specific, many-valued headings whose groups hold at least about 10 rows (these exist already and work). Use soft weights (×2-3) for theme under the few-valued headings (dials, families, role hints). Before any grouping, fix two usage-rule faults that already produce repeats.",
+        "findings": [
+          {
+            "title": "The total number of P1 outcomes is not what limits variety; each table's pool and repeats across births are",
+            "detail": "Shannon entropy summed over every draw (the chain rule, 2,000 seeds, dials sampled from dials.yaml weights): today about 152.9 bits per birth given the dials (foundation 52.2, identity 90.2, layout and dice 9.7), plus 9.7 bits for the dials. Hard grouping of everything: 142.7 bits. Claims: 152.8. Soft ×3 everywhere: 154.4. Every model still gives more than 2^140 effective outcomes. For the rows the owner actually sees (spine × ruin × lifeline × contest × trope break × question, product of effective pools): about 8.6e8 today and about 5.6e7 under hard grouping, which is 15 times fewer and still enormous. The cost of grouping shows up per table and across births, not in this total.",
+            "evidence": "scratchpad exp1.py / exp1_2000.txt and exp5.py. Effective pools today: spine 23.7, ruin 35.2, lifeline 37.8, contest 34.3, trope 27.7, question 28.6."
+          },
+          {
+            "title": "Exclusion-style tags cost almost nothing in variety",
+            "detail": "Modelled as the audit's 22 literal pairs (lottery or dragons vs heirs; guilds vs heirs, throne, lords, old nobles and the binding marriage; iron vs iron_coal and famous_steel; underground-forbidden vs era underground, three_depths, mountain_within, deep_lake, deep_mouth, mushroom_fields and surface_deep; no_writing vs renaissance; moon and night vs era underground; age_of_mages vs magic high), applied as a filter before the die. Births with a clash went from 97-100 of 2,000 (about 5%) to 7 (0.35%). The 7 left are the ruin_age_of_mages × magic-high pair, which sits in the foundation and which I did not filter. Trope effective pool 27.3 to 26.5 rows (−3%). No empty pools.",
+            "evidence": "exp1_2000.txt: 'claims(neg filter): ok 2000/2000, clash births 7 (0.35%)', trope 4.73 bits vs 4.77."
+          },
+          {
+            "title": "Hard inclusion groups at realistic density shrink the key tables 4-7x",
+            "detail": "Density taken from the owner's existing affinity lists: tensions.yaml rows list 1.88 of 8 contest families (f=0.235); ruin olgu_families list 2.1 of 8 (f=0.263); form hints list 0-2 of 8. Made hard: question 28.6 to 7.5 effective rows; institution_form 12.6 to 1.8 (the hints scholarly, guild and criminal each have exactly one form: School, Guild, Society; state, the hint on 38 of the 121 hinted roles, has House or Council only); lineage 13.5 to 4.1; trope break (synthetic f=0.25 under contest family) 27.7 to 6.9. Soft ×3 on the same links costs little: trope 27.3 to 23.9, question 32.8 flat to 28.6.",
+            "evidence": "groups.py output; exp1_2000.txt ('hard everything'), exp5.py. Tension group sizes by contest family: hidden_hand 5, two_hands 5, nonhuman 7, race 7, kin 8, strong_weak 9, open_close 10, old_new 11."
+          },
+          {
+            "title": "Hard grouping makes campaigns more predictable from their headings",
+            "detail": "Share of a row's uncertainty that the earlier rolls fix (mutual information divided by the row's entropy): today trope 5%, question 4%, form 4%, lineage 3%; hard grouping 42%, 41%, 76%, 34%. The phenomenon rule is already a hard group today and sits at 38%. Probability that two births with the same contest family draw the same row, without used.json: trope 3.4% to 12.8%, question 4.2% to 11.2%, form 8.0% to 15.4%. With used.json over 40 births: trope 6.9% to 26.2%, question 3.0% to 7.0%, form 6.4% to 12.8%. So the same heading does bring back the same few rows.",
+            "evidence": "exp3_out.txt (1,500 births per model); exp2_out.txt 'same contest family -> shares ...' lines (3,118-3,363 same-family pairs)."
+          },
+          {
+            "title": "Small hard groups run out early; the repetition rules then remove every protection at once",
+            "detail": "40 sequences × 40 births with used.json simulated (test births see all earlier ones), using the waits as the headers intend. Median birth at which the first draw falls back on usage: trope 20 today vs 12 hard; tensions 29 vs 24; lineage never vs 14 (in 12% of sequences). Under hard trope grouping, 53 of 1,600 births stopped on an empty pool. When usage empties a pool, the arbiter's third pass drops every usage exclusion together (used_elsewhere, row_wait, pair; USAGE_ORDER), so a row from the last birth can return. The arbiter also relaxes each group separately, so a small group reaches this point long before the whole table does.",
+            "evidence": "exp2_out.txt, hard_all_f25 vs today_intended; design_arbiter.py:45 USAGE_ORDER and :173 'for skip in ((), (\"family_wait\",), USAGE_ORDER)'."
+          },
+          {
+            "title": "Intersecting several headings empties the pool",
+            "detail": "Catching every audit clash with inclusion groups means the trope break has to sit under the era, spine family, lifeline family and contest family at once. Even at a generous f=0.5 the intersection leaves 2.3 effective rows and empties the pool in 451 of 2,000 births (22.5%). At the owner's measured f≈0.25 the expected group is 33×0.25^4≈0.13 rows. The exclusion form intersects 'does not clash' sets, each about 97% of the table, and keeps about 26.5 of 33 rows.",
+            "evidence": "exp1_2000.txt: 'hard trope by contest+spine+lifeline+era (f=.5): ok 1549/2000 ... eff. pool 2.3'."
+          },
+          {
+            "title": "One heading per roll cannot remove most clashes",
+            "detail": "Breakdown of the clash occurrences in 2,000 births: trope break × era dial 58, × contest 20, × spine 11, × lifeline 8, and ruin × magic dial 5. Grouping the trope break under the contest family alone would stop about 20% of them. Under the era alone, about 57%. The few-valued heading (era: 5 values, medieval 33% of births) is exactly where hard groups run out fastest.",
+            "evidence": "scratchpad exp4.py: 'break x dial era: 58, break x contest: 20, break x spine: 11, break x life: 8, ruin x dial magic: 5'."
+          },
+          {
+            "title": "Where hard groups already work: specific, many-valued headings",
+            "detail": "phenomenon_rule is filtered to the ruin's olgu_families: a 10-row pool for 36 of 40 ruins, 15 for 4, 5 with scar_magic_rule_changed. Because the heading (ruin_source: 40 rows, avoid_used, family_wait 3) rotates on its own, the first fallback comes at birth 35 (median) and repeats stay at 13% after birth 21. The lifeline (60 rows, filtered to palette kinds) keeps an effective pool of 37.8 and never fell back in 40 births. Actions filtered by target and fits keep 9.0 effective rows. These are the model for good hard grouping: the heading is a specific row, not a dial or family value.",
+            "evidence": "exp2_out.txt today_intended rows for phenomenon_rule, lifeline and action; foundation.yaml#ruin_source olgu_families counts."
+          },
+          {
+            "title": "Existing repetition fault: actions and scars are excluded for good, not for 3 births",
+            "detail": "fd.roll draws the action and the scars with Roller.table's default avoid=True. design_dice.usage adds used_elsewhere whenever avoid is true and never checks the header's avoid_used:false. So actions and scars (headers: row_wait 3) behave as never again until the table runs out, and then fall back with no wait at all. In code: scars run out at birth 11 (median) and 20.5% of scar draws repeat a row from the last 3 births. With the intended waits: 0%. Actions: first fallback at birth 18 vs 29, near-repeats 7.3% vs 0.9%. Step 2's lineage (row_wait 1) would inherit the same fault if item 10 uses the defaults.",
+            "evidence": "design_foundation.py:166 and :180 (no avoid=); design_dice.py:148 'if avoid:'; check_usage.py showed used_elsewhere for foundation.yaml#action and #scar; exp2_out.txt today_code vs today_intended."
+          },
+          {
+            "title": "Other small pools that repeat today",
+            "detail": "naming.yaml#family: 10 rows, 2-3 per birth, avoid_used. It runs out at birth 4, and from then on 55% of draws repeat a family used in the last 3 births. institution_form (14 rows, no avoid, no wait) repeats an earlier birth's form in 67% of draws. What the current used.json (5 test births) already costs the next test birth: 7 of 33 tensions, 8 of 10 naming families, 5 of 24 secret archetypes, 5 of 12 twists, 4 of 6 trails, but only 1 of 33 trope breaks (the other old ids were dropped).",
+            "evidence": "exp2_out.txt; design_dice.rows_used_elsewhere('_test-next', ...) counts (secret tables: counts only)."
+          }
+        ],
+        "numbers": [
+          {
+            "what": "P1 entropy per birth given the dials: today / claims / soft x3 / hard everything",
+            "value": "152.9 / 152.8 / 154.4 / 142.7 bits (dials add 9.7)"
+          },
+          {
+            "what": "Headline combinations (spine×ruin×lifeline×contest×trope×question): today vs hard",
+            "value": "about 8.6e8 vs about 5.6e7"
+          },
+          {
+            "what": "Births with a literal clash: today vs claims filter",
+            "value": "5.0% (97-100/2000) vs 0.35% (7/2000, all foundation ruin×magic)"
+          },
+          {
+            "what": "Trope-break effective pool: today / claims / soft x3 / hard f=0.25 / hard f=0.5 / hard 4-heading f=0.5",
+            "value": "27.3 / 26.5 / 23.9 / 7.0 / 13.9 / 2.3 rows"
+          },
+          {
+            "what": "Question (tensions) effective pool: flat / today x3 / hard",
+            "value": "32.8 / 28.6 / 7.5 rows"
+          },
+          {
+            "what": "Institution form effective pool: flat / today x3 / hard by hint",
+            "value": "14.0 / 12.6 / 1.8 rows (scholarly, guild, criminal: 1 row each)"
+          },
+          {
+            "what": "Lineage effective pool: flat / today / hard",
+            "value": "14.2 / 13.5 / 4.1 rows"
+          },
+          {
+            "what": "Births with an empty pool: hard trope f=0.25 / 4-heading intersection f=0.5",
+            "value": "4.0% (79/2000) / 22.5% (451/2000)"
+          },
+          {
+            "what": "Share of the row fixed by earlier rolls (MI/H): today vs hard, trope / question / form / lineage",
+            "value": "5/4/4/3% vs 42/41/76/34%"
+          },
+          {
+            "what": "P(same row | same contest family), with used.json over 40 births: today vs hard, trope / question / form",
+            "value": "6.9/3.0/6.4% vs 26.2/7.0/12.8%"
+          },
+          {
+            "what": "Median birth of first usage fallback: today vs hard, trope / tensions / lineage",
+            "value": "20 vs 12; 29 vs 24; never vs 14"
+          },
+          {
+            "what": "Clash occurrences by partner roll",
+            "value": "era dial 57%, contest 20%, spine 11%, lifeline 8%, ruin×magic 5%"
+          },
+          {
+            "what": "Scar table in code (default avoid=True): median birth run out / near-repeat rate",
+            "value": "birth 11 / 20.5% (intended waits: never / 0%)"
+          },
+          {
+            "what": "Naming family: birth run out / near-repeat rate afterwards",
+            "value": "birth 4 / 55%"
+          },
+          {
+            "what": "Authored group density already in the tables (tensions, olgu)",
+            "value": "f = 0.235, 0.263 (a row under about 1/4 of the headings)"
+          }
+        ],
+        "risks": [
+          "Hard inclusion groups under few-valued headings (dials, families, role hints) run out after about 12-24 births. After that, the arbiter's all-at-once fallback lets the previous birth's row come back. This is the repetition the owner dislikes.",
+          "Every heading value × constraint cell must stay non-empty: 8 contest families × the prohibition rows the new-taboo scar needs × families_distinct × 2 draws. Otherwise EmptyPool stops the preroll, which happened in 4% of births even at f=0.25. That is a combinatorial authoring load, and it grows with every new table.",
+          "The synthetic trope-grouping results depend on random membership at the measured density. An owner-authored membership could cluster differently, but the pool sizes, run-out and intersection results depend on density, not on which rows are listed.",
+          "Same heading, same few rows: under hard grouping, 26% of same-contest-family campaigns share a trope break and a 'state' institution is always House or Council. This makes campaigns easier to predict, which works against the goal behind the tables that were rewritten to remove attractors.",
+          "Soft weighting alone guarantees no consistency: the clash rate stays at 5.0% under soft ×3. It can carry theme, not correctness.",
+          "The step-2 model (order, counts, the institution-role rule, secret and villain sizes) is my reconstruction of plan item 25 and the review. Items 7-10 of the build are not coded yet, so the identity numbers are estimates.",
+          "If step 2 is coded with Roller.table defaults, the tables whose header says avoid_used:false but that record usage through row_wait (lineage) inherit the permanent-exclusion fault."
+        ],
+        "recommendation": "Take tags and grouping in their exclusion form. Every row carries a few claims (topic: value, e.g. nobility: none; iron: rare; below_ground: forbidden; writing: absent). The dials carry claims too (era underground: sky none; era renaissance: writing printed; magic high: magic plentiful). The next roll's group is every row whose claims fit what is already rolled. This removes about 93% of clash births for about 3% of trope rows and 0.1 bits per birth.\n\nKeep hard inclusion groups only where the heading is a specific row from a large table that rotates by itself and the group keeps at least about 10 rows after the other filters: phenomenon rule ← ruin olgu_families, action ← target fits, lifeline ← palette kinds. All three exist and measure well.\n\nUse soft weights (×2-3) for theme under few-valued headings: question ← contest family (tensions family_weight 3 as planned), institution form ← role hint (hint_weight 3), lineage ← palette and lifeline, and, if wanted, trope break ← contest or ruin. Do not make these hard: they would drop to 7.5, 1.8, 4.1 and 6.9 effective rows. Never intersect several hard headings.\n\nFix the usage rules first, whatever is chosen:\n- In design_foundation.py:166/180, draw actions and scars with avoid=False, or make design_dice.usage honour the header's avoid_used, so they wait 3 births as item 25 says.\n- Make the arbiter's fallback graded: drop used_elsewhere but keep row_wait and pair before dropping everything, so 'not in the last 3 births' survives when a table or group runs out.\n- Give naming families, trails and other small pools a wait window instead of avoid_used.\n- Add to the many-seeds test a group-size floor (every heading × constraint cell has at least N rows) and a repetition check over simulated birth sequences (like exp2) next to the no-conflict proof.\n\nScratchpad scripts, reusable: C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\scratchpad\\varsim.py, exp1.py-exp5.py."
+      },
+      {
+        "lens": "implementation",
+        "verdict": "Yes, the owner's idea can be built, and it is already how the arbiter works. design_arbiter.arbitrate() narrows the pool to the rows that fit every earlier roll, and only then throws the die. Grouping through earlier rows already exists: 86 `requires: any_of` lists on palette ids decide which lifelines, ruins, contests and traits can come, and the phenomenon rule is filtered in code to the ruin's `olgu_families`. Two things are missing. First, the vocabulary: headings today are only single row ids, and the dial rows are never in the arbiter's Context. Second, the negative side: nothing records that two rows assert opposite facts. The groups cannot be written by hand. In 3,000 simulated births every earlier-roll context was unique (3,000 of 3,000), and even at family level there were 1,977 distinct contexts out of 5,040 possible. So a \"heading\" has to be worked out at draw time, as the overlap of what each earlier row's tags allow. That is exactly the arbiter's filter. With tags on rows, the idea is a small extension, not a rewrite. I built a model-free prototype that stores tag tokens in the Context and derives conflicts from them, with no change to arbitrate(). It used 7 topics and 26 tag holders. It removed every audited pair: 0 of 3,000 births, against 4.90% before, and 0 of 2,250 across all 45 scale × magic × era combinations. It caused no empty pools, and the trope-break table's variety was essentially unchanged: entropy went from 5.040 to 5.036 bits, where 5.044 is the maximum for 33 rows. The one caveat: tags only guarantee compatibility for what is tagged. The system enforces the registry; it cannot make the registry complete.",
+        "findings": [
+          {
+            "title": "The owner's grouping is the arbiter's existing model; what is missing is a tag vocabulary wider than row ids",
+            "detail": "'The previous tags are the next roll's headings' already works when the heading is one earlier row. `requires: {any_of: [row ids]}` is a hard group and `weight_by` is a soft one; both are read against Context.rolled before the die. What cannot be expressed today: (a) a heading made of an earlier row's family (for example 'the lifeline is a craft'), (b) a dial row as a heading for `conflicts_with`, and (c) 'these two rows assert opposite facts' without listing every pair by hand.",
+            "evidence": "scripts/design_arbiter.py constraint_reason()/holds(): the only condition keys are dial/any_of/all_of/none_of over row ids. Across the P1 tables there are 118 id-list conditions: 86 requires any_of, 21 weight_by any_of, 10 none_of, 1 all_of. 169 of their 220 id references are palette ids (land_*), so the palette already acts as the tag vocabulary. The lifeline has 56 any_of requirements. In design_foundation.py and the new identity rows, the phenomenon rule's hard group is a code-level `where` on the ruin's olgu_families."
+          },
+          {
+            "title": "Groups cannot be written by hand; they must be computed as the overlap of each tag's filter",
+            "detail": "If 'drawn from its own heading' means a physical sub-table per heading, the combinations explode. A trope break has to fit the dials, the spine, the lifeline and the contest at the same time; the audited pairs involve all four. One heading, such as the contest family, cannot guarantee compatibility with the lifeline or the era. The overlap of per-tag filters is exactly what arbitrate() already computes. Physical per-heading sub-tables would also copy rows. That breaks the rule that ids are unique across all tables (test_design_tables.py), and used.json would see one concept under two ids, so it could repeat across births.",
+            "evidence": "Measured over 3,000 simulated births: 3,000 distinct (era, magic, spine, ruin, lifeline, contest) contexts at the trope-break roll, and 1,977 distinct family-level contexts (era, magic, spine family, lifeline family, contest family) out of 5,040 possible."
+          },
+          {
+            "title": "Prototype: claims stored as tokens in the Context remove every audited pair with no change to arbitrate()",
+            "detail": "Each row carries claims such as {descent: forbidden}. Topics are exclusive, so two different values clash. design_tables derives conflicts_with entries against the other values' tokens, and these merge into the symmetric index that is already cached by file signature. Context.add also adds the rolled row's tokens, and the dial rows seed their own tokens. Because the tokens behave like pseudo-row ids, the existing conflicts_with, requires any_of/none_of, the symmetric index and the secret-reason routing all work on them unchanged. The same tokens can also serve as positive headings: `requires: {any_of: ['claim:descent=lived']}`.",
+            "evidence": "Scratchpad impl_lens/iclaims.py: 7 topics (succession, nobility, iron, descent, sky, magic_now, writing) and 26 tag holders. Weighted dials, 3,000 seeds: audited-pair births fell from 147 (4.90%) to 0, with 0 EmptyPool. Across all 45 dial combinations × 50 seeds: 0 pairs and 0 EmptyPool. Entropy: trope 5.040→5.036 bits, contest 5.258→5.258, lifeline 5.810→5.810, spine 4.786→4.786, ruin 5.251→5.255. Trope pool after constraints and usage: mean 30.58→29.51, minimum 25→19 (era underground: mean 27.3, minimum 19)."
+          },
+          {
+            "title": "The dials are not in the arbiter's Context, and 62% of the audited hits involve a dial",
+            "detail": "The dial rows have ids (era_underground, era_renaissance, magic_high). Context(dials=...) keeps only the values, so a `conflicts_with: [era_underground]` on a trope row would never take effect. Seeding the dial row ids (and their tokens) into Context fixes most audited hits with the field that already exists. Two stopgaps would also work today: `requires: {dial: ...}` whitelists, such as ruin_age_of_mages requiring magic [low, medium] (it already carries weight_by magic low ×2), or break_no_writing requiring an era other than renaissance. A dial whitelist has a trap, though: a newly added era would be excluded by default.",
+            "evidence": "Baseline pair hits out of 154: era_renaissance+break_no_writing 32, era_underground+break_underground_forbidden 21, era_underground+break_moon_trades 15, era_underground+break_night_is_safe 15, magic_high+ruin_age_of_mages 12. That is 95 of 154. designer.py:164 `arb.Context(dials=dict(dials))`; design_dice.py:189 does the same."
+          },
+          {
+            "title": "Hard groups (whitelists) cost variety; clashes (blacklists) barely do",
+            "detail": "A row that has to be listed under a heading becomes rare when the heading is rare, and a small group runs out across births sooner, so used.json falls back to repeating rows. The owner dislikes repetition, so the default should be 'compatible unless it clashes'. Hard membership fits only where a row cannot exist without the earlier fact (a lifeline needs its landform; a rule needs the ruin's strangeness), and 'fits better' should stay a weight.",
+            "evidence": "Frequency in 3,000 births: life_giant_peace (all_of mountain+plain) 9, against a uniform 50 (18%); life_wheat_plain 17. Cross-birth simulation, 40 births, 300 sequences: tensions hard-grouped by contest family repeat first at birth ~23 (median) with 9.3 repeats, against ~34 and 7.0 repeats with the planned ×3 weight. The phenomenon rule's existing hard group (10 of 40 rows for 36 of 40 ruins) repeats first at birth ~33, against none within 40 unconstrained. The claims prototype lowered the tagged trope rows only where they clash: break_underground_forbidden 159→127, break_no_writing 157→127, break_dragons_rule 123→104."
+          },
+          {
+            "title": "Implicit tags are already hand-copied as id lists; family tokens and claims would replace them",
+            "detail": "Several conditions are a tag spelled out as an id list and repeated. With family tokens (for example lifeline family = craft) and claims, a new row joins the group without anyone editing every list.",
+            "evidence": "13 condition lists name rows that are not palette kinds. The after-the-break guard `none_of: [time_coming]` is repeated on 10 rows (7 people_trait, 2 phenomenon_rule, 1 phenomenon_user) beside the `after_the_break: true` flag, which is a claim in all but name. The 8-id craft-lifeline list (the whole lifeline craft family) appears twice (lineage_gnome, practice_lifeline_craft). The 'dragons present' list exists in two versions, with 5 ids and 8 ids (lineage_dragonborn, practice_dragon_giant_hunters)."
+          },
+          {
+            "title": "Tags without a registry drift at once; a closed registry and a test are required",
+            "detail": "trope-breaks.yaml already has a `tags` field that no script reads, and it has drifted. Every claim topic and value must come from a closed registry, checked by a test, as the region biomes' ecology_tags already are.",
+            "evidence": "trope-breaks.yaml `tags`: 19 values across 33 rows, with both 'creature'/'creatures' and 'people'/'peoples'. Only campaign_graph.py and design_seed.py read a `tags` field, and those are graph nodes. break_moon_trades has `overrides: {era_bias: [era_nautical]}`, which no script reads. The precedent is test_design_tables.py:637-640 (ecology_tags ⊆ HABITATS)."
+          },
+          {
+            "title": "What the code must change: about 70 lines in two modules and no change to arbitrate()",
+            "detail": "design_tables.py: a registry loader, `claims_index()` (row id → tokens, including `family:<ref>=<family>`), and derived clash entries merged into _conflicts_for, which the yaml-mtime signature already invalidates. design_arbiter.Context: dial row ids and tokens seeded in __post_init__, tokens expanded in add(), and both done for a `rolled=` passed at construction. conflicting_pairs() must expand tokens so the door's recheck and the many-seeds test see clashes. An exclusion's `with` should name the token's source row as well as the token, and a token set by a secret row keeps the secret flag (Context.add already ORs it). designer.Roller and design_foundation.roll need no change; forces, forces_one_of and families_distinct stay as code or `where`, because they are distinctness rules, not compatibility.",
+            "evidence": "There are two ways a Context is built: designer.py:164 (in_memory, then add) and design_dice.py:189 (`Context(dials, rolled=prior_rolls(...))`, which never calls add). Twelve test sites build `arb.Context(rolled={...})` directly. conflicting_pairs is used by test_foundation_roll.py:67 and the door. A new data file must join PLANNED in test_design_tables.py:50-53 and pass the header and row rules (schema_version, table, consumed_by, plan, rows with id/label/hooks)."
+          },
+          {
+            "title": "This is the right moment: the identity roller (build item 10) is not written yet",
+            "detail": "The identity headers declare grouping rules that no code implements yet. Building tags first lets item 10 use tokens instead of adding four more ad hoc mechanisms.",
+            "evidence": "designer.py preroll_p1 still rolls the old identity (tension.1/2, signatures#phenomenon/people/institution). These are declared but unimplemented: tensions `family_weight: 3`, institution_form `hint_weight: 3`, trope-breaks `families_distinct`, the phenomenon_rule olgu filter and scar override, and the people_lineage note 'the inverted-homes and human-minority trope breaks reweigh this roll by script (item 10)'."
+          },
+          {
+            "title": "The existing many-seeds test proves enforcement, not completeness",
+            "detail": "test_no_conflicting_set_in_thousands_of_seeds passes today while 4.9% of births contain a literal contradiction, because it checks only the conflicts the tables declare. A tag registry changes what the review covers (each topic against each table instead of every row pair); it does not create completeness.",
+            "evidence": "tests/test_foundation_roll.py:64-67 checks arb.conflicting_pairs against the declared index. The committed conflicts_with entries: 2 in trope-breaks, 1 in tensions, 2 in secrets (count only). The cross-table pair matrix over 545 public P1 rows is 139,369 pairs, against 545 per-row claim decisions."
+          }
+        ],
+        "numbers": [
+          {
+            "what": "Births with an audited contradiction (baseline; weighted P0 dials, foundation + the identity approximated, 3,000 seeds)",
+            "value": "147 / 3000 = 4.90% (the audit's own sample: 3.5%)"
+          },
+          {
+            "what": "Audited pair hits that involve a dial",
+            "value": "95 of 154 (62%)"
+          },
+          {
+            "what": "The same, with the claims prototype (7 topics, 26 holders)",
+            "value": "0 / 3000; 0 / 2250 across all 45 scale×magic×era combinations; 0 EmptyPool"
+          },
+          {
+            "what": "Trope-break entropy, before → prototype (maximum log2 33)",
+            "value": "5.040 → 5.036 bits (5.044)"
+          },
+          {
+            "what": "Trope pool size after constraints, before → prototype",
+            "value": "mean 30.58 → 29.51; minimum 25 → 19 (era underground: mean 27.3, minimum 19)"
+          },
+          {
+            "what": "Distinct earlier-roll contexts at the trope roll (3,000 births)",
+            "value": "3000 row-level; 1,977 family-level out of 5,040 possible"
+          },
+          {
+            "what": "Public P1 rows (new tables) vs cross-table pairs to review pairwise",
+            "value": "545 rows vs 139,369 pairs"
+          },
+          {
+            "what": "Id-list conditions in the P1 tables / those naming non-palette rows (implicit tags)",
+            "value": "118 / 13 (time_coming ×10, craft list ×2, dragon list in 2 versions)"
+          },
+          {
+            "what": "Palette ids among the condition references",
+            "value": "169 of 220"
+          },
+          {
+            "what": "Hard-group frequency skew: rarest lifeline",
+            "value": "life_giant_peace 9 per 3,000 vs uniform 50 (18%)"
+          },
+          {
+            "what": "Cross-birth first repeat, tensions hard-grouped by contest family vs ×3 weight (median, 40 births)",
+            "value": "birth ~23 vs ~34; 9.3 vs 7.0 repeats"
+          },
+          {
+            "what": "Phenomenon rule's existing hard group, first repeat",
+            "value": "birth ~33 vs none within 40 unconstrained"
+          },
+          {
+            "what": "Unregistered trope-break `tags` vocabulary",
+            "value": "19 values on 33 rows, 2 duplicate spellings, 0 readers"
+          },
+          {
+            "what": "Estimated migration",
+            "value": "a registry of ~8-20 topics; ~80-120 row claims (trope ~30, foundation ~15, dials 4, signatures ~20 incl. the 10 time_coming guards, tensions few, secret/villain by the dev tab, counts only); ~70 lines of code; ~8-10 tests"
+          }
+        ],
+        "risks": [
+          "Completeness illusion: the guarantee covers only tagged topics. 0% on the audited pairs does not mean 0% contradictions; an untagged assertion passes silently, just as an unlisted conflicts_with does today.",
+          "A whitelist taken as the default ('a row appears only under the headings it names') makes an untagged row unreachable. That causes hidden empty pools and frequency skew (life_giant_peace already sits at 18% of uniform) and faster repetition across births, the thing the owner most dislikes.",
+          "Physical per-heading sub-tables would duplicate rows: this violates the unique-id rule and lets used.json repeat one concept under two ids.",
+          "Topics that are too coarse or too broad (for example exclusive succession with world scope against epic's second contest 'on another part of the spine') create false clashes that shrink the late tables' pools. Topic scope (world vs local) must be declared.",
+          "Order bias: tokens constrain only later draws, so the late tables (trope break, lineage, P2+) always yield. Tagged trope rows drop up to about 20% in frequency (break_underground_forbidden 159→127).",
+          "Two ways of building the Context: token expansion placed only in add() would silently skip design_dice.context (P2+ from disk) and every test built with Context(rolled=...).",
+          "Secret layer: tokens set by secret or villain rows that constrain later public draws (P2+) hide the reason (the existing routing), but the smaller pool and die size can still hint at them. Tokens need their secret flag carried, and their exclusions must be counted, never named.",
+          "Forced rows (spine forces, forces_by_dial, implies, adds_palette) that clash with a dial's claims turn into a runtime EmptyPool through check_forced unless a static test catches them first.",
+          "A new table or topic that forgets its claims: without a per-table review stamp, adding a topic never forces the older tables to be re-read.",
+          "Review load for the owner: the plan requires every conflict and requirement list to be shown to the owner like the rows. The registry and per-row claims are more compact than pairs, but they still need approval (secret and villain claims as counts only)."
+        ],
+        "recommendation": "Build the owner's idea as tags on rows, with the arbiter working out each heading's group before the die, as one small build item before item 10 (the identity roller). Do not restructure the tables into per-heading sub-tables. (1) Add a closed registry of topics in data/design, each topic with its values, whether it is exclusive or which values clash, and its scope. Add a test that every row's `claims` uses registered values. Drop or convert the unused trope `tags`. (2) Change design_tables: add claims_index(), add automatic family tokens, and merge the derived clashes into the cached symmetric index. Change design_arbiter.Context: seed the dial row ids and their tokens in __post_init__, and expand tokens in add() and for a `rolled=` passed at construction. Make conflicting_pairs expand tokens as well. Leave arbitrate() unchanged. (3) Use three kinds of relation, matching the plan's own words. 'Needs' becomes a hard group, as requires any_of on tokens, and only where the row cannot exist without the earlier fact. 'Clashes' is derived from the claims and is the default. 'Fits better' stays weight_by on tokens. (4) Migrate in this order. Dial rows and the audited rows come first, because seeding the dial ids alone clears 62% of the hits. Then the 10 time_coming guards, the craft and dragon lists, and trope-breaks, followed by tensions and the signatures. The development tab tags secrets and antagonists and shows the owner counts only. (5) Tests: registry closure; symmetric derived clashes; identical tokens on both ways of building a Context; the many-seeds test extended to the identity once item 10 lands, with the audited pairs pinned; no EmptyPool across the 45 dial combinations and a pool floor per draw; a static check that forced rows never clash; row reachability plus entropy and frequency floors per table; secret-token routing; and a `claims_reviewed` stamp in each P1 table's roll header that fails when a topic is added, so no table silently forgets its tags. The owner should hear that tags remove the contradictions the registry names, and that completeness comes from reviewing each topic against each table."
+      }
+    ],
+    "synthesis": {
+      "feasible": true,
+      "summary": "Yes, the idea can be built, and it is the right model, provided \"group\" is read one specific way. A roll's group is every row whose tags do not clash with any tag already rolled: the dials, every earlier row, the earlier draw of the same table, and earlier phases. The arbiter works that group out at the moment of the draw. That is exactly the owner's \"the earlier tags are the next roll's headings\". It is also how design_arbiter.arbitrate() already works: it filters the pool before the die against everything rolled. The lifeline-by-palette, rule-by-ruin and action-by-target chains already work this way and never contradict themselves.\n\nTwo literal readings fail:\n- Physical sub-tables per heading. Rows would be copied, the unique-id rule breaks, and used.json would repeat one idea under two ids.\n- One heading per roll. The trope break clashes with five different parents (dials 62%, main contest 19%, spine 14%, second contest 6%, lifeline 4%). A heading tree for it needs about 295 combinations (1,470 possible).\n\nRead as \"compatible with all earlier tags\", the idea removes every audited contradiction. Births holding one go from 4.9-5.7% (7.2% on the extended set) to 0 in 3,000 seeds and across all 45 scale x magic x era combinations. No pool runs empty, and trope entropy goes from 5.040 to 5.036 bits (the maximum is 5.044).\n\nThe part not to take literally: turning today's soft affinities into hard \"only inside your heading\" groups. That shrinks the key tables 4-7x, leaves 4% of births with an empty pool, and makes 26% of same-contest-family campaigns share a trope break. That is the repetition the owner dislikes. So:\n- tags are hard where two rows' sentences contradict literally;\n- positive headings stay hard only where they already work (a specific row of a large, rotating table);\n- theme stays a soft weight.\n\nThis is not a rewrite. The tables stay, and rows gain tags. The new machinery is small:\n- a closed tag registry file;\n- a `claims` field on rows and on dial values;\n- about 70 lines that turn claims into tokens the arbiter already understands (arbitrate() is unchanged);\n- enforcing families_distinct;\n- two usage fixes.\n\nLimits to state plainly:\n- Tags guarantee only what they name. Completeness comes from reviewing each topic against each table.\n- The prose (the writer and the sentence templates) and the P2+ prerolls must use the same tags.\n- A later table always yields to an earlier one.\n\nThe right moment is before build item 10: the identity roller is not coded yet, and it can use tags instead of four more ad hoc mechanisms.",
+      "design_rules": [
+        "R1 (the owner's rule, made exact): every draw is thrown on the group of rows that are compatible with everything already rolled: the dials, every earlier row of every table, the earlier draw of the same table, and earlier phases. The group is computed by the arbiter at draw time. It is never written out as a physical sub-table, and it is never one heading alone.",
+        "R2 (three kinds of tag, three strengths, matching the plan's own words). (a) `claims: {topic: value}` is a fact the row asserts about the world. It is HARD and works by exclusion: a row leaves the group when one of its claims clashes with a claim already rolled. This is the default tool for consistency. (b) `requires: {any_of: [claim:topic=value | row id]}` means 'needs': the row cannot exist without the earlier fact. It is HARD and works by inclusion. It is allowed only when the heading is a specific row of a large table that rotates by itself and the group keeps about 10 rows or more (median) after the other filters. (c) `weight_by` on a tag means 'fits better': SOFT, x2-3. Every theme link under a few-valued heading (dial values, families, role hints) stays soft.",
+        "R3 (what earns a claim): a claim is written only where two rows' sentences contradict literally. This is the owner's conflict principle of 2026-09-29. A reading that makes a story is no clash, and affinity is never a claim. Candidates such as world_is_young x an old-age ruin (65 of 3,000 births) go to the owner under this principle; they are not tagged automatically.",
+        "R4 (closed registry): one new data file, e.g. data/design/claims.yaml, lists each topic, its values and which values clash. The default is that two different values of one topic clash; the registry may declare compatible pairs. A test checks that every row's claims use registered topics and values, as ecology_tags are checked today. The unread trope-break `tags` field is dropped or converted into claims. It has 19 values, two spelling drifts (people/peoples, creature/creatures) and no reader.",
+        "R5 (starter vocabulary, for the owner's review): rule (hereditary / lottery / guild_council / dragons / mages), nobility (exists / none), iron (plentiful / sacred_rare), below_ground (lived / forbidden), sky (open / none), writing (printed / absent), magic_now (plentiful / faded), mass_war (exists / ritual_only). This is about 9 topics and about 40 claim assignments. Modelled over 3,000 seeds, it clears all nine audited pairs.",
+        "R6 (the dials are the root and carry claims): examples are era_underground {sky: none, below_ground: lived}, era_renaissance {writing: printed} and magic_high {magic_now: plentiful}. The owner may set the dials, so they are never re-keyed; every later roll yields to them. The dial rows' ids and their claims are placed in the arbiter's Context. Today only the dial values are kept there, so a clash naming a dial row never fires.",
+        "R7 (claim at the highest common ancestor): put `below_ground: lived` on the palette kind land_underground. That one tag covers 97% of the underground case (641 of 660 births). Only the few rows that assert the fact on other ground carry it themselves, e.g. life_deep_lake on a desert.",
+        "R8 (scope by not claiming): a claim is a world-wide fact of the home land. A row whose fact belongs to a foreign land (contest_foreign_envoy's kingdom) or to one region carries no claim on that topic, or a narrower value. No scope machinery is added unless the owner's review finds a case that needs it.",
+        "R9 (mechanism, the only new code): claims become tokens `claim:topic=value` in Context.rolled, and every rolled row also adds `family:<table>=<family>`. design_tables derives the clashes from the registry and merges them into the symmetric conflict index it already caches. requires, none_of, weight_by and conflicts_with then work on tokens unchanged. arbitrate() does not change. conflicting_pairs expands tokens, so the door's recheck and the many-seeds test see claim clashes. Both ways of building a Context expand tokens the same way: the in-memory add(), and design_dice.context, which builds from disk. A token set by a secret row keeps the secret flag, and its exclusions are counted, never named.",
+        "R10 (inside one table): the second trope break and epic's second contest see the first draw's claims. families_distinct is enforced by the roller. It is declared today but read by no script, and about 4.0% of standard or epic births currently draw two governance tropes.",
+        "R11 (implicit tags become real tags): the ten `none_of: [time_coming]` guards next to `after_the_break: true` become a claim on the break's time. The craft-lifeline id list (written twice) becomes `family:lifeline=craft`. The two different dragon lists (5 and 8 ids) become one claim. A new row then joins a group by carrying one tag, instead of someone editing every opposing row.",
+        "R12 (floors): a hard group that can fall under 5 rows fails the build test. A group under 8 rows gets a run-out report from a simulated sequence of births under used.json. Two hard few-valued headings are never intersected: four of them leave 2.3 effective rows and empty 22.5% of pools.",
+        "R13 (usage rules, because groups make pools smaller): the arbiter's fallback becomes graded. It drops used_elsewhere first and keeps row_wait and pair; only then does it drop everything. Today it drops them all at once (design_arbiter.py line 173). design_dice.usage honours a header's avoid_used: false. Today actions and scars are drawn with avoid=True by default (design_foundation.py lines 166 and 180), so they are excluded for good instead of for 3 births. Small pools such as naming families (10 rows, used up by birth 4) get a wait window instead of avoid_used.",
+        "R14 (completeness is a review, not a mechanism): each P1 table's roll header carries a `claims_reviewed` stamp listing the registry topics it was read against. Adding a topic fails the test until every table has been re-read. The owner reviews the topic list and the per-row claims the same way as rows, with full lists. Claims on the secret and villain rows are tagged by the development tab and shown to the owner as counts only.",
+        "R15 (order): keep the approved P1 order. The trope break stays step 2's first roll, and its group is the rows compatible with the dials and the whole foundation (pool minimum 19, median about 30 of 33). Trope-first (right after P0, becoming a heading for the spine, lifeline, contest and ruin) also measures 0 clashes, with a contest pool minimum of 24. That option is an owner decision, because it reverses review #1, and the tie would still be rolled after the foundation.",
+        "R16 (beyond P1): the P2+ prerolls build their Context with the same tokens, starting with magic.yaml#regulator against break_magic_is_nobility. The same claims feed the door's word patterns, so the prose and the script's sentence templates are held to them too."
+      ],
+      "grouping_solves": [
+        "Parent-to-child contradictions, which is the class of all nine audited pairs (8 land on the trope table, 1 on the ruin table). This works when the group is 'compatible with every earlier tag'. Result: 4.9-5.7% of births (7.2% on the extended set) fall to 0 over 3,000 seeds and all 45 dial combinations, with no empty pool.",
+        "Sibling clashes, once the check runs against everything rolled rather than one parent heading. Example: the lottery trope, then the inheritance-vs-merit question, a pair a contest-family heading would miss (2 of 3,000 births without the hand-written conflict).",
+        "Same-table second draws (the second trope, epic's second contest), because the second draw sees the first draw's claims. An example is world_is_young with no_writing across families (2 of 1,977 births).",
+        "Replacing hand-copied id lists with one tag each (time_coming x10, craft x2, dragons in two versions). A new row joins its group by carrying a tag, not by edits to every opposing row. The pairwise review matrix is 139,369 cross-table pairs against about 545 per-row claim decisions.",
+        "Thematic fit where the heading is a specific row of a large rotating table, which is already working: lifeline by palette kinds (effective pool 37.8, never fell back in 40 births), phenomenon rule by the ruin's olgu families (first repeat around birth 33-35), action by target fits (9.0 effective rows)."
+      ],
+      "grouping_does_not_solve": [
+        "One heading per roll cannot guarantee compatibility. The trope clashes with five parents at once (dials 62%, main contest 19%, spine 14%, second contest 6%, lifeline 4%). A heading tree would need about 295 hand-built combinations for that one table, and intersecting four hard headings empties 22.5% of pools.",
+        "Untagged facts. The system enforces the registry; it cannot make the registry complete. 0% on the audited pairs is not 0% contradictions. For example, 11 of 40 contest role texts print ruler, noble or kingdom nouns, and world_is_young meets an old-age ruin in 65 of 3,000 births. Completeness comes from reviewing each topic against each table (R14).",
+        "Steering an earlier roll from a later one. Headings flow forward only: the era is rolled in P0, so break_moon_trades' `era_bias` override can never act, and the later table always yields. Tagged trope rows lose 15-25% of their frequency, e.g. underground_forbidden 159 to 127 per 3,000 births.",
+        "Prose: the writer's text and the script's own templates (sentence() prints contest role texts verbatim, and s2 always opens with 'Çok önce'). These need the same claims at the door's word patterns.",
+        "Repetition. Small hard groups under avoid_used run dry, and the arbiter's all-at-once fallback then brings back the previous birth's row. Grouping makes this worse unless the usage rules are fixed (R13). Today scars already run out by birth 11, with 20.5% near-repeats.",
+        "Distinctness rules. families_distinct, forces and forces_one_of concern difference between draws, not compatibility, so the roller must enforce them. families_distinct is unread today.",
+        "Later phases, unless the P2+ prerolls build the same Context with tokens (design_dice.context from disk). Today only the pantheon override crosses from P1 to P2.",
+        "Soft weights never guarantee consistency: at x3 on the same links, the clash rate stays at 5.0%. Weights carry theme only."
+      ],
+      "per_roll_keys": [
+        {
+          "roll": "P0 dials (scale, tone, magic, era, danger, content mix)",
+          "key": "none: the root, and the owner may set them. The dial rows carry claims (era_underground: sky none, below_ground lived; era_renaissance: writing printed; magic_high: magic_now plentiful)",
+          "hard_or_soft": "hard source of claims, never re-keyed",
+          "why": "62% of audited clash hits involve a dial (95 of 154). Once dial ids and claims are in Context, one tag per dial value replaces every pair list."
+        },
+        {
+          "roll": "Spine",
+          "key": "magic (requires, as today); era (weight_by, as today); three_depths and mountain_within claim below_ground: lived",
+          "hard_or_soft": "magic hard, era soft, claims hard",
+          "why": "Made hard, era boosts would leave 0 boosted spines in 34.2% of births. The claim makes these spines leave the pool after a clashing earlier claim (in a trope-first order), and it lets the later trope see them."
+        },
+        {
+          "roll": "Palette",
+          "key": "spine forces / forces_one_of; magic fantastic cap; era forces land_underground; land_underground claims below_ground: lived",
+          "hard_or_soft": "hard (fixed lookups, as today)",
+          "why": "It is the common ancestor of most later rolls: one claim here covers 97% of the underground case."
+        },
+        {
+          "roll": "Ruin source",
+          "key": "palette kinds (8 of 40 rows, as today); dial claims (age_of_mages claims magic_now: faded, which clashes with magic_high); magic low x2 weight; family_wait 3 rotation",
+          "hard_or_soft": "palette and claims hard, magic weight soft",
+          "why": "It removes the one audited foundation clash (magic high vs age of mages). The pool stays at 33 or more rows."
+        },
+        {
+          "roll": "Lifeline",
+          "key": "palette kinds (56 of 60 rows, union pool min 11 / median 39, as today); claims: iron plentiful (iron_coal, famous_steel), below_ground lived (deep_lake, deep_mouth, mushroom_fields), rule hereditary + nobility exists (binding_marriage)",
+          "hard_or_soft": "hard (membership plus claims)",
+          "why": "The best existing example of the owner's grouping: a specific, many-valued heading that rotates by itself. It has never fallen back in 40 simulated births."
+        },
+        {
+          "roll": "Contest (and epic's second contest)",
+          "key": "palette kinds where required (9 of 40); lifeline (weights, as today); claims: rule hereditary (two_heirs, sibling_rulers, empty_throne), nobility exists (lords_peasants, old_order_reform, capital_marches, occupier_resistance, humans_fey), below_ground lived (surface_deep), mass_war where literal; the second contest sees the first's claims and another family",
+          "hard_or_soft": "palette and claims hard, lifeline soft",
+          "why": "These claims are what the rulers, guilds and dragons tropes clash with (main contest 19% of hits, second contest 6%). Rows about a foreign land carry no nobility claim (R8)."
+        },
+        {
+          "roll": "Break target",
+          "key": "the pieces that exist",
+          "hard_or_soft": "hard (structural, as today)",
+          "why": "A target must exist. There is no variety issue at 5-6 rows, because avoid_used is false."
+        },
+        {
+          "roll": "Break action",
+          "key": "target piece x the piece's kind (`fits`); the target+action pair never repeats",
+          "hard_or_soft": "hard (as today)",
+          "why": "Works (9.0 effective rows), but the lifeline/craft group has 4 rows (hit in 1.8% of births). It gets a run-out report, and its row_wait 3 must be honoured instead of today's permanent exclusion (R13)."
+        },
+        {
+          "roll": "Scars",
+          "key": "the action's bars_scars_on_target; the fantastic cap",
+          "hard_or_soft": "hard (as today)",
+          "why": "A structural fit. Fix the avoid default: today scars are used up by birth 11 and 20.5% repeat a recent birth's scar."
+        },
+        {
+          "roll": "Break time",
+          "key": "none (4 rows); its value becomes a claim (break_time: coming / past)",
+          "hard_or_soft": "hard source of a claim",
+          "why": "Replaces the ten hand-copied `none_of: [time_coming]` guards with one claim that traits, the phenomenon rule and the user read."
+        },
+        {
+          "roll": "Winner",
+          "key": "the contest roles and the action",
+          "hard_or_soft": "hard (as today)",
+          "why": "Structural: the winner must be a role in the contest."
+        },
+        {
+          "roll": "Escalation, layout",
+          "key": "deterministic",
+          "hard_or_soft": "n/a",
+          "why": "No die, so nothing to group."
+        },
+        {
+          "roll": "Trope break (1, or 2 at standard and epic)",
+          "key": "the claims of the dials, the whole foundation and the first trope; families_distinct enforced",
+          "hard_or_soft": "hard (exclusion); no soft key",
+          "why": "8 of the 9 audited clashes land here, and the table has no condition today. The claims group keeps a pool minimum of 19 and a median of about 30 of 33. A soft key is not needed: earlier rolls fix only 5% of the trope today. Hard inclusion under the contest family would shrink it to 6.9 effective rows."
+        },
+        {
+          "roll": "Trope tie",
+          "key": "none (4 foundation pieces)",
+          "hard_or_soft": "none",
+          "why": "4 rows, and the tie is a writing aid. A key would only lower variety."
+        },
+        {
+          "roll": "People lineage",
+          "key": "palette, lifeline, ruin (weights); the trope's inverted homes and human minority reweigh it (as the plan says); claims",
+          "hard_or_soft": "theme soft, claims hard",
+          "why": "Hard grouping leaves 4.1 effective rows and a first fallback at birth 14. Its row_wait must be honoured (R13)."
+        },
+        {
+          "roll": "People traits",
+          "key": "palette kinds where required; the break-time claim (after_the_break); the magic cap",
+          "hard_or_soft": "hard",
+          "why": "A trait that describes life after the break cannot exist while the break is still coming. The pool minimum is 14."
+        },
+        {
+          "roll": "People attitude",
+          "key": "none",
+          "hard_or_soft": "none",
+          "why": "No literal dependency."
+        },
+        {
+          "roll": "Institution role",
+          "key": "contest roles that carry a hint (institution-able roles)",
+          "hard_or_soft": "hard (structural)",
+          "why": "The institution must come from the contest. That is a 'needs', not a theme."
+        },
+        {
+          "roll": "Institution form",
+          "key": "the role's hint (hint_weight 3)",
+          "hard_or_soft": "soft",
+          "why": "Hard would leave 1.8 effective rows: the scholarly, guild and criminal hints hold exactly one form each."
+        },
+        {
+          "roll": "Institution practice",
+          "key": "lifeline, ruin, scar (weights); claims from the trope and the foundation",
+          "hard_or_soft": "theme soft, claims hard",
+          "why": "It keeps variety while stopping, for example, an iron-forging practice under a sacred-rare-iron trope."
+        },
+        {
+          "roll": "Institution sign",
+          "key": "scale",
+          "hard_or_soft": "hard (lookup)",
+          "why": "The size of the sign follows the scale."
+        },
+        {
+          "roll": "Institution power",
+          "key": "none",
+          "hard_or_soft": "none",
+          "why": "No literal dependency."
+        },
+        {
+          "roll": "Phenomenon rule",
+          "key": "the ruin's olgu_families (a 10-row group for 36 of 40 ruins), or scar_magic_rule_changed, which leads to born_of_break",
+          "hard_or_soft": "hard (as planned)",
+          "why": "A specific heading from a large rotating table: first repeat around birth 33-35. The born_of_break group has 5 rows (3 when the break is coming), is hit in 11% of births and runs dry after about 45 births. Grow it to 8 or more rows, or give it a wait window."
+        },
+        {
+          "roll": "Phenomenon limit",
+          "key": "palette kinds",
+          "hard_or_soft": "hard",
+          "why": "A structural fit; the pool minimum is 11."
+        },
+        {
+          "roll": "Phenomenon user",
+          "key": "the break-time claim",
+          "hard_or_soft": "hard",
+          "why": "It uses a token instead of the time_coming guards. The pool minimum is 7, so watch its run-out."
+        },
+        {
+          "roll": "Question (tensions)",
+          "key": "contest family (family_weight 3, as planned); claims (this replaces the lottery x inheritance_merit conflicts_with)",
+          "hard_or_soft": "family soft, claims hard",
+          "why": "Hard family groups leave 7.5 effective rows (hidden_hand and two_hands hold 5 each), and 26% of same-family campaigns would repeat."
+        },
+        {
+          "roll": "Secret",
+          "key": "the break, and not what the foundation already shows (as planned); claims",
+          "hard_or_soft": "hard",
+          "why": "Its clash surface is unmeasured, so the development tab tags it and the owner sees counts only. Exclusions caused by secret tokens are counted, never named."
+        },
+        {
+          "roll": "Villain",
+          "key": "the secret's chooser (the chooser-tie equivalence); a question pole; claims",
+          "hard_or_soft": "chooser hard, pole as planned, claims hard",
+          "why": "The villain must be the secret's chooser. Claims keep its shape consistent with the world's rulers and magic."
+        },
+        {
+          "roll": "Names",
+          "key": "the naming families of the people, the contest and the institution",
+          "hard_or_soft": "as today, with a wait window",
+          "why": "The naming family table (10 rows) is used up by birth 4, after which 55% of draws repeat a family from the last 3 births. It needs a wait window, not a group."
+        },
+        {
+          "roll": "P2+ prerolls",
+          "key": "the same Context with P1's claims (e.g. magic.yaml#regulator against break_magic_is_nobility)",
+          "hard_or_soft": "claims hard",
+          "why": "Today later phases see P1 only through the pantheon override."
+        }
+      ],
+      "variety_cost": "In its exclusion form the idea is nearly free.\n\nWhat claims cost:\n- Trope-break effective pool: 27.3 to 26.5 rows (-3%).\n- Information per birth: about 0.1 bit lost out of about 153 bits (152.9 to 152.8).\n- Trope entropy: 5.040 to 5.036 bits, against a maximum of 5.044.\n- Trope pool: minimum 19, median about 30 of 33 (with the trope rolled after the foundation).\n- Only the tagged rows lose frequency, and only in births where they would clash: underground_forbidden 159 to 127 per 3,000 births, no_kings 46.7 to 35.3 per 1,000, no_writing about -20%.\n- Trope-first would move that cost onto the contests instead (two_heirs 26.3 to 22.3 per 1,000; contest pool minimum 24).\n\nThe inclusion form is costly when every theme link becomes hard:\n- Effective pools shrink 4-7x: trope 27.7 to 6.9 rows, question 28.6 to 7.5, institution form 12.6 to 1.8, lineage 13.5 to 4.1.\n- 4% of births hit an empty pool.\n- 26% of campaigns with the same contest family share a trope break, against 7% today.\n- The first cross-birth fallback comes at birth 12 instead of 20.\n- Intersecting four hard headings leaves 2.3 rows and empties 22.5% of pools.\n\nSo hard inclusion stays only where it already measures well (lifeline, phenomenon rule, action), and theme stays soft. The existing usage faults cost more variety today than claims would: scars are used up by birth 11 and naming families by birth 4. The usage fixes (R13) are part of the recommendation.",
+      "risks_and_mitigations": [
+        "Completeness illusion: a fact nobody tagged still passes. Mitigation: the `claims_reviewed` stamp per table (adding a topic fails the test until every table is re-read); the owner reviews topics and claims like rows; the many-seeds test asserts zero claim clashes and pins the audited pairs.",
+        "Over-tagging turns affinity into law, and variety and cross-birth freshness fall. Mitigation: R3 (a claim only where the sentences contradict literally); R2 (theme stays weight_by); pool floors and frequency floors per table in the many-seeds test.",
+        "Topics too coarse or too broad create false clashes that shrink the late tables. Example: a foreign kingdom's envoy tripping 'nobility: none'. Mitigation: R8 (a foreign or regional fact carries no claim, or a narrower value); values stay specific; the registry can declare compatible pairs.",
+        "Small hard groups plus avoid_used or row_wait run dry, and the all-at-once fallback returns last birth's rows unseen. Mitigation: R12 floors; graded fallback and honouring avoid_used: false (R13); a run-out report for groups under 8 rows. born_of_break (3-5 rows) and action/craft (4 rows) are watched first.",
+        "Two ways of building the Context: token expansion placed only in add() would silently skip design_dice.context and the twelve test sites that pass rolled=. Mitigation: expand in __post_init__ as well, plus a test that both paths give identical tokens.",
+        "Secret leakage through tokens: a claim set by a secret row shrinks a public pool, and the die size could hint at it. Mitigation: the token keeps the secret flag (Context.add already ORs it); its exclusions are routed to the secret side and counted, never named; the development tab tags the secret and villain rows, and the owner sees counts only.",
+        "Forced rows (spine forces, forces_by_dial, adds_palette) that clash with a dial's claim become a runtime EmptyPool through check_forced. Mitigation: a static test that no forced row can clash with any dial value's claims.",
+        "Order bias: the later table always yields, so tagged trope rows become rarer. Mitigation: accept it, since the dials are the owner's; or the owner chooses trope-first, which moves the cost to the 40-row contest table; frequency floors in the test.",
+        "The measurements rest on analysts' models of step 2 (items 8-10 are not coded) and on their reading of the audit pairs. Mitigation: re-run the many-seeds and birth-sequence simulations on the real roller once item 10 lands; the audited 3.5-5.7% rate is a floor, not the full count.",
+        "Owner review load: the plan requires every condition list to be shown like rows. Mitigation: one short topic list plus about 40-120 per-row claims is far smaller than pair lists, and it is reviewed once per topic per table."
+      ],
+      "migration": "The owner asked to agree the system first and to talk about applying it to the build items after that. So this is an outline, not a schedule. Each step is one green commit.\n\n- Step 0: the owner approves the topic list and values (R5), the three strengths (R2) and the order decision (R15). This is plain Turkish, full lists.\n- Step 1, independent of tags: the usage fixes. Graded fallback in design_arbiter; design_dice.usage honours avoid_used: false; actions and scars wait 3 births; naming families get a wait window. Tests pin the repeat rates.\n- Step 2, the machinery (a new build item placed before item 10, the identity roller, because that roller is not coded yet): the claims registry file and its closure test. In design_tables: claims_index(), family tokens, and derived clashes merged into the cached conflict index. In design_arbiter.Context: seed the dial row ids and their tokens, and expand tokens in add() and __post_init__. conflicting_pairs expands tokens. The new data file joins PLANNED in test_design_tables.py. About 70 lines and 8-10 tests; arbitrate() and the Roller are unchanged.\n- Step 3, data: tag the dial values, land_underground and the audited rows (trope about 10, lifeline about 6, contest about 11, ruin 1). Convert the implicit tags (the ten time_coming guards, the craft list, the dragon lists). Drop or convert the trope `tags` field. Assert zero claim clashes over thousands of seeds and across all 45 dial combinations, with no EmptyPool.\n- Step 4: build item 10 on tokens. It enforces families_distinct, uses the olgu group, keeps hint and family weights soft, and applies claims to tensions and the new signature sub-tables. The development tab tags secrets and antagonists and reports counts only.\n- Step 5: the claims_reviewed stamp in each P1 roll header, pool floors and run-out reports in the many-seeds test, and a static forced-row check.\n- Step 6: the P2+ prerolls use the same Context (regulator first), and the claims feed the door's word patterns.\n\nNo test birth runs in the development tab. The new birth, run by the owner in the Opus tab, comes after P0 and P1 are complete, as the plan already says."
+    },
+    "critique": {
+      "holes": [
+        {
+          "claim_attacked": "Summary: exclusion by claims 'is exactly the owner's idea' and 'removes every audited contradiction', with 0 clashes in 3,000 seeds (grouping_solves #1).",
+          "failure": "The 0% is circular: it counts only the pairs the proposal tagged. Claims are default-allow, so any fact nobody tagged still gets through. The owner's grouping is default-deny: a row appears only under a heading it was declared to fit. The proposal quietly swaps one model for the other. It rejects the owner's literal reading with a strawman ('rows would be copied'), although per-row membership lists would need no copying. It also measured 'hard inclusion' as hard theme groups, not as compatibility groups. Its own starter vocabulary misses literal clashes in the real tables.",
+          "example": "In-memory roller, 3,000 seeds, trope draws with families distinct, after the foundation:\n- war_is_ritual ('mass war is unthinkable') with content_mix war (sieges, musters; 'a war has a date it began'): 2.73% of births. R6 gives the war dial no claim.\n- border_forbidden with contest_foreign_envoy ('the envoy of a distant kingdom'), contest_settlers_newcomers or life_binding_marriage: 0.67%.\n- underground_forbidden with mining rows (contest_mine_owners_miners, whose fourth role is literally 'a deep people angered by the mine's expansion'; iron_coal; copper_mine; gemstones): up to 0.60%. The mining contest is not in the proposal's below_ground list.\n- practice_royal_monopoly ('a royal charter') with no_kings, and practice_watch_the_sky with era underground: both untagged.\nTogether these exceed the audited 3.5%. Scripts: scratchpad/sim.py.",
+          "severity": "high"
+        },
+        {
+          "claim_attacked": "R3, a claim only where two rows' sentences contradict; R2, exclusion as the default tool; 'a later table always yields', accepted as a cost.",
+          "failure": "Many clashes live in hooks, dial effects, scale parameters and forced quotas, not in row statements. R3's test never reads those. Exclusion is also the wrong fix for them. trope-breaks.yaml says the trope 'inverts defaults the later rolls read'. If the trope yields to the dial or scale default, it is barred by the very default it exists to invert. The proposal has no 'overrides' relation. The only override (pantheon_type) is hand-coded, and era_bias cannot act.",
+          "example": "3,000 seeds (scratchpad/sim2.py):\n- no_kings (P4 hook: 'the state faction has archetype guild') against the P4 quota's forced archetype_state: 5.2%.\n- magic_is_nobility (P2 hook: 'regulator is the nobility itself') against the magic dial's own regulator (low: an institution that hunts casters; medium: 'the mage guild exists'; high: municipal): 4.9%.\n- war_is_ritual against mix_war (the P4 front, one stronghold per act): 3.0%.\n- dungeons_inhabited ('every site's attitude starts at negotiate') against mix_horror ('one site per act … test or enslave'): 3.0%.\n- world_is_young ('three centuries') against the epic scale (history 500 years; P2 always rolls 3-5 deep-past events): 1.9%.\nAt least one of these in 17.6% of births. Fixing them by exclusion would bar magic_is_nobility in 57-100% of births, and war_is_ritual and dungeons_inhabited in 60%.",
+          "severity": "high"
+        },
+        {
+          "claim_attacked": "R9 / R14 / risks #6: a token set by a secret row keeps the secret flag; its exclusions go to the secret side and are 'counted, never named'. R16: P2+ prerolls use the same Context.",
+          "failure": "arb.pick writes notation d{len(pool)} and raw = the pick's position in the filtered pool to the PUBLIC record. Any secret-driven shrink therefore shows as a smaller die than the public exclusions explain, and raw narrows down which rows went. A single secret claim reaches every tagged row in every later public table (all of P2+ under R16), so the public dice log reads out the secret's claims. Context.add ORs the flag, so a token set by both a public and a secret row becomes secret: exclusions a public row fully explains disappear from the public log, and that disappearance shows the secret shares the claim. The owner also reviews the full registry (R4/R14), so any topic or value added for secret rows is visible to them, and 'counts only' still leaks the theme spread.",
+          "example": "scratchpad/leak.py uses the real arbitrate() on pantheon.yaml#type (5 rows), with one secret-flagged token clashing with dead_gods and silent_gods. The public record shows excluded: [], {notation: 'd3', raw: 2, row_id: 'pantheon_dualist'}. The owner sees 5 rows, no public exclusion and a d3: two rows were removed by the secret layer. From the raw position and the table order they can narrow down which two.",
+          "severity": "high"
+        },
+        {
+          "claim_attacked": "Order: 'headings flow forward only' (grouping_does_not_solve #3); R15 'keep the approved order'.",
+          "failure": "In the code, a rerun's Context holds every OTHER phase's latest attempt, later ones included. design_dice.prior_rolls() skips only skip_phase. dm.stale() only relabels later phases and leaves their dice_log and dm-only records in place. So a P1 rerun (or revise --reseed) made after P2-P4 were prerolled is filtered by P2-P4 rows. Once claims exist, these backward headings are broad: stale later rows shrink P1 pools, can empty them (EmptyPool stops the rerun), and P4's secret rolls (faction.N.secret, secret=True) shape public P1 draws, with the die-size leak above. The proposal's claim that 'today only the pantheon override crosses from P1 to P2' is also wrong: the cross-phase plumbing already exists. The gap is data (no P2+ row references a P1 row).",
+          "example": "Roller.__init__ calls dd.context(campaign, skip_phase=phase), which calls prior_rolls(): it takes every record whose attempt is its phase's latest, for every phase except the one being rerun. design_manifest.stale (lines 491-505) sets status only. A P1 rerun at the P4 review therefore runs with P2-P4 rows, secret ones included, in its Context.",
+          "severity": "high"
+        },
+        {
+          "claim_attacked": "R6 example: era_underground {sky: none}; sky/moon tropes excluded underground.",
+          "failure": "This contradicts the owner-approved ruling that underground means 'the surface is rare': 19 spines weigh x0.25 and 15 palette kinds x0.5, but none is excluded. It also contradicts the era's own P2 hook, 'the calendar names what replaces the sun and the moon'. Applied consistently under R3 + R16, every P2 calendar moon row presupposes a sky (even moon_none_stars, 'only stars'), so P2 hits EmptyPool in every underground birth (about 11%). Applied selectively, moon_trades is barred while other sky rows pass, and the line becomes arbitrary.",
+          "example": "3.70% of births hold era underground together with a sky-presupposing foundation row: scar_sky_changed, act_fell_from_sky, ruin_fallen_star, ruin_fallen_sky_city, ruin_star_kingdom, land_floating_isles, land_sky_river, spine_floating_archipelago. The identity tables add practice_watch_the_sky, trait_giant_birds and life_griffon_eyries. The tables approve these at x0.5, not x0.",
+          "severity": "medium"
+        },
+        {
+          "claim_attacked": "R7: put below_ground: lived on the palette kind land_underground ('covers 97%'); variety cost 'underground_forbidden 159 to 127' (-20%).",
+          "failure": "A landform on the map is not people living below. The forbidden-descent trope needs an underground to forbid: its P6 hook reads 'every underground site is entered against the law'. The tag makes a false clash under R3's own principle, and the cost quoted belongs to a different rule. The proposal measured a lived-rows-only claim but proposes the landform claim.",
+          "example": "scratchpad/ug.py and sim3.py, 3,000 seeds:\n- land_underground is in 42.5% of palettes (35.5% outside the underground era).\n- In 23.7% of births it is the only below-ground source: no lived row, not the underground era.\n- underground_forbidden per 3,000 births: 144 with no claim; 115 with lived rows only (-20%, the quoted figure); 73 under R7 as written (-49%).",
+          "severity": "medium"
+        },
+        {
+          "claim_attacked": "R4: two different values of one topic clash by default; R5's value lists; R11: 'the two dragon lists become one claim'.",
+          "failure": "Facts are often nested or compatible, not exclusive. A default clash yields false clashes. Adding a value later silently bars every existing value with no review, which makes a maintenance trap. R11 also turns theme lists (the dragonborn weights, the gnome craft list) into hard claims, against R3.",
+          "example": "- rule mages vs hereditary: magic_is_nobility is hereditary ('a noble's hidden child', 'caster NPCs are nobles or their bastards'), yet two_heirs, sibling_rulers or empty_throne would bar it.\n- writing printed (era_renaissance) against world_is_young's 'written history': a manuscript world needs writing: exists, and under the default rule that clashes with printed.\n- One dragon claim risks reinstating dragons_rule x ruin_age_of_dragons, a pair the owner explicitly ruled is no conflict (plan item 25, build 7).",
+          "severity": "medium"
+        },
+        {
+          "claim_attacked": "R8: a claim is a world-wide fact of the home land; 'no scope machinery unless the owner's review finds a case'.",
+          "failure": "The case exists now. People traits describe one people's order, contests can be two polities (epic's second contest sits 'on another part of the spine'), and tropes are land-wide. Not claiming leaves the clash in place; claiming makes false clashes. The per_roll_keys give people traits no rule claims.",
+          "example": "trait_rulers_by_contest ('they choose their rulers by contests of craft') and trait_the_young_rule ('the youngest rule') can each sit beside rule_by_lottery ('every office is filled by lottery'), dragons_rule, two_heirs, sibling_rulers or magic_is_nobility. I estimate about 1% of births from table sizes; this was not simulated.",
+          "severity": "medium"
+        },
+        {
+          "claim_attacked": "R14: completeness is a per-topic review; R2(b) allows 'requires' but does not demand it.",
+          "failure": "There is a whole class of presuppositions: a row names an antecedent that was never rolled. It is not a clash between two rolled rows, so no topic review finds it. It is exactly what the owner's positive grouping catches, and the proposal drops that part.",
+          "example": "- practice_empty_temples ('They still worship in the departed god's temples') has only a x3 weight on ruin_departed_god (1 of 40 ruins). About 2.4% of births would show it with no departed god.\n- practice_raise_the_orphans ('the break's orphans') and practice_mend_the_wound ('the break's wound') carry no none_of [time_coming] guard. About 1.9% of births would show them under a break still coming.\nBoth rates are estimates from table sizes (1/40 per practice draw, 1/4 coming times), not simulated. R11 converts only the ten existing guards.",
+          "severity": "medium"
+        },
+        {
+          "claim_attacked": "R12: a hard group that can fall under 5 rows fails the build test; per_roll_keys covers every roll.",
+          "failure": "The scar_new_taboo draw takes a trope from the 6 prohibition rows. That is a small hard group under avoid_used, and per_roll_keys leaves it out. With families_distinct and R7, it often falls under the proposal's own floor, so R12 would fail the build on an owner-approved mechanism. The plan also never says whether the prohibition draw is the first or the second trope, and the pools depend on it.",
+          "example": "scratchpad/seq.py, 20 sequences x 40 births, prohibition draw taken last:\n- group size with R7: 3 rows in 10 of 75 taboo draws, 4 rows in 20 (40% at 4 or fewer);\n- without claims: 4 rows in 16%;\n- 55% of taboo draws fall back to used rows.",
+          "severity": "medium"
+        },
+        {
+          "claim_attacked": "variety_cost: 'in its exclusion form the idea is nearly free' (measured per birth).",
+          "failure": "The cost is measured on single births and a 40-claim vocabulary. First, across births the trope table (33 rows, avoid_used, no row_wait) runs out by itself, and R13's graded fallback gives it no floor, so last birth's trope can return. Second, completing the registry (holes 1-2, which R14 requires) puts dial-level claims on the root, and those remove late-table rows for every birth with that dial value. A complete registry would cost several times the quoted 0.1 bit, concentrated on the trope rows.",
+          "example": "seq.py: first trope fallback at birth 19 (median); over 40 births 50.6% of trope draws hit 'every usage exclusion dropped'. A mix_war claim alone would bar war_is_ritual in 60% of births.",
+          "severity": "medium"
+        },
+        {
+          "claim_attacked": "R14 claims_reviewed stamp; R9 tokens in ctx.rolled; risks #7 (the static forced-row test covers dial claims).",
+          "failure": "Four maintenance gaps:\n- The stamp is per table, so a row added to a stamped table passes with no review.\n- Tokens share ctx.rolled with row ids, so every consumer that treats it as row ids (tests' rolled(), the door, cards) now sees tokens.\n- family:<table>=<fam> tokens are outside the closed registry, so a misspelled family never fires and nothing reports it.\n- The forced-row check covers dial claims only, but under R16 later forced rows (P4 quota archetypes, P3 settlement kinds, the pantheon override) meet claims from rolled P1 rows. check_forced then raises a runtime SystemExit mid-preroll.",
+          "example": "P4 forces archetype_state and archetype_religious for every standard/epic birth. Any claim on those rows that clashes with a P1 trope or secret claim stops P4 at runtime; no static test proposed would catch it.",
+          "severity": "low"
+        }
+      ],
+      "verdict": "The plumbing is sound and worth keeping: turning claims into tokens the arbiter already understands, arbitrate() unchanged, enforcing families_distinct, and the usage fixes. The proposal as written is not ready to adopt. It overstates what it guarantees: 'compatibility guaranteed' is really 'no clash among the pairs it tagged'. Against the real tables and code it lets through clash classes that together are more frequent than the audited 3.5%:\n- unaudited literal pairs, such as war_is_ritual with the war dial (2.7%) and mining or envoy rows beside the forbidden-descent and forbidden-border tropes;\n- promise-level clashes in hooks, dial effects, scale parameters and forced quotas: at least one in 17.6% of births (magic_is_nobility against every magic dial's regulator, no_kings against P4's forced state faction, world_is_young against the epic scale's 500-year history);\n- presuppositions (the departed god's temples with no departed god; the break's orphans and wound under a break still coming);\n- scope clashes between people traits and land-wide rule.\n\nFor the promise-level class, exclusion is the wrong tool: it makes the trope yield to the defaults it exists to invert. The proposal has no 'overrides' relation.\n\nTwo starter claims are wrong:\n- sky: none on the underground era contradicts the owner's ruling that the surface is rare, not gone. Applied consistently, it empties P2's moon table in every underground birth.\n- below_ground on land_underground makes false clashes under the proposal's own principle. It halves the forbidden-descent trope (144 to 73 per 3,000 births), while the proposal quotes -20%, the cost of a different rule.\n\nSecrecy is not solved. The public die size and the pick's position show secret-driven exclusions: demonstrated as a d3 with no public exclusion on a 5-row table. The OR'ed token flag and the owner-reviewed registry leak as well.\n\nThe rerun path already feeds later and secret phases into an earlier phase's Context, so headings do not flow forward only.\n\nAdopt the tokens, but only after fixing the items below. Then re-measure with the real identity roller and a completed vocabulary, and show the owner the availability cost for each trope row.\n\nScratch scripts: C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\scratchpad\\ (sim.py, sim2.py, sim3.py, ug.py, seq.py, leak.py, xref.py).",
+      "must_fix_before_adopting": [
+        "Add an 'overrides' relation (a trope rewrites a dial effect, a scale parameter, a forced quota or a later hook) for clashes between a trope and a default, instead of excluding the trope. Otherwise show the owner, per row, how often each trope becomes unavailable (magic_is_nobility, no_kings, war_is_ritual, dungeons_inhabited, world_is_young).",
+        "Build a secret firewall. Public draws must never be filtered or weighted by tokens from secret rows, or the public notation and raw must be computed on a public-only pool. Keep per-token provenance instead of Context.add's OR'ed flag. Keep secret-only topics and values out of the owner-reviewed registry, and per-topic counts off public surfaces.",
+        "Fix design_dice.prior_rolls so that a phase's Context holds only earlier phases, by phase order, with no stale or later phase and no later secret records. Do this before claims widen backward headings.",
+        "Drop sky: none from era_underground, or take it to the owner together with its consequence: P2's calendar moon table runs empty in every underground birth. Move below_ground claims off the land_underground landform and onto rows where people live or work below, and add the mining rows (contest_mine_owners_miners, iron_coal, copper_mine, gemstones).",
+        "Registry semantics: no default clash between the values of a topic. Declare clashes explicitly, or support implication (printed implies written; a magic nobility is hereditary). Add a scope for each claim (land, people, region, foreign polity), and do not convert theme lists (dragons, craft) into hard claims.",
+        "Widen the completeness review: hooks and dial effects, not only row statements, plus a presupposition pass (a row naming 'the X' must require X, or the break-has-happened claim). Stamp each row by a content hash rather than each table.",
+        "Settle whether the new-taboo prohibition draw is the first or the second trope. Then give that group a floor or a wait window: R12 as written fails on it.",
+        "Restate the figures honestly: '0 contradictions' means 0 among tagged pairs; R7's cost is -49%, not -20%. Re-run the many-seeds and birth-sequence measurements on the real identity roller (build item 10) with the completed vocabulary before the owner approves the topic list."
+      ]
+    }
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Analyze"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Synthesize"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 3,
+      "title": "Challenge"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "lens:structure",
+      "phaseIndex": 1,
+      "phaseTitle": "Analyze",
+      "agentId": "abb8f9bfc71899898",
+      "model": "claude-fable-5-1",
+      "state": "done",
+      "startedAt": 1790677074886,
+      "queuedAt": 1790677074861,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "The owner's idea works, and most of it is already built. Th…",
+      "promptPreview": "You are analysing a design question for the Campaign Designer, a D&D 5e campaign generator in C:\\Users\\armag\\Desktop\\Campaign-Designer.\nSTRICT RULES: read-only. Never edit, create, stage or commit anything inside the repository. If you need to run a\nPython helper, write it under C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\s…",
+      "promptFramed": true,
+      "lastProgressAt": 1790677927975,
+      "tokens": 182485,
+      "toolCalls": 31,
+      "durationMs": 853084,
+      "resultPreview": "{\"verdict\":\"The owner's idea works, and most of it is already built. The geography chain in foundation.yaml groups its rows exactly this way: `requires any_of` palette kinds on 56 of the 60 lifelines, 8 of 40 ruins, 9 of 40 contests and 9 of 50 traits; `olgu_families` on the ruin rows; `families` on the tensions; the role `hint`s; the action `fits` matrix. design_arbiter.py filters on these before…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "lens:coverage",
+      "phaseIndex": 1,
+      "phaseTitle": "Analyze",
+      "agentId": "a39c1e8a4c7b67b06",
+      "model": "claude-fable-5-1",
+      "state": "done",
+      "startedAt": 1790677074888,
+      "queuedAt": 1790677074861,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Grouping by earlier tags removes contradictions of one clas…",
+      "promptPreview": "You are analysing a design question for the Campaign Designer, a D&D 5e campaign generator in C:\\Users\\armag\\Desktop\\Campaign-Designer.\nSTRICT RULES: read-only. Never edit, create, stage or commit anything inside the repository. If you need to run a\nPython helper, write it under C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\s…",
+      "promptFramed": true,
+      "lastProgressAt": 1790677676346,
+      "tokens": 145558,
+      "toolCalls": 31,
+      "durationMs": 599769,
+      "resultPreview": "{\"verdict\":\"Grouping by earlier tags removes contradictions of one class by construction: a later roll clashing with an earlier roll it can see (a, parent to child). That holds only when each draw is filtered by the tags of every earlier roll, not by one heading. All nine audited contradictions are class (a), because the trope break and the ruin are rolled after the dials and the foundation they c…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "lens:variety",
+      "phaseIndex": 1,
+      "phaseTitle": "Analyze",
+      "agentId": "ae48afb8d7d31a452",
+      "model": "claude-fable-5-1",
+      "state": "done",
+      "startedAt": 1790677074889,
+      "queuedAt": 1790677074861,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "From the variety side, the owner's \"tags + grouping\" idea i…",
+      "promptPreview": "You are analysing a design question for the Campaign Designer, a D&D 5e campaign generator in C:\\Users\\armag\\Desktop\\Campaign-Designer.\nSTRICT RULES: read-only. Never edit, create, stage or commit anything inside the repository. If you need to run a\nPython helper, write it under C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\s…",
+      "promptFramed": true,
+      "lastProgressAt": 1790678001450,
+      "tokens": 214068,
+      "toolCalls": 41,
+      "durationMs": 924872,
+      "resultPreview": "{\"verdict\":\"From the variety side, the owner's \\\"tags + grouping\\\" idea is workable if a group means \\\"every row that does not contradict what is already rolled\\\" (membership by exclusion: a row is in unless a claim rules it out). It is costly if a group means \\\"only the rows listed under the earlier roll's heading\\\" (membership by inclusion: a row is out unless listed). I measured both on the com…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "lens:implementation",
+      "phaseIndex": 1,
+      "phaseTitle": "Analyze",
+      "agentId": "a5e0dfa3eb3e9b0da",
+      "model": "claude-fable-5-1",
+      "state": "done",
+      "startedAt": 1790677074891,
+      "queuedAt": 1790677074861,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Yes, the owner's idea can be built, and it is already how t…",
+      "promptPreview": "You are analysing a design question for the Campaign Designer, a D&D 5e campaign generator in C:\\Users\\armag\\Desktop\\Campaign-Designer.\nSTRICT RULES: read-only. Never edit, create, stage or commit anything inside the repository. If you need to run a\nPython helper, write it under C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\s…",
+      "promptFramed": true,
+      "lastProgressAt": 1790677989730,
+      "tokens": 183130,
+      "toolCalls": 37,
+      "durationMs": 913152,
+      "resultPreview": "{\"verdict\":\"Yes, the owner's idea can be built, and it is already how the arbiter works. design_arbiter.arbitrate() narrows the pool to the rows that fit every earlier roll, and only then throws the die. Grouping through earlier rows already exists: 86 `requires: any_of` lists on palette ids decide which lifelines, ruins, contests and traits can come, and the phenomenon rule is filtered in code to…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "synthesis",
+      "phaseIndex": 2,
+      "phaseTitle": "Synthesize",
+      "agentId": "af54c57d4bd9f5251",
+      "model": "claude-fable-5-1",
+      "state": "done",
+      "startedAt": 1790678002788,
+      "queuedAt": 1790678002772,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Yes, the idea can be built, and it is the right model, prov…",
+      "promptPreview": "You are analysing a design question for the Campaign Designer, a D&D 5e campaign generator in C:\\Users\\armag\\Desktop\\Campaign-Designer.\nSTRICT RULES: read-only. Never edit, create, stage or commit anything inside the repository. If you need to run a\nPython helper, write it under C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\s…",
+      "promptFramed": true,
+      "lastProgressAt": 1790678314606,
+      "tokens": 101910,
+      "toolCalls": 6,
+      "durationMs": 311817,
+      "resultPreview": "{\"feasible\":true,\"summary\":\"Yes, the idea can be built, and it is the right model, provided \\\"group\\\" is read one specific way. A roll's group is every row whose tags do not clash with any tag already rolled: the dials, every earlier row, the earlier draw of the same table, and earlier phases. The arbiter works that group out at the moment of the draw. That is exactly the owner's \\\"the earlier tag…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "critic",
+      "phaseIndex": 3,
+      "phaseTitle": "Challenge",
+      "agentId": "aad24dc6fc3508510",
+      "model": "claude-fable-5-1",
+      "state": "done",
+      "startedAt": 1790678315926,
+      "queuedAt": 1790678315909,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "The plumbing is sound and worth keeping: turning claims int…",
+      "promptPreview": "You are analysing a design question for the Campaign Designer, a D&D 5e campaign generator in C:\\Users\\armag\\Desktop\\Campaign-Designer.\nSTRICT RULES: read-only. Never edit, create, stage or commit anything inside the repository. If you need to run a\nPython helper, write it under C:\\Users\\armag\\AppData\\Local\\Temp\\claude\\C--Users-armag-Desktop-Campaign-Designer\\8d6f4f98-10d0-4c4d-9722-45585aa189da\\s…",
+      "promptFramed": true,
+      "lastProgressAt": 1790679564816,
+      "tokens": 249615,
+      "toolCalls": 45,
+      "durationMs": 1248889,
+      "resultPreview": "{\"holes\":[{\"claim_attacked\":\"Summary: exclusion by claims 'is exactly the owner's idea' and 'removes every audited contradiction', with 0 clashes in 3,000 seeds (grouping_solves #1).\",\"failure\":\"The 0% is circular: it counts only the pairs the proposal tagged. Claims are default-allow, so any fact nobody tagged still gets through. The owner's grouping is default-deny: a row appears only under a he…"
+    }
+  ],
+  "totalTokens": 1076766,
+  "totalToolCalls": 191
+}

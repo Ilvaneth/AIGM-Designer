@@ -1,0 +1,74 @@
+dial entropy bits: 9.67
+
+== today(plan: soft q/form/lineage, hard rule): ok 2000/2000, empty-pool {}, clash births 100 (5.00%)
+   P1 bits/birth (given dials): mean 152.9  -> effective outcomes 2^153
+   trope-breaks.yaml: mean bits per draw 4.77 (eff. pool 27.3), draws 3338
+   tensions.yaml: mean bits per draw 4.84 (eff. pool 28.6), draws 2321
+   signatures.yaml#institution_form: mean bits per draw 3.65 (eff. pool 12.6), draws 2000
+   signatures.yaml#people_lineage: mean bits per draw 3.76 (eff. pool 13.5), draws 2000
+   signatures.yaml#phenomenon_rule: mean bits per draw 3.23 (eff. pool 9.4), draws 2000
+
+== claims(neg filter): ok 2000/2000, empty-pool {}, clash births 7 (0.35%)
+   P1 bits/birth (given dials): mean 152.8  -> effective outcomes 2^153
+   trope-breaks.yaml: mean bits per draw 4.73 (eff. pool 26.5), draws 3338
+   tensions.yaml: mean bits per draw 4.84 (eff. pool 28.6), draws 2321
+   signatures.yaml#institution_form: mean bits per draw 3.65 (eff. pool 12.6), draws 2000
+   signatures.yaml#people_lineage: mean bits per draw 3.76 (eff. pool 13.5), draws 2000
+   signatures.yaml#phenomenon_rule: mean bits per draw 3.23 (eff. pool 9.4), draws 2000
+
+== soft trope x3 by contest (f=.25): ok 2000/2000, empty-pool {}, clash births 100 (5.00%)
+   P1 bits/birth (given dials): mean 152.5  -> effective outcomes 2^153
+   trope-breaks.yaml: mean bits per draw 4.58 (eff. pool 23.9), draws 3338
+   tensions.yaml: mean bits per draw 4.84 (eff. pool 28.6), draws 2321
+   signatures.yaml#institution_form: mean bits per draw 3.65 (eff. pool 12.6), draws 2000
+   signatures.yaml#people_lineage: mean bits per draw 3.76 (eff. pool 13.5), draws 2000
+   signatures.yaml#phenomenon_rule: mean bits per draw 3.23 (eff. pool 9.4), draws 2000
+
+== hard trope by contest (f=.25): ok 1921/2000, empty-pool {'identity_empty:trope-breaks.yaml': 79}, clash births 98 (5.10%)
+   P1 bits/birth (given dials): mean 149.4  -> effective outcomes 2^149
+   trope-breaks.yaml: mean bits per draw 2.81 (eff. pool 7.0), draws 3201
+   tensions.yaml: mean bits per draw 4.84 (eff. pool 28.6), draws 2223
+   signatures.yaml#institution_form: mean bits per draw 3.65 (eff. pool 12.6), draws 1921
+   signatures.yaml#people_lineage: mean bits per draw 3.76 (eff. pool 13.5), draws 1921
+   signatures.yaml#phenomenon_rule: mean bits per draw 3.22 (eff. pool 9.3), draws 1921
+
+== hard trope by contest (f=.5): ok 2000/2000, empty-pool {}, clash births 111 (5.55%)
+   P1 bits/birth (given dials): mean 151.3  -> effective outcomes 2^151
+   trope-breaks.yaml: mean bits per draw 3.80 (eff. pool 13.9), draws 3338
+   tensions.yaml: mean bits per draw 4.84 (eff. pool 28.6), draws 2321
+   signatures.yaml#institution_form: mean bits per draw 3.65 (eff. pool 12.6), draws 2000
+   signatures.yaml#people_lineage: mean bits per draw 3.76 (eff. pool 13.5), draws 2000
+   signatures.yaml#phenomenon_rule: mean bits per draw 3.23 (eff. pool 9.4), draws 2000
+
+== hard trope by contest+spine+lifeline+era (f=.5): ok 1549/2000, empty-pool {'identity_empty:trope-breaks.yaml': 451}, clash births 72 (4.65%)
+   P1 bits/birth (given dials): mean 144.9  -> effective outcomes 2^145
+   trope-breaks.yaml: mean bits per draw 1.19 (eff. pool 2.3), draws 2480
+   tensions.yaml: mean bits per draw 4.84 (eff. pool 28.7), draws 1771
+   signatures.yaml#institution_form: mean bits per draw 3.65 (eff. pool 12.6), draws 1549
+   signatures.yaml#people_lineage: mean bits per draw 3.76 (eff. pool 13.5), draws 1549
+   signatures.yaml#phenomenon_rule: mean bits per draw 3.23 (eff. pool 9.4), draws 1549
+
+== hard everything (q,form,lineage,rule, trope f=.25): ok 1921/2000, empty-pool {'identity_empty:trope-breaks.yaml': 79}, clash births 98 (5.10%)
+   P1 bits/birth (given dials): mean 142.7  -> effective outcomes 2^143
+   trope-breaks.yaml: mean bits per draw 2.81 (eff. pool 7.0), draws 3201
+   tensions.yaml: mean bits per draw 2.91 (eff. pool 7.5), draws 2223
+   signatures.yaml#institution_form: mean bits per draw 0.82 (eff. pool 1.8), draws 1921
+   signatures.yaml#people_lineage: mean bits per draw 2.08 (eff. pool 4.2), draws 1921
+   signatures.yaml#phenomenon_rule: mean bits per draw 3.22 (eff. pool 9.3), draws 1921
+
+== soft everything (rule soft x3): ok 2000/2000, empty-pool {}, clash births 100 (5.00%)
+   P1 bits/birth (given dials): mean 154.4  -> effective outcomes 2^154
+   trope-breaks.yaml: mean bits per draw 4.58 (eff. pool 23.9), draws 3338
+   tensions.yaml: mean bits per draw 4.84 (eff. pool 28.6), draws 2321
+   signatures.yaml#institution_form: mean bits per draw 3.65 (eff. pool 12.6), draws 2000
+   signatures.yaml#people_lineage: mean bits per draw 3.76 (eff. pool 13.5), draws 2000
+   signatures.yaml#phenomenon_rule: mean bits per draw 5.07 (eff. pool 33.7), draws 2000
+
+== flat (no weights, rule unfiltered): ok 2000/2000, empty-pool {}, clash births 100 (5.00%)
+   P1 bits/birth (given dials): mean 155.4  -> effective outcomes 2^155
+   trope-breaks.yaml: mean bits per draw 4.77 (eff. pool 27.3), draws 3338
+   tensions.yaml: mean bits per draw 5.04 (eff. pool 32.8), draws 2321
+   signatures.yaml#institution_form: mean bits per draw 3.81 (eff. pool 14.0), draws 2000
+   signatures.yaml#people_lineage: mean bits per draw 3.83 (eff. pool 14.2), draws 2000
+   signatures.yaml#phenomenon_rule: mean bits per draw 5.27 (eff. pool 38.7), draws 2000
+secs 251.4

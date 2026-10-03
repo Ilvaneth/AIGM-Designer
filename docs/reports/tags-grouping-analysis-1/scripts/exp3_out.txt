@@ -1,0 +1,28 @@
+
+== today
+  trope-breaks.yaml                    H(row) 5.02  H(row|history) 4.76  info fixed by earlier rolls 0.26 bits (  5%)  distinct rows seen 33  P(same row | same contest fam)  3.4% vs any  3.1%
+  tensions.yaml                        H(row) 5.03  H(row|history) 4.84  info fixed by earlier rolls 0.19 bits (  4%)  distinct rows seen 33  P(same row | same contest fam)  4.2% vs any  3.1%
+  signatures.yaml#institution_form     H(row) 3.79  H(row|history) 3.65  info fixed by earlier rolls 0.13 bits (  4%)  distinct rows seen 14  P(same row | same contest fam)  8.0% vs any  7.3%
+  signatures.yaml#people_lineage       H(row) 3.87  H(row|history) 3.76  info fixed by earlier rolls 0.11 bits (  3%)  distinct rows seen 16  P(same row | same contest fam)  7.9% vs any  7.5%
+  signatures.yaml#phenomenon_rule      H(row) 5.28  H(row|history) 3.26  info fixed by earlier rolls 2.03 bits ( 38%)  distinct rows seen 40  P(same row | same contest fam)  3.1% vs any  2.6%
+
+== soft_all
+  trope-breaks.yaml                    H(row) 5.00  H(row|history) 4.56  info fixed by earlier rolls 0.44 bits (  9%)  distinct rows seen 33  P(same row | same contest fam)  4.3% vs any  3.2%
+  tensions.yaml                        H(row) 5.02  H(row|history) 4.84  info fixed by earlier rolls 0.19 bits (  4%)  distinct rows seen 33  P(same row | same contest fam)  4.2% vs any  3.1%
+  signatures.yaml#institution_form     H(row) 3.79  H(row|history) 3.65  info fixed by earlier rolls 0.13 bits (  4%)  distinct rows seen 14  P(same row | same contest fam)  8.0% vs any  7.3%
+  signatures.yaml#people_lineage       H(row) 3.87  H(row|history) 3.76  info fixed by earlier rolls 0.11 bits (  3%)  distinct rows seen 16  P(same row | same contest fam)  7.9% vs any  7.5%
+  signatures.yaml#phenomenon_rule      H(row) 5.27  H(row|history) 5.07  info fixed by earlier rolls 0.20 bits (  4%)  distinct rows seen 40  P(same row | same contest fam)  3.1% vs any  2.7%
+
+== hard_all
+  trope-breaks.yaml                    H(row) 4.78  H(row|history) 2.80  info fixed by earlier rolls 1.99 bits ( 42%)  distinct rows seen 33  P(same row | same contest fam) 12.8% vs any  4.2%
+  tensions.yaml                        H(row) 4.97  H(row|history) 2.92  info fixed by earlier rolls 2.05 bits ( 41%)  distinct rows seen 33  P(same row | same contest fam) 11.2% vs any  3.3%
+  signatures.yaml#institution_form     H(row) 3.39  H(row|history) 0.83  info fixed by earlier rolls 2.56 bits ( 76%)  distinct rows seen 12  P(same row | same contest fam) 15.4% vs any 10.9%
+  signatures.yaml#people_lineage       H(row) 3.16  H(row|history) 2.08  info fixed by earlier rolls 1.08 bits ( 34%)  distinct rows seen 11  P(same row | same contest fam) 12.7% vs any 12.2%
+  signatures.yaml#phenomenon_rule      H(row) 5.28  H(row|history) 3.26  info fixed by earlier rolls 2.03 bits ( 38%)  distinct rows seen 40  P(same row | same contest fam)  3.1% vs any  2.6%
+
+== flat
+  trope-breaks.yaml                    H(row) 5.02  H(row|history) 4.76  info fixed by earlier rolls 0.26 bits (  5%)  distinct rows seen 33  P(same row | same contest fam)  3.4% vs any  3.1%
+  tensions.yaml                        H(row) 5.03  H(row|history) 5.04  info fixed by earlier rolls -0.01 bits ( -0%)  distinct rows seen 33  P(same row | same contest fam)  3.5% vs any  3.1%
+  signatures.yaml#institution_form     H(row) 3.80  H(row|history) 3.81  info fixed by earlier rolls -0.01 bits ( -0%)  distinct rows seen 14  P(same row | same contest fam)  7.7% vs any  7.2%
+  signatures.yaml#people_lineage       H(row) 3.82  H(row|history) 3.83  info fixed by earlier rolls -0.01 bits ( -0%)  distinct rows seen 16  P(same row | same contest fam)  9.1% vs any  8.7%
+  signatures.yaml#phenomenon_rule      H(row) 5.29  H(row|history) 5.27  info fixed by earlier rolls 0.02 bits (  0%)  distinct rows seen 40  P(same row | same contest fam)  3.0% vs any  2.6%
