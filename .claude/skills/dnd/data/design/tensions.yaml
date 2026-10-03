@@ -41,7 +41,7 @@ rows:
   - id: tension_power_self
     label: "Power vs self"
     poles: [power, self]
-    families: [strong_weak, race]
+    families: [strong_weak, race, hidden_hand]
     tr: {poles: ["güç", "benlik"]}
   - id: tension_memory_salvation
     label: "Memory vs salvation"
@@ -66,7 +66,7 @@ rows:
   - id: tension_justice_peace
     label: "Justice vs peace"
     poles: [justice, peace]
-    families: [strong_weak, kin]
+    families: [strong_weak, kin, two_hands]
     tr: {poles: ["adalet", "barış"]}
   - id: tension_belonging_becoming
     label: "Belonging vs becoming"
@@ -106,12 +106,12 @@ rows:
   - id: tension_one_many
     label: "The one vs the many"
     poles: [the_one, the_many]
-    families: [two_hands, strong_weak]
+    families: [two_hands, strong_weak, hidden_hand]
     tr: {poles: ["bir kişi", "çoğunluk"]}
   - id: tension_ambition_contentment
     label: "Ambition vs contentment"
     poles: [ambition, contentment]
-    families: [race]
+    families: [race, two_hands]
     tr: {poles: ["hırs", "kanaat"]}
   - id: tension_hospitality_suspicion
     label: "Hospitality vs suspicion"
@@ -162,7 +162,7 @@ rows:
   - id: tension_security_freedom
     label: "Security vs freedom"
     poles: [security, freedom]
-    families: [strong_weak, open_close]
+    families: [strong_weak, open_close, hidden_hand]
     tr: {poles: ["güvenlik", "özgürlük"]}
   - id: tension_hope_truth
     label: "Hope vs truth"
@@ -182,5 +182,5 @@ rows:
   - id: tension_winning_being_right
     label: "Winning vs being right"
     poles: [winning, being_right]
-    families: [race, hidden_hand]
+    families: [race, hidden_hand, two_hands]
     tr: {poles: ["kazanmak", "haklı olmak"]}

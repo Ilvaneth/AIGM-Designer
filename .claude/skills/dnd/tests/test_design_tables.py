@@ -243,22 +243,18 @@ class Floors(unittest.TestCase):
             self.assertTrue(set(r["villain_relation"]) <= {"knows", "is", "serves", "hunts", "denies"}, r["id"])
 
     def test_trope_breaks_and_touch_two_phases(self):
-        """Item 25 step 2 #5: 33 rows in six families (17 kept, 16 added), each touching two phases; four ties; six
-        prohibition rows for the new-taboo scar (owner, 2026-09-29)."""
+        """Item 25 step 2 #5 after the tag review (build item 7c-3): 31 rows in six families, each touching two
+        phases; four ties; eight prohibition rows for the new-taboo scar. test_trope_claims checks the claims."""
         breaks = dt.rows("trope-breaks.yaml")
-        self.assertEqual(len(breaks), 33)
+        self.assertEqual(len(breaks), 31)
         from collections import Counter
         self.assertEqual(Counter(r["family"] for r in breaks),
-                         {"governance": 7, "peoples": 8, "gods": 5, "danger": 5, "time": 3, "knowledge": 5})
+                         {"governance": 7, "peoples": 3, "gods": 5, "danger": 7, "time": 3, "knowledge": 6})
         self.assertEqual({r["piece"] for r in dt.rows("trope-breaks.yaml#tie")}, {"lifeline", "ruin_source", "contest", "break"})
-        self.assertEqual({r["id"] for r in breaks if r.get("prohibition")}, {"break_maps_are_illegal", "break_weapons_one_class", "break_god_name_forbidden",
-                                                                                 "break_sacred_beast", "break_underground_forbidden",
-                                                                                 "break_border_forbidden"})
+        self.assertEqual({r["id"] for r in breaks if r.get("prohibition")},
+                         {"break_weapons_one_class", "break_border_forbidden", "break_god_name_forbidden", "break_underground_forbidden",
+                          "break_ruins_forbidden", "break_night_forbidden", "break_maps_are_illegal", "break_casting_forbidden"})
         self.assertTrue(dt.load("trope-breaks.yaml")["roll"]["families_distinct"])
-        conflicts = {r["id"]: r.get("conflicts_with") for r in breaks if r.get("conflicts_with")}
-        self.assertEqual(conflicts, {"break_rule_by_lottery": ["tension_inheritance_merit"],
-                                     "break_elves_are_new": ["ruin_elven_withdrawal"]},
-                         "a conflict only where two sentences contradict literally (owner, 2026-09-29)")
         for r in breaks:
             self.assertTrue(r["tr"]["name"] and r["tr"]["at_table"], r["id"])
             self.assertNotIn("(", r["tr"]["name"], r["id"])

@@ -344,8 +344,11 @@ def preroll_p2(R: Roller, m: dict) -> None:
     override = None
     for b in breaks:
         row = dt.row("trope-breaks.yaml", b) or {}
-        if (row.get("overrides") or {}).get("pantheon_type"):
-            override = (b, row["overrides"]["pantheon_type"])
+        # the one override applied today: a trope break that names a pantheon type forces it (the ancestor gods).
+        # Every other override is data for the floor that owns the default (claims.yaml).
+        for o in row.get("overrides") or []:
+            if o.get("default") == "pantheon_type" and dt.row("pantheon.yaml#type", str(o.get("to"))):
+                override = (b, o["to"])
     if override:
         R.forced("pantheon_type", "pantheon.yaml#type", override[1], f"override by {override[0]}")
     else:

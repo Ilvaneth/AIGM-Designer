@@ -67,4 +67,8 @@ defaults:
   lineage_palette_weights: {phase: P1, what: "the lineage roll's palette weights (item 10)"}
 
 # how two overrides of one default stand together: [{default, rows: [a, b], combine: "one line"}]
-combines: []
+combines:
+  - {default: regulator_identity, rows: [break_magic_is_nobility, contest_casters_casterless], combine: "the contest's side a is the nobility; one regulator"}
+  - {default: regulator_identity, rows: [break_casting_forbidden, contest_casters_casterless], combine: "the contest's side a is the ban's licensed exception and its enforcer; one regulator"}
+  - {default: regulator_strictness, rows: [break_casting_forbidden, contest_casters_casterless], combine: "the ban's strictest rule holds; side a enforces it"}
+  - {default: site_attitude_pool, rows: [break_monsters_have_treaties, break_dungeons_inhabited], combine: "the treaty people's lairs are negotiate; every other site's pool loses kill and ignore"}
