@@ -667,3 +667,24 @@ What is left is exactly what item 10 builds, the rolls of step 2: the people's r
 Every archetype is told as the break's true cause with a person who chose it, and carries three clue stages; no row protects the party. Two conflicts with public rows are added (a secret the foundation already half shows). The visibility table may repeat (the approved rule is that the shape and origin pair is not drawn again). The coding tab's own decisions are accepted (four archetypes removed, not two; one twist replaced; hashed stamp keys for the secret tables). The burn sample (`docs/reports/item9-burn-sample.md`: three archetypes, three shapes, in no table) is for the owner to read.
 
 **The burn sample was read and its level approved by the owner (2026-10-03);** build item 9 is committed after the five corrections. The specification of item 10 (step 2's rolls, two commits) is `docs/p1-build-10.md`.
+
+**Build item 10a, audited 2026-10-03 (`design_identity.py` read line by line; 586 tests green; committed as `db19171` after two corrections).** The public identity's rolls follow `docs/p1-build-10.md`. Two owner rulings came out of the audit, both with no exception left:
+- *The institution always has a home.* In 1 of 2,700 births the break destroyed the contest's only role with an archetype. The break may no longer strike the last seated role that can house the institution (a constraint beside the winner's rule, in the foundation); the placeholder that rolled an archetype outside the contest is gone, and a missing home stops the preroll.
+- *The form always sits under the role's archetype.* Two practices named a form their own archetype list was wider than (66 of 2,700 births). `practice_free_company` now fits `martial` only and `practice_smugglers_union` `criminal` only (practices per archetype: trade 10, criminal 6; the others unchanged). No exemption remains in the test.
+The floor over 2,700 seeds: no table whose rows are not drawn again under five (the resistance archetype's practices 5, a ruin source's rules 5, epic's second question 5, the prohibition rows at the scar's draw 5).
+
+**Build item 10b, audited 2026-10-03 (`roll_secret` read; the suite run).** The secret (archetype, chooser, twist, trail, and the role when the chooser is a contest role) and the villain (visibility, shape, origin, tie, pole) are rolled secretly in P1; P4 reads the three moved rolls; the shape and origin pair is recorded hashed and not drawn again; the chooser is the villain exactly when the tie is "caused it". Accepted as reported: a legacy birth whose P1 predates this keeps rolling the three in P4; the chooser's role may be the role the break destroyed (a role that chose its own end is a story).
+
+**The whole-P1 measurement on the real rolls (2026-10-03, `whole_p1_v2.py`, 3,000 births; it calls `design_foundation` and `design_identity` as the preroll does).**
+
+| What | Tables as they stood | After builds 7a to 8 | After build 10 |
+|---|---|---|---|
+| a literal clash | 26.1 % | 0 | 0 |
+| a row outside its heading (prize, the people's role) | 37.3 % | 4.1 % | 0 |
+| the institution against its role's archetype | 70.2 % | 69.6 % | 0 |
+| a user against the rule's kind | 69.3 % | 69.1 % | 0 |
+| a question outside its contest's family | 78.7 % | 77.1 % | 0 |
+| the chooser and the villain's tie disagreeing | not measured | not measured | 0 |
+| any of them | 86.4 % (the first three) | 71.1 % | 0 |
+
+The measured cases do occur in the sample (in 600 births: a forced-lineage role 28 times, a prize contest 47, a usable rule 92, a form named by its practice 40, the "new prohibition" scar 77), so the zeros are not an empty result. As before, this counts what the review found and ruled; it is no proof that nothing else exists.
