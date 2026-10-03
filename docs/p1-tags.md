@@ -648,3 +648,5 @@ Four small points were open; the owner ruled on them the same day (below).
 | a question outside its contest's family | 78.7 % | 77.1 % |
 
 What is left is exactly what item 10 builds, the rolls of step 2: the people's role forcing the lineage (the 4.1 %), the archetype heading of the institution, the user rolled for usable rules only, the question drawn under its contest's family. The data for all four is in the tables; the script still rolls them the old way. The measurement is repeated after item 10.
+
+**The secret and villain tables: how the owner is assured without seeing a row (approved 2026-10-03).** (a) Seven criteria the owner set, which the rows are written and audited against (`docs/p1-build-9.md` section 1). (b) A burn sample: three archetypes and three villain shapes written to the tables' standard, shown to the owner, never in the tables. (c) The development tab reads every row and reports counts per criterion. (d) The owner may ask one-sentence questions answered only yes, no, or "not answerable without a spoiler".
