@@ -122,9 +122,10 @@ class Convention(unittest.TestCase):
             for key in ("secret_archetype_bias", "pantheon_type_bias", "era_bias"):
                 refs += (r.get("effects") or {}).get(key) or []
             refs += r.get("touch_bias") or []
-            refs += (r.get("overrides") or {}).get("pantheon_type_bias") or []
-            if (r.get("overrides") or {}).get("pantheon_type"):
-                refs.append(r["overrides"]["pantheon_type"])
+            old = r.get("overrides") if isinstance(r.get("overrides"), dict) else {}   # the list form is test_claims' to check
+            refs += old.get("pantheon_type_bias") or []
+            if old.get("pantheon_type"):
+                refs.append(old["pantheon_type"])
             for ref in refs:
                 table = ref.split("_", 1)[0]
                 prefix_table = {"secret": "secrets", "break": "trope-breaks", "tension": "tensions",

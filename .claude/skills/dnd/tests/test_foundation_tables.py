@@ -474,6 +474,78 @@ class CleanPhrases(unittest.TestCase):
             self.assertNotRegex(r["tr"]["what"], r"(?i)bir zamanlar|çok önce|eskiden", r["id"])
 
 
+class TagReview(unittest.TestCase):
+    """Build item 7c-2 (docs/p1-build-7c.md): the foundation rows as the tag review left them."""
+
+    def test_the_claims(self):
+        by = {r["id"]: r for r in CONTEST}
+        want = {"contest_two_heirs": {"nobility": "exists", "rule": "hereditary"}, "contest_empty_throne": {"nobility": "exists", "rule": "hereditary"},
+                "contest_sibling_rulers": {"rule": "hereditary"}, "contest_old_order_reform": {"nobility": "exists"},
+                "contest_capital_marches": {"nobility": "exists"}, "contest_lords_peasants": {"nobility": "exists"},
+                "contest_treasure_race": {"rule": "throne"}, "contest_first_settlers": {"rule": "throne"},
+                "contest_humans_giants": {"rule": "throne"}, "contest_war_fed_company": {"war": "by_armies"}}
+        self.assertEqual({k: r["claims"] for k, r in by.items() if r.get("claims")}, want)
+        roles = {(k, key): role["claims"] for k, r in by.items() for key, role in r["roles"].items() if role.get("claims")}
+        self.assertEqual(roles, {("contest_occupier_resistance", "third"): {"nobility": "exists"},
+                                 ("contest_humans_fey", "fourth"): {"nobility": "exists"}})
+        self.assertEqual({r["id"]: r["claims"] for r in LIFE if r.get("claims")},
+                         {"life_binding_marriage": {"nobility": "exists", "rule": "hereditary"}})
+        self.assertEqual({r["id"]: r["claims"] for r in RUIN if r.get("claims")}, {"ruin_age_of_mages": {"magic": "faded"}})
+
+    def test_the_prize_and_the_lifeline(self):
+        by = {r["id"]: r for r in CONTEST}
+        craft = [r["id"] for r in LIFE if r["family"] == "craft"]
+        passage = [r["id"] for r in LIFE if r["family"] == "passage"]
+        for cid in ("contest_old_new_craft", "contest_share_keep_knowledge", "contest_split_family"):
+            self.assertEqual(by[cid]["requires"], {"any_of": craft})
+        self.assertEqual(by["contest_open_close_road"]["requires"], {"any_of": passage + ["life_pilgrim_road"]})
+        self.assertEqual(by["contest_one_harbour"]["requires"]["all"][0], {"any_of": ["land_coast"]}, "the palette requirement stays")
+        for cid in ("contest_one_harbour", "contest_one_pasture", "contest_two_banks", "contest_mine_owners_miners"):
+            palette, lifes = by[cid]["requires"]["all"]
+            self.assertTrue(all(x.startswith("land_") for x in palette["any_of"]))
+            self.assertIn({"when": {"any_of": lifes["any_of"]}, "x": 3}, by[cid]["weight_by"], "as likely as before inside its heading")
+        self.assertIsNone(by["contest_one_shrine"].get("requires"))
+        gods = [r["id"] for r in RUIN if r["family"] == "gods"]
+        self.assertIn({"when": {"any_of": gods}, "x": 2}, by["contest_one_shrine"]["weight_by"])
+
+    def test_the_peoples_roles_and_the_other_contest_changes(self):
+        by = {r["id"]: r for r in CONTEST}
+        people = {(k, key): role for k, r in by.items() for key, role in r["roles"].items() if role.get("people_role")}
+        self.assertEqual(len(people), 10)
+        self.assertEqual({k: v.get("lineage_forced") for k, v in people.items() if v.get("lineage_forced")},
+                         {("contest_humans_giants", "b"): "lineage_giant_kin", ("contest_humans_fey", "b"): "lineage_fey",
+                          ("contest_land_sea_folk", "b"): "lineage_merfolk"})
+        weigh = {"lineage_dwarf": 3, "lineage_gnome": 3, "lineage_goblinoid": 3}
+        self.assertEqual({k: v["lineage_weight"] for k, v in people.items() if v.get("lineage_weight")},
+                         {("contest_surface_deep", "b"): weigh, ("contest_mine_owners_miners", "fourth"): weigh})
+        self.assertEqual(by["contest_two_branches"]["roles"]["a"]["tr"], "eski çöküşü bir ceza sayan kol")
+        self.assertEqual(by["contest_two_branches"]["roles"]["b"]["tr"], "onu bir fırsat sayan kol")
+        self.assertEqual([o["default"] for o in by["contest_casters_casterless"]["overrides"]], ["regulator_identity", "regulator_strictness"])
+
+    def test_the_break_rows(self):
+        times = {r["id"]: r for r in dt.rows("foundation.yaml#time")}
+        self.assertEqual(times["time_coming"]["conflicts_with"], ["scar_new_people", "scar_magic_rule_changed"])
+        surface = {"dial": {"era": ["medieval", "renaissance", "ancient", "nautical"]}}
+        scars = {r["id"]: r for r in SCARS}
+        acts = {r["id"]: r for r in ACTIONS}
+        for row in (scars["scar_sky_changed"], scars["scar_seasons_broken"], acts["act_fell_from_sky"]):
+            self.assertEqual(row["requires"], surface, row["id"])
+        generic = ("carry this scar", "the identity takes this scar")
+        for r in SCARS:
+            for h in r["hooks"]:
+                self.assertFalse(any(g in h["must"] for g in generic), (r["id"], h["must"]))
+        self.assertEqual(scars["scar_new_taboo"]["floors"], ["P1", "P3"])
+        plane = "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"
+        ruins = {r["id"]: r for r in RUIN}
+        for row in (ruins["ruin_planar_rift"], ruins["ruin_planar_invasion"], ruins["ruin_celestial_war"], ruins["ruin_elven_withdrawal"],
+                    acts["act_merged_with_plane"], scars["scar_plane_thinned"]):
+            self.assertTrue(any(plane in h["must"] and h["phase"] == "P2" for h in row["hooks"]), row["id"])
+        self.assertEqual(PALETTE["land_glass_desert"]["tr"]["what"], "kumu cama dönmüş bir çöl")
+        self.assertEqual(PALETTE["land_giant_bones"]["tr"]["what"], "dev bir iskeletin üstünde ve içinde kurulmuş toprak")
+        common = [h["must"] for h in DOC["tables"]["palette"]["hooks_common"]]
+        self.assertIn("the origin of every fantastic kind the ruin source did not bring is written", common)
+
+
 class Attractors(unittest.TestCase):
 
     def test_no_attractor_cluster_in_any_row(self):

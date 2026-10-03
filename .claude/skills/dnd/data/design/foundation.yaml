@@ -44,6 +44,7 @@ tables:
     hooks_common:
       - {phase: P3, must: "every palette kind lives on at least one map node (short has 1-2 regions against 4-5 kinds)"}
       - {phase: P3, must: "a region's biomes come from its palette kinds' biomes"}
+      - {phase: P2, must: "the origin of every fantastic kind the ruin source did not bring is written"}
     rows:
       - {id: land_mountain, label: Mountains, height: true, biomes: [biome_high_mountains, biome_foothills], tr: {name: "dağ"}}
       - {id: land_highland, label: Highlands, height: true, biomes: [biome_pine_uplands, biome_grazing_hills, biome_moor], weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "yayla"}}
@@ -77,9 +78,9 @@ tables:
       - {id: land_floating_isles, label: Floating isles, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "yüzen adalar", what: "havada asılı kayalar ve üstlerindeki köyler"}}
       - {id: land_crystal_forest, label: Crystal forest, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "kristal orman", what: "ağaçları kristalden bir orman"}}
       - {id: land_stone_sea, label: Petrified sea, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "taşlaşmış deniz", what: "dalgaları taş kesilmiş, üstünde yürünen bir deniz"}}
-      - {id: land_giant_bones, label: Giant's bones, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "dev kemikleri", what: "bir titanın iskeletinin üstünde ve içinde kurulmuş toprak"}}
+      - {id: land_giant_bones, label: Giant's bones, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "dev kemikleri", what: "dev bir iskeletin üstünde ve içinde kurulmuş toprak"}}
       - {id: land_sky_river, label: River into the sky, fantastic: true, water: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "göğe akan nehir", what: "yukarı doğru akan, havada bir su yolu"}}
-      - {id: land_glass_desert, label: Glass desert, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "cam çölü", what: "eski bir büyü savaşının camlaştırdığı kum"}}
+      - {id: land_glass_desert, label: Glass desert, fantastic: true, requires: {dial: {magic: [medium, high]}}, weight_by: [{when: {dial: {era: [underground]}}, x: 0.5}], tr: {name: "cam çölü", what: "kumu cama dönmüş bir çöl"}}
       - {id: land_giant_fungus, label: Giant fungus forest, fantastic: true, requires: {dial: {magic: [medium, high]}}, tr: {name: "dev mantar ormanı", what: "yüzeyde, ağaç boyu mantarlar"}}
       - id: land_thin_place
         label: Thin place
@@ -460,6 +461,8 @@ tables:
         olgu_families: [magic_behaviour, nature_creatures]
         tr: {name: "göksel savaş", what: "düzlemler arası bir savaş bu dünyada çarpıştı", remnant: "düşmüş savaş makineleri, yaralı toprak", sites: "çarpma kraterleri, düşmüş gök kaleleri, düzlem yarıkları", strangeness: "savaş alanında iyilik ve kötülük elle tutulur hale geliyor"}
       # 3. gods
+        hooks:
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_dead_god
         label: A dead god
         family: gods
@@ -498,6 +501,7 @@ tables:
         tr: {name: "tanrılaşamayan ölümlü", what: "bir büyücü tanrılığa yükselmeye çalıştı ve başaramadı", remnant: "yükseliş kulesi", sites: "kule, ayin mahzenleri, yarı tanrılaşmış hizmetkârlar", strangeness: "kulede dilekler yarım gerçekleşiyor"}
       # 4. magic
       - id: ruin_age_of_mages
+        claims: {magic: faded}           # the age of plentiful magic ended: never at magic high
         label: The age of mages
         family: magic
         remnant_kind: city
@@ -633,6 +637,8 @@ tables:
         sites: [site_dungeon_ruin, site_planar, site_wilderness]
         olgu_families: [time, place_path]
         tr: {name: "elflerin çekildiği orman", what: "elfler başka bir düzleme çekildi", remnant: "boş ağaç-şehirler", sites: "ağaç-saraylar, fey geçitleri, bekçi yaratıklar", strangeness: "ormanda zaman farklı akıyor"}
+        hooks:
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_giants_land
         label: The land of giants
         family: old_peoples
@@ -666,7 +672,7 @@ tables:
         olgu_families: [magic_behaviour, place_path, time]
         tr: {name: "düzlem yarığı", what: "bir düzlemin kapısı açıldı, sonra kapandı", remnant: "yarığın izi", sites: "yarık çevresindeki dönüşmüş toprak, düzlem yaratıklarının kaleleri", strangeness: "yarık bölgesinde o düzlemin bir kuralı geçerli"}
         hooks:
-          - {phase: P2, must: "the rift's plane is chosen and its one rule written"}
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_fallen_sky_city
         label: The sky city that fell
         family: planes
@@ -682,6 +688,8 @@ tables:
         sites: [site_stronghold, site_planar, site_dungeon_lair]
         olgu_families: [nature_creatures, body_blood]
         tr: {name: "düzlem istilası", what: "başka bir düzlemden gelen ordu geri püskürtüldü", remnant: "istilacıların kaleleri", sites: "istilacı kaleleri, esir kampları, kapı kalıntıları", strangeness: "istilacıların bıraktığı yaratıklar çoğalıyor"}
+        hooks:
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_broken_time
         label: Where time broke
         family: planes
@@ -1048,6 +1056,7 @@ tables:
         family: treaty
         tr: {"name": "paralı muhafızlar", "name_note": "bir birlik bölgeyi korur, bölge öder", "who": "muhafızlar", "yields": "güvenlik", "weak_point": "ödeme aksarsa"}
       - id: life_binding_marriage
+        claims: {nobility: exists, rule: hereditary}
         label: "The marriage that binds two kingdoms"
         family: treaty
         tr: {"name": "iki krallığı bağlayan evlilik", "who": "elçiler", "yields": "barış", "weak_point": "bir ölüm"}
@@ -1081,6 +1090,7 @@ tables:
       - {phase: P7, must: "the contest's escalation climbs with the arc"}
     rows:
       - id: contest_two_heirs
+        claims: {nobility: exists, rule: hereditary}
         label: "Two heirs, a regent at the heart"
         family: two_hands
         prize: heart
@@ -1102,7 +1112,8 @@ tables:
           b: {tr: "yeni kurulan rakip şehir", hint: trade}
           third: {tr: "limanı kullanan kaçakçılar", hint: criminal}
           fourth: {tr: "denizciler loncası", hint: null}
-        requires: {any_of: ["land_coast"]}
+        requires: {all: [{any_of: ["land_coast"]}, {any_of: [life_natural_harbour, life_strait_crossing, life_shipbuilding, life_fish_run, life_oyster_beds, life_sea_folk_hunt, life_dye_sources, life_amber_shores]}]}   # the palette, and a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_natural_harbour, life_strait_crossing, life_shipbuilding, life_fish_run, life_oyster_beds, life_sea_folk_hunt, life_dye_sources, life_amber_shores]}, x: 3}]
         escalation: ["gemilere el koyma", "kıyı savaşı"]
         tr: {name: "aynı limanı isteyen iki şehir", name_note: "kilit yerin iki yanında"}
       - id: contest_one_pasture
@@ -1114,7 +1125,8 @@ tables:
           b: {tr: "tarlasını genişleten ova köyleri", hint: state}
           third: {tr: "iki tarafa da at ve silah satan tüccarlar", hint: trade}
           fourth: {tr: "otlağın ortasındaki kutsal yerin bekçileri", hint: religious}
-        requires: {any_of: ["land_highland", "land_plain", "land_steppe"]}
+        requires: {all: [{any_of: ["land_highland", "land_plain", "land_steppe"]}, {any_of: [life_yak_herds, life_horse_herds, life_deer_migration, life_wheat_plain, life_carpet_weaving, life_leather_armour, life_vineyards, life_flax_fields]}]}   # the palette, and a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_yak_herds, life_horse_herds, life_deer_migration, life_wheat_plain, life_carpet_weaving, life_leather_armour, life_vineyards, life_flax_fields]}, x: 3}]
         escalation: ["sürü baskınları", "kan davası"]
         tr: {name: "iki halk, bir otlak"}
       - id: contest_one_shrine
@@ -1127,6 +1139,7 @@ tables:
           b: {tr: "aynı yeri kendi tanrısının sayan yeni inanç", hint: religious}
           third: {tr: "hacılarla geçinen kasaba", hint: guild}
           fourth: {tr: "yeri kazmak isteyen bilginler", hint: scholarly}
+        weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}]   # a ruin source of the gods
         escalation: ["hacıların yolunun kesilmesi", "kutsal yerde kan"]
         tr: {name: "iki inanç, bir kutsal yer", name_note: "kutsal yer kilit yerde"}
       - id: contest_two_banks
@@ -1137,8 +1150,9 @@ tables:
           a: {tr: "yukarı akıştakiler", hint: state}
           b: {tr: "aşağı akıştakiler", hint: state}
           third: {tr: "suyu yönlendiren bent ustaları", hint: guild}
-          fourth: {tr: "nehirde yaşayan bir halk", hint: null}
-        requires: {any_of: ["land_river"]}
+          fourth: {tr: "nehirde yaşayan bir halk", hint: null, people_role: true}
+        requires: {all: [{any_of: ["land_river"]}, {any_of: [life_snowmelt, life_river_flood, life_shared_water_right, life_river_ford, life_flax_fields, life_tile_ceramics, life_fish_run]}]}   # the palette, and a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_snowmelt, life_river_flood, life_shared_water_right, life_river_ford, life_flax_fields, life_tile_ceramics, life_fish_run]}, x: 3}]
         escalation: ["suyu kesme", "bent yıkma"]
         tr: {name: "bir nehir, iki yaka"}
       - id: contest_settlers_newcomers
@@ -1155,6 +1169,7 @@ tables:
         escalation: ["yasaklar", "mahalle yangınları"]
         tr: {name: "yerleşikler ve yeni gelenler", name_note: "gelenler bir uçta"}
       - id: contest_old_order_reform
+        claims: {nobility: exists}
         label: "The old order and the reformers"
         family: old_new
         prize: heart
@@ -1175,7 +1190,8 @@ tables:
           b: {tr: "yeni bir alaşım ya da makine getirenler", hint: scholarly}
           third: {tr: "işsiz kalan işçiler", hint: resistance}
           fourth: {tr: "yeni yöntemi silah olarak isteyen bir devlet", hint: null}
-        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["boykot", "makine kırma", "kan"]
         tr: {name: "eski zanaat, yeni zanaat"}
       - id: contest_old_gods_new_faith
@@ -1210,12 +1226,13 @@ tables:
         roles:
           a: {tr: "bölgeyi tutan dış güç", hint: martial}
           b: {tr: "dağlardaki direniş", hint: resistance}
-          third: {tr: "işbirlikçi yerel soylular", hint: state}
+          third: {tr: "işbirlikçi yerel soylular", hint: state, claims: {nobility: exists}}
           fourth: {tr: "iki taraftan da kazanan kaçakçılar", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["vergiler ve askerler", "ayaklanma"]
         tr: {name: "işgalci ve direniş", name_note: "işgalci kalpte"}
       - id: contest_capital_marches
+        claims: {nobility: exists}
         label: "The capital and the marches"
         family: strong_weak
         prize: lifeline
@@ -1229,6 +1246,7 @@ tables:
         escalation: ["yardımın kesilmesi", "sınırın kopması"]
         tr: {name: "başkent ve sınır boyu", name_note: "başkent kalpte"}
       - id: contest_lords_peasants
+        claims: {nobility: exists}
         label: "Lords and peasants"
         family: strong_weak
         prize: lifeline
@@ -1248,9 +1266,9 @@ tables:
           a: {tr: "madeni elinde tutan aile", hint: guild}
           b: {tr: "madenciler", hint: resistance}
           third: {tr: "cevheri alan dış tüccarlar", hint: trade}
-          fourth: {tr: "madenin genişlemesine öfkelenen derin bir halk", hint: null}
-        requires: {any_of: ["land_mountain", "land_highland", "land_underground"]}
-        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+          fourth: {tr: "madenin genişlemesine öfkelenen derin bir halk", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
+        requires: {all: [{any_of: ["land_mountain", "land_highland", "land_underground"]}, {any_of: [life_copper_mine, life_iron_coal, life_quarry, life_gemstones, life_peat_bog, life_famous_steel]}]}   # the palette, and a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_copper_mine, life_iron_coal, life_quarry, life_gemstones, life_peat_bog, life_famous_steel]}, x: 3}, {when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["grev", "maden baskını"]
         tr: {name: "maden sahipleri ve madenciler"}
       - id: contest_casters_casterless
@@ -1263,6 +1281,7 @@ tables:
           third: {tr: "gizlice büyü öğreten kaçak ustalar", hint: criminal}
           fourth: {tr: "büyüyü tümden yasaklamak isteyen bir inanç", hint: religious}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
+        overrides: [{default: regulator_identity, to: "the contest's side a"}, {default: regulator_strictness, to: strict}]
         escalation: ["yasaklar", "büyücü avı"]
         tr: {name: "büyücüler ve büyüsüzler"}
       - id: contest_sealed_remnant
@@ -1286,6 +1305,8 @@ tables:
           b: {tr: "yabancıyı dışarıda tutmak isteyenler", hint: state}
           third: {tr: "kapalı yolda kaçakçılık yapanlar", hint: criminal}
           fourth: {tr: "yolun öbür ucundaki ülke", hint: null}
+        requires: {any_of: [life_winter_pass, life_river_ford, life_natural_harbour, life_caravan_inn, life_rift_bridge, life_strait_crossing, life_deep_mouth, life_marsh_boardwalk, life_ice_road, life_pilgrim_road]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_winter_pass, life_river_ford, life_natural_harbour, life_caravan_inn, life_rift_bridge, life_strait_crossing, life_deep_mouth, life_marsh_boardwalk, life_ice_road, life_pilgrim_road]}, x: 3}]
         escalation: ["kervan yasakları", "kervan yakma"]
         tr: {name: "yolu açanlar ve kapayanlar"}
       - id: contest_forbidden_lands
@@ -1296,7 +1317,7 @@ tables:
           a: {tr: "yasak toprakları keşfetmek isteyenler", hint: scholarly}
           b: {tr: "girişi engelleyenler", hint: martial}
           third: {tr: "oradan gelen şeyleri satanlar", hint: criminal}
-          fourth: {tr: "yasak topraklarda yaşayanlar", hint: null}
+          fourth: {tr: "yasak topraklarda yaşayanlar", hint: null, people_role: true}
         escalation: ["devriyeler", "sınır ötesine seferler"]
         tr: {name: "yasak topraklar"}
       - id: contest_share_keep_knowledge
@@ -1308,6 +1329,8 @@ tables:
           b: {tr: "onu sır tutan lonca", hint: guild}
           third: {tr: "bilgiyi çalıp satan casuslar", hint: criminal}
           fourth: {tr: "bilgiyi silaha çevirmek isteyen bir devlet", hint: null}
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}, x: 3}]
         escalation: ["kopyalama", "suikast"]
         tr: {name: "bilgiyi yayanlar ve saklayanlar"}
       - id: contest_open_close_gate
@@ -1324,18 +1347,20 @@ tables:
         escalation: ["ayinler", "geçitte savaş"]
         tr: {name: "kapıyı açanlar ve kapayanlar"}
       - id: contest_treasure_race
+        claims: {rule: throne}
         label: "Companies racing for a treasure"
         family: race
         prize: remnant
         roles:
           a: {tr: "kraliyetin resmî seferi", hint: state}
           b: {tr: "paralı bir birlik", hint: martial}
-          third: {tr: "yerli halkın avcıları", hint: null}
+          third: {tr: "yerli halkın avcıları", hint: null, people_role: true}
           fourth: {tr: "bir büyücünün gizli seferi", hint: scholarly}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["haritaların çalınması", "yolda pusu"]
         tr: {name: "hazineye koşan gruplar"}
       - id: contest_empty_throne
+        claims: {nobility: exists, rule: hereditary}
         label: "An empty throne, three houses"
         family: race
         prize: heart
@@ -1348,13 +1373,14 @@ tables:
         escalation: ["evlilik ittifakları", "zehir", "açık savaş"]
         tr: {name: "boş taht, üç ev"}
       - id: contest_first_settlers
+        claims: {rule: throne}
         label: "The first to settle the new land"
         family: race
         prize: new
         roles:
           a: {tr: "bir krallığın yerleşimcileri", hint: state}
           b: {tr: "özgür yerleşimciler", hint: resistance}
-          third: {tr: "toprağın yerli halkı", hint: null}
+          third: {tr: "toprağın yerli halkı", hint: null, people_role: true}
           fourth: {tr: "toprak satan dolandırıcılar", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["sınır taşları", "yerleşim yakma"]
@@ -1378,7 +1404,7 @@ tables:
         roles:
           a: {tr: "devlet", hint: state}
           b: {tr: "loncalar", hint: guild}
-          third: {tr: "kaynağın üstünde yaşayan halk", hint: null}
+          third: {tr: "kaynağın üstünde yaşayan halk", hint: null, people_role: true}
           fourth: {tr: "kaçakçılar", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["hak iddiaları", "kaynağın başında kan"]
@@ -1388,7 +1414,7 @@ tables:
         family: kin
         prize: heart
         roles:
-          a: {tr: "kırılmayı bir ceza sayan kol", hint: religious}
+          a: {tr: "eski çöküşü bir ceza sayan kol", hint: religious}
           b: {tr: "onu bir fırsat sayan kol", hint: trade}
           third: {tr: "iki kolu birleştirmeye çalışan yaşlılar", hint: null}
           fourth: {tr: "kollardan birini kullanan dış bir güç", hint: null}
@@ -1421,6 +1447,7 @@ tables:
         escalation: ["kapıların kapanması", "köprüde çatışma"]
         tr: {name: "ikiye bölünmüş şehir", name_note: "kalp ikiye bölünmüş"}
       - id: contest_sibling_rulers
+        claims: {rule: hereditary}
         label: "Sibling rulers"
         family: kin
         prize: heart
@@ -1441,16 +1468,18 @@ tables:
           b: {tr: "ayrılan kol", hint: trade}
           third: {tr: "aile zanaatının sırrını bilen tek usta", hint: null}
           fourth: {tr: "rakip bir lonca", hint: null}
-        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["müşteri çalma", "sabotaj", "cinayet"]
         tr: {name: "bölünen aile"}
       - id: contest_humans_giants
+        claims: {rule: throne}
         label: "Humans and giants"
         family: nonhuman
         prize: lifeline
         roles:
           a: {tr: "ovaya yayılan krallık", hint: state}
-          b: {tr: "dağlarda eski haklarını savunan dev klanları", hint: null}
+          b: {tr: "dağlarda eski haklarını savunan dev klanları", hint: null, people_role: true, lineage_forced: lineage_giant_kin}
           third: {tr: "iki tarafla da ticaret yapanlar", hint: trade}
           fourth: {tr: "devlerle yaşamayı öğrenmiş sınır köyleri", hint: null}
         requires: {any_of: ["land_mountain"]}
@@ -1477,9 +1506,9 @@ tables:
         prize: lifeline
         roles:
           a: {tr: "ormanı açan köyler", hint: state}
-          b: {tr: "ormanın fey sahipleri", hint: null}
+          b: {tr: "ormanın fey sahipleri", hint: null, people_role: true, lineage_forced: lineage_fey}
           third: {tr: "iki dünya arasında aracılık eden druidler", hint: religious}
-          fourth: {tr: "fey ile gizlice pazarlık eden bir soylu", hint: null}
+          fourth: {tr: "fey ile gizlice pazarlık eden bir soylu", hint: null, claims: {nobility: exists}}
         requires: {any_of: ["land_forest"]}
         weight_by: [{when: {any_of: [life_fey_bargain]}, x: 2}]   # owner, 2026-09-28: the lifeline's treaty feeds this contest
         escalation: ["ağaç kesimi", "kaybolan çocuklar", "orman savaşı"]
@@ -1491,7 +1520,7 @@ tables:
         prize: lifeline
         roles:
           a: {tr: "yüzeydeki madenciler", hint: guild}
-          b: {tr: "derinlerde yaşayan halk", hint: null}
+          b: {tr: "derinlerde yaşayan halk", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
           third: {tr: "iki dünya arasında taşıyıcılık yapanlar", hint: trade}
           fourth: {tr: "derin halktan kaçıp yüzeye sığınanlar", hint: null}
         requires: {any_of: ["land_underground"]}
@@ -1505,7 +1534,7 @@ tables:
         prize: lifeline
         roles:
           a: {tr: "kıyı şehirleri", hint: state}
-          b: {tr: "deniz halkı", tr_note: "SRD 5.1'de merfolk; balık halkları", hint: null}
+          b: {tr: "deniz halkı", tr_note: "SRD 5.1'de merfolk; balık halkları", hint: null, people_role: true, lineage_forced: lineage_merfolk}
           third: {tr: "iki halktan evlenmiş kıyı aileleri", hint: null}
           fourth: {tr: "denizin dibini kazmak isteyen tüccarlar", hint: null}
         requires: {any_of: ["land_coast"]}
@@ -1542,6 +1571,7 @@ tables:
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
         tr: {name: "yabancı elçi"}
       - id: contest_war_fed_company
+        claims: {war: by_armies}
         label: "The company that feeds on the war"
         family: hidden_hand
         prize: lifeline
@@ -1648,6 +1678,7 @@ tables:
         fits: {"remnant": ["body", "machine", "structure", "object", "network"], "key_place": ["bridge", "gate", "descent", "landmark"]}
         forms: {past: "canlandı", present: "canlanıyor", imminent: "canlanmak üzere"}
       - id: act_fell_from_sky
+        requires: {dial: {era: [medieval, renaissance, ancient, nautical]}}   # not below ground
         leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
         concretise: true                # owner, 2026-09-28: step 2's writer names what fell / what was born (a promise)
         label: "Crushed by what fell from the sky"
@@ -1676,6 +1707,8 @@ tables:
         targets: [key_place, heart, thin_place]
         fits: {"key_place": ["gate", "descent", "crossroad", "network", "landmark"]}
         forms: {past: "bir düzlemle birleşti", present: "bir düzlemle birleşiyor", imminent: "bir düzlemle birleşmek üzere"}
+        hooks:
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: act_true_face
         label: "Showed its true face"
         targets: [lifeline, remnant, key_place]
@@ -1749,130 +1782,130 @@ tables:
         needs_fantastic_room: true
         tr: {name: "haritada yeni bir yer türü", name_note: "fantastik paletten"}
         hooks:
-          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P1, must: "a fantastic kind joins the palette"}
+          - {phase: P3, must: "the kind is a map node"}
       - id: scar_roads_changed
         label: "The roads changed"
         floors: [P3]
         tr: {name: "yolların değişmesi"}
         hooks:
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P3, must: "the map's edges and main line show the change"}
       - id: scar_cursed_belt
         label: "A poisoned or cursed belt"
         floors: [P3, P6]
         tr: {name: "zehirli ya da lanetli bir kuşak"}
         hooks:
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
-          - {phase: P6, must: "creatures or sites carry this scar"}
+          - {phase: P3, must: "a region or belt is poisoned or cursed"}
+          - {phase: P6, must: "a site and its creatures stand in it"}
       - id: scar_unreachable_region
         label: "An unreachable region"
         floors: [P3, P7]
         note: "a later act opens it (P7)"
         tr: {name: "erişilmez bir bölge"}
         hooks:
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
-          - {phase: P7, must: "the arc carries this scar"}
+          - {phase: P3, must: "a region is marked closed"}
+          - {phase: P7, must: "a later act opens it"}
       - id: scar_magic_rule_changed
         label: "A rule of magic changed"
         floors: [P1, P2]
         note: "the phenomenon signature is this rule: its home becomes the break and its rule comes from family 8 (review #6)"
         tr: {name: "büyünün bir kuralı değişti"}
         hooks:
-          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
-          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P1, must: "the phenomenon signature is this rule"}
+          - {phase: P2, must: "the magic system carries it"}
       - id: scar_god_changed
         label: "A god changed"
         floors: [P2]
         tr: {name: "bir tanrı değişti"}
         hooks:
-          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P2, must: "that god is changed in the pantheon"}
       - id: scar_plane_thinned
         label: "The border with a plane grew thin"
         floors: [P2]
         tr: {name: "bir düzlemle sınır inceldi"}
         hooks:
-          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P2, must: "the touched plane's border is thin; this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: scar_sky_changed
+        requires: {dial: {era: [medieval, renaissance, ancient, nautical]}}   # not below ground: the sky is seldom seen there
         label: "The sky changed"
         floors: [P2]
         tr: {name: "gökyüzü değişti"}
         hooks:
-          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P2, must: "the calendar carries the change"}
       - id: scar_seasons_broken
+        requires: {dial: {era: [medieval, renaissance, ancient, nautical]}}   # not below ground: the sky is seldom seen there
         label: "The seasons broke"
         floors: [P2]
         tr: {name: "mevsimler bozuldu"}
         hooks:
-          - {phase: P2, must: "the cosmos carries this scar"}
+          - {phase: P2, must: "the climate and the calendar carry the change"}
       - id: scar_time_flow_changed
         label: "Time's flow changed in a region"
         floors: [P2, P3]
         tr: {name: "bir bölgede zamanın akışı değişti", name_note: "hızlı ya da yavaş"}
         hooks:
-          - {phase: P2, must: "the cosmos carries this scar"}
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P2, must: "a magic or plane rule names it"}
+          - {phase: P3, must: "the region where time runs differently"}
       - id: scar_people_displaced
         label: "A people was driven from its home"
         floors: [P3, P5]
         tr: {name: "bir halk yerinden oldu"}
         hooks:
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
-          - {phase: P5, must: "a people or NPCs carry this scar"}
+          - {phase: P3, must: "a refugee settlement"}
+          - {phase: P5, must: "NPCs of that people"}
       - id: scar_new_people
         label: "A new people appeared"
         floors: [P1, P5]
         note: "the people signature may be this people (its home becomes the scar)"
         tr: {name: "yeni bir halk ortaya çıktı", name_note: "kırılmanın dönüştürdükleri"}
         hooks:
-          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
-          - {phase: P5, must: "a people or NPCs carry this scar"}
+          - {phase: P1, must: "the people signature may be this people"}
+          - {phase: P5, must: "NPCs of that people"}
       - id: scar_state_fell
         label: "A state fell and left a void"
         floors: [P3, P4]
         tr: {name: "bir devlet yıkıldı, yerinde boşluk kaldı"}
         hooks:
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
-          - {phase: P4, must: "a faction or the contest carries this scar"}
+          - {phase: P3, must: "one polity's status is fallen; the fallen state is never the polity a seated contest role rules, and P3 names it"}
+          - {phase: P4, must: "a faction wants the void"}
       - id: scar_creatures_changed
         label: "Living things changed"
         floors: [P6]
         tr: {name: "canlılar değişti"}
         hooks:
-          - {phase: P6, must: "creatures or sites carry this scar"}
+          - {phase: P6, must: "the creature ecology carries the change"}
       - id: scar_new_resource
         label: "A new resource was born"
         floors: [P3, P4]
         note: "a contest with a 'new' prize may take it"
         tr: {name: "yeni bir kaynak doğdu"}
         hooks:
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
-          - {phase: P4, must: "a faction or the contest carries this scar"}
+          - {phase: P3, must: "the goods hold the new resource"}
+          - {phase: P4, must: "the contest's prize, when the prize is `new`, is this resource"}
       - id: scar_lost_knowledge
         label: "A knowledge or craft was lost"
         floors: [P3, P6]
         note: "P6's ruins keep it"
         tr: {name: "bir bilgi ya da zanaat kayboldu"}
         hooks:
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
-          - {phase: P6, must: "creatures or sites carry this scar"}
+          - {phase: P3, must: "a trade or good is missing"}
+          - {phase: P6, must: "a ruin keeps it"}
       - id: scar_new_taboo
         label: "A new law or taboo"
-        floors: [P1, P2, P3]
+        floors: [P1, P3]
         note: "one trope break is drawn from the prohibition rows (step 2)"
         tr: {name: "yeni bir yasak ya da tabu"}
         hooks:
-          - {phase: P1, must: "the identity takes this scar where the plan joins them"}
-          - {phase: P2, must: "the cosmos carries this scar"}
-          - {phase: P3, must: "the map, peoples, polities, economy or law carry this scar"}
+          - {phase: P1, must: "one trope break is drawn from the prohibition rows"}
+          - {phase: P3, must: "the law carries the taboo"}
       - id: scar_new_belief
         label: "A new belief"
         floors: [P2, P4]
         note: "a side, never the forbidden evil cult; the institution practice 'they interpret the break' may join it"
         tr: {name: "yeni bir inanç", name_note: "yasaklı \"kötü tarikat\" değil, bir taraf"}
         hooks:
-          - {phase: P2, must: "the cosmos carries this scar"}
-          - {phase: P4, must: "a faction or the contest carries this scar"}
-
+          - {phase: P2, must: "the belief has its place in the pantheon"}
+          - {phase: P4, must: "a faction holds it"}
   time:
     roll: {avoid_used: false}
     hooks_common:
@@ -1895,6 +1928,7 @@ tables:
         meaning: "the break unfolds through the campaign"
         tr: {name: "şimdi oluyor", name_note: "kırılma kampanya boyunca açılır", lead: "şimdi"}
       - id: time_coming
+        conflicts_with: [scar_new_people, scar_magic_rule_changed]   # a break still coming has no products yet
         label: "Coming"
         tense: imminent
         meaning: "signs are seen; the campaign is a race against it"

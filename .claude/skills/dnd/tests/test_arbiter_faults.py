@@ -196,7 +196,7 @@ class Waits(unittest.TestCase):
         for i in range(n):
             name = f"_test-seq-{i:02d}"
             dd.save_used(used)
-            res = arb.arbitrate(ref, rows, arb.Context(dials={"magic": "high", "scale": "epic"}), usage=dd.usage(name, ref),
+            res = arb.arbitrate(ref, rows, arb.Context(dials={"magic": "high", "scale": "epic", "era": "medieval"}), usage=dd.usage(name, ref),
                                 conflicts={}, secret_ids=set())
             row = arb.pick(random.Random(f"{ref}:{i}"), res["pool"], res["weights"])["row_id"]
             out.append((name, row, [r["id"] for r in res["pool"]], res["usage_fallback"]))

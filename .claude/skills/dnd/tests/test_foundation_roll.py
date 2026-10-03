@@ -268,6 +268,74 @@ class ManySeeds(unittest.TestCase):
                         self.assertEqual(c["prize"]["at"], lay["break_at"])
         self.assertGreater(seen_merge, 0, "the sweep reaches a merge")
 
+    def test_no_clash_pair_stands_together(self):
+        """Build item 7c-2: the final set holds on claims too: the rolled rows, the dial rows' claims, the seated
+        roles' and the layout's tokens."""
+        seen = {"hereditary": 0, "nobility": 0, "throne": 0}
+        for d, R, out, f in self.runs:
+            rows = [r["row_id"] for r in R.public + R.secret if r.get("row_id")]
+            self.assertEqual(arb.conflicting_pairs(rows, tokens=R.ctx.tokens), [], R.master)
+            for k, tok in (("hereditary", "claim:rule=hereditary"), ("nobility", "claim:nobility=exists"), ("throne", "claim:rule=throne")):
+                seen[k] += tok in R.ctx.tokens
+        for k, v in seen.items():
+            self.assertGreater(v, 0, f"the sweep reaches a birth that claims {k}")
+
+    def test_a_role_claim_is_a_token_only_when_the_role_is_seated(self):
+        """contest_humans_fey's fourth role and contest_occupier_resistance's third claim a nobility."""
+        fourth = third = 0
+        for d, R, out, f in self.runs:
+            main = f["contests"][0]
+            rec = R.by_label.get("foundation.contest.1.claims") or {}
+            if main["id"] == "contest_humans_fey":
+                self.assertEqual("claim:nobility=exists" in (rec.get("tokens") or []), "fourth" in main["roles"], R.master)
+                fourth += 1
+            if main["id"] == "contest_occupier_resistance":
+                self.assertIn("claim:nobility=exists", rec["tokens"])
+                third += 1
+        self.assertGreater(third, 0)
+        self.assertGreater(fourth, 0)
+
+    def test_a_prize_contest_stands_on_a_lifeline_of_its_list(self):
+        """18.6 % of births paired a prize contest with a lifeline that cannot be its prize; now none."""
+        need = {}
+        for cid, row in CONTEST.items():
+            req = row.get("requires") or {}
+            for c in (req.get("all") or [req]):
+                lifes = [x for x in (c.get("any_of") or []) if x.startswith("life_")]
+                if lifes:
+                    need[cid] = set(lifes)
+        self.assertEqual(set(need), {"contest_one_harbour", "contest_one_pasture", "contest_two_banks", "contest_old_new_craft",
+                                     "contest_share_keep_knowledge", "contest_split_family", "contest_mine_owners_miners",
+                                     "contest_open_close_road"})
+        drawn = set()
+        for d, R, out, f in self.runs:
+            for c in f["contests"]:
+                drawn.add(c["id"])
+                if c["id"] in need:
+                    self.assertIn(f["lifeline"]["id"], need[c["id"]], (R.master, c["id"]))
+        self.assertEqual(set(need) - drawn, set(), "every prize contest is still drawn")
+        first = min(R.pool_of["foundation.contest.1"] for d, R, out, f in self.runs)
+        self.assertGreaterEqual(first, 27, "the contest pool never falls under 27 of 40")
+        second = min(R.pool_of["foundation.contest.2"] for d, R, out, f in self.runs if d["scale"] == "epic")
+        self.assertGreaterEqual(second, 20, "epic's second contest also leaves out the first one's family (five rows)")
+
+    def test_the_break_rules_of_the_tag_review(self):
+        for d, R, out, f in self.runs:
+            b = f["break"]
+            with self.subTest(seed=R.master):
+                if b["time"] == "time_coming":
+                    self.assertFalse({"scar_new_people", "scar_magic_rule_changed"} & set(b["scars"]),
+                                     "a break still coming has no products")
+                if d["era"] == "underground":
+                    self.assertFalse({"scar_sky_changed", "scar_seasons_broken"} & set(b["scars"]))
+                    self.assertNotEqual(b["action"], "act_fell_from_sky")
+                if d["magic"] == "high":
+                    self.assertNotEqual(f["ruin_source"], "ruin_age_of_mages", "the faded age never stands beside plentiful magic")
+        runs = self.runs
+        self.assertTrue(any(f["break"]["time"] == "time_coming" for _, _, _, f in runs))
+        self.assertTrue(any(f["ruin_source"] == "ruin_age_of_mages" for d, _, _, f in runs if d["magic"] != "high"))
+        self.assertTrue(any(f["break"]["action"] == "act_fell_from_sky" for d, _, _, f in runs if d["era"] != "underground"))
+
     def test_the_escalation_follows_the_level_band(self):
         for d, R, out, f in self.runs:
             lo, hi = d["level_band"]
@@ -289,7 +357,10 @@ class ManySeeds(unittest.TestCase):
                 self.assertNotIn("(", s, "no design note in the sentence")
                 for marker in ("Çok önce", "Bugün halk", "arasında eski bir gerilim var", "Bundan güçlü çıkan:"):
                     self.assertIn(marker, s)
-                self.assertIn("Yaraları:" if len(f["break"]["scars"]) > 1 else "Yarası:", s)
+                coming = f["break"]["time"] == "time_coming"
+                self.assertIn("İlk izleri:" if coming else ("Yaraları:" if len(f["break"]["scars"]) > 1 else "Yarası:"), s)
+                if coming:
+                    self.assertNotIn("Yara", s, "a break still coming has left no wound")
                 t = TIME[f["break"]["time"]]
                 self.assertIn(ACTION[f["break"]["action"]]["forms"][t["tense"]], s)
                 if t["id"] == "time_coming":

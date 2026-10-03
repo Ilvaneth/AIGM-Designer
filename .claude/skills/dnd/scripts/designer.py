@@ -154,6 +154,7 @@ class Roller:
         self.ctx = dd.context(campaign, phase)        # the phases before this one, each at its latest attempt
         self.foundation: dict | None = None
         self.pools: dict[str, int] = {}               # table → its smallest pool after the constraints (the floor)
+        self.pool_of: dict[str, int] = {}             # label → that draw's pool after the constraints
 
     @classmethod
     def in_memory(cls, master: str, dials: dict, phase: str = "P1", attempt: int = 1) -> "Roller":
@@ -164,7 +165,7 @@ class Roller:
         R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
         R.ctx = arb.Context(dials=dict(dials))
         R.foundation = None
-        R.pools = {}
+        R.pools, R.pool_of = {}, {}
         return R
 
     def _usage(self, ref: str, avoid: bool) -> dict:
@@ -194,6 +195,7 @@ class Roller:
             raise SystemExit(f"designer: {self.phase} {label}: {exc}" if not secret else
                              f"designer: {self.phase} {label} (secret): the pool is empty after the constraints — a table fault")
         self.pools[ref] = min(self.pools.get(ref, res["allowed"]), res["allowed"])
+        self.pool_of[label] = res["allowed"]
         rec = self._record(label, ref)
         picked = arb.pick(rng, res["pool"], res["weights"])
         shown, real = (picked, None) if secret else arb.public_view(res, picked)

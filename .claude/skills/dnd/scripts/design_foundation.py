@@ -407,7 +407,8 @@ def sentence(out: dict) -> str:
     head = _cap(lead) + (" " if lead.endswith(":") else ", ")
     scars = ", ".join(rows_by_id("scar")[s]["tr"]["name"] for s in out["scars"])
     winner = _role_phrase(contest, out["winner"])
-    scar_word = "Yaraları" if len(out["scars"]) > 1 else "Yarası"
+    # a break still coming has left no wound yet: its scars are its first signs
+    scar_word = "İlk izleri" if time["id"] == "time_coming" else ("Yaraları" if len(out["scars"]) > 1 else "Yarası")
     s5 = f"{head}{target_phrase(out)} {form}. {scar_word}: {scars}. Bundan güçlü çıkan: {winner}."
     return " ".join([s1, s2, s3, s4, s5])
 
