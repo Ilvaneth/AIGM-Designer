@@ -665,3 +665,5 @@ What is left is exactly what item 10 builds, the rolls of step 2: the people's r
 | villain: tie to the break | 6 | 6 | 0 |
 
 Every archetype is told as the break's true cause with a person who chose it, and carries three clue stages; no row protects the party. Two conflicts with public rows are added (a secret the foundation already half shows). The visibility table may repeat (the approved rule is that the shape and origin pair is not drawn again). The coding tab's own decisions are accepted (four archetypes removed, not two; one twist replaced; hashed stamp keys for the secret tables). The burn sample (`docs/reports/item9-burn-sample.md`: three archetypes, three shapes, in no table) is for the owner to read.
+
+**The burn sample was read and its level approved by the owner (2026-10-03);** build item 9 is committed after the five corrections. The specification of item 10 (step 2's rolls, two commits) is `docs/p1-build-10.md`.
