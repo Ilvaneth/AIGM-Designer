@@ -18,7 +18,7 @@ schema_version: 1
 table: antagonists
 consumed_by: [P1, P4, P5, P6, P7, validator, play]
 plan: "item 25 step 2 #7, errata 24.2 #22, item 7.5, 10.5, 17 #17, errata 24.2 #3, risk 24.1 #10 #16, 24.6 #3"
-roll: {labels: [P4.bbeg_visibility, P4.bbeg_shape, P4.bbeg_origin, P4.front_template, P4.doom_shape, P4.lieutenant_role.<n>], secret: true, avoid_used: true, note: "all antagonist rolls are secret; the card shows only the archetype class and the clue count per act (24.6 #6)"}
+roll: {labels: [P1.bbeg_visibility, P1.bbeg_shape, P1.bbeg_origin, P1.bbeg_tie, P1.bbeg_pole, P4.bbeg_faction_archetype, P4.front_template, P4.doom_shape, P4.lieutenant_role.<n>], secret: true, avoid_used: true, note: "all antagonist rolls are secret; the card shows only the archetype class and the clue count per act (24.6 #6)"}
 rules:
   doom_day: "mid(target_sessions) × doom.days_per_session_default × (1 + doom.slack_min), rounded to a calendar date; the front's portents spread over it; lieutenants' clocks end at 30-60% of it"
   goals: "BBEG and lieutenants: goals.py add --kind npc with a metric and the three responses; regional villains: none"
@@ -66,7 +66,8 @@ tables:
           - {phase: P4, must: "the BBEG entity is a faction or a signature_ with the steering person in dm-only; the lieutenants are its officers; the doom is the working completed"}
 
   villain_shape:
-    note: "closed list for the registry field `villain_shape` (risk 24.1 #10); the three forbidden shapes never enter a pool and exist only so forbidden.yaml can name them. Every usable shape has a reason a decent person could defend and nothing in it spares the party."
+    roll: {avoid_used: false}
+    note: "the rows may repeat across campaigns; the shape and origin PAIR is written at approve (hashed) and never drawn again (design_identity.py). Closed list for the registry field `villain_shape` (risk 24.1 #10); the three forbidden shapes never enter a pool and exist only so forbidden.yaml can name them. Every usable shape has a reason a decent person could defend and nothing in it spares the party."
     rows:
       - {id: shape_reformer, value: reformer, label: The reformer, rule: "wants to fix the world and has chosen the cost", hooks: [{phase: P1, must: "fits secret_break_was_the_cure; the win ending must answer the reform"}]}
       - {id: shape_collector, value: collector, label: The collector, rule: "gathers what was scattered (relics, lands, oaths, people) because the whole, once together again, would mend a harm everyone has learned to live with; will not stop one short", hooks: [{phase: P7, must: "the metric is the collection; portents are acquisitions"}]}
@@ -89,7 +90,8 @@ tables:
       - {id: shape_secretly_evil_ruler, value: secretly_evil_ruler, label: The secretly evil ruler (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_secretly_evil_ruler)"}]}
 
   origin:
-    note: "closed list for the registry field `bbeg_origin`; the origin is a choice made by a living person within the history's span"
+    roll: {avoid_used: false}
+    note: "the rows may repeat across campaigns; the shape and origin pair never does. Closed list for the registry field `bbeg_origin`; the origin is a choice made by a living person within the history's span"
     rows:
       - {id: origin_choice_in_history, value: choice_in_history, label: A choice at a dated event, hooks: [{phase: P2, must: "the event is within years_covered and has a divergence"}]}
       - {id: origin_bargain, value: bargain, label: A bargain with a power, hooks: [{phase: P2, must: "the power is a rank_power god or a plane's keeper"}]}

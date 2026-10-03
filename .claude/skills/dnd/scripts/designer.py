@@ -154,6 +154,7 @@ class Roller:
         self.ctx = dd.context(campaign, phase)        # the phases before this one, each at its latest attempt
         self.foundation: dict | None = None
         self.identity: dict | None = None
+        self.identity_secret: dict | None = None      # the secret and the villain: dm-only alone
         self.exempt: set = set()                      # conflict pairs a forced roll was allowed to stand in
         self.pools: dict[str, int] = {}               # table → its smallest pool after the constraints (the floor)
         self.pool_of: dict[str, int] = {}             # label → that draw's pool after the constraints
@@ -166,7 +167,7 @@ class Roller:
         R.manifest = {"dials": dials, "dice_log": []}
         R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
         R.ctx = arb.Context(dials=dict(dials))
-        R.foundation, R.identity, R.exempt = None, None, set()
+        R.foundation, R.identity, R.identity_secret, R.exempt = None, None, None, set()
         R.pools, R.pool_of = {}, {}
         return R
 
@@ -286,6 +287,8 @@ class Roller:
             path = dm_only_dir(self.campaign) / "dice-log.json"
             log = read_json(path) or {"_meta": {"schema_version": 1, "campaign": self.campaign}, "rolls": []}
             log["rolls"].extend(self.secret)
+            if self.identity_secret is not None:
+                log["identity"] = self.identity_secret       # the secret and the villain as P1 rolled them
             stamp_meta(log, self.campaign, "designer.py preroll (secret)")
             write_json_atomic(path, log)
             dls = data["dice_log_secret"]
@@ -325,7 +328,7 @@ def spread_exclude(uses: dict, n_rows: int) -> set:
 def preroll_p1(R: Roller, m: dict) -> None:
     """Step 1, the foundation (design_foundation.py); step 2, the identity (design_identity.py): the trope breaks,
     the people, the institution, the phenomenon and the question(s), then the naming families, the secret and the
-    signature-mechanic gate."""
+    villain (secret rolls, build item 10b) and the signature-mechanic gate."""
     import design_foundation as fd
     import design_identity as di
     used_pairs = dd.used_values(R.campaign, fd.PAIR_KEY) if R.campaign else set()
@@ -338,9 +341,7 @@ def preroll_p1(R: Roller, m: dict) -> None:
     for n in range(1, int(dt.load("naming.yaml")["roll"]["count_by_scale"][dials_of(m)["scale"]]) + 1):
         rec = R.table(f"naming_family.{n}", "naming.yaml#family", exclude=set(fams))
         fams.append(rec["row_id"])
-    R.table("secret_archetype", "secrets.yaml#archetype", secret=True)
-    R.table("secret_twist", "secrets.yaml#twist", secret=True)
-    R.table("secret_trail", "secrets.yaml#trail", secret=True)
+    R.identity_secret = di.roll_secret(R, dials_of(m), R.foundation, R.identity)     # every roll secret; dm-only alone
     chance = int(sc["signature_mechanic_chance"])
     if chance <= 0:
         R.forced("mechanic", "dice", "no", "scale never rolls the signature mechanic")
@@ -465,10 +466,13 @@ def preroll_p4(R: Roller, m: dict) -> None:
         links: list[str] = []
         for k in range(1, R.count(f"faction.{n}.links_count", [2, 4]) + 1):
             links.append(R.table(f"faction.{n}.link.{k}", "factions.yaml#access_link", avoid=False, exclude=set(links))["row_id"])
-    # antagonists — every roll secret
-    R.table("bbeg_visibility", "antagonists.yaml#visibility", secret=True)
-    R.table("bbeg_shape", "antagonists.yaml#villain_shape", secret=True)       # the forbidden shapes never enter
-    R.table("bbeg_origin", "antagonists.yaml#origin", secret=True)             # nor the awakened ancient evil
+    # antagonists — every roll secret. Visibility, shape and origin are P1's since build item 10b: P4 stands on them
+    # through its context. A birth whose P1 was rolled before that (a legacy birth) still rolls them here.
+    import design_identity as di
+    if not di.villain_in_context(R.ctx):
+        R.table("bbeg_visibility", "antagonists.yaml#visibility", secret=True)
+        R.table("bbeg_shape", "antagonists.yaml#villain_shape", secret=True)       # the forbidden shapes never enter
+        R.table("bbeg_origin", "antagonists.yaml#origin", secret=True)             # nor the awakened ancient evil
     # religious only when a rolled secret or break admits it (`allowed_via`): the arbiter reads every rolled row
     R.table("bbeg_faction_archetype", "antagonists.yaml#bbeg_faction_archetype", secret=True, avoid=False)
     R.table("front_template", "antagonists.yaml#front_template", secret=True)

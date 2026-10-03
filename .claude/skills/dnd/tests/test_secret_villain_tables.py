@@ -313,14 +313,14 @@ class ManySeeds(unittest.TestCase):
 
     def test_no_forbidden_row_was_rolled(self):
         forbidden = {r["id"] for ref in ("antagonists.yaml#villain_shape", "antagonists.yaml#origin") for r in rows(ref) if r.get("forbidden")}
-        hit = sum(1 for _, p4 in self.runs for r in p4.secret if r.get("row_id") in forbidden)
+        hit = sum(1 for p1, p4 in self.runs for r in p1.secret + p4.secret if r.get("row_id") in forbidden)
         self.assertEqual(hit, 0)
 
     def test_the_archetypes_floor(self):
         smallest = min(p1.pools["secrets.yaml#archetype"] for p1, _ in self.runs)
         self.assertGreaterEqual(smallest, 5, f"the archetype's smallest pool after the constraints is {smallest}")
         for ref in ("antagonists.yaml#villain_shape", "antagonists.yaml#origin"):
-            self.assertGreaterEqual(min(p4.pools[ref] for _, p4 in self.runs), 5, ref)
+            self.assertGreaterEqual(min(p1.pools[ref] for p1, _ in self.runs), 5, ref)
 
     def test_the_public_log_names_no_secret_row(self):
         leaks = sizes = 0
@@ -337,10 +337,10 @@ class ManySeeds(unittest.TestCase):
 
     def test_every_secret_piece_is_rolled_secretly(self):
         for p1, p4 in self.runs[:45]:
-            for label in ("secret_archetype", "secret_twist", "secret_trail"):
+            for label in ("secret_archetype", "secret_chooser", "secret_twist", "secret_trail",
+                          "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_tie", "bbeg_pole"):
                 self.assertIn(p1.by_label[label], p1.secret)
-            for label in ("bbeg_visibility", "bbeg_shape", "bbeg_origin"):
-                self.assertIn(p4.by_label[label], p4.secret)
+                self.assertNotIn(label, p4.by_label, "P4 no longer rolls what P1 rolled")
 
 
 class Legacy(unittest.TestCase):

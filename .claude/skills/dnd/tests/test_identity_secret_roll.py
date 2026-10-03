@@ -1,0 +1,259 @@
+"""
+test_identity_secret_roll.py — build item 10b (docs/p1-build-10.md §8-10): the secret and the villain rolled in P1,
+every roll secret; P4 reads the moved rolls.
+
+The owner is also the player: no assertion here prints a secret row. A failure gives a count or a seed, never an id.
+"""
+
+import itertools
+import json
+import os
+import shutil
+import sys
+import unittest
+import uuid
+
+from _campaign import SCRIPTS, CAMPAIGNS, USED
+import _floor
+import test_designer as td
+
+sys.path.insert(0, str(SCRIPTS))
+import design_arbiter as arb  # noqa: E402
+import design_dice as dd  # noqa: E402
+import design_identity as di  # noqa: E402
+import design_tables as dt  # noqa: E402
+import designer  # noqa: E402
+
+A, V = "secrets.yaml#", "antagonists.yaml#"
+SEEDS = 1800
+P1_SECRET = ("secret_archetype", "secret_chooser", "secret_twist", "secret_trail",
+             "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_tie", "bbeg_pole")
+MOVED = ("bbeg_visibility", "bbeg_shape", "bbeg_origin")
+FORBIDDEN = {r["id"] for sub in ("villain_shape", "origin") for r in dt.rows(V + sub) if r.get("forbidden")}
+SECRET_IDS = dt.secret_row_ids()
+
+
+def dials_of(i, combos, mixes):
+    scale, magic, era, tone = combos[i % len(combos)]
+    return {"scale": scale, "magic": magic, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]),
+            "party_size": 2, "level_band": [1, 1 + _floor.SPAN[scale]]}
+
+
+def p4_on(p1, dials, tag):
+    p4 = designer.Roller.in_memory(tag, dials, phase="P4")
+    p4.ctx = p1.ctx                                  # P4 stands on what P1 rolled, the secret rows too
+    designer.preroll_p4(p4, {"dials": dials})
+    return p4
+
+
+class ManySeeds(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        combos = _floor.dial_sets()
+        mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
+        cls.runs, cls.empty = [], 0
+        for i in range(SEEDS):
+            d = dials_of(i, combos, mixes)
+            try:
+                p1 = designer.Roller.in_memory(f"SECRET-{i}", d)
+                designer.preroll_p1(p1, {"dials": d})
+                cls.runs.append((d, p1, p4_on(p1, d, f"SECRET-{i}")))
+            except SystemExit:
+                cls.empty += 1
+
+    def test_no_pool_is_empty(self):
+        self.assertEqual(self.empty, 0, f"{self.empty} seed(s) stopped on an empty pool")
+
+    def test_no_conflicting_set_across_the_public_and_the_secret_rows(self):
+        bad = 0
+        for d, p1, p4 in self.runs:
+            rolled = [r["row_id"] for R in (p1, p4) for r in R.public + R.secret if r.get("row_id")]
+            bad += bool(arb.conflicting_pairs(rolled, tokens=list(p4.ctx.tokens), exempt=p1.exempt))
+        self.assertEqual(bad, 0, f"{bad} seed(s) rolled a conflicting set")
+
+    def test_the_chooser_and_the_tie(self):
+        """The chooser is the villain exactly when the tie is `bond_caused_it`, in every birth; forced, not rolled."""
+        wrong = villain = role_wrong = with_role = 0
+        for d, p1, _ in self.runs:
+            s, v = p1.identity_secret["secret"], p1.identity_secret["villain"]
+            is_villain = s["chooser"] == "chooser_the_villain"
+            villain += is_villain
+            wrong += is_villain != (v["tie"] == "bond_caused_it")
+            wrong += is_villain != (p1.by_label["bbeg_tie"]["notation"] == "forced")
+            has_role = "secret_chooser.role" in p1.by_label
+            with_role += has_role
+            role_wrong += has_role != (s["chooser"] == "chooser_contest_role")
+            role_wrong += (s["chooser_role"] is not None) != has_role
+            role_wrong += s["chooser_role"] is not None and s["chooser_role"] not in p1.foundation["contests"][0]["roles"]
+        self.assertEqual(wrong, 0, f"{wrong} breach(es) of the chooser and tie equivalence")
+        self.assertEqual(role_wrong, 0)
+        self.assertGreater(villain, 100)
+        self.assertGreater(with_role, 100)
+
+    def test_the_tie_and_the_breaks_time(self):
+        need = {"bond_wants_to_reverse", "bond_failed_to_stop", "bond_product_of_it"}
+        coming = sum(1 for d, p1, _ in self.runs if p1.foundation["break"]["time"] == "time_coming")
+        bad = sum(1 for d, p1, _ in self.runs
+                  if p1.foundation["break"]["time"] == "time_coming" and p1.identity_secret["villain"]["tie"] in need)
+        self.assertGreater(coming, 100)
+        self.assertEqual(bad, 0)
+
+    def test_no_forbidden_shape_or_origin(self):
+        hit = sum(1 for d, p1, p4 in self.runs for r in p1.secret + p4.secret if r.get("row_id") in FORBIDDEN)
+        self.assertEqual(hit, 0)
+
+    def test_the_floor(self):
+        """The secret's non-repeating tables keep five rows after the constraints; the villain's shape and origin
+        may repeat (the pair is what never does) and are reported only."""
+        low = {ref: min(p1.pools[ref] for _, p1, _ in self.runs if ref in p1.pools)      # a forced tie has no pool
+               for ref in (A + "archetype", A + "twist", A + "trail", V + "villain_shape", V + "origin", V + "break_tie")}
+        type(self).floors = low
+        for ref in (A + "archetype", A + "twist", A + "trail"):
+            self.assertGreaterEqual(low[ref], 5, f"{ref}: the smallest pool is {low[ref]}")
+
+    def test_the_pole_and_the_majority(self):
+        sides = set()
+        for d, p1, _ in self.runs:
+            v = p1.identity_secret["villain"]
+            sides.add(v["pole"]["role"])
+            self.assertEqual(v["pole"]["question"], p1.identity["questions"][0]["id"])
+            self.assertEqual(v["pole"]["contest"], p1.foundation["contests"][0]["id"], "epic: the main contest's question")
+            self.assertEqual(v["majority_pole"], "villain" if d["tone"] == "dark" else "other")
+        self.assertEqual(sides, {"a", "b"})
+
+    def test_every_piece_is_secret_and_nothing_public_names_it(self):
+        leaks = sizes = 0
+        for d, p1, p4 in self.runs:
+            for label in P1_SECRET:
+                self.assertIn(p1.by_label[label], p1.secret)
+            for R in (p1, p4):
+                text = json.dumps(R.public, ensure_ascii=False) + json.dumps(R.identity or {}, ensure_ascii=False) \
+                    + json.dumps(R.foundation or {}, ensure_ascii=False)
+                leaks += sum(1 for rid in SECRET_IDS if f'"{rid}"' in text)
+                leaks += sum(1 for r in R.public if r["label"] in P1_SECRET or r["label"].startswith("secret_"))
+                for note in R.secret_notes:                      # a secret row took rows out of a public pool
+                    shown = R.by_label[note["label"]]
+                    if shown in R.public and note.get("notation"):
+                        sizes += shown["notation"] == note["notation"]
+        self.assertEqual(leaks, 0, f"{leaks} secret row(s) or label(s) in a public record")
+        self.assertEqual(sizes, 0, f"{sizes} public die size(s) tell what the secret layer took out")
+
+    def test_p4_reads_the_moved_rolls(self):
+        for d, p1, p4 in self.runs:
+            for label in MOVED + ("bbeg_tie", "bbeg_pole"):
+                self.assertNotIn(label, p4.by_label, "no label is rolled twice")
+            labels = [r["label"] for r in p1.public + p1.secret + p4.public + p4.secret]
+            self.assertEqual(len(labels), len(set(labels)))
+            for label in ("bbeg_faction_archetype", "front_template", "doom_shape"):
+                self.assertIn(p4.by_label[label], p4.secret)
+            self.assertTrue(p4.ctx.has(p1.by_label["bbeg_shape"]["row_id"]), "P4 stands on P1's villain")
+
+
+class LegacyP4(unittest.TestCase):
+
+    def test_a_birth_whose_p1_rolled_no_villain_still_rolls_it_in_p4(self):
+        """A birth from before build item 10b: P1 holds no villain rolls, so P4 makes them as it did."""
+        d = {"scale": "standard", "magic": "medium", "era": "medieval", "tone": "shadowed",
+             "content_mix": ["war", "mystery", "horror"], "party_size": 2, "level_band": [1, 12]}
+        p4 = designer.Roller.in_memory("LEGACY-P4", d, phase="P4")
+        self.assertFalse(di.villain_in_context(p4.ctx))
+        designer.preroll_p4(p4, {"dials": d})
+        for label in MOVED:
+            self.assertIn(p4.by_label[label], p4.secret)
+        self.assertNotIn("bbeg_tie", p4.by_label)
+
+
+class ThePair(unittest.TestCase):
+
+    D = {"scale": "standard", "magic": "medium", "era": "medieval", "tone": "shadowed",
+         "content_mix": ["war", "mystery", "horror"], "party_size": 2, "level_band": [1, 12]}
+
+    def p1(self, used_pairs=None):
+        real = di.roll_secret
+        if used_pairs is not None:
+            di.roll_secret = lambda R, dials, f, idn: real(R, dials, f, idn, used_pairs=used_pairs)
+        try:
+            R = designer.Roller.in_memory("PAIR-1", self.D)
+            designer.preroll_p1(R, {"dials": self.D})
+            return R
+        finally:
+            di.roll_secret = real
+
+    def test_a_pair_another_campaign_drew_is_not_drawn_again(self):
+        first = self.p1()
+        v = first.identity_secret["villain"]
+        rec = first.by_label["bbeg_origin"]
+        self.assertEqual(rec["used_keys"], {di.VILLAIN_PAIR_KEY: f"{v['shape']}|{v['origin']}"})
+        again = self.p1(used_pairs={dd.hashed(f"{v['shape']}|{v['origin']}")})
+        w = again.identity_secret["villain"]
+        self.assertEqual(w["shape"], v["shape"], "the same seed draws the same shape")
+        self.assertNotEqual(w["origin"], v["origin"], "the spent pair's origin waits")
+        self.assertEqual(sum(1 for e in again.by_label["bbeg_origin"]["excluded"] if e["why"] == "pair"), 1)
+        for sub in ("villain_shape", "origin"):
+            self.assertIs(dt.own_roll_header(V + sub).get("avoid_used"), False, "the rows themselves may repeat")
+            self.assertFalse(dt.records_usage(V + sub))
+
+
+class RealBirth(unittest.TestCase):
+    """One short test birth on disk: where the secret goes, what approve writes."""
+
+    def setUp(self):
+        self.guard = td.MarkerGuard().__enter__()
+        self.used_backup = USED.read_bytes() if USED.is_file() else None
+        self.name = f"_test-secret-{os.getpid()}-{uuid.uuid4().hex[:6]}"
+
+    def tearDown(self):
+        shutil.rmtree(CAMPAIGNS / self.name, ignore_errors=True)
+        if self.used_backup is not None:
+            USED.write_bytes(self.used_backup)
+        elif USED.is_file():
+            USED.unlink()
+        self.guard.__exit__(None, None, None)
+
+    def test_the_secret_goes_to_dm_only_and_the_pair_to_used_json_hashed(self):
+        td.run("new", self.name, "--party-size", "2", "--seed", "SECRET-0001", "--lang", "tr", "--scale", "short", "--tone", "shadowed",
+               "--magic", "medium", "--era", "medieval", "--danger", "balanced", "--content-mix", "war,mystery,horror", check=True)
+        proc = td.run("-c", self.name, "preroll", "--phase", "P1", check=True)
+        design = CAMPAIGNS / self.name / "design"
+        public_text = (design / "design.json").read_text(encoding="utf-8")
+        manifest = json.loads(public_text)
+        log = json.loads((design / "dm-only" / "dice-log.json").read_text(encoding="utf-8"))
+        ident = log["identity"]
+        self.assertEqual(set(ident), {"secret", "villain"})
+        self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "trail"})
+        self.assertEqual(set(ident["villain"]), {"visibility", "shape", "origin", "tie", "pole", "majority_pole"})
+        by_label = {r["label"]: r for r in log["rolls"] if r["phase"] == "P1"}
+        for label in P1_SECRET:
+            self.assertIn(label, by_label)
+            self.assertIn(label, manifest["dice_log_secret"]["labels"])
+        self.assertEqual(ident["villain"]["shape"], by_label["bbeg_shape"]["row_id"])
+        # nothing public names a secret row: design.json (dice log, foundation, identity) and the preroll's printout
+        named = sum(1 for rid in SECRET_IDS if rid in public_text or rid in proc.stdout)
+        self.assertEqual(named, 0, f"{named} secret row(s) named in design.json or printed at preroll")
+        self.assertNotIn("villain", manifest["identity"])
+        self.assertNotIn("secret", manifest["identity"])
+        # approve writes the shape and origin pair hashed; the rows themselves are not recorded
+        self.assertGreater(designer.record_used(self.name, "P1"), 0)
+        used_text = USED.read_text(encoding="utf-8")
+        mine = json.loads(used_text)["campaigns"][self.name]
+        pair = f"{ident['villain']['shape']}|{ident['villain']['origin']}"
+        self.assertEqual(mine[di.VILLAIN_PAIR_KEY], [dd.hashed(pair)])
+        self.assertNotIn(V + "villain_shape", mine)
+        self.assertNotIn(V + "origin", mine)
+        self.assertEqual(sum(1 for rid in SECRET_IDS if rid in used_text), 0, "used.json names a secret row in clear")
+        self.assertIn(dd.hashed(pair), dd.used_values("_test-another-birth", di.VILLAIN_PAIR_KEY), "the next birth sees the spent pair")
+        # P4 of this birth rolls no villain piece again
+        ctx = dd.context(self.name, "P4")
+        self.assertTrue(di.villain_in_context(ctx))
+
+
+if __name__ == "__main__":
+    if "--floor" in sys.argv:
+        ManySeeds.setUpClass()
+        ManySeeds("test_the_floor").test_the_floor()
+        for ref, n in sorted(ManySeeds.floors.items()):
+            print(f"{n:>3}  {ref}")
+        print("empty pools:", ManySeeds.empty, "seeds:", len(ManySeeds.runs))
+    else:
+        unittest.main()

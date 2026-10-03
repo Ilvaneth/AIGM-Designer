@@ -32,7 +32,7 @@ UNIQUE_TABLES = ("tensions.yaml", "secrets.yaml", "trope-breaks.yaml", "signatur
                  "foundation.yaml#contest")
 
 
-REPEATABLE = ("trope-breaks.yaml#tie", "signatures.yaml#people_lineage", "signatures.yaml#people_attitude",
+REPEATABLE = ("trope-breaks.yaml#tie", "secrets.yaml#chooser", "signatures.yaml#people_lineage", "signatures.yaml#people_attitude",
               "signatures.yaml#institution_form", "signatures.yaml#institution_sign", "signatures.yaml#institution_power",
               "signatures.yaml#phenomenon_sign", "signatures.yaml#phenomenon_limit", "signatures.yaml#phenomenon_user")
 # sub-tables of a unique file that may repeat (the traits, the practice and the rule stay unique)

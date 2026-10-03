@@ -24,6 +24,17 @@ design_arbiter against everything rolled before it), on the foundation step 1 bu
 
 `build(out)` is `design.json#identity`: public and stamped like `#foundation`. An override is data here: the rolled
 rows' overrides are collected, none is applied.
+
+`roll_secret(R, dials, foundation, identity)` makes the secret draws after the public ones (build item 10b), every
+one of them secret:
+
+6. the secret: archetype, chooser (with `chooser_contest_role` a further roll picks which seated role), twist, trail;
+7. the villain: visibility, shape, origin (a shape and origin pair another campaign drew waits as usage and is
+   written, hashed, at approve; the two tables' rows may otherwise repeat), the tie to the break (`bond_caused_it`,
+   not rolled, exactly when the chooser is the villain) and the pole: role a's or role b's side of the main
+   contest's question, with the darkness dial's `majority_pole` beside it.
+
+Its return goes to dm-only alone (`dice-log.json#identity`); design.json and the card never hold it.
 """
 
 from __future__ import annotations
@@ -33,6 +44,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_arbiter as arb  # noqa: E402
+import design_dice as dd  # noqa: E402
 import design_foundation as fd  # noqa: E402
 import design_tables as dt  # noqa: E402
 
@@ -43,6 +55,9 @@ S = "signatures.yaml#"
 TIE_OF_PIECE = (("lifeline", "tie_lifeline"), ("contest", "tie_contest"), ("ruin_source", "tie_ruin_source"))
 USER_OF_KIND = {"spell": "user_casters", "self": "user_no_one"}
 HEADINGS = ("state", "religious", "martial", "guild", "trade", "scholarly", "criminal", "resistance")
+SECRETS = "secrets.yaml#"
+VILLAIN = "antagonists.yaml#"
+VILLAIN_PAIR_KEY = "antagonists.yaml#shape_origin_pair"     # used.json: shape|origin, hashed, never repeated
 
 
 def named(cond) -> list[str]:
@@ -216,6 +231,47 @@ def roll(R, dials: dict, foundation: dict) -> dict:
         questions.append({"contest": c["id"], "family": fam, "id": qid})
     out["questions"] = questions
     return out
+
+
+def villain_in_context(ctx) -> bool:
+    """Did an earlier phase roll the villain's shape? (P1 does since build item 10b; a legacy birth's P4 still rolls
+    visibility, shape and origin itself.)"""
+    return any(ctx.has(r["id"]) for r in dt.rows(VILLAIN + "villain_shape"))
+
+
+def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: set | None = None) -> dict:
+    """The secret and the villain: every draw secret, through the arbiter against everything rolled before it."""
+    if used_pairs is None:
+        used_pairs = dd.used_values(R.campaign, VILLAIN_PAIR_KEY) if R.campaign else set()
+    main = foundation["contests"][0]
+
+    # 6. the secret
+    archetype = R.table("secret_archetype", SECRETS + "archetype", secret=True)["row_id"]
+    chooser = R.table("secret_chooser", SECRETS + "chooser", secret=True)["row_id"]
+    chooser_role = None
+    if chooser == "chooser_contest_role":
+        seated = list(main["roles"])
+        chooser_role = seated[int(R.notation("secret_chooser.role", f"d{len(seated)}", secret=True)["raw"]) - 1]
+    twist = R.table("secret_twist", SECRETS + "twist", secret=True)["row_id"]
+    trail = R.table("secret_trail", SECRETS + "trail", secret=True)["row_id"]
+
+    # 7. the villain
+    visibility = R.table("bbeg_visibility", VILLAIN + "visibility", secret=True)["row_id"]
+    shape = R.table("bbeg_shape", VILLAIN + "villain_shape", secret=True)["row_id"]        # the forbidden shapes never enter
+    spent = {o["id"] for o in dt.rows(VILLAIN + "origin") if dd.hashed(f"{shape}|{o['id']}") in used_pairs}
+    rec = R.table("bbeg_origin", VILLAIN + "origin", secret=True, also_used=spent)        # nor the awakened ancient evil
+    origin = rec["row_id"]
+    rec["used_keys"] = {VILLAIN_PAIR_KEY: f"{shape}|{origin}"}       # approve writes it hashed; the pair never repeats
+    if chooser == "chooser_the_villain":
+        tie = R.forced("bbeg_tie", VILLAIN + "break_tie", "bond_caused_it", "the chooser is the villain", secret=True)["row_id"]
+    else:
+        tie = R.table("bbeg_tie", VILLAIN + "break_tie", secret=True)["row_id"]    # `bond_caused_it` requires that chooser
+    side = ("a", "b")[int(R.notation("bbeg_pole", "d2", secret=True)["raw"]) - 1]
+    tone = dt.dial_row("tone", dials.get("tone")) or {}
+    return {"secret": {"archetype": archetype, "chooser": chooser, "chooser_role": chooser_role, "twist": twist, "trail": trail},
+            "villain": {"visibility": visibility, "shape": shape, "origin": origin, "tie": tie,
+                        "pole": {"question": identity["questions"][0]["id"], "contest": main["id"], "role": side},
+                        "majority_pole": (tone.get("effects") or {}).get("majority_pole")}}
 
 
 def overrides_of(row_ids) -> list[dict]:
