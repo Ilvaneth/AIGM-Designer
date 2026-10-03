@@ -11,20 +11,20 @@ Four relations between rows, all read from tags, never from text: **clashes** (h
 3. **Scope lives in the topic's name.** The land's rule and one people's own order are different topics; a foreign polity carries no claim. A clash may be declared across topics.
 4. **Clash or override, one test.**
    - Against a *rolled row* or a *dial's value*: **clashes**. The later row leaves the pool; what was rolled first stays.
-   - Against a *default* (a dial effect, a quota, a scale number, another row's hook): **overrides**. The trope break stays and the default is rewritten as it says.
+   - Against a *default* (a dial effect, a quota, a scale number, another row's hook): **overrides**. The rolled row stays (most often a trope break, also a foundation row such as "casters and the casterless") and the default is rewritten as it says.
 5. **Requires.** A row that names something by "the X" is not drawn unless X was rolled.
 6. **Fits.** A theme link is a weight only (×2-3), never hard. Theme lists (dragons, craft) are not turned into claims.
 7. **The dials are the root.** Dial rows carry claims too. The owner may set a dial, so no roll changes it; every later roll yields to it.
 8. **Inspection.**
    - Every row carries its own "reviewed" stamp; a changed or new row turns the test red.
-   - A hard group that falls under five rows turns the test red.
+   - A hard group that falls under five rows turns the test red. This holds for tables whose rows are not drawn again across campaigns (they run out); a table whose rows may repeat (forms, signs, limits, the tie, the time) is exempt.
    - The development tab tags the secret rows; the owner sees counts only. Topics that belong to the secret alone stay out of the owner-visible registry.
 
 9. **One target, one owner** (added the same day). Every effect and every hook names what it sets (P4's quota, P2's calendar, the site types). The "who sets what" chart below is kept during the review; a second owner of one target is brought to the owner at once. Where two owners are really needed, how they combine is written (multiplied, or one overrides the other); an unwritten second owner turns the test red. Effects are structured and a script can scan them; hooks are prose and are caught only as the review reads them, each read hook gaining a target tag. The hooks of the P2-P8 tables stay unscanned until their floors' turn.
 
 **A limit.** In P1 an override is data only. The code that applies it is built when the floor that reads the overridden default is bound (P4's quota at P4, the calendar at P2). Until then each override stands in the promise ledger as a promise with a due phase.
 
-**First topic list** (grows and is settled during the review): the land's rule · nobility · iron · below ground · writing · how plentiful magic is · the form of war · crossing the border · the world's age. "Sky" is left out on purpose until the era dial is reviewed.
+**The topic registry as the review left it (six topics):** the land's rule (hereditary, a throne, by lot, a guild council, a dragon sovereign) · nobility (exists, none) · below ground (lived in) · writing (printed) · how plentiful magic is (scarce, middling, plentiful, faded) · the form of war (by armies, by champions). The first list also held iron, crossing the border, the world's age and (deferred) the sky; no row ended up claiming any of them: the prohibitions claim nothing, and "the world is young" left the table.
 
 ## 2. The review, table by table
 
@@ -36,12 +36,11 @@ Four relations between rows, all read from tags, never from text: **clashes** (h
 | Default | Today | Overridden by |
 |---|---|---|
 | the forced `state` faction (`factions.quota.state`) | 1 at every scale | "no lords; guilds rule" |
-| the years history covers (`history.years_covered`) | short and standard 200, epic 500 | "the world is young; written history is three hundred years" (clashes at epic only) |
 
 - **Owner rulings (2026-10-02), for the floors' turn:**
   - *Planes (P2):* at least one touched plane at every scale. `planes_touched` at short becomes 1 (today `[0, 1]`).
   - *Gods and churches (P2, P4; narrows errata 24.2 #11):* an epic world may hold 9-14 gods, but not every god is a great, widely worshipped power. Fallen, weak and little-followed gods are story value and are never faction-strength. One or more gods, by the kind of story, are great powers with followers and servants; those may be factions. "A church faction per god" goes.
-    - Great powers (gods whose church is a faction): short 0-1 of 3-5 gods, standard 1-2 of 6-9, epic 2-4 of 9-14. The roll inside the band is weighted by the story: a ruin source of the gods family, a religious contest role, a religion-heavy tone push it up. The other gods keep a name, a domain and a story, and no faction.
+    - Great powers (gods whose church is a faction): short 0-1 of 3-5 gods, standard 1-2 of 6-9, epic 2-4 of 9-14. The roll inside the band is weighted by the story: a ruin source of the gods family and a religious contest role push it up (the tone no longer carries a religion weight). The other gods keep a name, a domain and a story, and no faction.
     - The church factions count inside the scale's faction total. The quota's forced `religious` faction is the first great god's church, not an extra one.
     - A religious contest role's faction is a great god's church; two religious roles (two faiths, one holy place) need two great gods. The contest sets the band's lower bound, at short too.
 
@@ -61,7 +60,7 @@ The owner asked whether tone could go. It carried two things: a genre (horror, p
 
 - **Deleted with the four genre rows:** their hooks (the signature creature, the court / exchange / tribunal list, the three-region hub) and every other tone effect: site-type weights, faction-archetype weights, secret-archetype bias, pantheon bias, NPC-secret bias, the era bias, the rest-pressure modifier, the planes modifier.
 - **Deleted by hand:** dark fantasy's P2 hook "the big secret is pinned to a deep-past event" (the secret is the break's true cause, and the break is recent). The surviving hooks stay: no faction is clean, complicity, the holy place that is dangerous, the ally by deed, the win's named cost.
-- **Open for the build item:** the seven tone weights in `foundation.yaml` (cosmic 3, heroic 2, horror 2); the voice examples go to item 15's cleanup list. Legacy births keep their old tone values untouched.
+- **For the build item:** the 22 tone weights in `foundation.yaml` (section 3 says where each goes); the voice examples go to item 15's cleanup list. Legacy births keep their old tone values untouched.
 
 ### P0 — magic (`dials.yaml#magic`; approved 2026-10-02)
 
@@ -72,12 +71,12 @@ The owner asked whether tone could go. It carried two things: a genre (horror, p
 - **`high` sat in the attractor.** "Magic is infrastructure and the city bills for it" and "lamps" go. The infrastructure idea stays without the bill (owner, the same day): "the city's ward, its lift, its bridge run on magic; they are nobody's property". The P3 hook asks for at least one such settlement.
 - **Note for P2:** the dial no longer guarantees a service provider (medium used to promise a guild selling identify and training), and P2's regulator table has a "nobody" row. At P2's turn "who gives the service" is answered for every regulator row.
 - **Overridable defaults:** the caster share of the roster (0.08 / 0.15 / 0.30) and the regulator, both by "magic is nobility; there is no magicless noble". Sketch for the trope-break table: with that trope P2's regulator roll is not made, the regulator is the nobility, and the primer's "what a caster risks by casting in public" becomes "what a commoner risks by casting".
-- **Note for P4 (rule 9):** the faction list has five sources (the scale's quota, the contest's roles, the institution signature, the great gods' churches, the magic regulator). Likely rule: the regulator is no new faction, it sits on an existing one.
+- **Note for P4 (rule 9):** the faction list has several sources (the scale's quota, the contest's roles, the institution signature, the great gods' churches, the magic regulator; the trope breaks joined later, six in all). Likely rule: the regulator is no new faction, it sits on an existing one.
 
 ### P0 — era (`dials.yaml#era`; approved 2026-10-02)
 
 - **Claims:** `era_renaissance` → writing: printed (clashes with the trope break "writing is unknown"). `era_underground` → below ground: lived in (clashes with the trope break "going underground is forbidden"). Medieval, ancient and nautical carry none. The dial is the root, so in those births the trope break leaves the pool.
-- **The sky (the report's open detail):** the underground era does **not** claim "no sky"; the surface is rare, not gone. The calendar note becomes "the sun and the moon are known but seldom seen; those below count time by what the deep gives" (the bells and tides go with it). The rows that touch the sky (the moon traders, night safe and day dangerous, the "sky changed" scar, the sky-watching institution) are judged one by one at their own tables; the leaning is that night-and-day clashes (it loses its meaning below) and the moon traders do not (a story).
+- **The sky (the report's open detail):** the underground era does **not** claim "no sky"; the surface is rare, not gone. The calendar note becomes "the sun and the moon are known but seldom seen; those below count time by what the deep gives" (the bells and tides go with it). The rows that touch the sky (the moon traders, night safe and day dangerous, the "sky changed" scar, the sky-watching institution) are judged one by one at their own tables; the leaning is that night-and-day clashes (it loses its meaning below) and the moon traders do not (a story). *Outcome:* "night is safe" and the night curfew clash with the underground era; the moon traders do not; the scars "the sky changed" and "the seasons broke" and the action "fell from the sky" are not drawn there; the sky-watching practice left its table; three phenomenon rules (night distances, the seasons' beast, feelings and weather) are not drawn there.
 - **Nautical forces the coast.** As underground forces `land_underground`, nautical forces `land_coast` into the palette, and the spines with no sea (the oasis, the barren corridor and the like) weigh ×0.25. Otherwise "a port hub" and "a site reachable only by sea" can be impossible.
 - **`economy_bias` is deleted** on all five rows: the lifeline owns P3's economy, and the lists held dropped goods (salt, light).
 - **Attractor hooks:** renaissance loses the bank, the exchange, credit and the "prices with credit and letters" primer section, and keeps the printing house; ancient's "temple (also the bank)" loses the bank; ancient's "tombs and temples outnumber planned dungeons" goes (tombs only as the approved khan tombs; the ruin source owns site types). The nautical lighthouse stays.
@@ -105,7 +104,7 @@ Clean: no claim, clash or requirement (danger is how hard play is, not a fact ab
 
 **Working rule (2026-10-02).** No pair is left open. Two rows that can stand together get one of three written verdicts: clashes, overrides, or "no clash". "No clash" may be written only after checking that the two rows' hooks do not write the same target, and its reason is recorded. Earlier leanings given without that check (the moon traders in the underground era, item 8's five "no conflict" pairs) are not rulings; they are re-read with their hooks at their own tables.
 
-### P1 — the spine (`foundation.yaml#spine`; in review from 2026-10-02)
+### P1 — the spine (`foundation.yaml#spine`; approved 2026-10-02)
 
 **What the spine carries.** A spine is geography: almost no claims. Its real work is to be the antecedent later rows require (a wall, a river, a strait); that is already data (`key_kind`, `parts`), so the requirement is written on the row that needs it, at that row's table. The owner also confirms, row by row, which spines read under the nautical era (the others weigh ×0.25 there).
 
@@ -133,7 +132,7 @@ No clash, override or requirement in the family.
 
 - *The one limit (approved):* a prohibition needs a majority that keeps it. It clashes only where the forbidden thing is the whole land's ordinary daily life. For "going underground is forbidden" that is three cases: the underground era, a spine whose heart city is below ground, and a layout that seats the heart on `land_underground`. A contest side living below is no clash; it is the side that breaks the ban.
 - *This narrows the four sources above:* source 3 is the heart only, not a contest side.
-- *The same test holds for the other prohibition rows* (maps, weapons, crossing the border, a god's name, a sacred beast).
+- *The same test holds for the other prohibition rows* (maps, weapons, crossing the border, a god's name; later also casting, the ruins and the night; the sacred beast left the table).
 - *Effect on the audit:* its largest group (43 in 3,000 births: forbidden descent with the deep-lake lifeline, the surface-and-deep contest and the like) is no longer a contradiction.
 
 **Family 4, layered (approved):**
@@ -167,8 +166,8 @@ Notes: in "two worlds" one contest side sits on the other plane, so a region and
 - **Requirements** (the palette kinds some rows need) stand as approved and are untouched. The table is an antecedent: institution practices, the break's remnant target and the phenomenon signature lean on it, at their tables.
 - **Whose plane (new promises, P2):** four rows name another plane (the planar rift, the planar invasion, the celestial war, the elves who withdrew to another plane); only the rift had a promise. All four get: "P2 chooses this row's plane among the touched planes". **Rule for P2:** the planes the foundation names are shared so that they fit the scale's plane count; at short they are all one plane (the thin place, the ruin's plane and the "border with a plane thinned" scar).
 - **The gods family and the pantheon (note for P2, no claim):** five rows say what befell a god; P2 rolls the pantheon type without reading the ruin. When the ruin is of the gods family the pantheon roll follows it. The ruin's god counts among the scale's gods and is one of the fallen, faction-less ones.
-- **Earlier rulings re-read:** the elves' withdrawal against "the elves arrived last century" stays a clash (in the data). The age of dragons against "dragons rule the lands" was ruled no conflict on 2026-09-29; under the working rule it is confirmed only after the two rows' hooks are read together at the trope-break table.
-- **No clash, with reasons:** "the world is young" with old ruins (owner, 2026-09-29: sites may be older than the fall, all that is known dates from it; the hooks write different targets, P6's sites and P2's years, the latter an overridable default); the sky ruins with the underground era (the era claims no "no sky"; their sites stand on the rare surface); "writing is unknown" with dwarf runes and merchant seals (the old people's, not today's).
+- **Earlier rulings re-read:** the elves' withdrawal against "the elves arrived last century" was a clash in the data; the trope break has since left the table, and the `conflicts_with` entry goes with it. The age of dragons against "dragons rule the lands" was ruled no conflict on 2026-09-29; under the working rule it is confirmed only after the two rows' hooks are read together at the trope-break table.
+- **No clash, with reasons:** the sky ruins with the underground era (the era claims no "no sky"; their sites stand on the rare surface); "writing is unknown" with dwarf runes and merchant seals (the old people's, not today's).
 - **Tone weights:** as in section 3 (horror's two rows to the content mix, heroic's two to `bright`, cosmic's three deleted).
 
 ### P1 — the lifeline (`foundation.yaml#lifeline`; approved 2026-10-02)
@@ -186,10 +185,12 @@ Notes: in "two worlds" one contest side sits on the other plane, so a region and
 | "crossing the border is forbidden" with the pilgrim road, the caravan inn, the natural harbour, the marriage | read the hooks: a land that lives on those who cross may meet the prohibition's limit |
 | "dragons rule the lands" with the dragon's protection | no clash, a fit |
 
+*Outcome at the trope-break table:* iron is a fit with a merge rule (the lifeline's smiths are the iron priesthood); the giants row left the table in the consistency pass; the animals row became the beast-people and clashes with nothing; the border clashes with nothing; the dragon's protection is a fit.
+
 - **Rule 9:** the four common hooks each have one owner (P3's economy and goods, P5's trades, the contest's prize, the people signature's home).
 - **Note for P2:** the pilgrim road presupposes a holy place and a faith; whether the pilgrims' god must be one of the great gods is asked at P2's turn.
 
-### P1 — the contest (`foundation.yaml#contest`; part 1 approved 2026-10-02)
+### P1 — the contest (`foundation.yaml#contest`; approved 2026-10-02)
 
 **Claims: 12 of 40 rows.**
 
@@ -268,15 +269,15 @@ Notes: in "two worlds" one contest side sits on the other plane, so a region and
 
 **The foundation is closed** (spine, palette, ruin source, lifeline, contest, break).
 
-### P1 — the trope break (`trope-breaks.yaml`; in review from 2026-10-03)
+### P1 — the trope break (`trope-breaks.yaml`; approved 2026-10-03)
 
-Every carried pair is settled here, each after reading both rows' hooks.
+Every carried pair is settled here, each after reading both rows' hooks. The section follows the order of the discussion: seven of the first 33 rows left the table and six were added; "giants are the peasants" left last (section 4). The final table is 31 rows: the family tables below plus the six added rows.
 
 **Family 1, governance and power (approved):**
 
 | Row | Claims | Clashes | Overrides | Fits |
 |---|---|---|---|---|
-| rulers are drawn by lot | the land's rule: by lot | the four "hereditary" rows (two heirs; the empty throne; sibling rulers; the binding marriage); the question "birthright and merit" (in the data) | the state faction's succession rule; the ruler NPC's heir field ("next draw"); the politics mix's `succession` node ("the day of the draw") | |
+| rulers are drawn by lot | the land's rule: by lot | the four "hereditary" rows (two heirs; the empty throne; sibling rulers; the binding marriage); the question "birthright and merit" (in the data) | the state faction's succession rule; the ruler NPC's heir field ("next draw"); the politics mix's `succession` and `election` nodes ("the day of the draw") | |
 | no lords; guilds rule | nobility: none; the land's rule: a guild council | the eight "nobility exists" rows, the three "a throne" rows, sibling rulers (hereditary) | the scale's forced state faction (archetype guild); the era's "seat of rule" anchor (a guild hall); the politics mix's `succession` node ("the choosing of masters") | ×2 with a contest whose side a or b is a guild |
 | wars are fought by champions | war: by champions | the company that feeds on war | the "→ war" last escalation step of about ten contests (a challenge of champions); the war mix's node kinds (duel, the choosing of champions, parley, raid); martial factions' assets (champions) | |
 | bearing arms is one class's right (prohibition) | none | nothing | | ×2 with lords and peasants |
@@ -294,15 +295,12 @@ Every carried pair is settled here, each after reading both rows' hooks.
 
 | Row | Clashes | Overrides | Fits |
 |---|---|---|---|
-| giants are the peasants | the giants' peace (lifeline), humans and giants (contest): two places and two orders for one people | | ×2 with the ruin "the giants' land" |
 | monsters hold treaties | nothing | P6's attitude roll on the treaty people's lairs (negotiate); the horror mix's "test or enslave" site is never one of those lairs | ×2 with the non-human treaty lifelines and the human-and-non-human contests |
 | some lands' lord is a beast-person | nothing | | |
 | lineage homes are inverted | nothing (the dwarf-city and elven-forest ruins tell the past) | the lineage roll's palette weights (inverted; item 10) | |
 
-- **"The elves arrived last century":** its statement is cut down to its name ("the elves came to this land last century; they have no past here"); the old text also called humans the ancient people of the old ruins, which contradicted four old-peoples ruins.
 - **"Animals speak and hold land" becomes the beast-people** (owner): the landholders are a born lineage that is both beast and person (the SRD's five lycanthropes; others by the reskin rule). The row says nothing of a curse, contagion or alignment: tables assign nobody a good or evil part, later floors place the parts (the owner's reading of "no inherently evil people", confirmed). Its P3 hook reads "a beast-lord holds one part of the map" (was: one region; short has 1-2). No clash with the herd and hunt lifelines, nor with the shapeshifter contest (an open lord of a region against an unproven rumour; different targets).
 - **Factions asked for:** the treaty people; the beast-lord.
-- **Note for the names table:** "trade speaks goblin" touches the language count (two at short); the common tongue being goblin is an override candidate.
 
 **Family 3, gods and the sky (approved 2026-10-03):**
 
@@ -314,7 +312,7 @@ Every carried pair is settled here, each after reading both rows' hooks.
 | one god's name may not be spoken (prohibition) | nothing | | ×2 with the ruins "the imprisoned god" and "the god who left" |
 
 - The moon is a plane and joins the shared-planes rule (at short the one plane is the moon; a thin place in the palette is where the moon ships land). Its old field "biases the era roll toward nautical" is deleted: a dial is rolled before the trope and cannot be overridden.
-- With the great-gods ruling: the god fading for lack of witnesses is one of the fallen, faction-less gods; the unnamed god's hidden priests are a faction, so that god counts among the great powers.
+- With the great-gods ruling: the unnamed god's hidden priests are a faction, so that god counts among the great powers.
 - *Note for P3:* "each god's holy ground is a map node" needs a node of its own only for the great gods; a fallen god's holy ground may be a small shrine in a settlement.
 
 **Family 4, where danger lies (approved 2026-10-03):**
@@ -380,11 +378,11 @@ Every carried pair is settled here, each after reading both rows' hooks.
 - **The tie.** (a) When the trope break has a fit bond with a foundation piece (sacred iron with an iron lifeline, the border with the road's openers and closers, ancestor gods with the failed-apotheosis ruin), the tie is that piece and is not rolled. (b) Under "coming" the tie cannot be the break (an established order is not explained by an event still to come); the one exception is the scar's prohibition, read as the break's first sign.
 - **Cleanup:** the unread `tags` field is deleted (19 values, two spelling drifts). The old unread `overrides` fields: the ancestor gods' becomes the new relation, the moon traders' is deleted. `prohibition: true` stays.
 
-**The trope break is closed:** 32 rows.
+**The trope break is closed:** 31 rows (governance 7, peoples 3, gods 5, danger 7, time 3, knowledge 6) after "giants are the peasants" left in the consistency pass.
 
 ### P1 — the people signature (`signatures.yaml#people_lineage`, `#people_trait`, `#people_attitude`, item 8's uncommitted tables; approved 2026-10-03)
 
-**Lineage (16 rows): no claims, weights only.** Today's weights stand (human base weight 4; dwarf, elf, halfling, gnome, giant-kin, sea folk, lizardfolk and centaurs by palette kind; gnome by the craft lifelines; dragonborn by the dragon rows; tiefling by the planar rows). Added fits, ×3: giant-kin with the giants' peace, humans and giants, the giants' land, giants against dragons, "giants are the peasants"; the fey people with the fey bargain, humans and fey, the elves' withdrawal; the sea folk with the sea-folk hunt, land and sea folk, the spine above and below the sea, the great flood; the goblin or kobold people with "monsters hold treaties". "Lineage homes are inverted" inverts the palette weights (a lineage whose home kind the palette lacks takes the ×3).
+**Lineage (16 rows): no claims, weights only.** Today's weights stand (human base weight 4; dwarf, elf, halfling, gnome, giant-kin, sea folk, lizardfolk and centaurs by palette kind; gnome by the craft lifelines; dragonborn by the dragon rows; tiefling by the planar rows). Added fits, ×3: giant-kin with the giants' peace, humans and giants, the giants' land, giants against dragons; the fey people with the fey bargain, humans and fey, the elves' withdrawal; the sea folk with the sea-folk hunt, land and sea folk, the spine above and below the sea, the great flood; the goblin or kobold people with "monsters hold treaties". "Lineage homes are inverted" inverts the palette weights (a lineage whose home kind the palette lacks takes the ×3).
 
 **The people's role was unmarked in the data.** The design says "when the contest has a people's role, the signature people is that role", but no role said so; a birth could make the signature people both "the giant clans in the mountains" and halflings. Ten roles are marked as a people's role (peoples who live in the land and carry no archetype hint):
 
@@ -415,7 +413,7 @@ When the main contest has a marked role and the scale seats it (fourth roles onl
 
 **Attitude to strangers (6 rows):** no tags.
 
-### P1 — the institution signature (`signatures.yaml#institution_form`, `#institution_practice`, `#institution_sign`, `#institution_power`, item 8's uncommitted tables; in review from 2026-10-03)
+### P1 — the institution signature (`signatures.yaml#institution_form`, `#institution_practice`, `#institution_sign`, `#institution_power`, item 8's uncommitted tables; approved 2026-10-03)
 
 **The role's archetype is the heading (approved).** The institution is a contest role, and that role's faction is the institution itself; yet only the form read the role (as a weight), while the practice, the sign and the power were rolled blind (a smugglers' role could draw "midwives"; a regent's house "monster hunters"). Not measurable on real code (item 10's rolls do not exist yet); by count, a practice fits a given archetype in about a third of draws. Ruling: the form, the practice and the power are drawn only from the rows under the role's archetype (state, religious, martial, guild, trade, scholarly, criminal, resistance). Every practice and power row carries the archetypes it fits; the form rows' `hints` turn from a weight into a requirement. No heading falls under five rows.
 
@@ -446,7 +444,7 @@ When the main contest has a marked role and the scale seats it (fourth roles onl
 | war | the riders of the border and its forts | martial, state |
 | war | champions who settle disputes in single combat | martial, state |
 | war | a free company | martial, trade, criminal |
-| war | they hunt dragons or giants | martial |
+| war | they hunt dragons | martial |
 | trade | they hold the monopoly of one good | trade, guild, state |
 | trade | they sell what comes out of the remnant | trade, criminal, scholarly |
 | trade | the sole sellers of the lifeline's product | trade, guild |
@@ -571,17 +569,24 @@ The largest single causes: prize against lifeline 18.6 %; the tie "the break" un
 | travel | the era (vehicle) and the spine (route) | combined, no overlap |
 | a site's attitude to intruders (P6) | P6's attitude roll | "every ruin is someone's home" narrows the pool; horror's hook asks for test or enslave |
 | where sites stand (P6) | the spine (the key place and the ends each hold or border a site) | shared without overlap: the ruin source says which sites, the content mix which types weigh, the danger dial how many are over tier |
-| P2's history | the ruin source (one age), the break (a dated event), the palette (the origin of a fantastic kind the ruin did not bring), the scale (the numbers) | "the world is young" overrides the years |
+| P2's history | the ruin source (one age), the break (a dated event), the palette (the origin of a fantastic kind the ruin did not bring), the scale (the numbers) | |
 | which plane | P2 chooses, among the touched planes, for the thin place, the ruin's plane and the scar; shared to fit the scale's count | |
 | the palette's kinds | the spine (forces), the era (forces: underground, nautical), the ruin source (one kind, on top of the count), a scar (one kind, counted toward the cap), the roll for the rest | every combination is written |
 | P7's endings | the question (their content), darkness (which is most reachable) | two aspects |
 | how clean the sides are (P4), the voice | darkness | |
 | the villain's pole | P1's secret roll; darkness `dark` overrides the majority's side | |
-| the magic regulator: who | P2's regulator roll | the magic dial no longer names it; "magic is nobility" overrides |
+| the magic regulator: who | P2's regulator roll | the magic dial no longer names it. Three rows override it: "magic is nobility" (the nobility), the contest "casters and the casterless" (side a), "casting is forbidden" (the hunters). Their pairs are written: nobility with the contest agree (side a is the nobility); the ban with the contest agree (side a is the licensed exception); nobility with the ban clash |
 | the magic regulator: how strict; the caster share; the loot multiplier; the wild-magic gate | magic | |
 | P4's faction list | scale quota, contest roles, institution, great gods' churches, regulator, trope breaks | six sources: to settle at P4; the scale's count is never exceeded |
 
-Words in two closed lists: `standard` is both a scale and a danger value; to rename at the danger dial.
+| P2's pantheon type | P2's roll | the ruin source's gods family leads it; "the gods are ancestors" sets it; "the gods live among mortals" narrows it |
+| the great gods' count | the scale's band | raised by a religious contest role, by "the gods live among mortals" (at least 1), by the unnamed god's hidden priests |
+| the lineage roll's weights | the palette and the foundation's rows | "lineage homes are inverted" inverts them; a marked people's role forces the lineage |
+| the institution's form, practice and power | the role's archetype (the heading) | four practices name their form |
+| the question | the contest's family (the heading) | |
+| the tie | the roll | a fit bond with a foundation piece sets it; the scar's prohibition is tied to the break |
+
+Words in two closed lists: `standard` was both a scale and a danger value; the danger value is renamed `balanced`.
 
 ## 3. Held for the build (owner, 2026-10-02: nothing more goes to the coding tab until P1's review ends)
 
@@ -594,4 +599,29 @@ The plan may still change while the review runs, so the review's results are col
 - `danger_standard` → `danger_balanced`, while `effects.state_difficulty` keeps its value (play reads it);
 - item 8's uncommitted `signatures.yaml` names tone values in ten places; they are re-pointed when item 8 resumes.
 
-**For item 7c (the claims system):** the claims, clash pairs, overrides and overridable defaults recorded above; `trope-breaks.yaml` already carries an unread field named `overrides` (on the moon traders, an era bias) that must not be confused with the new relation.
+**For item 7c (the claims system):** the claims, clash pairs, overrides and overridable defaults recorded above. `trope-breaks.yaml` carries two old unread `overrides` fields: the ancestor gods' (the pantheon type) becomes the new relation, the moon traders' (an era bias) is deleted.
+
+**For 7b, replacing the draft's rule of thumb:** which spines weigh ×0.25 under nautical is the owner-approved list in the spine section (×3: the long coast, the archipelago, above and below the sea, the peninsula, the strait; ×1: the river to the sea, the lake chain, the floating archipelago; ×0.25: the other 22).
+
+**Build item 7a, audited 2026-10-03 (the development tab read the four scripts' diff and ran the suite: 469 tests, exit code 0).** All five parts do what was asked: the public die is counted over the rows not publicly excluded and the real die goes to dm-only; a phase stands only on the phases before it; a table's own `avoid_used` wins over the caller's argument; the usage fallback drops one kind at a time (family wait, used elsewhere, row wait, the pair last) and names what it dropped; `families_distinct` is read by a general path as a constraint. Notes for later items:
+- *The header rule was read narrowly:* for `file#sub` only the sub-table's own header binds; a file-level header does not speak for its sub-tables. P2-P6 make many `avoid=False` calls on sub-tables whose file header says `avoid_used: true` (pantheon, calendar, history, regions, settlements, factions, antagonists); that contradiction is settled at those phases' turn.
+- *The same fault sat in the time table* (four rows, exhausted by the fifth birth); the same fix closed it.
+- *One gap, from the instruction's own wording:* the command-line `design_dice.py roll` no longer sees the earlier rolls of its own phase and attempt, so hand rolls inside one phase are not filtered against each other (only `families_distinct` reads them). No script or prompt calls that command, the preroll's `Roller` keeps its own stack, so no birth is affected; the fix (add the same phase's current-attempt rows to the command's context) was asked for with the commit.
+
+## 4. The consistency pass (2026-10-03)
+
+The development tab re-read this file whole after the review. The file follows the order of the discussion, so earlier sections held statements that later rulings replaced; those were brought in line (the removed trope breaks' leftovers, the topic registry, the tone weights' count, the faction sources' count, the outcomes of the pairs that had been carried forward, the chart's missing owners, rule 4's and rule 8's wording). No two standing rulings were found to contradict each other. Checked by count: the trope break families (7 + 4 + 5 + 7 + 3 + 6 = 32), the eight prohibitions, the rows that clash with "no lords" (eight nobility rows, three throne rows, sibling rulers), the four hereditary rows, the phenomenon kinds (15 + 19 + 6 = 40), the practices per archetype.
+
+Four small points were open; the owner ruled on them the same day (below).
+1. *A pair without a verdict:* the practice "they hunt dragons or giants" with "giants are the peasants" (the institution would hunt the land's farm labourers).
+2. *A text fix of the kind already approved:* the courier practice gives the party "letters"; with "writing is unknown" it should give "messages".
+3. *A pair without a written verdict, covered by the prohibition ruling:* "going out at night is forbidden" with the trait "below ground by day, on the surface by night" (the people is the one that breaks the ban).
+4. *Rule 8's scope:* the floor of five was worded for every hard group, but the time (four rows), the tie (four) and the forms were never meant by it; the wording now exempts tables whose rows may repeat.
+
+**The owner's rulings on the four points:**
+1. "Giants are the peasants" leaves the trope breaks (31 rows; the peoples family holds three: monsters hold treaties, the beast-people, lineage homes inverted). Its clash with the giants' peace and with humans and giants, its fit with the giants' land and the giant-kin lineage's weight on it go with it. The practice becomes "they hunt dragons" (the giants leave its sentence and its weight list). With "dragons rule the lands" the dragon hunters do not clash: a faction that wants the sovereign dead is a story, and in the merge with "humans and the dragon" they are the fourth role.
+2. The courier practice gives "messages", not "letters".
+3. "Going out at night is forbidden" with the trait "below ground by day, on the surface by night": no clash (the prohibition ruling; the people is the one that breaks the ban).
+4. Rule 8's floor of five holds only for tables whose rows are not drawn again across campaigns.
+
+**Where P1 stands.** The plan of P0 and P1 is closed for every table that exists. P1 itself closes only when the coding tab has built it: 7b (the P0 dials), 7c (the claims system and the table changes of this file), 8 (the signature tables, redone to this file), 9 (the secret and villain tables), 10 (step 2's rolls), 11 (the names), 12 (the promise ledger), 13 (the door), 14 (the writer, the critics, the card), 15 (the attractor cleanup), then the test birth that runs P1 alone.
