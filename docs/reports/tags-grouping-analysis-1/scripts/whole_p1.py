@@ -54,6 +54,9 @@ ARCH = {"hold_the_key_place": A("state martial guild"), "keep_the_one_road": A("
         "sell_the_remnant": A("trade criminal scholarly"), "sole_seller": A("trade guild"), "foreign_house": A("trade"),
         "smugglers_union": A("criminal trade"), "keep_the_lifeline_rite": A("religious"), "pilgrim_guides": A("religious trade"),
         "guard_the_holy_place": A("religious martial"), "worship_the_break": A("religious resistance"), "empty_temples": A("religious")}
+for _r in dt.rows("signatures.yaml#institution_practice"):       # once item 8 is in, the table's own hints
+    if _r.get("hints"):
+        ARCH[_r["id"].replace("practice_", "")] = set(_r["hints"])
 SPELL = {"rule_" + x for x in A("echo rebound inverted_element spells_grow_life spell_twins kin_doubles spell_marks delayed_spells "
                                 "casting_ages gesture_magic monsters_smell_magic one_way_magic spells_feed_the_break geography_of_power half_spells")}
 USABLE = {"rule_" + x for x in A("mirror_doors true_names signs_are_spells tongue_of_magic metal_wakes shared_wounds")}
