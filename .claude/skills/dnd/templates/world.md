@@ -2,10 +2,10 @@
 **Generated:** <date>
 
 ## Campaign Tone & Genre
-- **Tone:** <grimdark / dark fantasy / heroic / horror / political / swashbuckling / cosmic>
+- **Tone:** <bright / shadowed / dark>
 - **Magic level:** <none / low / medium / high>
 - **Setting type:** <medieval / renaissance / ancient / nautical / underground>
-- **Danger level:** <lethal / gritty / standard / heroic>
+- **Danger level:** <lethal / gritty / balanced / heroic>
 - **Premise:** <the campaign in one sentence — what it's fundamentally about>
 
 ---

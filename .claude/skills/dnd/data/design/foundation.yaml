@@ -34,7 +34,7 @@ tables:
       count_by_scale: {short: [4, 5], standard: [6, 8], epic: [9, 12]}
       fantastic_cap_by_magic: {low: 0, medium: 1, high: 2}   # `cap_exempt` rows (the thin place) never count
       needs: [height, water]            # at least one of each
-      forces_by_dial: {era: {underground: [land_underground]}}   # owner, 2026-09-28: underground is never optional there
+      forces_by_dial: {era: {underground: [land_underground], nautical: [land_coast]}}   # owner: never optional in those eras
       note: >-
         the spine's and the dial's forced kinds come first; the rest are drawn without replacement. The one
         fantastic kind the ruin source brings (`adds_palette`) comes on top of the count (+1), skips the
@@ -123,7 +123,7 @@ tables:
         key_kind: descent
         parts: {heart: [land_highland], end_a: [land_underground, land_forest, land_river, land_marsh], end_b: [land_highland], key_place: [land_highland, land_mountain]}
         forces: [land_highland]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "dev bir yarık", heart: "iki yakayı bağlayan köprü", ends: ["yarığın tabanı", "kenarlardaki yaylalar"], key_place: "köprü ya da tabana inen merdiven", travel: "kenarlar boyunca ve aşağıya iniş"}
       - id: spine_mountain_passes
         label: Passes along a range
@@ -131,7 +131,7 @@ tables:
         key_kind: crossing
         parts: {heart: [land_mountain], end_a: [land_forest, land_highland, land_plain], end_b: [land_desert, land_steppe], key_place: [land_mountain]}
         forces: [land_mountain]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "sıradağ boyunca geçitler", heart: "en büyük geçitteki kale-şehir", ends: ["dağın yağmur alan yamacı", "kurak yamacı"], key_place: "ana geçit", travel: "geçitten geçide, mevsime bağlı"}
       - id: spine_long_coast
         label: A long coastline
@@ -147,7 +147,7 @@ tables:
         key_kind: water
         parts: {heart: [land_desert, land_steppe], end_a: [land_plain, land_river, land_highland, land_forest], end_b: [land_plain, land_river, land_highland, land_forest], key_place: [land_desert, land_steppe]}
         forces_one_of: [land_desert, land_steppe]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "çorak koridor", heart: "koridorun ortasındaki han-şehir", ends_both: "koridorun iki ucundaki iki uygarlık", key_place: "yoldaki tek su kaynağı", travel: "konaktan konağa, suya bağlı"}
       # 2. centred
       - id: spine_lake_basin
@@ -156,7 +156,7 @@ tables:
         key_kind: gate
         parts: {heart: [land_lake], end_a: [land_plain, land_lake, land_forest], end_b: [land_forest, land_steppe, land_cold, land_desert], key_place: [land_mountain]}
         forces: [land_mountain, land_lake]
-        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "dağlarla çevrili çanak, ortasında göl", heart: "göldeki ada-şehir", ends: ["verimli havza", "dağların ötesindeki bilinmeyen"], key_place: "havzadan çıkan tek geçit", travel: "göl üstünden ve kıyı yollarından içeri doğru"}
       - id: spine_lone_mountain
         label: One giant mountain
@@ -164,7 +164,7 @@ tables:
         key_kind: descent
         parts: {heart: [land_mountain, land_highland], end_a: [land_mountain], end_b: [land_plain, land_forest, land_highland, land_steppe], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
-        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "tek dev dağ", heart: "yamaçtaki en büyük şehir", ends: ["zirve", "etek"], key_place: "zirveye çıkan yol ya da dağın içine inen ağız", travel: "halkalar halinde yukarı ve aşağı"}
       - id: spine_star_crater
         label: The crater of a fallen stone
@@ -172,7 +172,7 @@ tables:
         key_kind: descent
         parts: {heart: [], end_a: [land_glass_desert, land_crystal_forest, land_marsh, land_forest], end_b: [], key_place: [land_highland, land_mountain]}
         landmark: crater                 # a P3 landmark, not a palette kind (review #4)
-        weight_by: [{when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         merges_with:                     # owner, 2026-09-28: one crater, the spine's heart
           ruin_fallen_star: "the ruin's crater and star stone are the spine's heart crater"
           ruin_celestial_war: "the war's impact crater is the spine's heart crater"
@@ -185,13 +185,14 @@ tables:
         key_kind: water
         parts: {heart: [land_desert], end_a: [land_desert], end_b: [land_plain, land_steppe, land_mountain, land_coast], key_place: [land_desert]}
         forces: [land_desert]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "vaha ve çevresindeki halka", heart: "vaha", ends: ["vaha", "çölün öbür yakası"], key_place: "vahanın suyu", travel: "vahadan dışa seferler; geri dönmek zorunlu"}
       - id: spine_crossroads
         label: Four roads meeting
         family: centred
         key_kind: crossroad
         parts: {heart: [land_plain, land_steppe], end_a: [], end_b: [], end_c: [], end_d: [], key_place: [land_plain, land_steppe]}
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
         tr: {name: "dört yol ağzı", heart: "kavşak şehri", ends_both: "dört yöndeki dört farklı iklim ve ülke", key_place: "kavşağın kendisi", travel: "merkezden dışa, dört koldan"}
       # 3. fragmented
       - id: spine_archipelago
@@ -208,7 +209,7 @@ tables:
         key_kind: network
         parts: {heart: [land_plain, land_river], end_a: [land_forest, land_plain, land_river, land_highland, land_lake], end_b: [land_forest, land_plain, land_river, land_highland, land_lake], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "vadiler labirenti", heart: "en geniş vadi", ends_both: "birbirinden dağlarla ayrılmış, her biri başka bir halkın vadisi", key_place: "vadileri bağlayan tüneller ve geçitler", travel: "geçitlerden; her vadi ayrı bir dünya"}
       - id: spine_forest_clearings
         label: Clearings in an endless forest
@@ -216,7 +217,7 @@ tables:
         key_kind: network
         parts: {heart: [land_plain, land_forest], end_a: [land_plain, land_highland, land_lake, land_marsh], end_b: [land_forest], key_place: [land_forest]}
         forces: [land_forest]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "sonsuz ormanın açıklıkları", heart: "en büyük açıklık", ends: ["açıklıklar", "ormanın derinliği"], key_place: "açıklıkları bağlayan patikalar", travel: "açıklıktan açıklığa, yolsuz"}
       - id: spine_mesa_land
         label: A land of mesas
@@ -224,7 +225,7 @@ tables:
         key_kind: bridge
         parts: {heart: [land_highland], end_a: [land_highland, land_mountain], end_b: [land_desert, land_river], key_place: [land_highland, land_mountain]}
         forces_one_of: [land_desert, land_highland]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "mesa ülkesi", heart: "en büyük masa dağın üstündeki şehir", ends: ["yaşanan mesa tepeleri", "aradaki vahşi kanyonlar"], key_place: "mesaları bağlayan köprüler ve ip yollar", travel: "mesadan mesaya, kanyonlara iniş"}
       - id: spine_lake_chain
         label: A chain of lakes
@@ -241,7 +242,7 @@ tables:
         key_kind: descent
         parts: {heart: [land_underground], end_a: [land_plain, land_forest, land_highland, land_mountain], end_b: [land_underground], key_place: [land_underground]}
         forces: [land_underground]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "yüzey, orta derinlik ve derin", heart: "orta katmandaki şehir", ends: ["yüzey", "en derin katman"], key_place: "katmanları bağlayan büyük kuyu ya da kaldırgaç", travel: "aşağı ve yukarı"}
       - id: spine_terraces
         label: Terraces
@@ -249,7 +250,7 @@ tables:
         key_kind: descent
         parts: {heart: [land_highland, land_plain], end_a: [land_highland], end_b: [land_plain], key_place: [land_river, land_highland, land_mountain]}
         forces: [land_highland, land_plain]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         tr: {name: "basamaklar", heart: "orta terastaki şehir", ends: ["en üstteki yayla", "en alttaki ova"], key_place: "teraslar arası merdivenler ve şelaleler", travel: "basamak basamak"}
       - id: spine_two_worlds
         label: Two worlds, one over the other
@@ -260,6 +261,7 @@ tables:
         requires: {dial: {magic: [medium, high]}}
         merges_with:                     # owner, 2026-09-28: the rift is no separate place
           ruin_planar_rift: "the rift is the two worlds' crossing point, the key place"
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
         tr: {name: "üst üste iki dünya", heart: "iki dünyanın örtüştüğü şehir", ends: ["bizim dünya", "öbür düzlem"], key_place: "geçiş noktaları", travel: "iki katman arasında gidip gelme"}
       - id: spine_mountain_within
         label: The mountain's inside and outside
@@ -267,7 +269,7 @@ tables:
         key_kind: gate
         parts: {heart: [land_underground], end_a: [land_mountain], end_b: [land_underground], key_place: [land_mountain]}
         forces: [land_mountain, land_underground]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         tr: {name: "dağın içi ve dışı", heart: "dağın içindeki şehir", ends: ["dağın dışı", "dağın içi"], key_place: "dağın kapıları", travel: "kapılardan içeri ve dışarı"}
       - id: spine_above_below_sea
         label: Above and below the sea
@@ -299,7 +301,7 @@ tables:
         family: frontier
         key_kind: gate
         parts: {heart: [land_plain, land_steppe], end_a: [land_plain, land_river, land_forest], end_b: [land_steppe, land_desert, land_cold, land_forest, land_marsh], key_place: [land_mountain, land_highland, land_plain, land_steppe]}
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "uzun bir sur boyunca sınır", heart: "surun ana kapısı", ends: ["surun içi", "dışı"], key_place: "kapılar", travel: "sur boyunca ve kapılardan dışarı"}
       - id: spine_climate_belt
         label: A climate belt
@@ -307,14 +309,14 @@ tables:
         key_kind: crossing
         parts: {heart: [land_plain, land_steppe, land_highland], end_a: [land_cold], end_b: [land_desert], key_place: [land_mountain, land_coast, land_highland]}
         forces: [land_cold, land_desert]
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "iklim kuşağı", heart: "kuşağın ortasındaki şehir", ends: ["donmuş kuzey", "kavrulan güney"], key_place: "kuşağın daraldığı yer", travel: "kuşak boyunca doğu-batı, kenarlara seferler"}
       - id: spine_edge_of_civilisation
         label: The edge of civilisation
         family: frontier
         key_kind: gate
         parts: {heart: [land_plain, land_river], end_a: [land_plain, land_river, land_highland], end_b: [land_forest, land_marsh, land_mountain, land_cold, land_desert], key_place: [land_river, land_mountain, land_highland]}
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         tr: {name: "uygarlığın kenarı", heart: "son büyük şehir", ends: ["bilinen topraklar", "haritasız vahşi"], key_place: "sınır kalesi ya da son köprü", travel: "sınırdan vahşiye doğru"}
       # 6. fantastic
       - id: spine_titan_back
@@ -323,7 +325,7 @@ tables:
         key_kind: descent
         parts: {heart: [land_highland, land_forest], end_a: [], end_b: [], key_place: [land_underground, land_mountain]}
         requires: {dial: {magic: [high]}}
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "bir titanın sırtı", heart: "sırttaki şehir", ends: ["baş", "kuyruk"], key_place: "canlının içine inen yol", travel: "sırt boyunca"}
       - id: spine_floating_archipelago
         label: A floating archipelago
@@ -340,6 +342,7 @@ tables:
         key_kind: bridge
         parts: {heart: [land_highland, land_mountain, land_plain], end_a: [], end_b: [], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
         tr: {name: "dipsiz bir boşluğun çevresindeki halka", heart: "boşluğa bakan şehir", ends_both: "halkanın iki karşı yakası", key_place: "boşluğun üstündeki tek köprü", travel: "halka boyunca ya da köprüden"}
       - id: spine_giant_tree
         label: One giant tree, mountain-tall
@@ -348,7 +351,7 @@ tables:
         parts: {heart: [land_forest], end_a: [land_forest], end_b: [land_underground, land_marsh], key_place: [land_forest]}
         forces: [land_forest]
         requires: {dial: {magic: [medium, high]}}
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "dağ boyunda tek dev ağaç", heart: "gövdedeki şehir", ends: ["dallardaki ülke", "köklerdeki ülke"], key_place: "gövde", travel: "yukarı dallara, aşağı köklere"}
         hooks:
           - {phase: validator, must: "the giant tree is no 'world tree'; nothing in it refers to a real-world mythology (errata #19)"}
@@ -358,7 +361,7 @@ tables:
         key_kind: descent
         parts: {heart: [land_mountain, land_highland], end_a: [land_plain, land_forest, land_steppe, land_highland], end_b: [land_mountain, land_highland, land_coast], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
-        weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         tr: {name: "dünyanın kenarı", heart: "uçurumun kenarındaki şehir", ends: ["iç topraklar", "uçurumun ötesindeki bulut denizi"], key_place: "kenardan aşağı inen tek yol", travel: "kenara doğru ve aşağıya"}
 
   # ── 3. the ruin source: what left the dangerous places (8 families, 40) ────────────────────
@@ -453,7 +456,6 @@ tables:
         landmark: crater
         sites: [site_planar, site_dungeon_ruin, site_wilderness]
         olgu_families: [magic_behaviour, nature_creatures]
-        weight_by: [{when: {dial: {tone: [cosmic]}}, x: 2}]
         tr: {name: "göksel savaş", what: "düzlemler arası bir savaş bu dünyada çarpıştı", remnant: "düşmüş savaş makineleri, yaralı toprak", sites: "çarpma kraterleri, düşmüş gök kaleleri, düzlem yarıkları", strangeness: "savaş alanında iyilik ve kötülük elle tutulur hale geliyor"}
       # 3. gods
       - id: ruin_dead_god
@@ -507,7 +509,7 @@ tables:
         remnant_kind: structure
         sites: [site_dungeon_planned, site_dungeon_lair]
         olgu_families: [body_blood, nature_creatures]
-        weight_by: [{when: {dial: {tone: [horror]}}, x: 3}]
+        weight_by: [{when: {dial: {content_mix: [horror]}}, x: 3}]
         tr: {name: "başarısız deney", what: "bir akademinin deneyi bir bölgeyi dönüştürdü", remnant: "deney merkezi", sites: "laboratuvar-zindanlar, kaçan yaratıkların inleri", strangeness: "bölgede canlılar birbirine karışıyor"}
       - id: ruin_made_peoples
         label: The made peoples
@@ -562,7 +564,7 @@ tables:
         remnant_kind: city
         sites: [site_urban, site_dungeon_planned, site_wilderness]
         olgu_families: [body_blood, nature_creatures]
-        weight_by: [{when: {dial: {tone: [horror]}}, x: 3}]
+        weight_by: [{when: {dial: {content_mix: [horror]}}, x: 3}]
         tr: {name: "salgın", what: "bir salgın bir ülkeyi boşalttı", remnant: "karantina şehirleri, hastane-kaleler", sites: "boş şehirler, hastane zindanları, yasak vadiler", strangeness: "salgının bıraktığı bağışıklık bir halkta güce dönüştü"}
       - id: ruin_fallen_star
         label: The stone that fell from the sky
@@ -635,7 +637,7 @@ tables:
         remnant_kind: structure
         sites: [site_stronghold, site_dungeon_ruin]
         olgu_families: [word_sign, matter]
-        weight_by: [{when: {dial: {tone: [heroic]}}, x: 3}]
+        weight_by: [{when: {dial: {tone: [bright]}}, x: 3}]
         tr: {name: "devlerin ülkesi", what: "devler bu toprağı yönetiyordu", remnant: "insana göre dev yapılar", sites: "dev kaleleri, dev merdivenler, dev hazineleri", strangeness: "devlerin taşları hâlâ onların sözünü dinliyor"}
       - id: ruin_age_of_dragons
         label: The age of dragons
@@ -643,7 +645,7 @@ tables:
         remnant_kind: structure
         sites: [site_dungeon_lair, site_dungeon_natural, site_dungeon_planned]
         olgu_families: [body_blood, nature_creatures]
-        weight_by: [{when: {dial: {tone: [heroic]}}, x: 3}]
+        weight_by: [{when: {dial: {tone: [bright]}}, x: 3}]
         tr: {name: "ejderhalar çağı", what: "ejderhalar hüküm sürdü, sonra birbirini yok etti", remnant: "inler ve hazineler", sites: "inler, hazine mağaraları, ejderha tapınakları", strangeness: "ejderha soyundan gelenler hâlâ hak iddia ediyor"}
       - id: ruin_winged_mountains
         label: The winged people's mountains
@@ -684,7 +686,6 @@ tables:
         remnant_kind: city
         sites: [site_urban, site_planar]
         olgu_families: [time, place_path]
-        weight_by: [{when: {dial: {tone: [cosmic]}}, x: 3}]
         tr: {name: "zamanın kırıldığı yer", what: "bir büyü zamanı kırdı", remnant: "zamanı donmuş bir şehir", sites: "zamanın farklı aktığı sokaklar", strangeness: "şehirde geçmişten ve gelecekten parçalar dolaşıyor"}
       - id: ruin_star_kingdom
         label: The kingdom that reached for the stars
@@ -692,7 +693,6 @@ tables:
         remnant_kind: structure
         sites: [site_dungeon_planned, site_planar, site_dungeon_lair]
         olgu_families: [time, magic_behaviour]
-        weight_by: [{when: {dial: {tone: [cosmic]}}, x: 3}]
         tr: {name: "yıldızlara uzanan krallık", what: "bir gözlemevi-krallık yıldızlardan bir şey çağırdı", remnant: "gözlemevleri", sites: "gözlemevleri, çağrı odaları, yıldız yaratıklarının inleri", strangeness: "belli gecelerde gökyüzü yaklaşıyor"}
 
   # ── 4. the lifeline: what they live on, what they cannot lose (7 families, 60) ──────────────────────
@@ -1149,7 +1149,7 @@ tables:
           b: {tr: "toprağın ihtiyacı olan şeyi getiren yeni gelenler", hint: trade}
           third: {tr: "ikisinden de kazanan tüccarlar", hint: trade}
           fourth: {tr: "korkan halkı örgütleyen biri", hint: resistance}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["yasaklar", "mahalle yangınları"]
         tr: {name: "yerleşikler ve yeni gelenler", name_note: "gelenler bir uçta"}
       - id: contest_old_order_reform
@@ -1161,7 +1161,7 @@ tables:
           b: {tr: "reform isteyen genç hükümdar ya da meclis", hint: state}
           third: {tr: "reformdan kazanacak loncalar", hint: guild}
           fourth: {tr: "eski düzenin askerleri", hint: martial}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["yeni yasalar", "darbe girişimi"]
         tr: {name: "eski düzen ve reformcular"}
       - id: contest_old_new_craft
@@ -1173,7 +1173,7 @@ tables:
           b: {tr: "yeni bir alaşım ya da makine getirenler", hint: scholarly}
           third: {tr: "işsiz kalan işçiler", hint: resistance}
           fourth: {tr: "yeni yöntemi silah olarak isteyen bir devlet", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["boykot", "makine kırma", "kan"]
         tr: {name: "eski zanaat, yeni zanaat"}
       - id: contest_old_gods_new_faith
@@ -1185,7 +1185,7 @@ tables:
           b: {tr: "hızla yayılan yeni inanç", hint: religious}
           third: {tr: "taraf seçmeye zorlanan hükümdar", hint: state}
           fourth: {tr: "iki inancı da reddeden büyücüler", hint: scholarly}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["vaazlar", "tapınak yakma"]
         tr: {name: "eski tanrılar, yeni inanç"}
       - id: contest_returners_stayers
@@ -1197,7 +1197,7 @@ tables:
           b: {tr: "onların topraklarına yerleşmiş olanlar", hint: state}
           third: {tr: "dönüşü destekleyen yabancı bir güç", hint: state}
           fourth: {tr: "iki taraftan da evlenmiş karışık aileler", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["eski evlerin kapısını çalmak", "silahlı dönüş"]
         tr: {name: "dönenler ve kalanlar"}
       - id: contest_occupier_resistance
@@ -1390,7 +1390,7 @@ tables:
           b: {tr: "onu bir fırsat sayan kol", hint: trade}
           third: {tr: "iki kolu birleştirmeye çalışan yaşlılar", hint: null}
           fourth: {tr: "kollardan birini kullanan dış bir güç", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["ayrı pazarlar", "ayrı ordular"]
         tr: {name: "bir halkın iki kolu"}
       - id: contest_order_schism
@@ -1402,7 +1402,7 @@ tables:
           b: {tr: "kopan genç kol", hint: resistance}
           third: {tr: "tarikatın hazinesini tutan kâhya", hint: guild}
           fourth: {tr: "bölünmeden kazanan rakip bir inanç", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["tarikattan kovma", "kardeş kanı"]
         tr: {name: "bir tarikatın bölünmesi"}
       - id: contest_divided_city
@@ -1415,7 +1415,7 @@ tables:
           b: {tr: "öbür yarısı", hint: state}
           third: {tr: "iki yarıyı bağlayan kapının bekçileri", hint: null}
           fourth: {tr: "yeniden birleşmek isteyen gençler", hint: resistance}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["kapıların kapanması", "köprüde çatışma"]
         tr: {name: "ikiye bölünmüş şehir", name_note: "kalp ikiye bölünmüş"}
       - id: contest_sibling_rulers
@@ -1427,7 +1427,7 @@ tables:
           b: {tr: "öbür yarısını yöneten küçük kardeş", hint: state}
           third: {tr: "hâlâ yaşayan eski hükümdar, anneleri ya da babaları", hint: null}
           fourth: {tr: "iki kardeşe de kız vermiş komşu krallık", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["sınır anlaşmazlığı", "kardeş savaşı"]
         tr: {name: "kardeş hükümdarlar"}
       - id: contest_split_family
@@ -1439,7 +1439,7 @@ tables:
           b: {tr: "ayrılan kol", hint: trade}
           third: {tr: "aile zanaatının sırrını bilen tek usta", hint: null}
           fourth: {tr: "rakip bir lonca", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["müşteri çalma", "sabotaj", "cinayet"]
         tr: {name: "bölünen aile"}
       - id: contest_humans_giants
@@ -1520,7 +1520,7 @@ tables:
           b: {tr: "öbür rakip", hint: state}
           third: {tr: "ikisine de silah ve para veren tüccar evi", hint: trade}
           fourth: {tr: "gerçeği bilen bir kaçak", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["küçük saldırılar", "büyük savaş; sonunda tüccar ikisini de alır"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
@@ -1534,7 +1534,7 @@ tables:
           b: {tr: "öbür yerel güç", hint: state}
           third: {tr: "ikisine de dost görünen uzak bir krallığın elçisi", hint: state}
           fourth: {tr: "elçinin planını sezen bir casus şebekesi", hint: criminal}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["armağanlar", "suikastlar", "işgal bahanesi"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
@@ -1548,7 +1548,7 @@ tables:
           b: {tr: "komşusu", hint: state}
           third: {tr: "iki tarafa da kiralanıp savaşı uzatan paralı birlik", hint: martial}
           fourth: {tr: "barış isteyen tüccarlar", hint: trade}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["sınır olayları", "bitmeyen savaş"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
@@ -1562,7 +1562,7 @@ tables:
           b: {tr: "öbürü", hint: state}
           third: {tr: "eski devleti yeniden kurmak isteyen gizli hayranları", hint: null}
           fourth: {tr: "mirasçı olduğunu bilmeyen biri", hint: null}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["eski simgeler", "darbe"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
@@ -1576,7 +1576,7 @@ tables:
           b: {tr: "öbürü", hint: state}
           third: {tr: "iki tarafı birbirine düşüren kılık değiştirmiş bir yaratık ya da fey", hint: null}
           fourth: {tr: "ondan şüphelenen bir avcı", hint: martial}
-        weight_by: [{when: {dial: {tone: ["political"]}}, x: 2}]
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["suçlamalar", "kan davası"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]

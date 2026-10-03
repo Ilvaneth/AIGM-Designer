@@ -19,10 +19,10 @@ Three rules shape every command here:
 | Dial | Values |
 |---|---|
 | scale | short / standard / epic |
-| tone | grimdark / dark fantasy / heroic / horror / political / swashbuckling / cosmic |
+| tone | bright / shadowed / dark (aydınlık / gölgeli / karanlık: how dark, not which genre) |
 | magic | low / medium / high (never none; errata 24.2 #24) |
 | era | medieval / renaissance / ancient / nautical / underground |
-| danger | lethal / gritty / standard / heroic (touches only non-CR knobs) |
+| danger | lethal / gritty / balanced / heroic (touches only non-CR knobs) |
 | party size, starting level | 1-6; default 1 |
 | content mix | the top three of exploration / politics / war / horror / mystery, in order |
 | wishes | 1-3 must, 1-3 must-not, free text; hard constraints the wishes critic checks in every phase, secrets included |

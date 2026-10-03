@@ -102,12 +102,12 @@ class NewBirth(unittest.TestCase):
     def test_given_dials_are_not_rolled_and_a_real_birth_waits_for_onay(self):
         name = f"_test-real-birth-{os.getpid()}-{uuid.uuid4().hex[:6]}"   # git-ignored: nothing is ever committed
         self.names.append(name)
-        proc = run("new", name, "--scale", "short", "--tone", "horror", "--magic", "low", "--era", "nautical",
+        proc = run("new", name, "--scale", "short", "--tone", "shadowed", "--magic", "low", "--era", "nautical",
                    "--danger", "gritty", "--content-mix", "mystery,horror,exploration", "--party-size", "1",
                    "--seed", "REAL-0001", "--ask-approval", check=True)
         m = self.manifest(name)
         self.assertFalse(m["_meta"]["auto_approve"])
-        self.assertEqual(m["dials"]["tone"], "horror")
+        self.assertEqual(m["dials"]["tone"], "shadowed")
         self.assertEqual(m["dice_log"], [])
         self.assertEqual(m["phases"]["P0"]["status"], "awaiting_approval")
         self.assertIn("awaits `onay`", proc.stdout)

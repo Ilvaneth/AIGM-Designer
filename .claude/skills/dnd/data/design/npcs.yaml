@@ -69,7 +69,7 @@ tables:
       - {id: weak_exposure, label: A secret whose exposure ends them, hooks: [{phase: P5, must: "the surfacing path names who could expose it"}]}
 
   secret:
-    note: "secret kinds paired with a surfacing path (how it comes out) and a default tier; dials.yaml npc_secret_bias names these by suffix"
+    note: "secret kinds paired with a surfacing path (how it comes out) and a default tier"
     rows:
       - {id: npcsecret_complicity, label: Complicity in the premise's harm, path: "a document with their name; a victim who recognises them", tier: secret, hooks: [{phase: P1, must: "ties to the big secret or the villain's front"}]}
       - {id: npcsecret_debt, label: A debt to the wrong people, path: "the collector comes while the party is there", tier: discoverable, hooks: [{phase: P4, must: "the creditor faction's asset list"}]}

@@ -23,7 +23,7 @@ Written only by `design_manifest.py init | reconcile | pending | mark | approve 
   },
   "dials": {
     "scale": "short",
-    "tone": "dark fantasy",
+    "tone": "shadowed",
     "magic": "low",
     "era": "medieval",
     "danger": "gritty",

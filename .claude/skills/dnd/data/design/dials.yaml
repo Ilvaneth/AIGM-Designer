@@ -51,130 +51,51 @@ tables:
         hooks:
           - {phase: P0, must: "arc skeleton and every count come from scale.yaml row scale_epic"}
           - {phase: P1, must: "two trope breaks; the signature mechanic is always rolled"}
-          - {phase: P2, must: "separate church factions per god (errata 24.2 #11)"}
 
+  # the darkness dial (owner, 2026-10-02): the old heroic, dark fantasy and grimdark. A degree of darkness, not a
+  # genre: the content mix and the foundation carry the genre. It carries four things and nothing else.
   tone:
-    notation: d7
+    notation: d3
     rows:
-      - id: tone_grimdark
-        value: grimdark
-        label: Grimdark
-        weight: 1
-        effects:
-          site_type_weights: {dungeon: 3, stronghold: 2, wilderness: 2, urban: 3, planar: 0, social: 2}
-          faction_archetype_weights: {state: 2, religious: 2, guild: 2, criminal: 3, martial: 3, scholarly: 1, resistance: 3, cult: 2, trade: 2}
-          secret_archetype_bias: [secret_enemy_is_us, secret_cure_is_the_cause, secret_the_hero_failed]
-          pantheon_type_bias: [pantheon_silent_gods, pantheon_dead_gods]
-          ending_bias: [pyrrhic, loss]
-          npc_secret_bias: [complicity, debt, cowardice]
-          telegraph_voice: "bleak and exact; the danger is named by someone who has lost to it"
-          news_voice: "prices, bodies, rumours of who paid"
-        hooks:
-          - {phase: P1, must: "the villain's answer to the tension is the one most of the world already lives by"}
-          - {phase: P4, must: "no faction is clean: every faction's public position hides a cost someone else pays"}
-          - {phase: P5, must: "at least one major NPC's secret is complicity in the premise's harm"}
-          - {phase: P7, must: "the pyrrhic ending is the most reachable of the three"}
-      - id: tone_dark_fantasy
-        value: dark fantasy
-        label: Dark fantasy
-        weight: 3
-        effects:
-          site_type_weights: {dungeon: 3, stronghold: 2, wilderness: 3, urban: 2, planar: 1, social: 2}
-          faction_archetype_weights: {state: 2, religious: 3, guild: 2, criminal: 2, martial: 2, scholarly: 2, resistance: 2, cult: 3, trade: 1}
-          secret_archetype_bias: [secret_artifact_is_seal, secret_god_erased, secret_monsters_were_made]
-          pantheon_type_bias: [pantheon_polytheist, pantheon_dead_gods]
-          ending_bias: [pyrrhic, win]
-          npc_secret_bias: [bargain, heresy, a_buried_child]
-          telegraph_voice: "the land itself is wrong before the enemy is seen"
-          news_voice: "omens, disappearances, a road closed"
-        hooks:
-          - {phase: P2, must: "the big secret is pinned to a deep-past event and to one god"}
-          - {phase: P6, must: "at least one Act 1 over-tier site is a place the taught history calls holy"}
-      - id: tone_heroic
-        value: heroic
-        label: Heroic
+      - id: tone_bright
+        value: bright
+        label: Bright
+        tr: {name: "Aydınlık"}
         weight: 2
         effects:
-          site_type_weights: {dungeon: 3, stronghold: 3, wilderness: 3, urban: 2, planar: 2, social: 1}
-          faction_archetype_weights: {state: 3, religious: 2, guild: 2, criminal: 2, martial: 3, scholarly: 1, resistance: 2, cult: 1, trade: 2}
-          secret_archetype_bias: [secret_the_hero_failed, secret_king_is_a_copy, secret_history_inverted]
-          pantheon_type_bias: [pantheon_polytheist, pantheon_ancestor_gods]
-          ending_bias: [win, pyrrhic]
-          npc_secret_bias: [a_lost_title, a_hidden_heir, a_broken_oath]
-          telegraph_voice: "a clear warning from someone who wants the party to succeed"
-          news_voice: "victories, musters, heralds"
+          ending_bias: [win]
+          sides: "allies won by deed exist"
+          majority_pole: other            # the majority holds the pole the villain does not (read by the secret layer)
+          voice: "clear, encouraging"
         hooks:
           - {phase: P4, must: "at least one martial faction whose leader can become an ally by deed, not by purchase"}
           - {phase: P7, must: "the win ending is reachable and costs something named at birth"}
-      - id: tone_horror
-        value: horror
-        label: Horror
+      - id: tone_shadowed
+        value: shadowed
+        label: Shadowed
+        tr: {name: "Gölgeli"}
+        weight: 3
+        effects:
+          ending_bias: [pyrrhic]
+          sides: "mixed"
+          majority_pole: other
+          voice: "uneasy"
+        hooks:
+          - {phase: P6, must: "at least one Act 1 over-tier site is a place the taught history calls holy"}
+      - id: tone_dark
+        value: dark
+        label: Dark
+        tr: {name: "Karanlık"}
         weight: 1
         effects:
-          site_type_weights: {dungeon: 3, stronghold: 1, wilderness: 3, urban: 3, planar: 2, social: 2}
-          faction_archetype_weights: {state: 1, religious: 3, guild: 2, criminal: 2, martial: 1, scholarly: 2, resistance: 2, cult: 3, trade: 1}
-          secret_archetype_bias: [secret_two_worlds_overlaid, secret_magic_is_a_disease, secret_land_is_a_body]
-          pantheon_type_bias: [pantheon_silent_gods, pantheon_dead_gods]
           ending_bias: [pyrrhic, loss]
-          npc_secret_bias: [contagion, a_replaced_relative, what_they_saw]
-          telegraph_voice: "wrong details before wrong events; nobody says the word"
-          news_voice: "a missing person, an animal behaving wrongly, a house shuttered"
-          rest_pressure_modifier: 1
+          sides: "no faction is clean"
+          majority_pole: villain          # overrides: the majority lives by the villain's pole
+          voice: "bleak and exact"
         hooks:
-          - {phase: P1, must: "the signature creature is the horror's face and appears in at least three sites"}
-          - {phase: P3, must: "one region's tonal identity is a wrongness that has no name in the primer"}
-          - {phase: P6, must: "telegraphs escalate through the three distances from odd to explicit; the threshold line is never ambiguous"}
-      - id: tone_political
-        value: political
-        label: Political
-        weight: 2
-        effects:
-          site_type_weights: {dungeon: 1, stronghold: 3, wilderness: 1, urban: 3, planar: 0, social: 4}
-          faction_archetype_weights: {state: 4, religious: 2, guild: 3, criminal: 3, martial: 2, scholarly: 2, resistance: 3, cult: 1, trade: 3}
-          secret_archetype_bias: [secret_enemy_is_us, secret_prophecy_is_engineered, secret_king_is_a_copy]
-          pantheon_type_bias: [pantheon_polytheist, pantheon_ancestor_gods]
-          ending_bias: [pyrrhic, win]
-          npc_secret_bias: [a_bought_vote, a_second_master, a_forged_lineage]
-          telegraph_voice: "everyone knows who owns the place; the danger is what they will do to keep it"
-          news_voice: "appointments, prices, marriages, a sealed letter"
-        hooks:
-          - {phase: P1, must: "the signature institution is a court, exchange, tribunal or council with a seat the party can want"}
-          - {phase: P4, must: "at least two state or guild factions; every provocation ladder's first rung is legal or economic"}
-          - {phase: P7, must: "every chapter has at least one social node and one site node (the content-mix check)"}
-      - id: tone_swashbuckling
-        value: swashbuckling
-        label: Swashbuckling
-        weight: 1
-        effects:
-          site_type_weights: {dungeon: 2, stronghold: 2, wilderness: 3, urban: 3, planar: 1, social: 2}
-          faction_archetype_weights: {state: 2, religious: 1, guild: 3, criminal: 3, martial: 2, scholarly: 1, resistance: 2, cult: 1, trade: 3}
-          secret_archetype_bias: [secret_artifact_is_alive, secret_history_inverted, secret_time_is_wrong]
-          pantheon_type_bias: [pantheon_polytheist, pantheon_ancestor_gods]
-          ending_bias: [win, pyrrhic]
-          npc_secret_bias: [a_false_name, a_buried_fortune, a_debt_of_honour]
-          telegraph_voice: "a boast, a wager, a map with a burnt corner"
-          news_voice: "ships in, ships lost, a duel at dawn"
-          era_bias: [era_nautical, era_renaissance]
-        hooks:
-          - {phase: P3, must: "the map has at least one hub the party can reach three regions from"}
-          - {phase: P4, must: "a criminal or trade faction offers the party work in chapter 1"}
-      - id: tone_cosmic
-        value: cosmic
-        label: Cosmic
-        weight: 1
-        effects:
-          site_type_weights: {dungeon: 2, stronghold: 1, wilderness: 2, urban: 2, planar: 4, social: 1}
-          faction_archetype_weights: {state: 1, religious: 2, guild: 2, criminal: 1, martial: 1, scholarly: 3, resistance: 2, cult: 3, trade: 1}
-          secret_archetype_bias: [secret_planes_are_one, secret_gods_are_prisoners, secret_world_is_ending_suppressed]
-          pantheon_type_bias: [pantheon_silent_gods, pantheon_dualist]
-          ending_bias: [pyrrhic, loss]
-          npc_secret_bias: [what_they_heard, a_borrowed_body, a_calculation]
-          telegraph_voice: "scale: something too large to be aimed at the party"
-          news_voice: "the sky, the tides, the sleepers"
-          planes_touched_modifier: 1
-        hooks:
-          - {phase: P2, must: "at least one touched plane with a way in, a cost and a time rate; the big secret is cosmological"}
-          - {phase: P6, must: "one planar site inside the level band"}
+          - {phase: P4, must: "no faction is clean: every faction's public position hides a cost someone else pays"}
+          - {phase: P5, must: "at least one major NPC's secret is complicity in the premise's harm"}
+          - {phase: P7, must: "the pyrrhic ending is the most reachable of the three"}
 
   magic:
     notation: d3
@@ -186,11 +107,11 @@ tables:
         effects:
           caster_share_of_roster: 0.08
           loot_item_multiplier: 0.6
-          regulator: "one institution licenses or hunts casters; it is a faction"
+          regulator_strictness: strict      # who regulates is P2's magic.yaml#regulator roll
           wild_magic_roll: {notation: d6, "on": [1]}
           planes_touched_modifier: 0
         hooks:
-          - {phase: P4, must: "the regulator is a faction with a fracture about the phenomenon"}
+          - {phase: P4, must: "the regulator P2 rolls has a fracture about the phenomenon"}
           - {phase: P8, must: "the primer states what a caster risks by casting in public"}
       - id: magic_medium
         value: medium
@@ -199,11 +120,11 @@ tables:
         effects:
           caster_share_of_roster: 0.15
           loot_item_multiplier: 1.0
-          regulator: "a guild; membership is a service menu and a fracture"
+          regulator_strictness: loose
           wild_magic_roll: {notation: d6, "on": [1, 2]}
           planes_touched_modifier: 0
         hooks:
-          - {phase: P4, must: "the mage guild exists and offers identify, training and a price list"}
+          - {phase: P8, must: "the primer states how loosely casting is watched"}
       - id: magic_high
         value: high
         label: High
@@ -211,11 +132,11 @@ tables:
         effects:
           caster_share_of_roster: 0.3
           loot_item_multiplier: 1.5
-          regulator: "municipal: magic is infrastructure and the city bills for it"
+          regulator_strictness: free
           wild_magic_roll: {notation: d6, "on": [1, 2, 3]}
           planes_touched_modifier: 1
         hooks:
-          - {phase: P3, must: "at least one settlement anchor is a magical utility (lamps, wards, a lift)"}
+          - {phase: P3, must: "at least one settlement's ward, lift or bridge runs on magic; it is nobody's property"}
           - {phase: P6, must: "loot budget rolls at the high multiplier; every major site has one attunement item"}
 
   era:
@@ -228,7 +149,6 @@ tables:
         effects:
           travel: "mounted by default; roads between towns, tracks between villages"
           anchor_variants: [temple, guild hall, inn, market, seat of rule, signature place]
-          economy_bias: [grain, wool, timber, iron, salt]
           srd_equipment: "as printed"
         hooks:
           - {phase: P3, must: "every town has the six anchors; no settlement is a city without a wall or a river"}
@@ -238,26 +158,22 @@ tables:
         weight: 2
         effects:
           travel: "mounted; post roads and coaches between cities"
-          anchor_variants: [temple, guild hall, inn, market, seat of rule, signature place, printing house, exchange]
-          economy_bias: [cloth, books, glass, silver, credit]
+          anchor_variants: [temple, guild hall, inn, market, seat of rule, signature place, printing house]
           faction_weight_multipliers: {trade: 1.5, scholarly: 1.5, guild: 1.3}
-          srd_equipment: "as printed; books and letters of credit are trade goods"
+          srd_equipment: "as printed; books are trade goods"
         hooks:
-          - {phase: P4, must: "a bank, exchange or printing house is a faction asset someone wants"}
-          - {phase: P8, must: "the primer has a prices section with credit and letters"}
+          - {phase: P4, must: "a printing house is a faction asset someone wants"}
       - id: era_ancient
         value: ancient
         label: Ancient
         weight: 1
         effects:
           travel: "mounted; few roads, river routes, wilderness larger"
-          anchor_variants: [temple (also the bank), agora, well, seat of rule, walls, signature place]
-          economy_bias: [bronze, grain, oil, wine, slaves-as-a-break-only]
+          anchor_variants: [temple, agora, well, seat of rule, walls, signature place]
           faction_weight_multipliers: {religious: 1.5, state: 1.3}
           srd_equipment: "heavy armour ×3 price and rare; crossbows absent from shops"
         hooks:
-          - {phase: P3, must: "polities are city-states unless a trope break says otherwise"}
-          - {phase: P6, must: "tombs and temples outnumber planned dungeons"}
+          - {phase: P3, must: "few roads: the river routes and the wilderness carry the travel"}
       - id: era_nautical
         value: nautical
         label: Nautical
@@ -265,9 +181,7 @@ tables:
         effects:
           travel: "mounted on land; ship routes are map edges with days at sea and a season flag"
           anchor_variants: [temple, guild hall, inn, market, seat of rule, harbourmaster, signature place]
-          economy_bias: [fish, salt, rope, timber, tar, spice]
           site_type_additions: [wreck, reef, island, lighthouse]
-          content_mix_bias: mix_exploration
         hooks:
           - {phase: P3, must: "at least one port hub; map edges carry mode land|sea; travel-times list both"}
           - {phase: P6, must: "one site is reachable only by sea"}
@@ -278,11 +192,10 @@ tables:
         effects:
           travel: "on foot or by beast through tunnels; regions are strata, not areas"
           anchor_variants: [shrine, guild hall, hostel, market, seat of rule, the shaft or lift, signature place]
-          economy_bias: [fungus, ore, water, light, gems]
-          calendar_note: "no sky: months are counted by bells, tides of fungus light or a great clock"
+          calendar_note: "the sun and the moon are known but seldom seen; those below count time by what the deep gives"
           monster_habitat_filter: [underground, cave, deep]
         hooks:
-          - {phase: P2, must: "the calendar names what replaces the sun and the moon"}
+          - {phase: P2, must: "the calendar names what those below count time by"}
           - {phase: P3, must: "every region has a stratum depth and a way up"}
 
   danger:
@@ -319,9 +232,9 @@ tables:
           small_table_step_up: {1: 2, 2: 1}
         hooks:
           - {phase: P6, must: "three Act 1 sites two tiers above the band; every detailed site has at most one sanctuary"}
-      - id: danger_standard
-        value: standard
-        label: Standard
+      - id: danger_balanced
+        value: balanced
+        label: Balanced
         weight: 3
         effects:
           state_difficulty: standard
@@ -363,7 +276,7 @@ tables:
           node_kinds: [expedition, lost_place, crossing, survey]
           seed_kinds: [expedition, lost_place, escort, map_fragment]
         hooks:
-          - {phase: P3, must: "one region is unmapped in the player map and named as such in the primer"}
+          - {phase: P3, must: "one part of the map is unmapped in the player map and named as such in the primer (part of a region at short, a region above)"}
           - {phase: P7, must: "each chapter has at least two site nodes"}
       - id: mix_politics
         value: politics
@@ -371,7 +284,7 @@ tables:
         effects:
           site_share: 0.35
           site_type_weights: {dungeon: 1, stronghold: 3, wilderness: 0, urban: 2, planar: 0, social: 4}
-          node_kinds: [court, negotiation, succession, election, trial]
+          node_kinds: [audience, negotiation, succession, election]
           seed_kinds: [intrigue, negotiation, succession, blackmail]
         hooks:
           - {phase: P4, must: "the stance matrix has at least one −3 pair and one +3 pair among the state and guild factions"}

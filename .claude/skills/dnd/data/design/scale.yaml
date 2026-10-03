@@ -47,7 +47,7 @@ rows:
     npc_tiers: {major: 3, supporting: 5, minor: [6, 10]}
     sites: {count: [6, 8], roles: {minor: 4, standard: 3, major: 1, capstone: 0}, detailed_at_birth: 2}
     gods: [3, 5]
-    planes_touched: [0, 1]
+    planes_touched: 1             # at least one touched plane at every scale (owner, 2026-10-02)
     antagonists: {bbeg: 1, lieutenants: 1, regional: 0}
     quest_seeds: [6, 8]
     sockets_per_pc: 2
@@ -55,9 +55,10 @@ rows:
     trope_breaks: 1
     signature_mechanic_chance: 0
     history: {ages: [3, 5], dated_events: [8, 12], years_covered: 200, deep_past_events: [3, 5]}
-    churches_as_factions: false
+    great_gods: [0, 1]            # gods whose church is a faction; the other gods keep a name, a domain and a story
     volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 1}
     hooks:
+      - {phase: P4, must: "the great gods' churches are factions inside the count; the quota's religious faction is the first great god's church"}
       - {phase: P0, must: "arc skeleton: 1 act, 3 chapters, level band start..start+4"}
       - {phase: P4, must: "the quota fills the count; a religious faction is optional"}
       - {phase: P6, must: "8 sites at most: 4 minor, 3 standard, 1 major; the first 2 on the intended path are detailed at birth"}
@@ -86,9 +87,10 @@ rows:
     trope_breaks: 2
     signature_mechanic_chance: 50
     history: {ages: [3, 5], dated_events: [8, 12], years_covered: 200, deep_past_events: [3, 5]}
-    churches_as_factions: false
+    great_gods: [1, 2]            # gods whose church is a faction; the other gods keep a name, a domain and a story
     volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 2}
     hooks:
+      - {phase: P4, must: "the great gods' churches are factions inside the count; the quota's religious faction is the first great god's church"}
       - {phase: P0, must: "arc skeleton: 3 acts, 7 chapters by default, level band start..start+11"}
       - {phase: P4, must: "the quota's four archetypes plus rolls from the pool up to the count"}
       - {phase: P7, must: "six beats, two per act; the doom day ≈ 25 sessions × 5 days with ≥30% slack"}
@@ -117,9 +119,10 @@ rows:
     trope_breaks: 2
     signature_mechanic_chance: 100
     history: {ages: [3, 5], dated_events: [8, 12], years_covered: 500, deep_past_events: [3, 5]}
-    churches_as_factions: true
+    great_gods: [2, 4]            # gods whose church is a faction; the other gods keep a name, a domain and a story
     volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 3}
     hooks:
+      - {phase: P4, must: "the great gods' churches are factions inside the count; the quota's religious faction is the first great god's church"}
       - {phase: P0, must: "arc skeleton: 3 acts, 10 chapters by default, level band start..start+19"}
-      - {phase: P2, must: "a church faction per god (errata 24.2 #11); history covers 500 years"}
+      - {phase: P2, must: "history covers 500 years"}
       - {phase: P7, must: "still six beats: the spine does not lengthen, the chapters widen"}

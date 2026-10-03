@@ -32,7 +32,7 @@ class FreshCampaign(unittest.TestCase):
                               capture_output=True, text=True, env=self.env, encoding="utf-8")
 
     def test_init_creates_the_tree_and_a_manifest_with_a_derived_arc(self):
-        proc = self.run_m("init", "--scale", "short", "--tone", "horror", "--magic", "low", "--era", "nautical",
+        proc = self.run_m("init", "--scale", "short", "--tone", "shadowed", "--magic", "low", "--era", "nautical",
                           "--danger", "gritty", "--party-size", "2", "--content-mix", "mystery,exploration,politics",
                           "--must", "deniz", "--must-not", "kehanet", "--seed", "TT-00000001")
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -46,16 +46,16 @@ class FreshCampaign(unittest.TestCase):
         self.assertEqual(set(m["phases"]), {f"P{i}" for i in range(10)})
         for sub in ("design/dm-only/_snapshots", "design/_staging", "design/dm-only/npcs", "characters"):
             self.assertTrue((self.dir / sub).is_dir(), sub)
-        self.assertEqual(self.run_m("init", "--scale", "short", "--tone", "horror", "--magic", "low",
+        self.assertEqual(self.run_m("init", "--scale", "short", "--tone", "shadowed", "--magic", "low",
                                     "--era", "nautical", "--danger", "gritty", "--party-size", "2",
                                     "--content-mix", "mystery,exploration,politics").returncode, 1,
                          "a second init refuses to overwrite")
 
     def test_init_validates_the_dials(self):
-        proc = self.run_m("init", "--scale", "huge", "--tone", "horror", "--magic", "low", "--era", "nautical",
+        proc = self.run_m("init", "--scale", "huge", "--tone", "shadowed", "--magic", "low", "--era", "nautical",
                           "--danger", "gritty", "--party-size", "2", "--content-mix", "mystery,exploration,politics")
         self.assertEqual(proc.returncode, 2)
-        proc = self.run_m("init", "--scale", "epic", "--tone", "horror", "--magic", "low", "--era", "nautical",
+        proc = self.run_m("init", "--scale", "epic", "--tone", "shadowed", "--magic", "low", "--era", "nautical",
                           "--danger", "gritty", "--party-size", "2", "--content-mix", "mystery,mystery,politics")
         self.assertEqual(proc.returncode, 2)
 

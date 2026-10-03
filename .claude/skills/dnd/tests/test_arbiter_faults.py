@@ -294,7 +294,7 @@ class FamiliesDistinct(unittest.TestCase):
         fam = {r["id"]: r["family"] for r in dt.rows("trope-breaks.yaml")}
         for i in range(150):
             scale = ("standard", "epic")[i % 2]
-            dials = {"scale": scale, "tone": "heroic", "magic": "medium", "era": "medieval", "content_mix": ["war"],
+            dials = {"scale": scale, "tone": "bright", "magic": "medium", "era": "medieval", "content_mix": ["war"],
                      "party_size": 2, "level_band": [1, 12 if scale == "standard" else 20]}
             R = designer.Roller.in_memory(f"P1FAM-{i}", dials)
             designer.preroll_p1(R, {"dials": dials})

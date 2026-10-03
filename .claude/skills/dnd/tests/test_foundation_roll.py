@@ -34,7 +34,7 @@ TIME = fd.rows_by_id("time")
 
 
 def dials(scale, magic, era, start=1):
-    return {"scale": scale, "magic": magic, "era": era, "tone": "heroic", "content_mix": ["war", "mystery", "horror"],
+    return {"scale": scale, "magic": magic, "era": era, "tone": "bright", "content_mix": ["war", "mystery", "horror"],
             "level_band": [start, min(20, start + SPAN[scale])]}
 
 
@@ -76,6 +76,8 @@ class ManySeeds(unittest.TestCase):
                     self.assertTrue(set(spine["forces_one_of"]) & set(pal))
                 if d["era"] == "underground":
                     self.assertIn("land_underground", pal)
+                if d["era"] == "nautical":
+                    self.assertIn("land_coast", pal)
                 self.assertTrue(any(PAL[k].get("height") for k in pal))
                 self.assertTrue(any(PAL[k].get("water") and not PAL[k].get("fantastic") for k in pal))
                 self.assertLessEqual(sum(1 for k in pal if fd.is_capped(PAL[k])), CAP[d["magic"]])

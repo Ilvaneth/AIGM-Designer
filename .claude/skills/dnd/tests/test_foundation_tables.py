@@ -82,7 +82,8 @@ class Palette(unittest.TestCase):
 
     def test_underground_is_forced_and_the_unreadable_kinds_weigh_half(self):
         """Owner, 2026-09-28: 'underground: the surface is rare'."""
-        self.assertEqual(DOC["tables"]["palette"]["roll"]["forces_by_dial"], {"era": {"underground": ["land_underground"]}})
+        self.assertEqual(DOC["tables"]["palette"]["roll"]["forces_by_dial"],
+                         {"era": {"underground": ["land_underground"], "nautical": ["land_coast"]}})
         half = {"land_plain", "land_steppe", "land_forest", "land_marsh", "land_desert", "land_cold", "land_coast",
                 "land_island", "land_highland", "land_floating_isles", "land_sky_river", "land_crystal_forest",
                 "land_stone_sea", "land_glass_desert", "land_giant_bones"}

@@ -143,11 +143,10 @@ class PlanNumbers(unittest.TestCase):
 
     def test_dials_closed_lists_match_item_2(self):
         self.assertEqual(dt.dial_values("scale"), ("short", "standard", "epic"))
-        self.assertEqual(dt.dial_values("tone"), ("grimdark", "dark fantasy", "heroic", "horror", "political",
-                                                  "swashbuckling", "cosmic"))
+        self.assertEqual(dt.dial_values("tone"), ("bright", "shadowed", "dark"))   # the darkness dial (2026-10-02)
         self.assertEqual(dt.dial_values("magic"), ("low", "medium", "high"))   # errata 24.2 #24: never none
         self.assertEqual(dt.dial_values("era"), ("medieval", "renaissance", "ancient", "nautical", "underground"))
-        self.assertEqual(dt.dial_values("danger"), ("lethal", "gritty", "standard", "heroic"))
+        self.assertEqual(dt.dial_values("danger"), ("lethal", "gritty", "balanced", "heroic"))
         self.assertEqual(dt.dial_values("content_mix"), ("exploration", "politics", "war", "horror", "mystery"))
 
     def test_design_manifest_derives_its_lists_from_the_tables(self):
@@ -179,13 +178,14 @@ class PlanNumbers(unittest.TestCase):
         self.assertEqual((s["sites"]["count"], m["sites"]["count"], e["sites"]["count"]), ([6, 8], [15, 25], [30, 40]))
         self.assertEqual((s["sites"]["detailed_at_birth"], m["sites"]["detailed_at_birth"], e["sites"]["detailed_at_birth"]), (2, 3, [3, 4]))
         self.assertEqual((s["gods"], m["gods"], e["gods"]), ([3, 5], [6, 9], [9, 14]))
-        self.assertEqual((s["planes_touched"][0], m["planes_touched"][0], e["planes_touched"][0]), (0, 1, 3))
+        self.assertEqual((s["planes_touched"], m["planes_touched"][0], e["planes_touched"][0]), (1, 1, 3))   # one at least
         self.assertEqual((s["quest_seeds"], m["quest_seeds"], e["quest_seeds"][0]), ([6, 8], [15, 20], 30))
         self.assertEqual((s["antagonists"]["lieutenants"], m["antagonists"]["lieutenants"], e["antagonists"]["lieutenants"]), (1, [2, 3], [3, 4]))
         self.assertEqual((s["sockets_per_pc"], m["sockets_per_pc"], e["sockets_per_pc"]), (2, 3, 3))
         self.assertEqual((s["trope_breaks"], m["trope_breaks"], e["trope_breaks"]), (1, 2, 2))
         self.assertEqual((s["signature_mechanic_chance"], m["signature_mechanic_chance"], e["signature_mechanic_chance"]), (0, 50, 100))
-        self.assertEqual((s["churches_as_factions"], e["churches_as_factions"]), (False, True))
+        self.assertEqual((s["great_gods"], m["great_gods"], e["great_gods"]), ([0, 1], [1, 2], [2, 4]))
+        self.assertFalse(any("churches_as_factions" in r for r in (s, m, e)))
 
     def test_scale_site_roles_and_npc_tiers_add_up(self):
         """Item 9.5's role split fits the site band; item 8.2's rescaled tiers fit the NPC cap."""
@@ -718,10 +718,6 @@ class Floors(unittest.TestCase):
         for a in axes:
             self.assertEqual(set(a["weakness_from"]), set(a["poles"]), a["id"])
             self.assertTrue(set(a["weakness_from"].values()) <= weaknesses, a["id"])
-        secrets = {s["id"] for s in dt.rows("npcs.yaml#secret")}
-        for tone in dt.rows("dials.yaml#tone"):
-            for bias in tone["effects"]["npc_secret_bias"]:
-                self.assertIn(f"npcsecret_{bias}", secrets, (tone["id"], bias))
         for s in dt.rows("npcs.yaml#secret"):
             self.assertIn(s["tier"], ("discoverable", "secret"), s["id"])
             self.assertTrue(s["path"], s["id"])

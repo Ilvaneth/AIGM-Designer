@@ -16,7 +16,7 @@ consumed_by: [P2, P6, P8]
 plan: "item 5 (planes), 17 #10, item 18.3"
 roll: {labels: [P2.plane_deviation.<baseline id>, P2.plane_touched.<n>, P2.plane_rate.<n>, P2.plane_way.<n>, P2.plane_cost.<n>], avoid_used: false, note: "deviation is rolled per baseline row the tone or a break flags; touched planes are chosen, then rate / way / cost are rolled per touched plane"}
 rules:
-  touched_count: "scale.yaml planes_touched, plus the tone's and magic dial's planes_touched_modifier, never below 0"
+  touched_count: "scale.yaml planes_touched, plus the magic dial's planes_touched_modifier, never below 1"
   touched_plane_carries: [way_in, cost, site (a site_ entity with a fixed tier), time_rate, keeper (a power or a creature), what_it_wants_from_visitors]
   untouched: "exists for spells; a local name is optional; no site, no entity unless a break names it"
   primer_line: "one sentence per plane the folk have a word for; the rule that spells follow this cosmology"
@@ -42,7 +42,6 @@ tables:
         group: transitive
         srd: "a misty, fog-bound dimension; its Border Ethereal overlaps the Material and Inner Planes"
         spells: [etherealness, see invisibility, true seeing, blink]
-        touch_bias: [tone_horror, tone_cosmic]
         hooks:
           - {phase: P2, must: "if touched, the fog has a local name and the ghosts of the campaign live in it"}
       - id: baseline_astral
@@ -50,7 +49,6 @@ tables:
         group: transitive
         srd: "the realm of thought and dream, a silvery sea travelled as a disembodied soul"
         spells: [astral projection, plane shift]
-        touch_bias: [tone_cosmic]
         hooks:
           - {phase: P2, must: "if touched, dreams are the way in and the magic system's visibility says what dreams show"}
       - id: baseline_air
@@ -58,7 +56,6 @@ tables:
         group: inner
         srd: "one of the four Elemental Planes ringing the Material Plane"
         spells: [conjure elemental, plane shift, gate]
-        touch_bias: [tone_swashbuckling]
         hooks:
           - {phase: P2, must: "if touched, a vortex portal on a height is its way in (the SRD's portal rule)"}
       - id: baseline_earth
@@ -74,7 +71,7 @@ tables:
         group: inner
         srd: "one of the four Elemental Planes; the efreeti's home city is the appendix's example bargain"
         spells: [conjure elemental, plane shift, gate]
-        touch_bias: [tone_dark_fantasy]
+        touch_bias: [tone_shadowed]
         hooks:
           - {phase: P2, must: "if touched, the heart of a volcano or a great kiln is its vortex"}
       - id: baseline_water
@@ -90,7 +87,6 @@ tables:
         group: inner
         srd: "the churning tumult in which the four Elemental Planes are suspended"
         spells: [plane shift, gate]
-        touch_bias: [tone_cosmic]
         hooks:
           - {phase: P2, must: "if touched, wild magic's shape is planar bleed from it"}
       - id: baseline_lg
