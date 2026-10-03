@@ -141,9 +141,14 @@ def rows_used_by(campaigns: list[str], table: str, used: dict | None = None) -> 
 
 
 def usage(campaign: str, table: str, avoid: bool = True) -> dict:
-    """The usage exclusions of one draw: rows used elsewhere (when `avoid`), and the table's own waits."""
+    """The usage exclusions of one draw: rows used elsewhere, and the table's own waits. A table whose own header
+    states `avoid_used` is held to it; the caller's `avoid` is read only when the header is silent (the actions and
+    scars say `avoid_used: false, row_wait: 3`: they wait three births and are never exhausted)."""
     used = load_used()
     head = dt.roll_header(table)
+    own = dt.own_roll_header(table)
+    if "avoid_used" in own:
+        avoid = bool(own["avoid_used"])
     out: dict = {}
     if avoid:
         out["used_elsewhere"] = rows_used_elsewhere(campaign, table)
@@ -167,9 +172,13 @@ def used_values(campaign: str, key: str, window: int | None = None) -> set:
     return out
 
 
-def prior_rolls(campaign: str, skip_phase: str | None = None) -> dict:
-    """Row id -> rolled secretly, for every roll the campaign stands on: each phase's latest attempt only (a
-    rerun's earlier draws are superseded), `skip_phase` left out (the phase being prerolled now)."""
+def prior_rolls(campaign: str, phase: str | None = None) -> dict:
+    """Row id -> rolled secretly, for every roll a draw of `phase` stands on: the phases BEFORE it (P0 < P1 < ... <
+    P9), each at its latest attempt only (a rerun's earlier draws are superseded). The phase itself and every later
+    one are left out: a rerolled P1 is never filtered by the stale P2-P4 rolls built on its old self. A caller
+    outside the birth order (in-play `detail`, no phase) sees every birth phase."""
+    order = {p: i for i, p in enumerate(dt.PHASES)}
+    limit = order.get(phase)
     m = load_manifest(campaign)
     recs = [(r, False) for r in m.get("dice_log") or []]
     recs += [(r, True) for r in (read_json(dm_only_dir(campaign) / "dice-log.json") or {}).get("rolls", [])]
@@ -179,14 +188,36 @@ def prior_rolls(campaign: str, skip_phase: str | None = None) -> dict:
     out: dict = {}
     for r, secret in recs:
         ph = r.get("phase")
-        if ph == skip_phase or int(r.get("attempt") or 1) != latest.get(ph) or not r.get("row_id"):
+        if int(r.get("attempt") or 1) != latest.get(ph) or not r.get("row_id"):
+            continue
+        if limit is not None and order.get(ph, -1) >= limit:
             continue
         out[r["row_id"]] = out.get(r["row_id"], False) or secret
     return out
 
 
-def context(campaign: str, skip_phase: str | None = None) -> arb.Context:
-    return arb.Context(dials=dict(load_manifest(campaign).get("dials") or {}), rolled=prior_rolls(campaign, skip_phase))
+def context(campaign: str, phase: str | None = None) -> arb.Context:
+    return arb.Context(dials=dict(load_manifest(campaign).get("dials") or {}), rolled=prior_rolls(campaign, phase))
+
+
+def taken_families(table: str, drawn_rows) -> set:
+    """Families already drawn from a table whose header says `families_distinct`: the next draw of the same roll
+    leaves them out (a constraint, never relaxed)."""
+    if not dt.roll_header(table).get("families_distinct"):
+        return set()
+    fams = {r["id"]: r.get("family") for r in load_table(table)}
+    return {fams[x] for x in drawn_rows if fams.get(x) is not None}
+
+
+def distinct_filter(table: str, drawn_rows, where=None, why: str = "where"):
+    """(where, why) with the families_distinct constraint folded in."""
+    taken = taken_families(table, drawn_rows)
+    if not taken:
+        return where, why
+
+    def both(row):
+        return row.get("family") not in taken and (where is None or where(row))
+    return both, ("family_taken" if where is None else f"family_taken or {why}")
 
 
 def append_secret_exclusions(campaign: str, notes: list[dict]) -> None:
@@ -223,16 +254,29 @@ def roll(campaign: str, phase: str, label: str, table: str | None, notation: str
     rows = load_table(table) if table else []
     if rows:
         try:
-            res = arb.arbitrate(table, rows, context(campaign), usage=usage(campaign, table, avoid_used), secret=secret)
+            same = [r["row_id"] for r in manifest.get("dice_log") or []
+                    if r.get("phase") == phase and r.get("table") == table and int(r.get("attempt") or 1) == attempt and r.get("row_id")]
+            where, why = distinct_filter(table, same)
+            # the phases before this one, and what this phase's own attempt has already rolled: the earlier roll stays
+            ctx = context(campaign, phase)
+            mine = [(r, False) for r in manifest.get("dice_log") or []]
+            mine += [(r, True) for r in (read_json(dm_only_dir(campaign) / "dice-log.json") or {}).get("rolls", [])]
+            for r, was_secret in mine:
+                if r.get("phase") == phase and int(r.get("attempt") or 1) == attempt:
+                    ctx.add(r.get("row_id"), was_secret)
+            res = arb.arbitrate(table, rows, ctx, where=where, why=why,
+                                usage=usage(campaign, table, avoid_used), secret=secret)
         except arb.EmptyPool as exc:
             raise SystemExit(f"design_dice: {label}: {exc}")
-        record.update(arb.pick(rng, res["pool"], res["weights"]))
+        picked = arb.pick(rng, res["pool"], res["weights"])
+        shown, real = (picked, None) if secret else arb.public_view(res, picked)
+        record.update(shown)
         excluded.extend(res["excluded"])
         if res["usage_fallback"]:
             record["usage_fallback"] = res["usage_fallback"]
         if res["excluded_secret"]:
-            append_secret_exclusions(campaign, [{"phase": phase, "label": label, "attempt": attempt,
-                                                 "excluded": res["excluded_secret"]}])
+            append_secret_exclusions(campaign, [dict({"phase": phase, "label": label, "attempt": attempt,
+                                                      "excluded": res["excluded_secret"]}, **(real or {}))])
     else:
         if not notation:
             raise SystemExit(f"design_dice: no table rows for {table!r} and no --notation given")

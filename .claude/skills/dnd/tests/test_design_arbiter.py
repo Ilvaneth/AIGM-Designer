@@ -124,11 +124,11 @@ class Usage(unittest.TestCase):
         res = arb.arbitrate("t", ROWS, arb.Context(), usage={"used_elsewhere": {"c", "d"}, "family_wait": {"f1"}},
                             conflicts={}, secret_ids=set())
         self.assertEqual(ids(res), ["a", "b"])
-        self.assertEqual(res["usage_fallback"], "family waits dropped")
+        self.assertEqual(res["usage_fallback"], "dropped: family_wait")
         res = arb.arbitrate("t", ROWS, arb.Context(), usage={"used_elsewhere": {"a", "b", "c", "d"}}, conflicts={},
                             secret_ids=set())
         self.assertEqual(ids(res), ["a", "b", "c", "d"])
-        self.assertEqual(res["usage_fallback"], "every usage exclusion dropped")
+        self.assertEqual(res["usage_fallback"], "dropped: used_elsewhere")
 
     def test_pairs_and_row_waits(self):
         res = arb.arbitrate("t", ROWS, arb.Context(), usage={"row_wait": {"a"}, "pair": {"b"}}, conflicts={},

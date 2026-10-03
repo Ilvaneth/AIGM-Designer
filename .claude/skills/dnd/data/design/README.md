@@ -39,7 +39,7 @@ A row may also carry:
 
 A `roll` header (the file's, overlaid by a sub-table's own `roll`) may set `avoid_used` (a row another campaign drew waits while the table has rows), `family_wait: N` (a family the last N births drew waits; only the foundation's spine, ruin source, lifeline and contest), `row_wait: N` (a row the last N births drew waits; the break's actions and scars) and `secret: true` (the rows are dm-only; a public log never names them).
 
-`design_arbiter.py` filters every draw before the die: constraints first (the caller's exclusions, forbidden, requires, conflicts with any row rolled before, zero weight) — a pool they empty stops the preroll as a table fault; then usage (used elsewhere, the waits, a caller's spent pairs) — a pool usage empties falls back, family waits first. Every exclusion is logged on the record with its reason.
+`design_arbiter.py` filters every draw before the die: constraints first (the caller's exclusions, forbidden, requires, conflicts with any row rolled before, zero weight) — a pool they empty stops the preroll as a table fault; then usage (used elsewhere, the waits, a caller's spent pairs) — a pool usage empties falls back one kind at a time: family waits, then used elsewhere, then row waits, the pair last; the record names what was dropped. A table whose own header states `avoid_used` is held to it; the caller's argument is read only when the header is silent. `families_distinct: true` makes several rows drawn from the table for one roll take different families (a constraint, never relaxed). Every exclusion is logged on the record with its reason; a public record counts its die over the rows not publicly excluded, so its size never tells what the secret layer took out.
 
 ## The tables (item 17)
 

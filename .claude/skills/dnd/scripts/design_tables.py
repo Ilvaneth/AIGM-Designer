@@ -160,6 +160,20 @@ def roll_header(ref: str) -> dict:
     return head
 
 
+def own_roll_header(ref: str) -> dict:
+    """The `roll` header the reference itself states: the sub-table's own for `file#sub`, the file's for a bare file.
+    A file's header never speaks for a sub-table here (the caller's argument does, design_dice.usage)."""
+    file_part, _, key = ref.partition("#")
+    try:
+        doc = load(file_part)
+    except FileNotFoundError:
+        return {}
+    if not key:
+        return dict(doc.get("roll") or {})
+    node = (doc.get("tables") or {}).get(key)
+    return dict(node.get("roll") or {}) if isinstance(node, dict) else {}
+
+
 def records_usage(ref: str) -> bool:
     """Does an approved phase write this table's rows to used.json? (avoid-used, family waits, row waits)."""
     head = roll_header(ref)

@@ -151,7 +151,7 @@ class Roller:
         self.secret: list[dict] = []
         self.secret_notes: list[dict] = []
         self.by_label: dict[str, dict] = {}
-        self.ctx = dd.context(campaign, skip_phase=phase)
+        self.ctx = dd.context(campaign, phase)        # the phases before this one, each at its latest attempt
         self.foundation: dict | None = None
 
     @classmethod
@@ -183,21 +183,26 @@ class Roller:
         use = self._usage(ref, avoid)
         if also_used:
             use["pair"] = set(also_used)
+        # a table whose header says families_distinct: the families this batch already drew from it are out
+        drawn = [r["row_id"] for r in self.public + self.secret if r.get("table") == ref and r.get("row_id")]
+        where, why = dd.distinct_filter(ref, drawn, where, why)
         try:
             res = arb.arbitrate(ref, rows, self.ctx, exclude=exclude, where=where, why=why, usage=use, secret=secret)
         except arb.EmptyPool as exc:
             raise SystemExit(f"designer: {self.phase} {label}: {exc}" if not secret else
                              f"designer: {self.phase} {label} (secret): the pool is empty after the constraints — a table fault")
         rec = self._record(label, ref)
-        rec.update(arb.pick(rng, res["pool"], res["weights"]))
+        picked = arb.pick(rng, res["pool"], res["weights"])
+        shown, real = (picked, None) if secret else arb.public_view(res, picked)
+        rec.update(shown)
         rec["excluded"] = res["excluded"]
         if res["usage_fallback"]:
             rec["usage_fallback"] = res["usage_fallback"]
         if used_keys:
             rec["used_keys"] = dict(used_keys)
         if res["excluded_secret"]:
-            self.secret_notes.append({"phase": self.phase, "label": label, "attempt": self.attempt,
-                                      "excluded": res["excluded_secret"]})
+            self.secret_notes.append(dict({"phase": self.phase, "label": label, "attempt": self.attempt,
+                                           "excluded": res["excluded_secret"]}, **(real or {})))
         self._keep(rec, secret)
         return rec
 

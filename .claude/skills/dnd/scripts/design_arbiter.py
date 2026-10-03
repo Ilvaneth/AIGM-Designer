@@ -15,12 +15,16 @@ Two classes of exclusion, applied in this order:
    kept.
 2. **Usage** — rows another campaign drew (`used_elsewhere`, the tables' `avoid_used`), rows of a family the last
    N births drew (`family_wait`), rows the last N births drew (`row_wait`), and values a caller marks spent (a
-   target + action pair that never repeats, `pair`). Usage never stops a draw: when it empties the pool, the
-   family waits are dropped first, then every usage exclusion, and the record says so (`usage_fallback`).
+   target + action pair that never repeats, `pair`). Usage never stops a draw: when it empties the pool it is
+   relaxed one kind at a time, in FALLBACK_ORDER (family_wait, then used_elsewhere, then row_wait, the pair
+   last), stopping as soon as a row is left; the record names what was dropped (`usage_fallback`).
 
 Every exclusion is logged with its reason. An exclusion on a public record that names a secret row (a row
 rolled secretly, or any row of a table whose roll header says `secret: true`) is moved to the secret side, so
-the public dice log never tells the owner, who is also the player, what the secret layer holds.
+the public dice log never tells the owner, who is also the player, what the secret layer holds. The die's size
+would tell it too: a public record's notation and face are counted over the rows not publicly excluded (the
+pool plus the secretly excluded rows, `visible`), and the real size and face go to the secret side
+(`public_view`).
 
 Conditions (`requires`, `weight_by[].when`) are a mapping whose keys must all hold, or a list of such mappings
 of which one must hold:
@@ -42,7 +46,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_tables as dt  # noqa: E402
 
 CONDITION_KEYS = ("dial", "any_of", "all_of", "none_of")
-USAGE_ORDER = ("used_elsewhere", "row_wait", "pair", "family_wait")   # family_wait is relaxed first
+USAGE_ORDER = ("used_elsewhere", "row_wait", "pair", "family_wait")   # the order a row's reason is named in
+FALLBACK_ORDER = ("family_wait", "used_elsewhere", "row_wait", "pair")  # the order usage is relaxed in, the pair last
 
 
 class EmptyPool(Exception):
@@ -150,7 +155,8 @@ def _names_secret(entry: dict, row: dict, ctx: Context, secret_ids: set) -> bool
 def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=None, why: str = "where",
               usage: dict | None = None, secret: bool = False, conflicts: dict | None = None,
               secret_ids=None) -> dict:
-    """The pool a draw is thrown on: {'pool', 'weights', 'excluded', 'excluded_secret', 'usage_fallback'}.
+    """The pool a draw is thrown on: {'pool', 'weights', 'excluded', 'excluded_secret', 'usage_fallback',
+    'visible'}. `visible` are the rows a public record may count (not publicly excluded), in table order.
     `conflicts` and `secret_ids` default to the committed tables' (tests pass their own)."""
     exclude = set(exclude or ())
     usage = usage or {}
@@ -170,12 +176,14 @@ def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=N
         detail = ", ".join(f"{k} {v}" for k, v in sorted(counts.items()))
         raise EmptyPool(f"{ref}: no row survives the constraints ({len(rows)} rows: {detail}) — a table fault")
     fallback = None
-    for skip in ((), ("family_wait",), USAGE_ORDER):
+    for n in range(len(FALLBACK_ORDER) + 1):          # nothing dropped, then one more kind at each step
+        skip = FALLBACK_ORDER[:n]
         spent = [usage_reason(r, usage, skip) for r in allowed]
         pool = [r for r, e in zip(allowed, spent) if e is None]
         if pool:
-            if skip:
-                fallback = "family waits dropped" if skip == ("family_wait",) else "every usage exclusion dropped"
+            dropped = [k for k in skip if usage.get(k)]
+            if dropped:
+                fallback = "dropped: " + ", ".join(dropped)
             barred += [e for e in spent if e is not None]
             break
     secret_ids = set(secret_ids)
@@ -186,8 +194,10 @@ def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=N
             hidden.append(e)
         else:
             public.append(e)
+    shown = {e["row"] for e in public}
     return {"pool": pool, "weights": [weight_of(r, ctx) for r in pool], "excluded": public,
-            "excluded_secret": hidden, "usage_fallback": fallback}
+            "excluded_secret": hidden, "usage_fallback": fallback,
+            "visible": [r for r in rows if r["id"] not in shown]}
 
 
 def pick(rng: random.Random, pool: list[dict], weights: list[float]) -> dict:
@@ -202,6 +212,17 @@ def pick(rng: random.Random, pool: list[dict], weights: list[float]) -> dict:
             break
     return {"notation": f"d{len(pool)}", "raw": pool.index(chosen) + 1, "row_id": chosen["id"],
             "row_label": chosen.get("label")}
+
+
+def public_view(res: dict, picked: dict) -> tuple[dict, dict | None]:
+    """(the fields a public record shows, the real die for the secret side or None). When a secret row took rows
+    out of a public pool, the public record counts the die over `visible` (the pool plus the secretly excluded
+    rows, in table order), so its size and face give nothing away; the drawn row is the same."""
+    if not res["excluded_secret"]:
+        return picked, None
+    visible = [r["id"] for r in res["visible"]]
+    shown = dict(picked, notation=f"d{len(visible)}", raw=visible.index(picked["row_id"]) + 1)
+    return shown, {"notation": picked["notation"], "raw": picked["raw"]}
 
 
 def check_forced(row_id: str, ctx: Context, conflicts: dict | None = None) -> None:
