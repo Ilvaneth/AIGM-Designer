@@ -104,6 +104,7 @@ tables:
         value: low
         label: Low
         weight: 3
+        claims: {magic: scarce}
         effects:
           caster_share_of_roster: 0.08
           loot_item_multiplier: 0.6
@@ -117,6 +118,7 @@ tables:
         value: medium
         label: Medium
         weight: 3
+        claims: {magic: middling}
         effects:
           caster_share_of_roster: 0.15
           loot_item_multiplier: 1.0
@@ -129,6 +131,7 @@ tables:
         value: high
         label: High
         weight: 1
+        claims: {magic: plentiful}
         effects:
           caster_share_of_roster: 0.3
           loot_item_multiplier: 1.5
@@ -156,6 +159,7 @@ tables:
         value: renaissance
         label: Renaissance
         weight: 2
+        claims: {writing: printed}
         effects:
           travel: "mounted; post roads and coaches between cities"
           anchor_variants: [temple, guild hall, inn, market, seat of rule, signature place, printing house]
@@ -189,6 +193,7 @@ tables:
         value: underground
         label: Underground
         weight: 1
+        claims: {below_ground: lived_in}
         effects:
           travel: "on foot or by beast through tunnels; regions are strata, not areas"
           anchor_variants: [shrine, guild hall, hostel, market, seat of rule, the shaft or lift, signature place]

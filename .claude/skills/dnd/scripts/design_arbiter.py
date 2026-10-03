@@ -32,7 +32,15 @@ of which one must hold:
     requires: {dial: {magic: [medium, high], era: [underground]}}   the dial's value is in the list
     requires: {any_of: [land_thin_place]}                            one of these rows was rolled
     requires: {all_of: [...]} / {none_of: [...]}                     all / none of these rows were rolled
+    requires: {all: [{any_of: [...]}, {any_of: [...]}]}              every sub-condition holds (one of these AND one of those)
+    requires: {any: [<condition>, ...]}                              one sub-condition holds
     weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]             weight × 3 while the condition holds
+
+Claims (build item 7c). A rolled row's `claims` enter the context as tokens `claim:<topic>=<value>`; the dial rows'
+claims enter when the context is built. A row conflicts with every token whose claim clashes with one of its own
+(claims.yaml declares the clashes pair by pair), through the same symmetric conflict index. `any_of`, `all_of`,
+`none_of`, `conflicts_with` and `weight_by` may name a token as they name a row. A token set by a secret row is
+secret: an exclusion that names it goes to the secret side.
 """
 
 from __future__ import annotations
@@ -45,7 +53,7 @@ from dataclasses import dataclass, field
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_tables as dt  # noqa: E402
 
-CONDITION_KEYS = ("dial", "any_of", "all_of", "none_of")
+CONDITION_KEYS = ("dial", "any_of", "all_of", "none_of", "all", "any")
 USAGE_ORDER = ("used_elsewhere", "row_wait", "pair", "family_wait")   # the order a row's reason is named in
 FALLBACK_ORDER = ("family_wait", "used_elsewhere", "row_wait", "pair")  # the order usage is relaxed in, the pair last
 
@@ -56,16 +64,44 @@ class EmptyPool(Exception):
 
 @dataclass
 class Context:
-    """What a draw is judged against: the dials and every row rolled so far (row id → rolled secretly)."""
+    """What a draw is judged against: the dials, every row rolled so far (row id → rolled secretly) and the tokens
+    they set (token → set secretly): the claims of the dial rows and of the rolled rows, a seated contest role's
+    claims and the layout's tokens (added by the roller)."""
     dials: dict = field(default_factory=dict)
     rolled: dict = field(default_factory=dict)
+    tokens: dict = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        for dial, value in self.dials.items():
+            if isinstance(value, str):
+                row = dt.dial_row(dial, value) if dial in dt.DIAL_NAMES else None
+                for t in dt.claim_tokens((row or {}).get("claims")):
+                    self.add_token(t, False)
+        index = dt.row_tokens()
+        for row_id, secret in list(self.rolled.items()):
+            for t in index.get(row_id, ()):
+                self.add_token(t, secret)
 
     def add(self, row_id, secret: bool) -> None:
         if row_id:
             self.rolled[row_id] = self.rolled.get(row_id, False) or bool(secret)
+            for t in dt.row_tokens().get(row_id, ()):
+                self.add_token(t, secret)
 
-    def has(self, row_id) -> bool:
-        return row_id in self.rolled
+    def add_token(self, tok: str, secret: bool) -> None:
+        """A token set publicly stays public even when a secret row sets it too."""
+        self.tokens[tok] = self.tokens[tok] and bool(secret) if tok in self.tokens else bool(secret)
+
+    def has(self, key) -> bool:
+        return key in self.rolled or key in self.tokens
+
+    def secret_of(self, key) -> bool:
+        """Was this row rolled, or this token set, secretly?"""
+        return bool(self.rolled.get(key, False) or self.tokens.get(key, False))
+
+    def clashes(self, claims) -> list[str]:
+        """The context's tokens that clash with these claims (a contest role's, judged when the scale seats it)."""
+        return sorted(t for t in dt.clashing_tokens(claims) if t in self.tokens)
 
 
 def _condition_ids(cond) -> set:
@@ -76,7 +112,10 @@ def _condition_ids(cond) -> set:
         for c in cond:
             out |= _condition_ids(c)
         return out
-    return {x for key in ("any_of", "all_of", "none_of") for x in (cond.get(key) or [])}
+    out = {x for key in ("any_of", "all_of", "none_of") for x in (cond.get(key) or [])}
+    for key in ("all", "any"):
+        out |= _condition_ids(list(cond.get(key) or []))
+    return out
 
 
 def holds(cond, ctx: Context) -> bool:
@@ -101,6 +140,10 @@ def holds(cond, ctx: Context) -> bool:
         return False
     if any(ctx.has(x) for x in cond.get("none_of") or []):
         return False
+    if any(not holds(c, ctx) for c in cond.get("all") or []):
+        return False
+    if cond.get("any") and not any(holds(c, ctx) for c in cond["any"]):
+        return False
     return True
 
 
@@ -123,7 +166,7 @@ def constraint_reason(row: dict, ctx: Context, exclude: set, where, why: str, co
         return {"row": rid, "why": "forbidden"}
     if not holds(row.get("requires"), ctx):
         return {"row": rid, "why": "requires"}
-    hits = sorted((x for x in conflicts.get(rid, ()) if ctx.has(x)), key=lambda x: (ctx.rolled.get(x, False), x))
+    hits = sorted((x for x in conflicts.get(rid, ()) if ctx.has(x)), key=lambda x: (ctx.secret_of(x), x))
     if hits:
         return {"row": rid, "why": "conflict", "with": hits[0]}   # a public reason first, when there is one
     if weight_of(row, ctx) <= 0:
@@ -149,7 +192,7 @@ def _names_secret(entry: dict, row: dict, ctx: Context, secret_ids: set) -> bool
     """Does the reason point at the secret layer (a conflict with, a requirement on, an admission by a secret row)?"""
     named = {"conflict": {entry.get("with")}, "requires": _condition_ids(row.get("requires")),
              "forbidden": set(row.get("allowed_via") or [])}.get(entry["why"], set())
-    return any(x in secret_ids or ctx.rolled.get(x) for x in named if x)
+    return any(x in secret_ids or ctx.secret_of(x) for x in named if x)
 
 
 def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=None, why: str = "where",
@@ -196,7 +239,7 @@ def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=N
             public.append(e)
     shown = {e["row"] for e in public}
     return {"pool": pool, "weights": [weight_of(r, ctx) for r in pool], "excluded": public,
-            "excluded_secret": hidden, "usage_fallback": fallback,
+            "excluded_secret": hidden, "usage_fallback": fallback, "allowed": len(allowed),
             "visible": [r for r in rows if r["id"] not in shown]}
 
 
@@ -233,8 +276,16 @@ def check_forced(row_id: str, ctx: Context, conflicts: dict | None = None) -> No
         raise EmptyPool(f"the forced row {row_id} conflicts with a row already rolled — a table fault")
 
 
-def conflicting_pairs(row_ids, conflicts: dict | None = None) -> list[tuple[str, str]]:
-    """Every conflicting pair inside a set of rolled rows (the door's recheck and the many-seeds test)."""
-    ids = sorted(set(x for x in row_ids if x))
+def conflicting_pairs(row_ids, conflicts: dict | None = None, tokens=()) -> list[tuple[str, str]]:
+    """Every conflicting pair inside a set of rolled rows (the door's recheck and the many-seeds test). The rows'
+    claims are expanded to tokens, and `tokens` adds the ones no row carries (the dials', a seated role's, the
+    layout's): a row beside a token its claims clash with is a pair too."""
+    rows_in = set(x for x in row_ids if x)
+    index = dt.row_tokens()
+    expanded = set(tokens)
+    for r in rows_in:
+        expanded |= set(index.get(r, ()))
+    ids = sorted(rows_in | expanded)
     idx = dt.conflict_index() if conflicts is None else conflicts
-    return [(a, b) for i, a in enumerate(ids) for b in ids[i + 1:] if b in idx.get(a, ())]
+    clash = dt.clash_map()
+    return [(a, b) for i, a in enumerate(ids) for b in ids[i + 1:] if b in idx.get(a, ()) or b in clash.get(a, ())]

@@ -239,6 +239,7 @@ tables:
       - id: spine_three_depths
         label: Surface, middle depth and the deep
         family: layered
+        claims: {below_ground: lived_in}
         key_kind: descent
         parts: {heart: [land_underground], end_a: [land_plain, land_forest, land_highland, land_mountain], end_b: [land_underground], key_place: [land_underground]}
         forces: [land_underground]
@@ -266,6 +267,7 @@ tables:
       - id: spine_mountain_within
         label: The mountain's inside and outside
         family: layered
+        claims: {below_ground: lived_in}
         key_kind: gate
         parts: {heart: [land_underground], end_a: [land_mountain], end_b: [land_underground], key_place: [land_mountain]}
         forces: [land_mountain, land_underground]

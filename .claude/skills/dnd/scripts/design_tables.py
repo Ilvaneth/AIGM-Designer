@@ -52,9 +52,12 @@ def _file_name(name: str) -> str:
     return name if name.endswith(".yaml") else f"{name}.yaml"
 
 
+REGISTRIES = ("claims.yaml",)      # no table: a registry the tables' rows name, never rolled
+
+
 def list_tables() -> list[str]:
-    """Committed table files (test scratch files start with `_`)."""
-    return sorted(p.name for p in tables_dir().glob("*.yaml") if not p.name.startswith("_"))
+    """Committed table files (test scratch files start with `_`; a registry is no table)."""
+    return sorted(p.name for p in tables_dir().glob("*.yaml") if not p.name.startswith("_") and p.name not in REGISTRIES)
 
 
 @lru_cache(maxsize=None)
@@ -131,11 +134,70 @@ def _every_row():
                 yield ref, r
 
 
+# ── claims (build item 7c): tokens, the registry, the clashes ───────────────────────────────
+
+CLAIM = "claim:"
+
+
+def claims_registry() -> dict:
+    """claims.yaml: topics and values, clash pairs, layout tokens, overridable defaults, combine lines."""
+    try:
+        return load("claims.yaml")
+    except FileNotFoundError:
+        return {}
+
+
+def token(topic: str, value) -> str:
+    return f"{CLAIM}{topic}={value}"
+
+
+def claim_tokens(claims) -> list[str]:
+    """`{topic: value}` (a row's or a role's `claims`) as context tokens."""
+    return [token(t, v) for t, v in (claims or {}).items()]
+
+
+@lru_cache(maxsize=4)
+def _clash_map_for(sig: tuple) -> dict:
+    out: dict[str, set] = {}
+    for a, b in (claims_registry().get("clashes") or []):
+        out.setdefault(CLAIM + a, set()).add(CLAIM + b)
+        out.setdefault(CLAIM + b, set()).add(CLAIM + a)
+    return {k: frozenset(v) for k, v in out.items()}
+
+
+def clash_map() -> dict:
+    """Token → the tokens it clashes with (declared pair by pair; nothing clashes by default)."""
+    return _clash_map_for(_signature())
+
+
+def clashing_tokens(claims) -> set:
+    """Every token that clashes with one of these claims."""
+    cm = clash_map()
+    out: set = set()
+    for t in claim_tokens(claims):
+        out |= cm.get(t, frozenset())
+    return out
+
+
+@lru_cache(maxsize=4)
+def _row_tokens_for(sig: tuple) -> dict:
+    return {r["id"]: tuple(claim_tokens(r["claims"])) for _, r in _every_row() if r.get("claims")}
+
+
+def row_tokens() -> dict:
+    """Row id → the tokens its own `claims` set (a contest role's claims are added by the roller, when seated)."""
+    return _row_tokens_for(_signature())
+
+
 @lru_cache(maxsize=4)
 def _conflicts_for(sig: tuple) -> dict:
     idx: dict[str, set] = {}
+    cm = _clash_map_for(sig)
     for _, r in _every_row():
-        for other in r.get("conflicts_with") or []:
+        others = list(r.get("conflicts_with") or [])
+        for t in claim_tokens(r.get("claims")):          # a row conflicts with every token its claims clash with
+            others += list(cm.get(t, ()))
+        for other in others:
             idx.setdefault(r["id"], set()).add(other)
             idx.setdefault(other, set()).add(r["id"])
     return {k: frozenset(v) for k, v in idx.items()}
@@ -172,6 +234,54 @@ def own_roll_header(ref: str) -> dict:
         return dict(doc.get("roll") or {})
     node = (doc.get("tables") or {}).get(key)
     return dict(node.get("roll") or {}) if isinstance(node, dict) else {}
+
+
+# ── the reviewed stamp (build item 7c: a row of a P0 or P1 table is stamped after the audit) ──
+
+REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.yaml", "tensions.yaml")
+
+
+def reviewed_path() -> Path:
+    return tables_dir() / "reviewed.json"
+
+
+def row_hash(row: dict) -> str:
+    import hashlib
+    body = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(body.encode("utf-8")).hexdigest()[:16]
+
+
+def reviewed_rows() -> dict:
+    """Row id → the hash of its content, for every row of the P0 and P1 tables as they stand."""
+    out = {}
+    for name in REVIEWED_TABLES:
+        for lst in all_row_lists(load(name)).values():
+            for r in lst:
+                out[r["id"]] = row_hash(r)
+    return out
+
+
+def read_stamps() -> dict:
+    path = reviewed_path()
+    return (json.loads(path.read_text(encoding="utf-8")).get("rows") or {}) if path.is_file() else {}
+
+
+def unreviewed() -> dict:
+    """Rows without a stamp or with a stamp that no longer matches: {'missing': [...], 'changed': [...], 'gone': [...]}."""
+    now, stamps = reviewed_rows(), read_stamps()
+    return {"missing": sorted(set(now) - set(stamps)),
+            "changed": sorted(k for k in now if k in stamps and stamps[k] != now[k]),
+            "gone": sorted(set(stamps) - set(now))}
+
+
+def write_stamps() -> int:
+    """`design_tables.py stamp`: run only after the development tab's audit of the tables."""
+    rows_now = reviewed_rows()
+    body = {"_meta": {"what": "row id -> hash of the row's content at its last audit (docs/p1-build-7c.md, inspection)",
+                      "tables": list(REVIEWED_TABLES)},
+            "rows": dict(sorted(rows_now.items()))}
+    reviewed_path().write_text(json.dumps(body, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    return len(rows_now)
 
 
 def records_usage(ref: str) -> bool:
@@ -237,6 +347,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="read the designer's tables")
     sub = ap.add_subparsers(dest="verb", required=True)
     sub.add_parser("list")
+    sub.add_parser("stamp")
+    sub.add_parser("unreviewed")
     r = sub.add_parser("rows")
     r.add_argument("ref")
     r.add_argument("--json", action="store_true")
@@ -251,6 +363,15 @@ def main(argv=None) -> int:
             parts = ", ".join(f"{k or 'rows'}={len(v)}" for k, v in lists.items()) or "no rows"
             print(f"  {name:<22} {parts}")
         return 0
+    if a.verb == "stamp":
+        print(f"design_tables: {write_stamps()} rows stamped in {reviewed_path().name}")
+        return 0
+    if a.verb == "unreviewed":
+        state = unreviewed()
+        for kind, ids in state.items():
+            for rid in ids:
+                print(f"  {kind:<8} {rid}")
+        return 1 if any(state.values()) else 0
     if a.verb == "rows":
         found = rows(a.ref)
         if a.json:

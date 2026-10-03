@@ -130,13 +130,32 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
 
     # 5. the contest
     roles_by_scale = header("contest")["roles_by_scale"]
-    c1 = R.table("foundation.contest.1", ref("contest"))["row_id"]
-    out["contests"] = [{"id": c1, "roles": list(roles_by_scale[scale])}]
+
+    def role_claims(row: dict, roles: list[str]) -> dict:
+        """The claims of the roles the scale seats (a role's claim is silent when the role is not seated)."""
+        merged: dict = {}
+        for key in roles:
+            merged.update((row["roles"].get(key) or {}).get("claims") or {})
+        return merged
+
+    def seat_claims(n: int, cid: str, roles: list[str]) -> None:
+        row = rows_by_id("contest")[cid]
+        toks = [t for key in roles for t in dt.claim_tokens((row["roles"].get(key) or {}).get("claims"))]
+        R.add_tokens(f"foundation.contest.{n}.claims", toks, f"the seated roles of {cid}: {', '.join(roles)}")
+
+    roles1 = list(roles_by_scale[scale])
+    c1 = R.table("foundation.contest.1", ref("contest"),
+                 where=lambda r: not R.ctx.clashes(role_claims(r, roles1)), why="a seated role's claim")["row_id"]
+    out["contests"] = [{"id": c1, "roles": roles1}]
+    seat_claims(1, c1, roles1)
     if int(header("contest")["contests_by_scale"][scale]) > 1:
         fam1 = rows_by_id("contest")[c1]["family"]
+        roles2 = ["a", "b", "third"]
         c2 = R.table("foundation.contest.2", ref("contest"), exclude={c1},
-                     where=lambda r: r["family"] != fam1, why="another family")["row_id"]
-        out["contests"].append({"id": c2, "roles": ["a", "b", "third"]})
+                     where=lambda r: r["family"] != fam1 and not R.ctx.clashes(role_claims(r, roles2)),
+                     why="another family, and a seated role's claim")["row_id"]
+        out["contests"].append({"id": c2, "roles": roles2})
+        seat_claims(2, c2, roles2)
     main = rows_by_id("contest")[c1]
     main_roles = out["contests"][0]["roles"]
 
@@ -202,6 +221,13 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
 
     # the layout: the palette on the spine's parts, the lifeline and the contests' roles seated on them
     out["layout"] = lay_out(R, spine, palette + out["palette_extra"], life, out["contests"], out)
+    # the layout's tokens (build item 7c): a heart below ground is a land lived in below; the remnant on the heart
+    lay_tokens = []
+    if out["layout"]["parts"].get("heart") == "land_underground":
+        lay_tokens.append(dt.token("below_ground", "lived_in"))
+    if out["layout"]["remnant"] == "heart":
+        lay_tokens.append("layout:remnant_on_heart")
+    R.add_tokens("foundation.layout.tokens", lay_tokens, "the layout")
 
     # 7. the escalation
     out["escalation"] = tiers_touched(dials["level_band"])

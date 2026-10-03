@@ -172,7 +172,7 @@ def used_values(campaign: str, key: str, window: int | None = None) -> set:
     return out
 
 
-def prior_rolls(campaign: str, phase: str | None = None) -> dict:
+def prior_rolls(campaign: str, phase: str | None = None, with_tokens: bool = False):
     """Row id -> rolled secretly, for every roll a draw of `phase` stands on: the phases BEFORE it (P0 < P1 < ... <
     P9), each at its latest attempt only (a rerun's earlier draws are superseded). The phase itself and every later
     one are left out: a rerolled P1 is never filtered by the stale P2-P4 rolls built on its old self. A caller
@@ -186,18 +186,23 @@ def prior_rolls(campaign: str, phase: str | None = None) -> dict:
     for r, _ in recs:
         latest[r.get("phase")] = max(latest.get(r.get("phase"), 0), int(r.get("attempt") or 1))
     out: dict = {}
+    toks: dict = {}
     for r, secret in recs:
         ph = r.get("phase")
-        if int(r.get("attempt") or 1) != latest.get(ph) or not r.get("row_id"):
+        if int(r.get("attempt") or 1) != latest.get(ph):
             continue
         if limit is not None and order.get(ph, -1) >= limit:
             continue
-        out[r["row_id"]] = out.get(r["row_id"], False) or secret
-    return out
+        for t in r.get("tokens") or []:          # a seated role's claims, the layout's tokens
+            toks[t] = toks[t] and secret if t in toks else secret
+        if r.get("row_id"):
+            out[r["row_id"]] = out.get(r["row_id"], False) or secret
+    return (out, toks) if with_tokens else out
 
 
 def context(campaign: str, phase: str | None = None) -> arb.Context:
-    return arb.Context(dials=dict(load_manifest(campaign).get("dials") or {}), rolled=prior_rolls(campaign, phase))
+    rolled, toks = prior_rolls(campaign, phase, with_tokens=True)
+    return arb.Context(dials=dict(load_manifest(campaign).get("dials") or {}), rolled=rolled, tokens=toks)
 
 
 def taken_families(table: str, drawn_rows) -> set:
@@ -264,6 +269,8 @@ def roll(campaign: str, phase: str, label: str, table: str | None, notation: str
             for r, was_secret in mine:
                 if r.get("phase") == phase and int(r.get("attempt") or 1) == attempt:
                     ctx.add(r.get("row_id"), was_secret)
+                    for t in r.get("tokens") or []:
+                        ctx.add_token(t, was_secret)
             res = arb.arbitrate(table, rows, ctx, where=where, why=why,
                                 usage=usage(campaign, table, avoid_used), secret=secret)
         except arb.EmptyPool as exc:

@@ -1,0 +1,70 @@
+# claims.yaml — the closed registry of claims, clashes and overridable defaults (plan item 25, build item 7c;
+# docs/p1-tags.md, the rules of 2026-10-02).
+#
+# A claim is a fact about the world a rolled row asserts: `claims: {topic: value}` on a row, or on a contest
+# role. A rolled row's claims enter the arbiter's context as tokens `claim:<topic>=<value>`; a row conflicts
+# with every token whose claim clashes with one of its own. Clashes are declared pair by pair: two values of
+# one topic never clash by default. A row may also name a token directly in `conflicts_with`, `requires`
+# (`any_of`, `all_of`, `none_of`) and `weight_by`.
+#
+# An overridable default is something a dial effect, a scale number, a quota or a later phase's roll sets, which a
+# rolled row may rewrite: `overrides: [{default: <id>, to: <text or value>}]` on the row. An override is data
+# only: the floor that owns the default applies it at its own turn. When two rows that can be rolled together
+# override the same default, `combines` says in one line how the two overrides stand together.
+#
+# The file holds no rows and is never rolled.
+schema_version: 1
+table: claims
+consumed_by: [P1, P2, P3, P4, P5, P6, P7, P8, validator]
+plan: "item 25, build item 7c; docs/p1-tags.md"
+
+topics:
+  rule: {label: "the land's rule", values: [hereditary, throne, by_lot, guild_council, dragon_sovereign]}
+  nobility: {label: "the nobility", values: [exists, none]}
+  below_ground: {label: "below ground", values: [lived_in]}
+  writing: {label: "writing", values: [printed]}
+  magic: {label: "how plentiful magic is", values: [scarce, middling, plentiful, faded]}
+  war: {label: "how war is fought", values: [by_armies, by_champions]}
+
+# pair by pair; `rule=throne` clashes with neither by_lot nor dragon_sovereign
+clashes:
+  - ["nobility=exists", "nobility=none"]
+  - ["rule=hereditary", "rule=by_lot"]
+  - ["rule=hereditary", "rule=guild_council"]
+  - ["rule=hereditary", "rule=dragon_sovereign"]
+  - ["rule=throne", "rule=guild_council"]
+  - ["magic=plentiful", "magic=faded"]
+  - ["war=by_armies", "war=by_champions"]
+
+# tokens that are no claim: the layout sets them (design_foundation.py)
+tokens:
+  "layout:remnant_on_heart": "the ruin's remnant lies on the spine's heart (a merge rule)"
+
+defaults:
+  forced_state_faction: {phase: P4, what: "the scale's forced state faction (factions.quota.state)"}
+  state_leader: {phase: P4, what: "the state faction's leader"}
+  state_identity: {phase: P4, what: "what the state faction is (its archetype and name form)"}
+  state_succession: {phase: P4, what: "the state faction's succession rule"}
+  ruler_heir: {phase: P5, what: "the ruler NPC's heir field"}
+  caster_share: {phase: P5, what: "the caster share of the roster (the magic dial's caster_share_of_roster)"}
+  regulator_strictness: {phase: P2, what: "how strict the magic regulator is (the magic dial's regulator_strictness)"}
+  regulator_identity: {phase: P2, what: "who the magic regulator is (magic.yaml#regulator)"}
+  pantheon_type: {phase: P2, what: "the pantheon type (pantheon.yaml#type)"}
+  great_gods_floor: {phase: P2, what: "the lower bound of the great gods (scale.yaml great_gods)"}
+  era_equipment: {phase: P3, what: "the era's equipment rule (srd_equipment)"}
+  seat_of_rule_anchor: {phase: P3, what: "the era's 'seat of rule' anchor"}
+  travel_danger: {phase: P3, what: "the travel tables' danger default"}
+  politics_node_kinds: {phase: P7, what: "the politics mix's node kinds"}
+  war_node_kinds: {phase: P7, what: "the war mix's node kinds"}
+  contest_last_step: {phase: P7, what: "a contest's last escalation step"}
+  martial_assets: {phase: P4, what: "martial factions' assets"}
+  site_attitude_pool: {phase: P6, what: "a site's attitude pool (sites.yaml#attitude)"}
+  loot_writing: {phase: P6, what: "the loot's scrolls and the spellbook"}
+  player_map: {phase: P8, what: "the player map"}
+  primer_public_casting: {phase: P8, what: "the primer's line on casting in public"}
+  second_language: {phase: names, what: "the second language (item 11)"}
+  weekly_volatility: {phase: slice2, what: "the weekly volatility budget"}
+  lineage_palette_weights: {phase: P1, what: "the lineage roll's palette weights (item 10)"}
+
+# how two overrides of one default stand together: [{default, rows: [a, b], combine: "one line"}]
+combines: []

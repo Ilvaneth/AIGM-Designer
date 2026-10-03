@@ -153,6 +153,7 @@ class Roller:
         self.by_label: dict[str, dict] = {}
         self.ctx = dd.context(campaign, phase)        # the phases before this one, each at its latest attempt
         self.foundation: dict | None = None
+        self.pools: dict[str, int] = {}               # table → its smallest pool after the constraints (the floor)
 
     @classmethod
     def in_memory(cls, master: str, dials: dict, phase: str = "P1", attempt: int = 1) -> "Roller":
@@ -163,6 +164,7 @@ class Roller:
         R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
         R.ctx = arb.Context(dials=dict(dials))
         R.foundation = None
+        R.pools = {}
         return R
 
     def _usage(self, ref: str, avoid: bool) -> dict:
@@ -191,6 +193,7 @@ class Roller:
         except arb.EmptyPool as exc:
             raise SystemExit(f"designer: {self.phase} {label}: {exc}" if not secret else
                              f"designer: {self.phase} {label} (secret): the pool is empty after the constraints — a table fault")
+        self.pools[ref] = min(self.pools.get(ref, res["allowed"]), res["allowed"])
         rec = self._record(label, ref)
         picked = arb.pick(rng, res["pool"], res["weights"])
         shown, real = (picked, None) if secret else arb.public_view(res, picked)
@@ -211,6 +214,20 @@ class Roller:
         rec = self._record(label, None)
         rec.update({"notation": notation, "raw": dice_mod.run(notation, silent=True, rng=rng)})
         self._keep(rec, secret)
+        return rec
+
+    def add_tokens(self, label: str, tokens, reason: str, secret: bool = False) -> dict | None:
+        """Tokens no row carries by itself (a seated contest role's claims, the layout's): kept on a record of their
+        own so every later phase's context finds them again."""
+        tokens = [t for t in tokens if t]
+        if not tokens:
+            return None
+        rec = self._record(label, "tokens")
+        rec.update({"notation": "derived", "tokens": sorted(set(tokens)), "derived_from": reason})
+        (self.secret if secret else self.public).append(rec)
+        self.by_label[label] = rec
+        for t in rec["tokens"]:
+            self.ctx.add_token(t, secret)
         return rec
 
     def forced(self, label: str, ref: str, row_id: str, reason: str, secret: bool = False) -> dict:
