@@ -244,7 +244,11 @@ REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.
                    "signatures.yaml#institution_form", "signatures.yaml#institution_practice",
                    "signatures.yaml#institution_sign", "signatures.yaml#institution_power",
                    "signatures.yaml#phenomenon_rule", "signatures.yaml#phenomenon_sign",
-                   "signatures.yaml#phenomenon_limit", "signatures.yaml#phenomenon_user")
+                   "signatures.yaml#phenomenon_limit", "signatures.yaml#phenomenon_user",
+                   # build item 9: the secret and the villain (their stamps are kept under hashed keys, below)
+                   "secrets.yaml#archetype", "secrets.yaml#chooser", "secrets.yaml#twist", "secrets.yaml#trail",
+                   "antagonists.yaml#visibility", "antagonists.yaml#villain_shape", "antagonists.yaml#origin",
+                   "antagonists.yaml#break_tie")
 
 
 def reviewed_path() -> Path:
@@ -257,13 +261,24 @@ def row_hash(row: dict) -> str:
     return hashlib.sha256(body.encode("utf-8")).hexdigest()[:16]
 
 
+def stamp_key(row_id: str, secret: bool) -> str:
+    """The key a row is stamped under: its id, or a hash of it for a row of a secret table. reviewed.json and the
+    `unreviewed` listing sit where the owner, who is also the player, may read; neither names a secret row."""
+    if not secret:
+        return row_id
+    import hashlib
+    return "secret:" + hashlib.sha256(str(row_id).encode("utf-8")).hexdigest()[:16]
+
+
 def reviewed_rows() -> dict:
-    """Row id → the hash of its content, for every row of the P0 and P1 tables as they stand."""
+    """Stamp key → the hash of the row's content, for every row of the P0 and P1 tables as they stand."""
     out = {}
     for name in REVIEWED_TABLES:                 # a whole file, or one sub-table as file#sub
-        for lst in ([rows(name)] if "#" in name else all_row_lists(load(name)).values()):
+        lists = {name: rows(name)} if "#" in name else {(f"{name}#{k}" if k else name): v for k, v in all_row_lists(load(name)).items()}
+        for ref, lst in lists.items():
+            secret = bool(roll_header(ref).get("secret"))
             for r in lst:
-                out[r["id"]] = row_hash(r)
+                out[stamp_key(r["id"], secret)] = row_hash(r)
     return out
 
 

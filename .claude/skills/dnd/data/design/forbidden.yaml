@@ -107,7 +107,7 @@ rows:
     why: "a villain who acts through a puppet ruler by whispering; nothing he does is his own move"
     structural: {field: villain_shape, table: antagonists.yaml#villain_shape, forbidden_values: [whispering_advisor]}
     lexical: {en: ["whisper(s|ed|ing)? in the (king|queen|ruler)'s ear", "the (king|queen)'s (trusted )?advisor is secretly"], tr: ["kralın kulağına fısılda", "vezir aslında"]}
-    allowed_via: [secret_king_is_a_copy, secret_the_dead_rule]
+    allowed_via: [secret_king_is_a_copy]
     hooks:
       - {phase: P4, must: "a lieutenant at court holds their own seat and their own operation"}
   - id: forbidden_secretly_evil_ruler
@@ -115,6 +115,6 @@ rows:
     why: "a reveal that explains nothing and costs the polity its only interesting move"
     structural: {field: villain_shape, table: antagonists.yaml#villain_shape, forbidden_values: [secretly_evil_ruler]}
     lexical: {en: ["the (king|queen|duke|baron) (is|was) secretly (the|a) (villain|cultist|lich)"], tr: ["kral aslında (kötü|tarikat)"]}
-    allowed_via: [secret_king_is_a_copy, secret_the_dead_rule]
+    allowed_via: [secret_king_is_a_copy]
     hooks:
       - {phase: P4, must: "a ruler who is an antagonist is a known antagonist with a public position"}

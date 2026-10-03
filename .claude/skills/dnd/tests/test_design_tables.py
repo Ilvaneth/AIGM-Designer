@@ -136,6 +136,8 @@ class Convention(unittest.TestCase):
                                 "lineage": "signatures", "trait": "signatures", "stranger": "signatures", "form": "signatures",
                                 "practice": "signatures", "isign": "signatures", "power": "signatures", "rule": "signatures",
                                 "psign": "signatures", "limit": "signatures", "user": "signatures",
+                                "chooser": "secrets", "twist": "secrets", "trail": "secrets",
+                                "vis": "antagonists", "shape": "antagonists", "origin": "antagonists", "bond": "antagonists",
                                 "scar": "foundation", "time": "foundation", "tier": "foundation",
                                 "target": "foundation"}.get(table)
                 if prefix_table in present:
@@ -241,9 +243,9 @@ class Floors(unittest.TestCase):
         self.assertGreaterEqual(len(dt.rows("secrets.yaml#twist")), 8)
         self.assertGreaterEqual(len(dt.rows("secrets.yaml#trail")), 4)
         self.assertTrue(dt.load("secrets.yaml")["roll"]["secret"])
-        for r in dt.rows("secrets.yaml#archetype"):
-            self.assertEqual(set(r["clue_shape"]), {"act1", "act2", "act3"}, r["id"])
-            self.assertTrue(set(r["villain_relation"]) <= {"knows", "is", "serves", "hunts", "denies"}, r["id"])
+        for n, r in enumerate(dt.rows("secrets.yaml#archetype")):      # a failure never names a secret row
+            self.assertEqual(set(r["clue_shape"]), {"act1", "act2", "act3"}, f"archetype row {n + 1}")
+            self.assertNotIn("villain_relation", r, "build item 9: the villain's tie to the break replaced it")
 
     def test_trope_breaks_and_touch_two_phases(self):
         """Item 25 step 2 #5 after the tag review (build item 7c-3): 31 rows in six families, each touching two
@@ -508,9 +510,10 @@ class Floors(unittest.TestCase):
         self.assertEqual(len(dt.rows("antagonists.yaml#visibility")), 5)
         self.assertTrue(dt.load("antagonists.yaml")["roll"]["secret"])
         shapes = dt.rows("antagonists.yaml#villain_shape")
-        self.assertGreaterEqual(len([s for s in shapes if not s.get("forbidden")]), 10)
+        self.assertGreaterEqual(len([s for s in shapes if not s.get("forbidden")]), 14)
         origins = dt.rows("antagonists.yaml#origin")
-        self.assertGreaterEqual(len([o for o in origins if not o.get("forbidden")]), 8)
+        self.assertEqual(len([o for o in origins if not o.get("forbidden")]), 9)
+        self.assertEqual(len(dt.rows("antagonists.yaml#break_tie")), 6)
         bfa = {r["value"]: r for r in dt.rows("antagonists.yaml#bbeg_faction_archetype")}
         self.assertEqual(set(bfa), {a["value"] for a in dt.rows("factions.yaml#archetype")})
         self.assertTrue(bfa["religious"]["forbidden"])

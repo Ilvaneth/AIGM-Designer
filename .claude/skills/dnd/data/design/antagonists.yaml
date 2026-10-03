@@ -9,10 +9,15 @@
 # pre-written); regional villains are supporting tier, site bosses at a fixed CR, their front on the
 # faction's operation (errata 24.2 #3). The doom day is fixed at birth on a hard calendar and moves
 # only through a party-caused structured block (24.6 #3).
+#
+# Build item 9 (plan item 25 step 2 #7): the villain's home is the break and the question. Visibility, shape, origin
+# and the tie to the break are the villain's own pieces; from build item 10 on they are rolled secretly in P1 and P4
+# reads them. The owner is also the player: no row of these four sub-tables is shown in a summary, a card, a commit
+# message or a test's output. Their conflict lists say which two rows cannot describe one villain.
 schema_version: 1
 table: antagonists
-consumed_by: [P4, P5, P6, P7, validator, play]
-plan: "item 7.5, 10.5, 17 #17, errata 24.2 #3, risk 24.1 #10 #16, 24.6 #3"
+consumed_by: [P1, P4, P5, P6, P7, validator, play]
+plan: "item 25 step 2 #7, errata 24.2 #22, item 7.5, 10.5, 17 #17, errata 24.2 #3, risk 24.1 #10 #16, 24.6 #3"
 roll: {labels: [P4.bbeg_visibility, P4.bbeg_shape, P4.bbeg_origin, P4.front_template, P4.doom_shape, P4.lieutenant_role.<n>], secret: true, avoid_used: true, note: "all antagonist rolls are secret; the card shows only the archetype class and the clue count per act (24.6 #6)"}
 rules:
   doom_day: "mid(target_sessions) × doom.days_per_session_default × (1 + doom.slack_min), rounded to a calendar date; the front's portents spread over it; lieutenants' clocks end at 30-60% of it"
@@ -28,7 +33,9 @@ hooks_common:
 tables:
 
   visibility:
+    roll: {avoid_used: false}
     notation: d5
+    note: "may repeat across campaigns: five rows cannot be a table that runs out (the shape and origin pair is what never repeats, build item 10)"
     rows:
       - id: vis_known_untouchable
         label: Known and untouchable
@@ -48,29 +55,35 @@ tables:
       - id: vis_mystery_among_candidates
         label: A mystery among candidates
         rule: "three or four plausible candidates, all with motive; the truth is one of them"
+        conflicts_with: [break_no_direct_lies]
         hooks:
           - {phase: P5, must: "each candidate is an NPC with a secret that is not the one; the clue trail eliminates them in act order"}
       - id: vis_process_or_institution
-        label: Not a person but a process
-        rule: "the antagonist is an institution, a market, a plague, a rite; its lieutenants are people who serve it"
+        label: A body or a working, not a face
+        rule: "the antagonist acts as an institution or as a working someone set going (a rite, a market, a migration, a sickness); the one who set it going still steers it, and its officers are the faces"
+        conflicts_with: [shape_heir, shape_rival, shape_parent, shape_convert, shape_survivor, shape_beloved, shape_stranger, shape_champion, shape_oathkeeper]
         hooks:
-          - {phase: P4, must: "the BBEG entity is a faction or a signature_; the lieutenants are its officers; the doom is the process completing"}
+          - {phase: P4, must: "the BBEG entity is a faction or a signature_ with the steering person in dm-only; the lieutenants are its officers; the doom is the working completed"}
 
   villain_shape:
-    note: "closed list for the registry field `villain_shape` (risk 24.1 #10); the three forbidden shapes exist only so forbidden.yaml can name them"
+    note: "closed list for the registry field `villain_shape` (risk 24.1 #10); the three forbidden shapes never enter a pool and exist only so forbidden.yaml can name them. Every usable shape has a reason a decent person could defend and nothing in it spares the party."
     rows:
-      - {id: shape_reformer, value: reformer, label: The reformer, rule: "wants to fix the world and has chosen the cost", hooks: [{phase: P1, must: "fits secret_villain_is_right; the win ending must answer the reform"}]}
-      - {id: shape_collector, value: collector, label: The collector, rule: "gathers things (names, years, relics, people) toward a completion", hooks: [{phase: P7, must: "the metric is the collection; portents are acquisitions"}]}
+      - {id: shape_reformer, value: reformer, label: The reformer, rule: "wants to fix the world and has chosen the cost", hooks: [{phase: P1, must: "fits secret_break_was_the_cure; the win ending must answer the reform"}]}
+      - {id: shape_collector, value: collector, label: The collector, rule: "gathers what was scattered (relics, lands, oaths, people) because the whole, once together again, would mend a harm everyone has learned to live with; will not stop one short", hooks: [{phase: P7, must: "the metric is the collection; portents are acquisitions"}]}
       - {id: shape_heir, value: heir, label: The heir, rule: "owed something by the history and taking it", hooks: [{phase: P2, must: "the inheritance is an event's divergence"}]}
       - {id: shape_peacemaker, value: peacemaker, label: The peacemaker, rule: "keeps a peace that buries a crime and will bury anyone who digs", hooks: [{phase: P2, must: "the treaty event's as-happened layer"}]}
-      - {id: shape_institution, value: institution, label: The institution, rule: "a body with officers, not a person", hooks: [{phase: P4, must: "vis_process_or_institution; the faction is the BBEG"}]}
+      - {id: shape_institution, value: institution, label: The institution, rule: "a body with officers, steered by the one who founded or captured it; it outlives any officer the party removes", conflicts_with: [vis_mystery_among_candidates, origin_taken_by_phenomenon], hooks: [{phase: P4, must: "the faction is the BBEG; the steering person is in dm-only"}]}
       - {id: shape_rival, value: rival, label: The rival, rule: "wants what the party wants, for reasons as good", hooks: [{phase: P9, must: "one PC's mission collides with it"}]}
       - {id: shape_parent, value: parent, label: The parent or teacher, rule: "made someone in the party or the world, and wants it back", hooks: [{phase: P9, must: "a socket binds a PC to them"}]}
       - {id: shape_convert, value: convert, label: The convert, rule: "was on the world's side once and saw something", hooks: [{phase: P5, must: "a former ally in the roster remembers them kindly"}]}
       - {id: shape_survivor, value: survivor, label: The survivor, rule: "lived through the disaster and will not let it happen again, at any price", hooks: [{phase: P2, must: "the disaster is a dated event with a witness list that includes them"}]}
-      - {id: shape_process, value: process, label: The process, rule: "a plague, a market, a rite, a debt: no one wills it and everyone feeds it", hooks: [{phase: P4, must: "vis_process_or_institution"}]}
-      - {id: shape_beloved, value: beloved, label: The beloved, rule: "loved by the people; moving against them costs the party the people", hooks: [{phase: P8, must: "the primer speaks of them warmly"}]}
-      - {id: shape_stranger, value: stranger, label: The stranger from outside, rule: "from beyond the map, with a reason the map does not know", hooks: [{phase: P3, must: "an inset region or the edge of the map is theirs"}]}
+      - {id: shape_process, value: process, label: The tender, rule: "set a working going (a rite, a market, a migration, a sickness) and keeps feeding it, because stopping it now would cost more than finishing", hooks: [{phase: P4, must: "the working is a faction operation or a signature_; the tender is a person with a dossier"}]}
+      - {id: shape_beloved, value: beloved, label: The beloved, rule: "loved by the people; moving against them costs the party the people", conflicts_with: [vis_behind_visible_front], hooks: [{phase: P8, must: "the primer speaks of them warmly"}]}
+      - {id: shape_stranger, value: stranger, label: The stranger from outside, rule: "from beyond the map, come for what their own land lost here, was promised here or is owed from here; at home they are in the right", conflicts_with: [vis_known_untouchable, origin_made_by_institution, origin_ambition_for_a_seat], hooks: [{phase: P3, must: "an inset region or the edge of the map is theirs"}]}
+      - {id: shape_warden, value: warden, label: The warden, rule: "guards the land against something real and has decided the land may be trusted neither with the truth nor with its freedom", hooks: [{phase: P4, must: "the BBEG's faction gives a real protection the party will miss when it is gone"}]}
+      - {id: shape_champion, value: champion, label: The champion, rule: "fights for a people or a cause that was truly wronged and has stopped counting what the fight costs anyone else", hooks: [{phase: P5, must: "the wronged are in the demographic table; one of them disowns the champion"}]}
+      - {id: shape_builder, value: builder, label: The builder, rule: "is making something meant to outlast everyone (a wall, a city, a line, a peace) and spends lives on it as material", hooks: [{phase: P3, must: "the work is a landmark that grows with the front's steps"}]}
+      - {id: shape_oathkeeper, value: oathkeeper, label: The oath-keeper, rule: "swore to do a thing and will do it though the reason has gone; to break the oath would unmake who they are", hooks: [{phase: P2, must: "the oath is a dated event with witnesses"}]}
       - {id: shape_dark_lord, value: dark_lord, label: Dark lord in a black tower (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_dark_lord_black_tower)"}]}
       - {id: shape_whispering_advisor, value: whispering_advisor, label: The whispering advisor (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_evil_advisor)"}]}
       - {id: shape_secretly_evil_ruler, value: secretly_evil_ruler, label: The secretly evil ruler (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_secretly_evil_ruler)"}]}
@@ -82,12 +95,24 @@ tables:
       - {id: origin_bargain, value: bargain, label: A bargain with a power, hooks: [{phase: P2, must: "the power is a rank_power god or a plane's keeper"}]}
       - {id: origin_loss, value: loss, label: A loss at a dated event, hooks: [{phase: P2, must: "the loss is on the witness list"}]}
       - {id: origin_inheritance, value: inheritance, label: An inheritance, hooks: [{phase: P4, must: "the inherited thing is an asset"}]}
-      - {id: origin_taken_by_phenomenon, value: taken_by_phenomenon, label: The phenomenon took them, hooks: [{phase: P1, must: "the signature phenomenon's cost"}]}
+      - {id: origin_taken_by_phenomenon, value: taken_by_phenomenon, label: The phenomenon took them, hooks: [{phase: P1, must: "the signature phenomenon's rule is what took them: its sign is on them and its limit is their weakness"}]}
       - {id: origin_conversion, value: conversion, label: A conversion, hooks: [{phase: P2, must: "the converting god or doctrine is in the pantheon or a cult"}]}
-      - {id: origin_ambition_at_court, value: ambition_at_court, label: An ambition at court, hooks: [{phase: P4, must: "the court is the state faction's access chain"}]}
+      - {id: origin_ambition_for_a_seat, value: ambition_for_a_seat, label: An ambition for a seat, conflicts_with: [break_rule_by_lottery], hooks: [{phase: P4, must: "the seat belongs to the leading faction; its access chain is the way they climbed"}]}
       - {id: origin_wrong_done, value: wrong_done, label: A wrong done to them, hooks: [{phase: P5, must: "the wrongdoer is in the roster or the history"}]}
       - {id: origin_made_by_institution, value: made_by_institution, label: Made by the institution, hooks: [{phase: P1, must: "the signature institution raised or shaped them"}]}
       - {id: origin_awakened_ancient, value: awakened_ancient, label: Awakened ancient evil (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_awakening_ancient_evil)"}]}
+
+  break_tie:
+    roll: {avoid_used: false}
+    notation: d6
+    note: "the villain's tie to the break (plan item 25 step 2 #7; rolled secretly in P1 from build item 10 on). The list is public, the roll is secret. `bond_caused_it` stands exactly when the secret's chooser is the villain (secrets.yaml#chooser): it requires that chooser, and that chooser bars the other five. A tie that needs the break to have happened cannot stand with a break still coming."
+    rows:
+      - {id: bond_caused_it, label: Caused it, rule: "the villain chose the break and did it", requires: {any_of: [chooser_the_villain]}, hooks: [{phase: P7, must: "the confrontation turns on why they did it; the win ending answers that reason"}]}
+      - {id: bond_exploits_it, label: Exploits it, rule: "the villain did not cause the break and grows on it; every day it lasts is worth more to them", hooks: [{phase: P4, must: "one front step is a gain that exists only because of the break"}]}
+      - {id: bond_wants_to_complete, label: Wants to complete it, rule: "the break stopped short; the villain means to carry it to its end", hooks: [{phase: P7, must: "the doom is the break completed"}]}
+      - {id: bond_wants_to_reverse, label: Wants to reverse it at a terrible cost, rule: "the villain will undo the break and has accepted what the undoing takes from others", conflicts_with: [time_coming], hooks: [{phase: P7, must: "the doom is the undoing; its cost falls on people the party knows"}]}
+      - {id: bond_failed_to_stop, label: Tried to stop it and failed, rule: "the villain fought the break, lost, and now turns on those who stood by", conflicts_with: [time_coming], hooks: [{phase: P5, must: "one NPC stood by on the day and knows it"}]}
+      - {id: bond_product_of_it, label: Is its product, rule: "the break made the villain what they are; they were born with it", conflicts_with: [time_coming, origin_inheritance, origin_ambition_for_a_seat, origin_made_by_institution], hooks: [{phase: P2, must: "the villain's first day is the break's dated event"}]}
 
   bbeg_faction_archetype:
     note: "which archetype the BBEG's faction may have; religious only through an allowed secret or break (forbidden_corrupt_church_default_villain)"
