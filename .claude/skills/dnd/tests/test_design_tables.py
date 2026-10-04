@@ -517,7 +517,7 @@ class Floors(unittest.TestCase):
         shapes = dt.rows("antagonists.yaml#villain_shape")
         self.assertGreaterEqual(len([s for s in shapes if not s.get("forbidden")]), 14)
         origins = dt.rows("antagonists.yaml#origin")
-        self.assertEqual(len(origins), 10)
+        self.assertEqual(len(origins), 13)
         self.assertFalse(any(r.get("forbidden") for r in shapes + origins), "build item 16a: every shape and origin can be drawn")
         self.assertEqual(len(dt.rows("antagonists.yaml#break_tie")), 6)
         bfa = {r["value"]: r for r in dt.rows("antagonists.yaml#bbeg_faction_archetype")}

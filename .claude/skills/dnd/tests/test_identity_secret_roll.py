@@ -124,6 +124,37 @@ class ManySeeds(unittest.TestCase):
             self.assertEqual(v["majority_pole"], "villain" if d["tone"] == "dark" else "other")
         self.assertEqual(sides, {"a", "b"})
 
+    def test_the_public_figure_and_the_secret_villain(self):
+        """Build item 16c: beside a public row that shows a figure (the dark lord's contest), the villain is that figure
+        exactly when the visibility says "known"; then the shape is not rolled and, in the main contest, the pole is
+        that role's. With any other visibility the villain is someone else and never takes that shape."""
+        rules = {(pid, row["id"]): rule for row in dt.rows(V + "villain_shape") for pid, rule in (row.get("same_figure_with") or {}).items()}
+        self.assertEqual(len(rules), 1)
+        beside = same = other = wrong = 0
+        for d, p1, _ in self.runs:
+            v = p1.identity_secret["villain"]
+            contests = [c["id"] for c in p1.foundation["contests"]]
+            hit = [(pid, sid, rule) for (pid, sid), rule in rules.items() if pid in contests]
+            if not hit:
+                wrong += v["public_figure"] is not None
+                continue
+            beside += 1
+            pid, sid, rule = hit[0]
+            if v["visibility"] == rule["visibility"]:
+                same += 1
+                wrong += v["shape"] != sid or v["public_figure"] != {"contest": pid, "role": rule["role"]}
+                wrong += p1.by_label["bbeg_shape"]["notation"] != "forced"
+                if contests[0] == pid:
+                    wrong += v["pole"]["role"] != rule["role"] or p1.by_label["bbeg_pole"]["notation"] != "fixed"
+            else:
+                other += 1
+                wrong += v["shape"] == sid or v["public_figure"] is not None
+        self.assertEqual(wrong, 0, f"{wrong} breach(es) of the public figure rule")
+        self.assertGreater(beside, 10)
+        self.assertGreater(same, 0, "the same-figure case was exercised")
+        self.assertGreater(other, 0, "the other-figure case was exercised")
+        type(self).figure = {"beside": beside, "same": same, "other": other}
+
     def test_every_piece_is_secret_and_nothing_public_names_it(self):
         leaks = sizes = 0
         for d, p1, p4 in self.runs:
@@ -224,7 +255,7 @@ class RealBirth(unittest.TestCase):
         ident = log["identity"]
         self.assertEqual(set(ident), {"secret", "villain"})
         self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "trail"})
-        self.assertEqual(set(ident["villain"]), {"visibility", "shape", "origin", "tie", "pole", "majority_pole"})
+        self.assertEqual(set(ident["villain"]), {"visibility", "shape", "origin", "tie", "pole", "public_figure", "majority_pole"})
         by_label = {r["label"]: r for r in log["rolls"] if r["phase"] == "P1"}
         for label in P1_SECRET:
             self.assertIn(label, by_label)

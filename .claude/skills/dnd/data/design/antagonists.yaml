@@ -61,13 +61,13 @@ tables:
       - id: vis_process_or_institution
         label: A body or a working, not a face
         rule: "the antagonist acts as an institution or as a working someone set going (a rite, a market, a migration, a sickness); the one who set it going still steers it, and its officers are the faces"
-        conflicts_with: [shape_heir, shape_rival, shape_parent, shape_convert, shape_survivor, shape_beloved, shape_stranger, shape_champion, shape_oathkeeper, shape_dark_lord, shape_whispering_advisor, shape_secretly_evil_ruler]
+        conflicts_with: [shape_heir, shape_rival, shape_parent, shape_convert, shape_survivor, shape_beloved, shape_stranger, shape_champion, shape_oathkeeper, shape_dark_lord, shape_whispering_advisor, shape_secretly_evil_ruler, shape_outlaw_lord, shape_bargainer]
         hooks:
           - {phase: P4, must: "the BBEG entity is a faction or a signature_ with the steering person in dm-only; the lieutenants are its officers; the doom is the working completed"}
 
   villain_shape:
     roll: {avoid_used: false}
-    note: "the rows may repeat across campaigns; the shape and origin PAIR is written at approve (hashed) and never drawn again (design_identity.py). Closed list for the registry field `villain_shape` (risk 24.1 #10); no shape is barred (build item 16a: the dark lord, the whispering advisor and the ruler with a hidden purpose are ordinary rows). Every shape has a reason a decent person could defend and nothing in it spares the party."
+    note: "the rows may repeat across campaigns; the shape and origin PAIR is written at approve (hashed) and never drawn again (design_identity.py). Closed list for the registry field `villain_shape` (risk 24.1 #10); no shape is barred (build item 16a: the dark lord, the whispering advisor and the ruler with a hidden purpose are ordinary rows). `same_figure_with` (build item 16c): beside the public row it names, the shape is that row's public figure exactly when the visibility is the one it gives; design_identity.py forces or bars the shape by it and sets the pole to that role. Every shape has a reason a decent person could defend and nothing in it spares the party."
     rows:
       - {id: shape_reformer, value: reformer, label: The reformer, rule: "wants to fix the world and has chosen the cost", hooks: [{phase: P1, must: "fits secret_break_was_the_cure; the win ending must answer the reform"}]}
       - {id: shape_collector, value: collector, label: The collector, rule: "gathers what was scattered (relics, lands, oaths, people) because the whole, once together again, would mend a harm everyone has learned to live with; will not stop one short", hooks: [{phase: P7, must: "the metric is the collection; portents are acquisitions"}]}
@@ -85,9 +85,11 @@ tables:
       - {id: shape_champion, value: champion, label: The champion, rule: "fights for a people or a cause that was truly wronged and has stopped counting what the fight costs anyone else", hooks: [{phase: P5, must: "the wronged are in the demographic table; one of them disowns the champion"}]}
       - {id: shape_builder, value: builder, label: The builder, rule: "is making something meant to outlast everyone (a wall, a city, a line, a peace) and spends lives on it as material", hooks: [{phase: P3, must: "the work is a landmark that grows with the front's steps"}]}
       - {id: shape_oathkeeper, value: oathkeeper, label: The oath-keeper, rule: "swore to do a thing and will do it though the reason has gone; to break the oath would unmake who they are", hooks: [{phase: P2, must: "the oath is a dated event with witnesses"}]}
-      - {id: shape_dark_lord, value: dark_lord, label: The dark lord, rule: "rules by fear from a seat of power and means to rule everything; holds that only one will can keep the world from tearing itself apart, and has the armies to prove it", hooks: [{phase: P3, must: "the seat is a site on the map with a fixed tier; its shadow is on every neighbouring region's travel table"}]}
+      - {id: shape_dark_lord, value: dark_lord, label: The dark lord, same_figure_with: {contest_dark_lord: {visibility: vis_known_untouchable, role: a}}, rule: "rules by fear from a seat of power and means to rule everything; holds that only one will can keep the world from tearing itself apart, and has the armies to prove it", hooks: [{phase: P3, must: "the seat is a site on the map with a fixed tier; its shadow is on every neighbouring region's travel table"}]}
       - {id: shape_whispering_advisor, value: whispering_advisor, label: The whispering advisor, rule: "stands behind a ruler and steers by counsel; serves a cause held higher than the throne and will spend the ruler to reach it", hooks: [{phase: P5, must: "the ruler is a major NPC with a will of their own; one scene shows the ruler refusing the advice and what it costs them"}]}
       - {id: shape_secretly_evil_ruler, value: secretly_evil_ruler, label: The ruler with a hidden purpose, rule: "holds the seat openly and keeps what it is for hidden; believes the realm must be spent for something greater, and rules well until the day it is", conflicts_with: [vis_known_untouchable], hooks: [{phase: P4, must: "the ruler's faction is the leading faction; its public operations are sound, its hidden one is the front"}]}
+      - {id: shape_outlaw_lord, value: outlaw_lord, label: The lord of the lawless, rule: "rules what the realm abandoned (a sea, a quarter, a road, a people nobody would defend); built the only order those people have, and will burn the realm before handing it back", hooks: [{phase: P4, must: "the BBEG's faction gives its own people a real order the realm never did; one NPC owes it their life"}]}
+      - {id: shape_bargainer, value: bargainer, label: The bargainer, rule: "gives people what they ask for at a cost they agreed to; holds that no one is wronged who chose, and collects without mercy", hooks: [{phase: P5, must: "three NPCs have struck a bargain with them: one glad of it, one ruined, one about to be collected from"}]}
 
   origin:
     roll: {avoid_used: false}
@@ -103,6 +105,9 @@ tables:
       - {id: origin_wrong_done, value: wrong_done, label: A wrong done to them, hooks: [{phase: P5, must: "the wrongdoer is in the roster or the history"}]}
       - {id: origin_made_by_institution, value: made_by_institution, label: Made by the institution, hooks: [{phase: P1, must: "the signature institution raised or shaped them"}]}
       - {id: origin_awakened_ancient, value: awakened_ancient, label: Awakened from an older age, conflicts_with: [bond_product_of_it], hooks: [{phase: P2, must: "what they were is an event of the history's deep layer; what woke them is a dated act within living memory, done by someone alive"}]}
+      - {id: origin_refused_death, value: refused_death, label: They would not die, conflicts_with: [shape_institution], hooks: [{phase: P2, must: "the day they should have died is a dated event; what keeps them is named, with what it costs others"}]}
+      - {id: origin_cursed, value: cursed, label: A curse was laid on them, hooks: [{phase: P2, must: "who laid the curse, for what wrong, and what would lift it are written; the one who laid it is in the history or the roster"}]}
+      - {id: origin_changed_from_outside, value: changed_from_outside, label: Something from outside changed them, conflicts_with: [shape_institution], hooks: [{phase: P6, must: "they went to it, or someone brought them to it: a dated act by a person in the history or the roster; the place where it happened is a site, and what changed them left more than one mark there"}]}
 
   break_tie:
     roll: {avoid_used: false}

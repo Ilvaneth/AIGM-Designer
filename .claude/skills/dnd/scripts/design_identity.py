@@ -32,7 +32,9 @@ one of them secret:
 7. the villain: visibility, shape, origin (a shape and origin pair another campaign drew waits as usage and is
    written, hashed, at approve; the two tables' rows may otherwise repeat), the tie to the break (`bond_caused_it`,
    not rolled, exactly when the chooser is the villain) and the pole: role a's or role b's side of the main
-   contest's question, with the darkness dial's `majority_pole` beside it.
+   contest's question, with the darkness dial's `majority_pole` beside it. A shape whose row says `same_figure_with`
+   a rolled public row (build item 16c) is that row's public figure exactly when the visibility is the one the row
+   gives: then the shape is not rolled and the pole is that role's; with any other visibility the shape is barred.
 
 Its return goes to dm-only alone (`dice-log.json#identity`); design.json and the card never hold it.
 """
@@ -257,7 +259,23 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
 
     # 7. the villain
     visibility = R.table("bbeg_visibility", VILLAIN + "visibility", secret=True)["row_id"]
-    shape = R.table("bbeg_shape", VILLAIN + "villain_shape", secret=True)["row_id"]
+    # a shape that is a public row's figure (the dark lord of the contest): the same figure exactly when the visibility
+    # is the one its row gives; then the shape is not rolled and the pole is that role's
+    rolled_public = {c["id"]: n for n, c in enumerate(foundation["contests"])}
+    figure, barred = None, set()
+    for row in dt.rows(VILLAIN + "villain_shape"):
+        for public_id, rule in (row.get("same_figure_with") or {}).items():
+            if public_id not in rolled_public:
+                continue
+            if visibility == rule["visibility"]:
+                figure = {"shape": row["id"], "contest": public_id, "role": rule["role"], "main": rolled_public[public_id] == 0}
+            else:
+                barred.add(row["id"])
+    if figure:
+        shape = R.forced("bbeg_shape", VILLAIN + "villain_shape", figure["shape"],
+                         "the villain is the public figure of a rolled contest", secret=True)["row_id"]
+    else:
+        shape = R.table("bbeg_shape", VILLAIN + "villain_shape", secret=True, exclude=barred)["row_id"]
     spent = {o["id"] for o in dt.rows(VILLAIN + "origin") if dd.hashed(f"{shape}|{o['id']}") in used_pairs}
     rec = R.table("bbeg_origin", VILLAIN + "origin", secret=True, also_used=spent)
     origin = rec["row_id"]
@@ -266,11 +284,18 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
         tie = R.forced("bbeg_tie", VILLAIN + "break_tie", "bond_caused_it", "the chooser is the villain", secret=True)["row_id"]
     else:
         tie = R.table("bbeg_tie", VILLAIN + "break_tie", secret=True)["row_id"]    # `bond_caused_it` requires that chooser
-    side = ("a", "b")[int(R.notation("bbeg_pole", "d2", secret=True)["raw"]) - 1]
+    if figure and figure["main"]:            # the public figure carries its own role's pole
+        side = figure["role"]
+        rec = R._record("bbeg_pole", None)
+        rec.update({"notation": "fixed", "raw": None, "value": side, "derived_from": "the villain is that role's public figure"})
+        R._keep(rec, True)
+    else:
+        side = ("a", "b")[int(R.notation("bbeg_pole", "d2", secret=True)["raw"]) - 1]
     tone = dt.dial_row("tone", dials.get("tone")) or {}
     return {"secret": {"archetype": archetype, "chooser": chooser, "chooser_role": chooser_role, "twist": twist, "trail": trail},
             "villain": {"visibility": visibility, "shape": shape, "origin": origin, "tie": tie,
                         "pole": {"question": identity["questions"][0]["id"], "contest": main["id"], "role": side},
+                        "public_figure": {"contest": figure["contest"], "role": figure["role"]} if figure else None,
                         "majority_pole": (tone.get("effects") or {}).get("majority_pole")}}
 
 

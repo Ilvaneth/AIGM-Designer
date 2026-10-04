@@ -29,9 +29,10 @@ P4_OWN = ("front_template", "doom_shape", "lieutenant_role", "buy_time_lever", "
 REPO = SCRIPTS.parents[3]
 BURN = REPO / "docs" / "reports" / "item9-burn-sample.md"
 
-# the attractor (docs/p1-build-9.md §1): the dead and their rights; ledgers, registers, debts, tolls; courts and
-# trials; light and fuel; hush and bells; tides; salt
-ATTRACTOR = ("dead", "undead", "ghost", "grave", "tomb", "funeral", "corpse", "ledger", "register", "registry", "census",
+# the row families that do not come back (owner, 2026-10-04, docs/p1-build-16.md ruling 4): ledgers, registers, debts
+# and tolls; courts and trials; light as a fuel; hush and bells; tides; salt. The dead and the undead are general
+# material since ruling 1 and left the list with build item 16c.
+ATTRACTOR = ("ledger", "register", "registry", "census",
              "reckoning", "debt", "debtor", "toll", "tithe", "court", "trial", "tribunal", "judge", "verdict", "candle", "lamp",
              "lantern", "wick", "oil", "hush", "silence", "silent", "bell", "tide", "tidal", "salt", "wax")
 ATTRACTOR_RE = re.compile(r"\b(" + "|".join(ATTRACTOR) + r")s?\b", re.IGNORECASE)
@@ -311,7 +312,7 @@ class ManySeeds(unittest.TestCase):
         smallest = min(p1.pools["secrets.yaml#archetype"] for p1, _ in self.runs)
         self.assertGreaterEqual(smallest, 5, f"the archetype's smallest pool after the constraints is {smallest}")
         for ref in ("antagonists.yaml#villain_shape", "antagonists.yaml#origin"):
-            self.assertGreaterEqual(min(p1.pools[ref] for p1, _ in self.runs), 5, ref)
+            self.assertGreaterEqual(min(p1.pools[ref] for p1, _ in self.runs if ref in p1.pools), 5, ref)      # a forced shape has no pool
 
     def test_the_public_log_names_no_secret_row(self):
         leaks = sizes = 0
