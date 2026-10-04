@@ -283,6 +283,39 @@ def naming_errors(eid: str, row: dict, bl: dict, registered: set) -> list[str]:
     return errs
 
 
+def turkish_fields(node, path: str = "") -> list[str]:
+    """The paths of a row's text fields that carry a Turkish letter."""
+    if isinstance(node, str):
+        return [path or "."] if TURKISH_LETTERS.search(node) else []
+    if isinstance(node, dict):
+        return [p for k, v in node.items() for p in turkish_fields(v, f"{path}.{k}" if path else str(k))]
+    if isinstance(node, list):
+        return [p for i, v in enumerate(node) for p in turkish_fields(v, f"{path}[{i}]")]
+    return []
+
+
+def language_errors(eid: str, row: dict | None, frag: dict | None, root: Path) -> list[str]:
+    """A birth written in English (build item 13a) holds no Turkish letter: not in a registry text field, not in a
+    prose file, public and dm-only alike. The refusal names the field or the file and its first line, never the text."""
+    errs = []
+    if row is not None:
+        fields = turkish_fields(row)
+        if fields:
+            errs.append(f"{eid}: Turkish letters in {len(fields)} field(s) ({', '.join(fields[:6])}{' …' if len(fields) > 6 else ''}); "
+                        "the campaign is written in English, Turkish is spoken at the table only")
+    for key in ("prose", "dm_only_prose", "notes") if frag else ():
+        v = frag.get(key)
+        rel = v.get("file") if isinstance(v, dict) else v if isinstance(v, str) else None
+        f = root / str(rel) if rel else None
+        if f is None or not f.is_file():
+            continue
+        lines = [n for n, line in enumerate(f.read_text(encoding="utf-8", errors="replace").split("\n"), 1) if TURKISH_LETTERS.search(line)]
+        if lines:
+            errs.append(f"{eid}: {key} file {rel} carries Turkish letters on {len(lines)} line(s) (first: line {lines[0]}); "
+                        "the campaign is written in English")
+    return errs
+
+
 def duplicate_errors(eid: str, row: dict, canonical: dict, incoming: list[tuple[str, dict]]) -> list[str]:
     """No two persons, places, factions, gods, items or planes share a full name, and no two persons a first name."""
     group = NAME_GROUPS.get(row.get("type"))
@@ -556,11 +589,15 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
                if str(n.get("id", "")).startswith(("landmark_", "waypoint_"))}
     known_ids = set(canonical["entities"]) | {eid for eid, _ in incoming} | map_ids
     used = {t: sum(1 for row in canonical["entities"].values() if row.get("type") == t) for t in budget}
+    import design_manifest as dman
+    english = dman.writes_english(dman.load(campaign))
     for u in units:
         errs, warns = list(u["errors"]), []
         if u["frag"]:
             e2, w2 = prose_errors(u["id"], u["frag"], root, u["container"])
             errs += e2
+            if english:
+                errs += language_errors(u["id"], None, u["frag"], root)
             warns += w2
             notes = u["frag"].get("notes")
             if isinstance(notes, str) and notes and not notes.startswith("design/dm-only/") and (root / notes).is_file():
@@ -572,6 +609,8 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
         u["revised"] = {}
         for eid, row in u["rows"]:
             errs += row_errors(eid, row)
+            if english:
+                errs += language_errors(eid, row, None, root)
             errs += secret_name_errors(eid, row, publics, haystack)
             errs += naming_errors(eid, row, bl, registered)
             errs += pool_errors(eid, row, pool, canonical, phase, claimed)

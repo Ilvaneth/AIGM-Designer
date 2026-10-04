@@ -45,6 +45,15 @@ def common_hooks(name: str, sub: str) -> list:
     return list(doc.get("hooks_common") or []) + list((node or {}).get("hooks_common") or [] if isinstance(node, dict) else [])
 
 
+SKILL = SCRIPTS.parent
+
+
+def play_suffixing() -> dict:
+    """data/play/turkish-suffixing.yaml: how a name takes a Turkish suffix in the DM's narration."""
+    import yaml
+    return yaml.safe_load((SKILL / "data" / "play" / "turkish-suffixing.yaml").read_text(encoding="utf-8"))["turkish_suffixing"]
+
+
 class Convention(unittest.TestCase):
 
     def test_tables_dir_has_only_planned_files(self):
@@ -229,7 +238,7 @@ class Floors(unittest.TestCase):
         for r in rows:
             with self.subTest(row=r["id"]):
                 self.assertEqual(len(r["poles"]), 2)
-                self.assertEqual(len(r["tr"]["poles"]), 2)
+                self.assertNotIn("tr", r, "the English poles stand alone (build item 13a)")
                 self.assertTrue(r["families"])
                 self.assertFalse(set(r["families"]) - families)
                 self.assertFalse({"question_seeds", "villain_answer", "world_default"} & set(r), "no example, no fixed villain pole")
@@ -261,8 +270,8 @@ class Floors(unittest.TestCase):
                           "break_ruins_forbidden", "break_night_forbidden", "break_maps_are_illegal", "break_casting_forbidden"})
         self.assertTrue(dt.load("trope-breaks.yaml")["roll"]["families_distinct"])
         for r in breaks:
-            self.assertTrue(r["tr"]["name"] and r["tr"]["at_table"], r["id"])
-            self.assertNotIn("(", r["tr"]["name"], r["id"])
+            self.assertTrue(r["text"]["name"] and r["text"]["at_table"], r["id"])
+            self.assertNotIn("(", r["text"]["name"], r["id"])
         for r in breaks:
             phases = {h["phase"] for h in r["hooks"]}
             self.assertGreaterEqual(len(phases), 2, r["id"])
@@ -839,7 +848,7 @@ class Naming(unittest.TestCase):
         for kind, pats in doc["patterns"].items():
             for p in pats:
                 names += p["examples"]
-        names += [ex["name"] for ex in doc["rules"]["turkish_suffixing"]["examples"]]
+        names += [ex["name"] for ex in play_suffixing()["examples"]]
         for n in names:
             low = n.lower()
             with self.subTest(name=n):
@@ -849,7 +858,10 @@ class Naming(unittest.TestCase):
                 self.assertNotIn(low, registered)
 
     def test_turkish_suffix_rules_are_documented_with_examples(self):
-        rules = dt.load("naming.yaml")["rules"]["turkish_suffixing"]
+        """A play rule since build item 13a: the block left naming.yaml for data/play/, where the DM reads it."""
+        self.assertNotIn("turkish_suffixing", dt.load("naming.yaml")["rules"])
+        self.assertIn("data/play/turkish-suffixing.yaml", (SKILL / "SKILL.md").read_text(encoding="utf-8"))
+        rules = play_suffixing()
         self.assertGreaterEqual(len(rules["examples"]), 4)
         for ex in rules["examples"]:
             for key in ("dative", "locative", "genitive"):

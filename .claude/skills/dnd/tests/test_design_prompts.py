@@ -56,7 +56,7 @@ class Library(unittest.TestCase):
 
     def test_preamble_states_the_rules(self):
         common = dp.common_text()
-        for phrase in ("English-language fantasy name", "never roll dice", "## Secret", "Prose", "fragment"):
+        for phrase in ("The campaign is written in English", "never roll dice", "## Secret", "Prose", "fragment"):
             self.assertIn(phrase, common)
 
 

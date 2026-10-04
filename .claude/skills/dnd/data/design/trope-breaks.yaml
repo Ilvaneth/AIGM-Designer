@@ -20,10 +20,10 @@ tables:
     hooks_common:
       - {phase: P1, must: "the writer explains the inversion through the tied piece; the door checks the tie's id"}
     rows:
-      - {id: tie_lifeline, label: The lifeline, piece: lifeline, tr: {name: "can damarı"}}
-      - {id: tie_ruin_source, label: The ruin source, piece: ruin_source, tr: {name: "yıkıntı kaynağı"}}
-      - {id: tie_contest, label: The contest, piece: contest, tr: {name: "çekişme"}}
-      - {id: tie_break, label: The break, piece: break, conflicts_with: [time_coming], tr: {name: "kırılma"}}   # no break to explain by yet
+      - {id: tie_lifeline, label: The lifeline, piece: lifeline}
+      - {id: tie_ruin_source, label: The ruin source, piece: ruin_source}
+      - {id: tie_contest, label: The contest, piece: contest}
+      - {id: tie_break, label: The break, piece: break, conflicts_with: [time_coming]}   # no break to explain by yet
 rows:
   - id: break_rule_by_lottery
     label: "Rulers are drawn by lot"
@@ -32,7 +32,7 @@ rows:
     claims: {"rule": "by_lot"}
     conflicts_with: ["tension_inheritance_merit"]
     overrides: [{"default": "state_succession", "to": "the lottery"}, {"default": "ruler_heir", "to": "the next draw"}, {"default": "politics_node_kinds", "to": "succession and election become the day of the draw"}]
-    tr: {"name": "hükümdarlar kurayla seçilir", "at_table": "her kura bir siyasi kriz"}
+    text: {"name": "rulers are chosen by lot", "at_table": "every draw is a political crisis"}
     hooks:
       - {phase: P4, must: "the state faction's succession rule is the lottery; an operation is rigging it"}
       - {phase: P5, must: "the ruler NPC is an ordinary person; the heir field is `next draw`"}
@@ -43,7 +43,7 @@ rows:
     claims: {"nobility": "none", "rule": "guild_council"}
     overrides: [{"default": "forced_state_faction", "to": "its archetype is guild"}, {"default": "seat_of_rule_anchor", "to": "a guild hall"}, {"default": "politics_node_kinds", "to": "succession becomes the choosing of masters"}]
     weight_by: [{"when": {"any_of": ["contest_one_harbour", "contest_old_new_craft", "contest_mine_owners_miners", "contest_share_keep_knowledge", "contest_monster_bounty", "contest_new_resource", "contest_split_family", "contest_surface_deep"]}, "x": 2}]
-    tr: {"name": "lordlar yoktur; loncalar yönetir", "at_table": "güç, zanaat ve para demek"}
+    text: {"name": "there are no lords; the guilds rule", "at_table": "power means craft and money"}
     hooks:
       - {phase: P4, must: "the state faction has archetype guild; the access chain runs through masters"}
       - {phase: P3, must: "the seat of rule anchor is a guild hall"}
@@ -53,7 +53,7 @@ rows:
     statement: "Mass war is unthinkable; disputes are settled by a small number of named fighters under rules everyone knows."
     claims: {"war": "by_champions"}
     overrides: [{"default": "contest_last_step", "to": "a challenge of champions"}, {"default": "war_node_kinds", "to": "duel, the choosing of champions, parley, raid"}, {"default": "martial_assets", "to": "champions"}]
-    tr: {"name": "savaşları ordular değil şampiyonlar yapar", "at_table": "parti bir ülkenin şampiyonu olabilir"}
+    text: {"name": "wars are fought not by armies but by champions", "at_table": "the party can be a country's champion"}
     hooks:
       - {phase: P4, must: "martial factions' assets are champions (NPCs); a seize move is a challenge"}
       - {phase: P8, must: "the primer states the rules of challenge"}
@@ -63,7 +63,7 @@ rows:
     statement: "Carrying a weapon is a privilege of one class; everyone else is disarmed by law."
     prohibition: true                # the new-taboo scar draws from these
     weight_by: [{"when": {"any_of": ["contest_lords_peasants"]}, "x": 2}]
-    tr: {"name": "silah taşımak yalnızca bir sınıfa açıktır", "at_table": "silahlı bir parti ya ayrıcalıklıdır ya suçlu"}
+    text: {"name": "bearing arms is open to one class only", "at_table": "an armed party is either privileged or criminal"}
     hooks:
       - {phase: P3, must: "the law ladder names who may bear arms; a settlement's gate checks it"}
       - {phase: P4, must: "the armed class is a faction, or a privilege a faction guards"}
@@ -77,7 +77,7 @@ rows:
     overrides: [{"default": "regulator_identity", "to": "the nobility"}, {"default": "caster_share", "to": "as many as the nobles"}, {"default": "primer_public_casting", "to": "what a commoner risks by casting"}]
     weight_by: [{"when": {"any_of": ["contest_casters_casterless"]}, "x": 2}]
     merges_with: {"contest_casters_casterless": "role a is the nobility; one regulator"}
-    tr: {"name": "büyü soyluluktur; büyüsüz soylu yoktur", "at_table": "büyücü bir PC doğuştan bir statüye sahiptir"}
+    text: {"name": "magic is nobility; there is no noble without magic", "at_table": "a spellcaster PC holds a status by birth"}
     hooks:
       - {phase: P2, must: "magic's regulator is the nobility itself"}
       - {phase: P4, must: "the state faction's leaders are casters"}
@@ -91,7 +91,7 @@ rows:
     weight_by: [{"when": {"any_of": ["life_dragon_protection"]}, "x": 2}]
     merges_with: {"contest_humans_dragon": "role b takes the hint state (the sovereign dragon and its household); role a takes resistance; third and fourth stay"}
     merge_role_hints: {"contest_humans_dragon": {"a": "resistance", "b": "state"}}     # the merge above, for the script (build item 10)
-    tr: {"name": "ülkeleri ejderhalar yönetir", "at_table": "hükümdarla konuşmak bir ejderhayla konuşmak demek"}
+    text: {"name": "the lands are ruled by dragons", "at_table": "speaking with the ruler means speaking with a dragon"}
     hooks:
       - {phase: P4, must: "each polity's ruler is a dragon and its household a faction"}
       - {phase: P5, must: "a dragon ruler is a major NPC"}
@@ -102,7 +102,7 @@ rows:
     statement: "No one may cross the land's border; what lies beyond is both lure and crime."
     prohibition: true                # the new-taboo scar draws from these
     weight_by: [{"when": {"any_of": ["spine_long_wall"]}, "x": 2}, {"when": {"any_of": ["contest_open_close_road"]}, "x": 3}, {"when": {"any_of": ["contest_forbidden_lands"]}, "x": 2}]
-    tr: {"name": "sınırı geçmek yasaktır", "at_table": "sınırın ötesi hem çekici hem cezalı"}
+    text: {"name": "crossing the border is forbidden", "at_table": "what lies beyond the border is both alluring and punished"}
     hooks:
       - {phase: P3, must: "the border is a map line with its wardens; beyond it lies a named region"}
       - {phase: P4, must: "a faction guards the border and another profits from crossing it"}
@@ -113,7 +113,7 @@ rows:
     statement: "Goblins, giants or another 'monster' people hold sworn treaties; breaking one is the crime, not meeting them."
     overrides: [{"default": "site_attitude_pool", "to": "negotiate on the treaty people's lairs; the horror mix's 'test or enslave' site is never one of them"}]
     weight_by: [{"when": {"any_of": ["life_giant_peace", "life_dragon_protection", "life_fey_bargain", "life_sea_folk_hunt", "contest_humans_giants", "contest_humans_dragon", "contest_humans_fey", "contest_surface_deep", "contest_land_sea_folk"]}, "x": 2}]
-    tr: {"name": "canavarların antlaşmaları vardır", "at_table": "her canavar karşılaşması önce bir pazarlıktır"}
+    text: {"name": "the monsters have treaties", "at_table": "every monster encounter is first a negotiation"}
     hooks:
       - {phase: P4, must: "the treaty people are a faction with a stance row and an operation"}
       - {phase: P6, must: "their lairs are sites with attitude `negotiate`; monster-ecology marks the species as a people"}
@@ -122,7 +122,7 @@ rows:
     label: "Some lands' lord is a beast-person"
     family: peoples
     statement: "A born lineage is both beast and person and holds land; a wood may have a lord who is a stag and walks as a man."
-    tr: {"name": "bazı toprakların beyi bir hayvan-insandır", "at_table": "ormanın bir sahibi, bir sözü vardır"}
+    text: {"name": "the lord of some lands is a beast-person", "at_table": "the forest has an owner, and a say"}
     hooks:
       - {phase: P3, must: "a beast-lord holds one part of the map; its travel table is negotiated passage"}
       - {phase: P4, must: "the beast lord is a faction with a stance row"}
@@ -131,7 +131,7 @@ rows:
     family: peoples
     statement: "Each lineage lives where the defaults would never put it."
     overrides: [{"default": "lineage_palette_weights", "to": "inverted"}]
-    tr: {"name": "soyların yurtları alışılmışın tersidir", "at_table": "beklenti her soyda bozulur", "name_note": "cüceler denizci, elfler bozkır göçebesi"}
+    text: {"name": "the homelands of the lineages are the reverse of the usual", "at_table": "expectation breaks with every lineage", "name_note": "dwarves are seafarers, elves are steppe nomads"}
     hooks:
       - {phase: P1, must: "the people signature's lineage takes an inverted home"}
       - {phase: P3, must: "each lineage's settlements sit where the defaults would not put them"}
@@ -143,7 +143,7 @@ rows:
     conflicts_with: ["ruin_dead_god"]
     overrides: [{"default": "pantheon_type", "to": "pantheon_ancestor_gods"}]
     weight_by: [{"when": {"any_of": ["ruin_failed_apotheosis"]}, "x": 2}]
-    tr: {"name": "tanrıların ölümlü ataların ruhları olduğunu herkes bilir", "at_table": "din bir aile işidir"}
+    text: {"name": "everyone knows that the gods are the souls of mortal ancestors", "at_table": "religion is a family matter"}
     hooks:
       - {phase: P2, must: "every god has a mortal biography in the history; rank is earned; one candidate is pending"}
       - {phase: P4, must: "a religious faction's endgame is raising its founder"}
@@ -152,7 +152,7 @@ rows:
     family: gods
     statement: "Ships go to the moon when it is full; the moon folk sell what nothing here can make."
     weight_by: [{"when": {"dial": {"era": ["nautical"]}}, "x": 2}]
-    tr: {"name": "ayda yaşayanlar vardır ve ticaret yaparlar", "at_table": "gökten gelen mallar ve yabancılar"}
+    text: {"name": "there are those who live on the moon, and they trade", "at_table": "goods and strangers that come from the sky"}
     hooks:
       - {phase: P2, must: "the moon is a touched plane with a way in, a cost and a time rate; the moon is one of the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - {phase: P4, must: "a trade faction holds the right to the moon trade"}
@@ -161,7 +161,7 @@ rows:
     family: gods
     statement: "A god's power reaches only as far as its holy places."
     weight_by: [{"when": {"any_of": ["contest_one_shrine", "life_pilgrim_road"]}, "x": 2}]
-    tr: {"name": "tanrıların büyüsü yalnızca kutsal yerlerde işler", "at_table": "rahip bir PC kutsal yerden uzaklaştıkça güç kaybeder"}
+    text: {"name": "the magic of the gods works only in holy places", "at_table": "a cleric PC loses power the farther they go from the holy place"}
     hooks:
       - {phase: P2, must: "each god's holy ground is named"}
       - {phase: P3, must: "the holy grounds are map nodes"}
@@ -172,7 +172,7 @@ rows:
     statement: "One god's name may not be spoken; its priests hide, and whoever knows the name is dangerous."
     prohibition: true                # the new-taboo scar draws from these
     weight_by: [{"when": {"any_of": ["ruin_imprisoned_god", "ruin_departed_god"]}, "x": 2}]
-    tr: {"name": "tanrılardan birinin adını anmak yasaktır", "at_table": "o tanrının rahipleri gizlenir, adı bilen tehlikelidir"}
+    text: {"name": "speaking the name of one of the gods is forbidden", "at_table": "that god's priests hide, whoever knows the name is dangerous"}
     hooks:
       - {phase: P2, must: "the unnamed god has a public epithet and a hidden name"}
       - {phase: P4, must: "the unnamed god's priests are a hidden faction"}
@@ -183,7 +183,7 @@ rows:
     statement: "The gods live among mortals; each keeps a house, and one may knock at its door."
     overrides: [{"default": "great_gods_floor", "to": 1}, {"default": "pantheon_type", "to": "the silent-gods and dead-gods types leave the pool"}]
     weight_by: [{"when": {"any_of": ["ruin_dead_god", "ruin_gods_quarrel", "ruin_departed_god", "ruin_imprisoned_god", "ruin_failed_apotheosis"]}, "x": 2}]
-    tr: {"name": "tanrılar ölümlülerin arasında yaşar; her birinin bir evi vardır ve kapısı çalınır", "at_table": "parti bir tanrıyla yüz yüze konuşabilir"}
+    text: {"name": "the gods live among mortals; each has a house, and one knocks at its door", "at_table": "the party can speak with a god face to face"}
     hooks:
       - {phase: P2, must: "each great god has a house and receives petitioners; a fallen god's house stands empty or shut"}
       - {phase: P3, must: "the god's house is a map node"}
@@ -194,7 +194,7 @@ rows:
     family: danger
     statement: "Whatever hunts does so under the sun; people travel and work by night and shutter at dawn."
     requires: {"dial": {"era": ["medieval", "renaissance", "ancient", "nautical"]}}
-    tr: {"name": "gece güvenli, gündüz tehlikelidir", "at_table": "yolculuk ve baskın gece yapılır"}
+    text: {"name": "night is safe, day is dangerous", "at_table": "travel and raids are done at night"}
     hooks:
       - {phase: P2, must: "the calendar's sensory tone is written for night; the moon marks the working hours"}
       - {phase: P3, must: "travel tables roll by day-hours; a daylight crossing is a hazard"}
@@ -205,7 +205,7 @@ rows:
     statement: "The wild shelters; the cities are where people die."
     overrides: [{"default": "travel_danger", "to": "the wild is safe"}]
     weight_by: [{"when": {"any_of": ["spine_edge_of_civilisation"]}, "x": 2}]
-    tr: {"name": "şehirler tehlikeli, vahşi doğa güvenlidir", "at_table": "sığınak ormandır, tuzak şehir"}
+    text: {"name": "cities are dangerous, the wild is safe", "at_table": "the refuge is the forest, the trap is the city"}
     hooks:
       - {phase: P3, must: "each settlement carries a danger the wild lacks"}
       - {phase: P6, must: "an urban site is the deadliest of its tier"}
@@ -215,7 +215,7 @@ rows:
     family: danger
     statement: "No dungeon is empty; you knock before you enter."
     overrides: [{"default": "site_attitude_pool", "to": "att_kill and att_ignore leave the pool"}]
-    tr: {"name": "zindanlar boş değildir; her harabe birilerinin evidir ve kapısı çalınır", "at_table": "zindana girmek önce bir ziyarettir"}
+    text: {"name": "dungeons are not empty; every ruin is someone's home, and one knocks at its door", "at_table": "entering a dungeon is first a visit"}
     hooks:
       - {phase: P5, must: "a site detailed at birth has a named householder; every other site names its householder in one sentence of the site row"}
       - {phase: P6, must: "every site's inhabitants answer the door; no site's attitude is kill or ignore"}
@@ -224,7 +224,7 @@ rows:
     family: danger
     statement: "Killing a great beast hands you what it carried."
     weight_by: [{"when": {"any_of": ["contest_monster_bounty"]}, "x": 2}]
-    tr: {"name": "büyük bir canavarı öldüren onun yükünü devralır", "at_table": "zafer bir bedel getirir, öldürmek bir karardır"}
+    text: {"name": "whoever kills a great monster takes over its burden", "at_table": "victory brings a price, killing is a decision"}
     hooks:
       - {phase: P4, must: "a faction watches who kills great monsters"}
       - {phase: P6, must: "a site's boss carries a burden its slayer inherits"}
@@ -236,7 +236,7 @@ rows:
     prohibition: true                # the new-taboo scar draws from these
     conflicts_with: ["claim:below_ground=lived_in"]
     weight_by: [{"when": {"any_of": ["land_underground"]}, "x": 2}, {"when": {"any_of": ["life_deep_lake", "life_deep_mouth", "life_mushroom_fields", "life_giant_insects", "life_gemstones"]}, "x": 2}]
-    tr: {"name": "yeraltına inmek yasaktır", "at_table": "her zindan bir suçtur, aşağıdan dönen dışlanır"}
+    text: {"name": "going down below ground is forbidden", "at_table": "every dungeon is a crime, whoever returns from below is shunned"}
     hooks:
       - {phase: P3, must: "the law ladder punishes descent; the ways down are watched"}
       - {phase: P5, must: "an NPC came back from below and is shunned"}
@@ -248,7 +248,7 @@ rows:
     prohibition: true                # the new-taboo scar draws from these
     conflicts_with: ["layout:remnant_on_heart"]
     weight_by: [{"when": {"any_of": ["contest_sealed_remnant"]}, "x": 3}, {"when": {"any_of": ["contest_forbidden_lands", "contest_treasure_race"]}, "x": 2}]
-    tr: {"name": "harabelere girmek yasaktır; kalıntıya dokunan suçludur", "at_table": "her zindana yasaya karşı girilir; ganimet kaçak maldır"}
+    text: {"name": "entering the ruins is forbidden; whoever touches the remnant is a criminal", "at_table": "every dungeon is entered against the law; loot is contraband"}
     hooks:
       - {phase: P3, must: "the ways to the ruins are watched"}
       - {phase: P4, must: "one faction guards the ruins and another sells what comes out"}
@@ -260,7 +260,7 @@ rows:
     statement: "No one may be abroad after dark; the night belongs to the watch."
     prohibition: true                # the new-taboo scar draws from these
     requires: {"dial": {"era": ["medieval", "renaissance", "ancient", "nautical"]}}
-    tr: {"name": "gece dışarı çıkmak yasaktır; gece nöbetçilerindir", "at_table": "gece sahneleri suç olur; devriyeler ve izinler oyuna girer"}
+    text: {"name": "going out at night is forbidden; the night belongs to the watchmen", "at_table": "night scenes become crimes; patrols and permits come into play"}
     hooks:
       - {phase: P3, must: "settlements shut their gates at dusk"}
       - {phase: P4, must: "the night watch is a faction or a faction's asset"}
@@ -272,7 +272,7 @@ rows:
     overrides: [{"default": "state_identity", "to": "the victors"}]
     weight_by: [{"when": {"any_of": ["contest_occupier_resistance"]}, "x": 3}, {"when": {"any_of": ["ruin_besieged_land"]}, "x": 2}]
     merges_with: {"contest_occupier_resistance": "the victors are role a; role third is the state faction under them"}
-    tr: {"name": "eski düşman kazandı ve herkes iyi", "at_table": "\"kötülerin\" dünyası sıradan bir dünyadır"}
+    text: {"name": "the old enemy won and everyone is fine", "at_table": "the world of the \"villains\" is an ordinary world"}
     hooks:
       - {phase: P2, must: "the founding event is the defeat; taught and true layers differ on how bad the victors are"}
       - {phase: P4, must: "the resistance faction's true belief is nostalgia; the state faction is the victors"}
@@ -281,7 +281,7 @@ rows:
     family: time
     statement: "In the empty month nothing casts; wards fail, the sick die, and everyone who depends on magic hides."
     overrides: [{"default": "weekly_volatility", "to": "doubled in that month"}]
-    tr: {"name": "yılda bir ay büyü çalışmaz", "at_table": "büyücüler o ay için hazırlanır"}
+    text: {"name": "one month a year magic does not work", "at_table": "spellcasters prepare for that month"}
     hooks:
       - {phase: P2, must: "the calendar names the month; the simulation's volatility doubles in it"}
       - {phase: P7, must: "one beat or the doom sits in the empty month"}
@@ -289,7 +289,7 @@ rows:
     label: "One day a year no law holds"
     family: time
     statement: "On one day of the year no law holds, and everyone plans around it."
-    tr: {"name": "yılda bir gün hiçbir yasa geçerli değildir", "at_table": "o gün takvimde bellidir; herkes ona göre plan yapar"}
+    text: {"name": "one day a year no law is in force", "at_table": "that day is marked on the calendar; everyone plans around it"}
     hooks:
       - {phase: P2, must: "the calendar names the day, inside the campaign's span"}
       - {phase: P4, must: "every faction has a plan for the day"}
@@ -302,7 +302,7 @@ rows:
     overrides: [{"default": "era_equipment", "to": "iron goods ×5 and licensed"}]
     weight_by: [{"when": {"any_of": ["life_copper_mine", "life_iron_coal", "life_famous_steel"]}, "x": 2}, {"when": {"dial": {"era": ["ancient"]}}, "x": 2}]
     merges_with: {"life_iron_coal": "the lifeline's smiths are the iron priesthood", "life_famous_steel": "the lifeline's smiths are the iron priesthood"}
-    tr: {"name": "demir kutsal ve nadirdir", "at_table": "demir silah bir hazinedir"}
+    text: {"name": "iron is sacred and rare", "at_table": "an iron weapon is a treasure"}
     hooks:
       - {phase: P3, must: "the price table marks iron goods ×5 and licensed"}
       - {phase: P4, must: "the iron priesthood is a faction; its fracture is a smuggler"}
@@ -314,7 +314,7 @@ rows:
     prohibition: true                # the new-taboo scar draws from these
     overrides: [{"default": "player_map", "to": "only the primer's named places"}]
     weight_by: [{"when": {"dial": {"content_mix": ["exploration"]}}, "x": 2}, {"when": {"any_of": ["contest_treasure_race"]}, "x": 2}]
-    tr: {"name": "haritalar yasaktır", "at_table": "yol bilgisi en değerli şeydir"}
+    text: {"name": "maps are forbidden", "at_table": "knowledge of the road is the most valuable thing"}
     hooks:
       - {phase: P3, must: "the player map shows only the primer's named places; travel-times exist for the DM only"}
       - {phase: P4, must: "the guides are a guild faction; a map fragment is an item_ everyone wants"}
@@ -322,7 +322,7 @@ rows:
     label: "No one can lie outright"
     family: knowledge
     statement: "A direct lie is impossible; everyone evades instead."
-    tr: {"name": "kimse doğrudan yalan söyleyemez; herkes lafı dolandırır", "at_table": "her konuşma bir bilmecedir"}
+    text: {"name": "no one can tell a direct lie; everyone talks around the point", "at_table": "every conversation is a riddle"}
     hooks:
       - {phase: P5, must: "NPCs speak in evasions, never plain lies"}
       - {phase: P8, must: "the primer teaches how a native evades"}
@@ -332,7 +332,7 @@ rows:
     statement: "Knowledge lives in memory; a word is a handshake."
     conflicts_with: ["claim:writing=printed"]
     overrides: [{"default": "loot_writing", "to": "knots, memory or signs"}]
-    tr: {"name": "yazı bilinmez; bilgi ezberde taşınır, söz el sıkışmaktır", "at_table": "tanıklar ve ezberciler değerlidir"}
+    text: {"name": "writing is unknown; knowledge is carried in memory, a word is a handshake", "at_table": "witnesses and memorisers are valuable"}
     hooks:
       - {phase: P3, must: "no settlement has a library; memorisers keep the records"}
       - {phase: P5, must: "at least one NPC is a memoriser"}
@@ -342,7 +342,7 @@ rows:
     family: knowledge
     statement: "No tongue is shared; every people speaks its own, and nothing is said across them without an interpreter."
     overrides: [{"default": "second_language", "to": "the contest's other side's"}]
-    tr: {"name": "ortak dil yoktur; her halk kendi dilini konuşur", "at_table": "dil ve tercüman her sosyal sahnede önem kazanır"}
+    text: {"name": "there is no common tongue; every people speaks its own language", "at_table": "language and the interpreter gain weight in every social scene"}
     hooks:
       - {phase: P5, must: "every NPC carries the languages it speaks; at least one NPC is an interpreter"}
       - {phase: P8, must: "the primer says which tongue is spoken where"}
@@ -356,7 +356,7 @@ rows:
     overrides: [{"default": "regulator_strictness", "to": "strictest"}, {"default": "regulator_identity", "to": "the hunters"}]
     weight_by: [{"when": {"dial": {"magic": ["low"]}}, "x": 2}, {"when": {"any_of": ["contest_casters_casterless"]}, "x": 2}]
     merges_with: {"contest_casters_casterless": "role a is the ban's licensed exception and its enforcer; one regulator"}
-    tr: {"name": "büyü yapmak yasaktır; büyücüler gizlenir", "at_table": "büyücü bir PC suçludur; her büyü bir risk"}
+    text: {"name": "casting spells is forbidden; spellcasters hide", "at_table": "a spellcaster PC is a criminal; every spell a risk"}
     hooks:
       - {phase: P3, must: "the law ladder punishes casting; the gods' magic is outside the ban"}
       - {phase: P4, must: "one faction hunts casters and another shelters them"}

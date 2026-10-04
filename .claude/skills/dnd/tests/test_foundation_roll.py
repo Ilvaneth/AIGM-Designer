@@ -8,6 +8,7 @@ time. The low-magic mage war brings its glass desert; the merge rules; the pair 
 births are recognised as foundationless.
 """
 
+import re
 import itertools
 import sys
 import unittest
@@ -24,6 +25,7 @@ import designer  # noqa: E402
 SPAN = {"short": 4, "standard": 11, "epic": 19}
 CAP = {"low": 0, "medium": 1, "high": 2}
 PAL = fd.rows_by_id("palette")
+PALETTE = fd.rows_by_id("palette")
 SPINE = fd.rows_by_id("spine")
 RUIN = fd.rows_by_id("ruin_source")
 LIFE = fd.rows_by_id("lifeline")
@@ -348,23 +350,38 @@ class ManySeeds(unittest.TestCase):
         self.assertEqual(len(fd.tiers_touched([1, 20])), 4)
         self.assertEqual(len(fd.tiers_touched([11, 15])), 1)
 
-    def test_the_sentence(self):
+    def test_the_rendering(self):
+        """Build item 13a: the foundation's English rendering is a labelled list built from the rows' own fields; it
+        names every rolled piece and holds no Turkish letter, no note and no assembled sentence."""
+        turkish = re.compile("[çğıöşüÇĞİÖŞÜ]")
         for d, R, out, f in self.runs:
-            s = f["sentence_tr"]
+            lines = f["rendering"]
+            s = " | ".join(f"{x['label']}: {x['text']}" for x in lines)
             with self.subTest(seed=R.master):
-                self.assertTrue(s.startswith("Dünya "))
+                self.assertNotIn("sentence_tr", f)
+                want = ["The world's shape", "The lands", "The past", "The value", "The conflict"]
+                want += ["The second conflict"] if len(f["contests"]) > 1 else []
+                self.assertEqual([x["label"] for x in lines], want + ["The break"])
                 self.assertNotIn("None", s)
-                self.assertNotIn("(", s, "no design note in the sentence")
-                for marker in ("Çok önce", "Bugün halk", "arasında eski bir gerilim var", "Bundan güçlü çıkan:"):
-                    self.assertIn(marker, s)
+                self.assertNotIn("(", s, "no design note in the rendering")
+                self.assertIsNone(turkish.search(s))
+                sp, ru, li = SPINE[f["spine"]]["text"], RUIN[f["ruin_source"]]["text"], LIFE[f["lifeline"]["id"]]["text"]
+                named = [sp["name"], sp["heart"], sp["key_place"], ru["what"], ru["remnant"], li["name"],
+                         ACTION[f["break"]["action"]]["forms"][TIME[f["break"]["time"]]["tense"]], TIME[f["break"]["time"]]["text"]["name"]]
+                named += [PALETTE[k]["text"]["name"] for k in f["palette"] + f["palette_extra"]]
+                named += [SCAR[x]["text"]["name"] for x in f["break"]["scars"]]
+                for c in f["contests"]:
+                    named += [CONTEST[c["id"]]["text"]["name"]] + [CONTEST[c["id"]]["roles"][k]["text"] for k in c["roles"]]
+                named.append(CONTEST[f["contests"][0]["id"]]["roles"][f["break"]["winner"]]["text"])
+                for piece in named:
+                    self.assertIn(piece, s)
                 coming = f["break"]["time"] == "time_coming"
-                self.assertIn("İlk izleri:" if coming else ("Yaraları:" if len(f["break"]["scars"]) > 1 else "Yarası:"), s)
+                self.assertIn("first signs:" if coming else ("scars:" if len(f["break"]["scars"]) > 1 else "scar:"), s)
                 if coming:
-                    self.assertNotIn("Yara", s, "a break still coming has left no wound")
+                    self.assertNotRegex(s, r"scars?: ", "a break still coming has left no wound")
                 t = TIME[f["break"]["time"]]
                 self.assertIn(ACTION[f["break"]["action"]]["forms"][t["tense"]], s)
-                if t["id"] == "time_coming":
-                    self.assertIn("İşaretler belli: ", s)
+                self.assertIn(f"{t['text']['name']}: ", s, "the break's line opens with its time")
 
 
 class Rules(unittest.TestCase):
@@ -408,7 +425,7 @@ class Rules(unittest.TestCase):
     def test_the_same_seed_gives_the_same_foundation(self):
         d = dials("epic", "high", "nautical")
         self.assertEqual(one("SAME-1", d)[2], one("SAME-1", d)[2])
-        self.assertNotEqual(one("SAME-1", d)[2]["sentence_tr"], one("SAME-2", d)[2]["sentence_tr"])
+        self.assertNotEqual(one("SAME-1", d)[2]["rendering"], one("SAME-2", d)[2]["rendering"])
 
 
 class LegacyBirths(unittest.TestCase):

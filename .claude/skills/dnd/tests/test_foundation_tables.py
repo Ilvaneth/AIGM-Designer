@@ -52,7 +52,7 @@ class Palette(unittest.TestCase):
     def test_biomes_heights_and_waters(self):
         for r in PALETTE.values():
             with self.subTest(kind=r["id"]):
-                self.assertTrue(r["tr"]["name"])
+                self.assertTrue(r["text"]["name"])
                 self.assertFalse(set(r.get("biomes") or []) - BIOMES)
                 self.assertFalse(set(r.get("implies") or []) - set(PALETTE))
                 if not r.get("fantastic"):
@@ -110,7 +110,7 @@ class Spine(unittest.TestCase):
     def test_every_spine_carries_its_columns(self):
         for r in SPINE:
             with self.subTest(spine=r["id"]):
-                tr = r["tr"]
+                tr = r["text"]
                 for col in ("name", "heart", "key_place", "travel"):
                     self.assertTrue(tr.get(col))
                 self.assertTrue(len(tr.get("ends") or []) == 2 or tr.get("ends_both"), "two ends, or one phrase for both")
@@ -196,7 +196,7 @@ class RuinSource(unittest.TestCase):
         for r in RUIN:
             with self.subTest(ruin=r["id"]):
                 for col in ("name", "what", "remnant", "sites", "strangeness"):
-                    self.assertTrue(r["tr"].get(col))
+                    self.assertTrue(r["text"].get(col))
                 self.assertIn(r["remnant_kind"], DOC["remnant_kinds"])
                 self.assertTrue(r["sites"])
                 self.assertFalse(set(r["sites"]) - SITE_TYPES)
@@ -255,8 +255,8 @@ class Lifeline(unittest.TestCase):
         for r in LIFE:
             with self.subTest(life=r["id"]):
                 for col in ("name", "who", "yields", "weak_point"):
-                    self.assertTrue(r["tr"].get(col))
-                self.assertEqual(bool(r["tr"].get("sense")), r["family"] != "treaty", "only the treaties have no sense line")
+                    self.assertTrue(r["text"].get(col))
+                self.assertEqual(bool(r["text"].get("sense")), r["family"] != "treaty", "only the treaties have no sense line")
 
     def test_only_rows_the_palette_can_hold_are_drawn(self):
         """The rows file: the script draws only lifelines whose `where` kinds the palette brought; 'everywhere' rows
@@ -296,7 +296,7 @@ class Contest(unittest.TestCase):
             with self.subTest(contest=r["id"]):
                 self.assertEqual(set(r["roles"]), {"a", "b", "third", "fourth"})
                 for role in r["roles"].values():
-                    self.assertTrue(role["tr"])
+                    self.assertTrue(role["text"])
                     self.assertTrue(role["hint"] is None or role["hint"] in ARCHETYPES, role)
                 self.assertIn(r["prize"], ("lifeline", "heart", "remnant", "new", "thin_place"))
                 self.assertGreaterEqual(len(r["escalation"]), 2)
@@ -397,8 +397,11 @@ class Break(unittest.TestCase):
         self.assertEqual({r["id"] for r in ACTIONS if r.get("concretise")}, {"act_fell_from_sky", "act_gave_birth"})
         self.assertEqual({r["id"] for r in ACTIONS if r.get("leaves_ruins")},
                          {"act_sank", "act_burned", "act_fell_from_sky", "act_corrupted"})
-        leads = {r["id"]: r["tr"]["lead"] for r in dt.rows("foundation.yaml#time")}
-        self.assertEqual(leads["time_coming"], "işaretler belli:")
+        for r in dt.rows("foundation.yaml#time"):
+            self.assertEqual(set(r["text"]), {"name", "name_note"}, "the lead phrases went with the Turkish sentence (build item 13a)")
+        for r in ACTIONS:
+            self.assertEqual(set(r["forms"]), {"past", "present", "imminent"}, r["id"])
+            self.assertTrue(r["forms"]["present"].startswith(("is ", "are ")) and r["forms"]["imminent"].startswith("is about to "), r["id"])
 
     def test_actions_and_scars_are_grammar(self):
         """A used verb or scar waits three births; they are never exhausted."""
@@ -414,7 +417,7 @@ class Break(unittest.TestCase):
             with self.subTest(scar=r["id"]):
                 self.assertTrue(r["floors"])
                 self.assertEqual({h["phase"] for h in r["hooks"]}, set(r["floors"]))
-                self.assertNotRegex(r["tr"]["name"], r"ölü|ölüm", "the dead returning is left out on purpose")
+                self.assertNotRegex(r["text"]["name"], r"\bdead\b|\bdeath\b", "the dead returning is left out on purpose")
         new_land = next(r for r in SCARS if r["id"] == "scar_new_land_kind")
         self.assertTrue(new_land["needs_fantastic_room"])
 
@@ -429,7 +432,7 @@ class Break(unittest.TestCase):
 
 
 def sentence_texts(node, key=""):
-    """Every string a template may place: the `tr` values, minus the notes (`*_note`, `tr_note`)."""
+    """Every string the rendering may place: the `text` values, minus the notes (`*_note`, `text_note`)."""
     if isinstance(node, str):
         yield key, node
     elif isinstance(node, dict):
@@ -442,14 +445,14 @@ def sentence_texts(node, key=""):
 
 
 class CleanPhrases(unittest.TestCase):
-    """Owner, 2026-09-28: a design note never enters the foundation sentence; it lives beside the phrase."""
+    """Owner, 2026-09-28: a design note never enters the foundation's rendering; it lives beside the phrase."""
 
     def test_no_parenthesis_in_any_phrase_a_template_places(self):
         for sub, rows in dt.all_row_lists(DOC).items():
             for r in rows:
-                phrases = list(sentence_texts(r.get("tr")))
+                phrases = list(sentence_texts(r.get("text")))
                 for role in (r.get("roles") or {}).values():
-                    phrases.append(("tr", role["tr"]))
+                    phrases.append(("text", role["text"]))
                 phrases += [("form", f) for f in (r.get("forms") or {}).values()]
                 for key, t in phrases:
                     with self.subTest(row=r["id"], field=key):
@@ -458,20 +461,21 @@ class CleanPhrases(unittest.TestCase):
 
     def test_the_notes_are_kept_beside_their_phrase(self):
         by = {r["id"]: r for r in LIFE}
-        self.assertEqual(by["life_giant_peace"]["tr"], {"name": "devlerle barış", "name_note": "devler dağda, insanlar ovada",
-                                                         "who": "sınır elçileri", "yields": "güvenlik, takas",
-                                                         "weak_point": "söz bozulursa"})
+        self.assertEqual(by["life_giant_peace"]["text"], {"name": "peace with the giants",
+                                                         "name_note": "the giants on the mountain, the humans on the plain",
+                                                         "who": "border envoys", "yields": "safety, barter",
+                                                         "weak_point": "if the word is broken"})
         scars = {r["id"]: r for r in dt.rows("foundation.yaml#scar")}
-        self.assertEqual(scars["scar_time_flow_changed"]["tr"]["name"], "bir bölgede zamanın akışı değişti")
+        self.assertEqual(scars["scar_time_flow_changed"]["text"]["name"], "the flow of time changed in a region")
         sea = next(r for r in CONTEST if r["id"] == "contest_land_sea_folk")["roles"]["b"]
-        self.assertEqual(sea["tr"], "deniz halkı")
-        self.assertNotIn("triton", sea["tr_note"].lower(), "tritons are not in SRD 5.1")
-        self.assertEqual(next(r for r in SPINE if r["id"] == "spine_star_crater")["tr"]["ends"][0], "değişmiş krater içi")
+        self.assertEqual(sea["text"], "the sea folk")
+        self.assertNotIn("triton", sea["text_note"].lower(), "tritons are not in SRD 5.1")
+        self.assertEqual(next(r for r in SPINE if r["id"] == "spine_star_crater")["text"]["ends"][0], "the changed inside of the crater")
 
     def test_no_ruin_repeats_the_templates_time(self):
-        """The template says 'Çok önce'; a ruin's `what` never says it again."""
+        """The rendering's label says "The past"; a ruin's `what` never says when again."""
         for r in RUIN:
-            self.assertNotRegex(r["tr"]["what"], r"(?i)bir zamanlar|çok önce|eskiden", r["id"])
+            self.assertNotRegex(r["text"]["what"], r"(?i)\blong ago\b|\bonce upon\b|\bin the old days\b|\bformerly\b", r["id"])
 
 
 class TagReview(unittest.TestCase):
@@ -518,8 +522,8 @@ class TagReview(unittest.TestCase):
         weigh = {"lineage_dwarf": 3, "lineage_gnome": 3, "lineage_goblinoid": 3}
         self.assertEqual({k: v["lineage_weight"] for k, v in people.items() if v.get("lineage_weight")},
                          {("contest_surface_deep", "b"): weigh, ("contest_mine_owners_miners", "fourth"): weigh})
-        self.assertEqual(by["contest_two_branches"]["roles"]["a"]["tr"], "eski çöküşü bir ceza sayan kol")
-        self.assertEqual(by["contest_two_branches"]["roles"]["b"]["tr"], "onu bir fırsat sayan kol")
+        self.assertEqual(by["contest_two_branches"]["roles"]["a"]["text"], "the branch that counts the old collapse a punishment")
+        self.assertEqual(by["contest_two_branches"]["roles"]["b"]["text"], "the branch that counts it an opportunity")
         self.assertEqual([o["default"] for o in by["contest_casters_casterless"]["overrides"]], ["regulator_identity", "regulator_strictness"])
 
     def test_the_break_rows(self):
@@ -540,8 +544,8 @@ class TagReview(unittest.TestCase):
         for row in (ruins["ruin_planar_rift"], ruins["ruin_planar_invasion"], ruins["ruin_celestial_war"], ruins["ruin_elven_withdrawal"],
                     acts["act_merged_with_plane"], scars["scar_plane_thinned"]):
             self.assertTrue(any(plane in h["must"] and h["phase"] == "P2" for h in row["hooks"]), row["id"])
-        self.assertEqual(PALETTE["land_glass_desert"]["tr"]["what"], "kumu cama dönmüş bir çöl")
-        self.assertEqual(PALETTE["land_giant_bones"]["tr"]["what"], "dev bir iskeletin üstünde ve içinde kurulmuş toprak")
+        self.assertEqual(PALETTE["land_glass_desert"]["text"]["what"], "a desert whose sand has turned to glass")
+        self.assertEqual(PALETTE["land_giant_bones"]["text"]["what"], "land settled on and inside a giant skeleton")
         common = [h["must"] for h in DOC["tables"]["palette"]["hooks_common"]]
         self.assertIn("the origin of every fantastic kind the ruin source did not bring is written", common)
 

@@ -34,12 +34,12 @@ class Cards(unittest.TestCase):
 
     def test_site_card_shows_public_entities_and_nothing_secret(self):
         text = self.card("P6")
-        self.assertIn("Faz kartı — P6", text)
+        self.assertIn("Phase card — P6", text)
         self.assertIn("Sunken Pier", text)
-        self.assertIn("site: 4 açık, bant 6-8", text)
-        self.assertIn("Ölçek bandı", text)
-        self.assertIn("Doğrulayıcı", text)
-        self.assertIn("Dilekler:", text)
+        self.assertIn("site: 4 public, band 6-8", text)
+        self.assertIn("Scale band", text)
+        self.assertIn("Validator", text)
+        self.assertIn("Wishes:", text)
         self.assertIn("deniz ve tuz kokusu ?", text, "no wishes critique recorded yet → ?")
         self.assertIn("<!-- ids:", text)
         self.assertNotIn("Nerun", text)
@@ -49,17 +49,17 @@ class Cards(unittest.TestCase):
 
     def test_premise_card_carries_the_spoiler_safe_abstract(self):
         text = self.card("P1")
-        self.assertIn("Sır katmanı", text)
-        self.assertIn("arketip sınıfı *magic*", text)
-        self.assertIn("perde 1: 3", text)
+        self.assertIn("The secret layer", text)
+        self.assertIn("archetype class *magic*", text)
+        self.assertIn("act 1: 3", text)
         self.assertNotIn("borrowed", text, "the archetype id itself never shows")
         self.assertNotIn("Nerun", text)
 
     def test_lands_card_lists_the_public_map(self):
         text = self.card("P3")
-        self.assertIn("Oyuncu haritası", text)
+        self.assertIn("Player map", text)
         self.assertIn("settlement_lanternside", text)
-        self.assertIn("region: 1 açık, bant 1-2", text)
+        self.assertIn("region: 1 public, band 1-2", text)
 
     def test_wish_ticks_come_from_the_wishes_critic(self):
         ret = {"entity_id": "P6", "verdict": "pass", "findings": [
@@ -72,8 +72,8 @@ class Cards(unittest.TestCase):
         proc = self.c.run("design_approval.py", "critique", "--phase", "P6", "--file", str(f), check=True)
         self.assertIn("4 findings recorded", proc.stdout)
         text = self.card("P6")
-        self.assertIn("olsun: deniz ve tuz kokusu ✓", text)
-        self.assertIn("olmasın: kader/kehanet ✗", text)
+        self.assertIn("must: deniz ve tuz kokusu ✓", text)
+        self.assertIn("must not: kader/kehanet ✗", text)
         m = self.c.json("design/design.json")
         rec = m["phases"]["P6"]["critique"]["records"][-1]
         self.assertEqual(rec["verdict"], "pass")
@@ -99,7 +99,7 @@ class Cards(unittest.TestCase):
 
     def test_rerun_card_diffs_against_the_previous_one(self):
         first = self.card("P6")
-        self.assertNotIn("Önceki karta göre", first)
+        self.assertNotIn("Changes from the previous card", first)
         m = self.c.json("design/design.json")
         m["phases"]["P6"]["attempt"] = 3
         self.c.path("design/design.json").write_text(json.dumps(m, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -108,9 +108,9 @@ class Cards(unittest.TestCase):
         del proj["entities"]["site_bottomless_well"]
         self.c.path("design/entities.json").write_text(json.dumps(proj, ensure_ascii=False, indent=2), encoding="utf-8")
         second = self.card("P6")
-        self.assertIn("Önceki karta göre değişiklik (deneme 2 → 3)", second)
-        self.assertIn("çıkarıldı: site_bottomless_well", second)
-        self.assertIn("adı değişti: site_tide_cave", second)
+        self.assertIn("Changes from the previous card (attempt 2 → 3)", second)
+        self.assertIn("removed: site_bottomless_well", second)
+        self.assertIn("renamed: site_tide_cave", second)
         self.assertTrue(self.c.path("design/_approval/P6.attempt-2.card.md").is_file(), "the previous card is archived")
 
     def test_leak_scan_refuses_a_secret_name_and_a_dm_only_sentence(self):
@@ -135,7 +135,7 @@ class Cards(unittest.TestCase):
         proc = self.c.run("designer.py", "phase", "P6", "card", check=True)
         self.assertIn("leak scan clean", proc.stdout)
         text = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("Faz kartı — P6", text)
+        self.assertIn("Phase card — P6", text)
         self.c.run("designer.py", "phase", "P6", "approve", "--onay", check=True)
         m = self.c.json("design/design.json")
         self.assertEqual(m["phases"]["P6"]["status"], "approved")

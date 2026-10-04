@@ -155,7 +155,7 @@ class OrphanStubs(Base):
         self.c.reopen("P6", "validated")
         self.c.run("designer.py", "phase", "P6", "card", check=True)
         card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("Yazılmamış küçük taslak:** place ×1", card)
+        self.assertIn("Unwritten minor stubs:** place ×1", card)
         self.c.run("designer.py", "phase", "P6", "approve", "--onay", check=True)
 
     def test_the_blocking_stub_types_are_the_registrys_prose_types(self):
@@ -187,8 +187,8 @@ class CritiqueLoop(Base):
         self.assertEqual([(r["kind"], r["verdict"]) for r in records], [("phase", "fix"), ("phase", "pass")])
         self.c.run("designer.py", "phase", "P6", "card", check=True)
         card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("faz eleştirmeni fix → pass", card)
-        self.assertNotIn("Eleştirmen geçmedi:** faz eleştirmeni", card)
+        self.assertIn("phase critic fix → pass", card)
+        self.assertNotIn("A critic did not pass:** phase critic", card)
 
 
 class ApproveGate(Base):
@@ -219,7 +219,7 @@ class ApproveGate(Base):
         self.assertIn("site_sunken_pier", refused.stderr)
         self.c.run("designer.py", "phase", "P6", "card", check=True)
         card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("⛔ **Kapı kapalı:** eleştirmen çalışmadı", card)
+        self.assertIn("⛔ **Gate closed:** a critic did not run", card)
 
     def test_a_failed_seed_call_closes_the_gate(self):
         self.c.reopen("P6", "validated", seed={"made": 3, "skipped": 0, "failed": 2, "unsupported": 0})
@@ -573,8 +573,8 @@ class RealCost(Base):
         self.assertEqual(set(by_role), {"writer", "critic", "phase_critic"})
         self.c.run("designer.py", "phase", "P6", "card", check=True)
         card = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("**Gerçek çıktı:** 200", card)
-        self.assertIn("**Bağlam (Workflow):**", card)
+        self.assertIn("**Real output:** 200", card)
+        self.assertIn("**Context (Workflow):**", card)
 
 
 class PhaseReport(Base):
@@ -640,7 +640,9 @@ class Anchors(Base):
         nm = dt.load("naming.yaml")
         shown = [s for s in nm["rules"]["modes"].values()]
         shown += [x for rows in nm["patterns"].values() for r in rows for x in r.get("examples", [])]
-        shown += [r["example"] for r in nm["rules"]["turkish_suffixing"]["ending_table"]]
+        import yaml
+        play = yaml.safe_load((SCRIPTS.parent / "data" / "play" / "turkish-suffixing.yaml").read_text(encoding="utf-8"))
+        shown += [r["example"] for r in play["turkish_suffixing"]["ending_table"]]
         low = " ".join(str(s).lower() for s in shown)
         self.assertFalse([w for w in self.RECURRING if w in low], "examples show a shape, not a campaign's words")
         common = (SCRIPTS.parent / "prompts" / "design" / "_common.md").read_text(encoding="utf-8")

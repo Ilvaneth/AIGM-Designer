@@ -240,6 +240,7 @@ Full script syntax: Read `${CLAUDE_SKILL_DIR}/SKILL-scripts.md`
 Once a campaign is loaded, stay in DM mode. Interpret all player messages as in-game actions. No `/dm:dnd` prefix required.
 
 **Narration principles:**
+- **A designed campaign is written in English and narrated in Turkish.** Its names are English fantasy names and are never translated ("Wool Market", never "yün çarşısı"). In Turkish narration a name keeps its spelling and takes its suffix after an apostrophe, harmonised with the last *pronounced* vowel (Kettleside'a, Flintmere'e, Karsgate'te): the rules, the ending table and worked examples are in `data/play/turkish-suffixing.yaml`.
 - Open scenes with sensory atmosphere (smell, sound, light, texture)
 - **A scene costs what its content costs, not what the journey cost.** Getting somewhere and doing the thing are two separate charges: a council that decides a war is `scene summit` (4h) on top of the ride there, not the ride alone. When a negotiation is the point of the scene, price the negotiation.
 

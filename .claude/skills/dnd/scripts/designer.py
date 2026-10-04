@@ -622,7 +622,9 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         data = dm.load(campaign)
         data["foundation"] = R.foundation        # public and stamped: the identity builds on it, never changes it
         dm.save(campaign, data, f"designer.py preroll --phase {phase} (foundation)")
-        print(f"designer: foundation — {R.foundation['sentence_tr']}")
+        print("designer: foundation")
+        for line in R.foundation["rendering"]:
+            print(f"  {line['label']}: {line['text']}")
         print(f"designer: escalation — {R.foundation['escalation']['steps']} step(s)")
     if R.identity is not None:
         import design_identity as di
@@ -680,20 +682,20 @@ def roll_blank_dials(seed: str, given: dict) -> tuple[dict, list[dict]]:
 
 def p0_card(campaign: str, manifest: dict, records: list[dict]) -> Path:
     d = manifest["dials"]
-    lines = [f"# Faz 0 — kadranlar ({campaign})", "",
-             f"- **Ölçek:** {d['scale']} · **Ton:** {d['tone']} · **Büyü:** {d['magic']} · **Çağ:** {d['era']} · **Tehlike:** {d['danger']}",
-             f"- **Parti:** {d['party_size']} kişi, seviye {d['start_level']} → bant {d['level_band'][0]}-{d['level_band'][1]}",
-             f"- **İçerik karışımı:** {', '.join(d['content_mix'])}",
-             f"- **Tohum:** `{manifest['seed']['master']}`",
-             f"- **Dilekler:** olsun: {', '.join(d['wishes']['must']) or '—'}; olmasın: {', '.join(d['wishes']['must_not']) or '—'}", ""]
+    lines = [f"# Phase 0 — the dials ({campaign})", "",
+             f"- **Scale:** {d['scale']} · **Tone:** {d['tone']} · **Magic:** {d['magic']} · **Era:** {d['era']} · **Danger:** {d['danger']}",
+             f"- **Party:** {d['party_size']} characters, level {d['start_level']} → band {d['level_band'][0]}-{d['level_band'][1]}",
+             f"- **Content mix:** {', '.join(d['content_mix'])}",
+             f"- **Seed:** `{manifest['seed']['master']}`",
+             f"- **Wishes:** must: {', '.join(d['wishes']['must']) or '—'}; must not: {', '.join(d['wishes']['must_not']) or '—'}", ""]
     if records:
-        lines.append("## Zarlar (boş kadranlar)")
+        lines.append("## Rolls (blank dials)")
         for r in records:
             lines.append(f"- `{r['label']}` {r['notation']} → {r['raw']} = **{r['row_id']}**")
         lines.append("")
-    lines.append("## Ark iskeleti")
+    lines.append("## The arc skeleton")
     for ch in manifest["arc_skeleton"]:
-        lines.append(f"- {ch['chapter']} — perde {ch['act']}, seviye {ch['level_band'][0]}-{ch['level_band'][1]}")
+        lines.append(f"- {ch['chapter']} — act {ch['act']}, levels {ch['level_band'][0]}-{ch['level_band'][1]}")
     path = design_dir(campaign) / CARD_DIR / "P0.card.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
@@ -721,7 +723,7 @@ def new(a) -> int:
     card = p0_card(name, data, records)
     arm(name, "birth", a.session_id)
     for r in records:
-        print(f"  zar: {r['label']} {r['notation']} → {r['raw']} = {r['row_id']}")
+        print(f"  roll: {r['label']} {r['notation']} → {r['raw']} = {r['row_id']}")
     print(f"designer: {name} initialised (seed {seed}, auto_approve {data['_meta']['auto_approve']}); guard armed for birth")
     print(f"designer: P0 card {card}")
     if data["_meta"]["auto_approve"]:
@@ -1229,9 +1231,9 @@ def phase_card(campaign: str, phase: str) -> int:
         data = dm.load(campaign)
         ph = data["phases"][phase]
         roster = ph.get("roster") or []
-        lines = [f"# {phase} — faz kartı ({campaign})", "", f"- **Durum:** {ph['status']} · **Deneme:** {ph.get('attempt')}",
-                 f"- **Varlıklar:** {len(roster)} (" + ", ".join(sorted(roster)) + ")",
-                 f"- **Doğrulayıcı:** {ph.get('validator') or '—'}", ""]
+        lines = [f"# {phase} — phase card ({campaign})", "", f"- **Status:** {ph['status']} · **Attempt:** {ph.get('attempt')}",
+                 f"- **Entities:** {len(roster)} (" + ", ".join(sorted(roster)) + ")",
+                 f"- **Validator:** {ph.get('validator') or '—'}", ""]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     data = dm.load(campaign)

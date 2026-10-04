@@ -111,9 +111,9 @@ class Birth2(unittest.TestCase):
         self.assertEqual(crit["verdicts"], ["fix"], "the skeleton's fix is not a phase verdict")
         self.c.run("design_approval.py", "card", "--phase", "P6", check=True)
         text = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("faz eleştirmeni fix", text)
-        self.assertIn("dilek eleştirmeni pass", text)
-        self.assertIn("iskelet fix", text)
+        self.assertIn("phase critic fix", text)
+        self.assertIn("wishes critic pass", text)
+        self.assertIn("skeleton fix", text)
         self.assertIn("rubric_p6_only_here → site_sunken_pier (fix, twin_rooms)", text)
 
     def test_majors_get_two_critics_at_high_effort_and_the_files_are_relative_and_unique(self):
@@ -213,7 +213,7 @@ class Resume(unittest.TestCase):
         rows = [l for l in text.splitlines() if l.startswith("| ")]
         self.assertFalse([r for r in rows if r.startswith(("| chapter_", "| beat_", "| node_", "| socket_"))], "arc rows are never printed")
         self.assertIn("chapter ×", text)
-        self.assertIn("oyuncuya kapalı", text)
+        self.assertIn("closed to the player", text)
         names_comment = next(l for l in text.splitlines() if l.startswith("<!-- names:"))
         self.assertNotIn("beat_", names_comment)
 
@@ -223,10 +223,10 @@ class Resume(unittest.TestCase):
         self.c.run("designer.py", "phase", "P8", "merge", check=True)
         self.c.run("design_approval.py", "card", "--phase", "P8", check=True)
         text = self.c.path("design/_approval/P8.card.md").read_text(encoding="utf-8")
-        self.assertIn("## Belgeler", text)
+        self.assertIn("## Documents", text)
         self.assertIn("`primer_polity_reedmarch` — merged", text)
         self.assertIn("words 640", text)
-        self.assertIn("oyuncu primer'ı: `design/player-primer.md` (", text)
+        self.assertIn("the player primer: `design/player-primer.md` (", text)
         self.assertNotIn("(bu faz henüz varlık üretmedi)", text)
 
     def test_r6_critics_that_never_passed_are_loud_on_the_card(self):
@@ -236,7 +236,7 @@ class Resume(unittest.TestCase):
                       critique={"phase_loops": 1, "verdicts": ["fix"], "entity_loops_total": 2, "records": records, "skeleton_verdicts": ["fix", "fix"]})
         self.c.run("design_approval.py", "card", "--phase", "P6", check=True)
         text = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("⚠ **Eleştirmen geçmedi:** site_sunken_pier, faz eleştirmeni, iskelet", text)
+        self.assertIn("⚠ **A critic did not pass:** site_sunken_pier, phase critic, skeleton", text)
 
     def test_r5_seed_batches_write_their_own_file(self):
         rendered = self.c.run("design_prompts.py", "render", "P7.seeds", "--id", "seedbatch_1", "--attempt", "1", check=True).stdout

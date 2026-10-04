@@ -23,165 +23,132 @@ rows:
     label: "Legacy vs freedom"
     poles: [legacy, freedom]
     families: [old_new, kin]
-    tr: {poles: ["miras", "özgürlük"]}
   - id: tension_order_mercy
     label: "Order vs mercy"
     poles: [order, mercy]
     families: [strong_weak, hidden_hand]
-    tr: {poles: ["düzen", "merhamet"]}
   - id: tension_knowledge_sanity
     label: "Knowledge vs sanity"
     poles: [knowledge, sanity]
     families: [open_close]
-    tr: {poles: ["bilgi", "akıl sağlığı"]}
   - id: tension_faith_proof
     label: "Faith vs proof"
     poles: [faith, proof]
     families: [old_new, open_close]
-    tr: {poles: ["inanç", "kanıt"]}
   - id: tension_power_self
     label: "Power vs self"
     poles: [power, self]
     families: [strong_weak, race, hidden_hand]
-    tr: {poles: ["güç", "benlik"]}
   - id: tension_memory_salvation
     label: "Memory vs salvation"
     poles: [memory, salvation]
     families: [old_new, kin]
-    tr: {poles: ["hatırlamak", "kurtulmak"]}
   - id: tension_loyalty_truth
     label: "Loyalty vs truth"
     poles: [loyalty, truth]
     families: [kin, hidden_hand]
-    tr: {poles: ["sadakat", "gerçek"]}
   - id: tension_progress_cost
     label: "Progress vs cost"
     poles: [progress, cost]
     families: [old_new, open_close]
-    tr: {poles: ["ilerleme", "bedeli"]}
   - id: tension_survival_honour
     label: "Survival vs honour"
     poles: [survival, honour]
     families: [two_hands, strong_weak]
-    tr: {poles: ["hayatta kalmak", "onur"]}
   - id: tension_justice_peace
     label: "Justice vs peace"
     poles: [justice, peace]
     families: [strong_weak, kin, two_hands]
-    tr: {poles: ["adalet", "barış"]}
   - id: tension_belonging_becoming
     label: "Belonging vs becoming"
     poles: [belonging, becoming]
     families: [old_new, nonhuman]
-    tr: {poles: ["ait olmak", "dönüşmek"]}
   - id: tension_duty_desire
     label: "Duty vs desire"
     poles: [duty, desire]
     families: [race, kin]
-    tr: {poles: ["görev", "arzu"]}
   - id: tension_nature_dominion
     label: "Nature vs dominion"
     poles: [nature, dominion]
     families: [two_hands, nonhuman]
-    tr: {poles: ["doğa", "egemenlik"]}
   - id: tension_secrecy_openness
     label: "Secrecy vs openness"
     poles: [secrecy, openness]
     families: [open_close, hidden_hand]
-    tr: {poles: ["gizlilik", "açıklık"]}
   - id: tension_vengeance_release
     label: "Vengeance vs release"
     poles: [vengeance, release]
     families: [strong_weak, kin]
-    tr: {poles: ["intikam", "bırakmak"]}
   - id: tension_purity_mixture
     label: "Purity vs mixture"
     poles: [purity, mixture]
     families: [old_new, nonhuman]
-    tr: {poles: ["saflık", "karışım"]}
   - id: tension_permanence_change
     label: "Permanence vs change"
     poles: [permanence, change]
     families: [old_new]
-    tr: {poles: ["kalıcılık", "değişim"]}
   - id: tension_one_many
     label: "The one vs the many"
     poles: [the_one, the_many]
     families: [two_hands, strong_weak, hidden_hand]
-    tr: {poles: ["bir kişi", "çoğunluk"]}
   - id: tension_ambition_contentment
     label: "Ambition vs contentment"
     poles: [ambition, contentment]
     families: [race, two_hands]
-    tr: {poles: ["hırs", "kanaat"]}
   - id: tension_hospitality_suspicion
     label: "Hospitality vs suspicion"
     poles: [hospitality, suspicion]
     families: [old_new, nonhuman]
-    tr: {poles: ["misafirlik", "kuşku"]}
   - id: tension_sacrifice_worth
     label: "Sacrifice vs worth"
     poles: [sacrifice, worth]
     families: [strong_weak, race]
-    tr: {poles: ["fedakârlık", "değer"]}
   - id: tension_law_conscience
     label: "Law vs conscience"
     poles: [law, conscience]
     families: [strong_weak]
-    tr: {poles: ["yasa", "vicdan"]}
   - id: tension_inheritance_merit
     label: "Inheritance vs merit"
     poles: [inheritance, merit]
     families: [two_hands, race]
-    tr: {poles: ["doğuştan hak", "emekle hak"]}
     conflicts_with: [break_rule_by_lottery]
   - id: tension_mastery_wonder
     label: "Mastery vs wonder"
     poles: [mastery, wonder]
     families: [open_close, nonhuman]
-    tr: {poles: ["ustalık", "hayret"]}
   - id: tension_home_horizon
     label: "Home vs horizon"
     poles: [home, horizon]
     families: [old_new, open_close]
-    tr: {poles: ["yurt", "ufuk"]}
   - id: tension_forgiveness_accountability
     label: "Forgiveness vs accountability"
     poles: [forgiveness, accountability]
     families: [old_new, kin]
-    tr: {poles: ["affetmek", "hesap sormak"]}
   - id: tension_flesh_spirit
     label: "Flesh vs spirit"
     poles: [flesh, spirit]
     families: [open_close, nonhuman]
-    tr: {poles: ["beden", "ruh"]}
   - id: tension_ending_continuation
     label: "Ending vs continuation"
     poles: [ending, continuation]
     families: [old_new, open_close]
-    tr: {poles: ["son", "devam"]}
   - id: tension_security_freedom
     label: "Security vs freedom"
     poles: [security, freedom]
     families: [strong_weak, open_close, hidden_hand]
-    tr: {poles: ["güvenlik", "özgürlük"]}
   - id: tension_hope_truth
     label: "Hope vs truth"
     poles: [hope, truth]
     families: [open_close, hidden_hand]
-    tr: {poles: ["umut", "gerçek"]}
   - id: tension_blood_chosen_family
     label: "Blood vs chosen family"
     poles: [blood, chosen_family]
     families: [kin, nonhuman]
-    tr: {poles: ["kan bağı", "seçilmiş aile"]}
   - id: tension_owning_sharing
     label: "Owning vs sharing"
     poles: [owning, sharing]
     families: [two_hands, race]
-    tr: {poles: ["sahip olmak", "paylaşmak"]}
   - id: tension_winning_being_right
     label: "Winning vs being right"
     poles: [winning, being_right]
     families: [race, hidden_hand, two_hands]
-    tr: {poles: ["kazanmak", "haklı olmak"]}

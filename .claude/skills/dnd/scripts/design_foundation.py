@@ -21,8 +21,8 @@ docs/p1-foundation-rows.md §1-6 and §18; the owner's rulings on items 3-5 of t
 7. the escalation: the tiers of play the level band touches.
 
 `build(records)` turns the records into the foundation (public, stamped in design.json), with the merge rules (one
-crater; the planar rift is the two worlds' crossing point), the start (a destroyed heart moves it) and the Turkish
-foundation sentence from five templates. The sentence adds no suffix to any fragment.
+crater; the planar rift is the two worlds' crossing point), the start (a destroyed heart moves it) and the English
+rendering: a labelled list built from the rows' English fields (build item 13a: a campaign is written in English).
 """
 
 from __future__ import annotations
@@ -371,60 +371,57 @@ def landmarks(spine_id: str, ruin_id: str) -> list[str]:
     return out
 
 
-def _cap(text: str) -> str:
-    if not text:
-        return text
-    first = {"i": "İ", "ı": "I"}.get(text[0], text[0].upper())
-    return first + text[1:]
-
-
 def _role_phrase(contest: dict, key: str) -> str:
-    return contest["roles"][key]["tr"]
+    return contest["roles"][key]["text"]
 
 
 def target_phrase(out: dict) -> str:
     spine = rows_by_id("spine")[out["spine"]]
     piece = PIECE_OF_TARGET[out["target"]]
     if piece == "lifeline":
-        return rows_by_id("lifeline")[out["lifeline"]]["tr"]["name"]
+        return rows_by_id("lifeline")[out["lifeline"]]["text"]["name"]
     if piece == "remnant":
-        return rows_by_id("ruin_source")[out["ruin"]]["tr"]["remnant"]
+        return rows_by_id("ruin_source")[out["ruin"]]["text"]["remnant"]
     if piece == "key_place":
-        return spine["tr"]["key_place"]
+        return spine["text"]["key_place"]
     if piece == "heart":
-        return spine["tr"]["heart"]
+        return spine["text"]["heart"]
     if piece == "role":
         return _role_phrase(rows_by_id("contest")[out["contests"][0]["id"]], out["target_role"])
-    return rows_by_id("palette")["land_thin_place"]["tr"]["name"]
+    return rows_by_id("palette")["land_thin_place"]["text"]["name"]
 
 
-def sentence(out: dict) -> str:
-    """The five templates of item 25, step 1 #7; the fragments are joined by separate words, never suffixed."""
+def rendering(out: dict) -> list[dict]:
+    """The foundation in English, for the owner's eyes and the writer's: a labelled list built from the rows' own
+    English fields (build item 13a; the Turkish five-template sentence is gone). No sentence is assembled: every
+    line is `label: the rows' fragments`, and every rolled piece is named."""
     spine = rows_by_id("spine")[out["spine"]]
+    palette = rows_by_id("palette")
     ruin = rows_by_id("ruin_source")[out["ruin"]]
     life = rows_by_id("lifeline")[out["lifeline"]]
-    contest = rows_by_id("contest")[out["contests"][0]["id"]]
+    contests = rows_by_id("contest")
     act = rows_by_id("action")[out["action"]]
     time = rows_by_id("time")[out["time"]]
-    st = spine["tr"]
-    if st.get("ends"):
-        s1 = f"Dünya {st['name']}: kalbi {st['heart']}, bir ucunda {st['ends'][0]}, öbür ucunda {st['ends'][1]}."
-    else:
-        s1 = f"Dünya {st['name']}: kalbi {st['heart']}, uçlarında {st['ends_both']}."
-    s2 = f"Çok önce {ruin['tr']['what']}; geride {ruin['tr']['remnant']} kaldı."
-    s3 = f"Bugün halk {life['tr']['name']} ile yaşıyor."
-    roles = out["contests"][0]["roles"]
-    s4 = f"{_cap(_role_phrase(contest, 'a'))} ile {_role_phrase(contest, 'b')} arasında eski bir gerilim var; üçüncüsü {_role_phrase(contest, 'third')}"
-    s4 += f"; dördüncüsü {_role_phrase(contest, 'fourth')}." if "fourth" in roles else "."
-    lead = time["tr"]["lead"]
-    form = act["forms"][time["tense"]]
-    head = _cap(lead) + (" " if lead.endswith(":") else ", ")
-    scars = ", ".join(rows_by_id("scar")[s]["tr"]["name"] for s in out["scars"])
-    winner = _role_phrase(contest, out["winner"])
+    st = spine["text"]
+    ends = " / ".join(st["ends"]) if st.get("ends") else st["ends_both"]
+    lines = [
+        {"label": "The world's shape", "text": f"{st['name']}; heart: {st['heart']}; ends: {ends}; key place: {st['key_place']}"},
+        {"label": "The lands", "text": ", ".join(palette[k]["text"]["name"] for k in list(out["palette"]) + list(out["palette_extra"]))},
+        {"label": "The past", "text": f"{ruin['text']['what']}; remnant: {ruin['text']['remnant']}"},
+        {"label": "The value", "text": life["text"]["name"]},
+    ]
+    for n, c in enumerate(out["contests"]):
+        row = contests[c["id"]]
+        sides = f"{_role_phrase(row, 'a')} against {_role_phrase(row, 'b')}"
+        rest = "".join(f"; {key}: {_role_phrase(row, key)}" for key in ("third", "fourth") if key in c["roles"])
+        lines.append({"label": "The conflict" if n == 0 else "The second conflict", "text": f"{row['text']['name']}: {sides}{rest}"})
+    main = contests[out["contests"][0]["id"]]
+    scars = ", ".join(rows_by_id("scar")[s]["text"]["name"] for s in out["scars"])
     # a break still coming has left no wound yet: its scars are its first signs
-    scar_word = "İlk izleri" if time["id"] == "time_coming" else ("Yaraları" if len(out["scars"]) > 1 else "Yarası")
-    s5 = f"{head}{target_phrase(out)} {form}. {scar_word}: {scars}. Bundan güçlü çıkan: {winner}."
-    return " ".join([s1, s2, s3, s4, s5])
+    scar_word = "first signs" if time["id"] == "time_coming" else ("scars" if len(out["scars"]) > 1 else "scar")
+    lines.append({"label": "The break", "text": f"{time['text']['name']}: {target_phrase(out)} {act['forms'][time['tense']]}; "
+                                                f"{scar_word}: {scars}; stronger for it: {_role_phrase(main, out['winner'])}"})
+    return lines
 
 
 def build(out: dict, level_band) -> dict:
@@ -445,5 +442,5 @@ def build(out: dict, level_band) -> dict:
         "merges": merges(spine_id, ruin_id),
         "landmarks": landmarks(spine_id, ruin_id),
         "start": out["start"],
-        "sentence_tr": sentence(out),
+        "rendering": rendering(out),
     }

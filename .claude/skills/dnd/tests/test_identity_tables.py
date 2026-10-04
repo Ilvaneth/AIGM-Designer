@@ -43,12 +43,12 @@ def per_heading(sub):
 def weights(r):
     """{row id: factor} over the row's `weight_by` lines that name rows."""
     return {x: w["x"] for w in r.get("weight_by") or [] for x in (w["when"].get("any_of") or [])}
-ATTRACTORS = re.compile(r"\b(mum|balmumu|lamba|fener|kandil|çan(?!ak)|sessiz|defter|geçiş ücreti|haraç|mahkeme|yargı|gelgit|"
-                        r"tuz(?!ak)|ölülerin hak|ölü)", re.IGNORECASE)
+ATTRACTORS = re.compile(r"(candle|wax|lamp|lantern|bell|hush|silent|silence|ledger|toll|tribute|court|judgement|tide|"
+                        r"salt|the dead|rights of the dead)s?", re.IGNORECASE)
 
 
 def phrases(r):
-    tr = r.get("tr") or {}
+    tr = r.get("text") or {}
     return [v for k, v in tr.items() if not k.endswith("_note") and isinstance(v, str)]
 
 
@@ -87,7 +87,7 @@ class People(unittest.TestCase):
         for r in traits:
             want = "visible" if r["family"] in ("body", "creature_bond", "place_movement") else "behaving"
             self.assertEqual(r["kind"], want, r["id"])
-            self.assertTrue(r["tr"]["at_table"])
+            self.assertTrue(r["text"]["at_table"])
             self.assertFalse(r.get("conflicts_with"), f"{r['id']}: no trait carries a clash")
         self.assertTrue(dt.roll_header(S + "people_trait")["avoid_used"])
 
@@ -156,8 +156,8 @@ class Institution(unittest.TestCase):
             "form_cloister": "religious scholarly", "form_travelling": "guild trade criminal resistance",
             "form_society": "criminal scholarly resistance", "form_chartered": "trade",
             "form_confederacy": "state martial resistance", "form_militia": "martial resistance"}.items()})
-        self.assertEqual((forms["form_chartered"]["tr"]["name"], forms["form_chartered"]["form_word"]),
-                         ("imtiyazlı şirket", "Trading Company"), "a written charter clashed with a land without writing")
+        self.assertEqual((forms["form_chartered"]["label"], forms["form_chartered"]["form_word"]),
+                         ("Privileged company", "Trading Company"), "a written charter clashed with a land without writing")
 
     def test_practices_thirty_three(self):
         pr = {r["id"]: r for r in rows("institution_practice")}
@@ -165,7 +165,7 @@ class Institution(unittest.TestCase):
         self.assertEqual(Counter(r["family"] for r in pr.values()),
                          {"guard": 3, "carry": 5, "make": 3, "know": 4, "care": 4, "war": 5, "trade": 5, "faith": 4})
         for r in pr.values():
-            self.assertTrue(r["tr"]["gives"], r["id"])
+            self.assertTrue(r["text"]["gives"], r["id"])
         self.assertTrue(dt.roll_header(S + "institution_practice")["avoid_used"])
         self.assertEqual({k: r["conflicts_with"] for k, r in pr.items() if r.get("conflicts_with")},
                          {"practice_hold_the_remnant_gate": ["contest_sealed_remnant"],
@@ -192,14 +192,14 @@ class Institution(unittest.TestCase):
         for rid, others in want.items():
             self.assertEqual(weights(pr[rid]), {o: 3 for o in others}, rid)
         self.assertEqual({k for k, r in pr.items() if r.get("weight_by")}, set(want))
-        self.assertEqual(pr["practice_champions"]["tr"]["name"], "anlaşmazlıkları teke tek dövüşle çözen şampiyonlardır")
-        self.assertEqual(pr["practice_monopoly"]["tr"]["name"], "bir malın tekelini tutarlar")
+        self.assertEqual(pr["practice_champions"]["text"]["name"], "they are champions who settle disputes by single combat")
+        self.assertEqual(pr["practice_monopoly"]["text"]["name"], "they hold the monopoly of one good")
         self.assertNotIn("royal", pr["practice_monopoly"]["label"].lower())
-        self.assertEqual(pr["practice_study_the_remnant"]["tr"]["gives"], "kazı görevleri, eski bilginin çözülmesi")
-        self.assertEqual(pr["practice_keep_the_old_works"]["tr"]["name"], "kalıntının yapılarını onarıp çalışır tutarlar")
-        self.assertEqual(pr["practice_couriers"]["tr"]["gives"], "haberler, yetiştirilmesi gereken acil işler")
-        self.assertEqual((pr["practice_dragon_hunters"]["tr"]["name"], pr["practice_dragon_hunters"]["tr"]["gives"]),
-                         ("ejderha avlarlar", "büyük av, ejderhanın hazinesi"))
+        self.assertEqual(pr["practice_study_the_remnant"]["text"]["gives"], "excavation tasks, the deciphering of old knowledge")
+        self.assertEqual(pr["practice_keep_the_old_works"]["text"]["name"], "they repair the remnant's works and keep them running")
+        self.assertEqual(pr["practice_couriers"]["text"]["gives"], "news, urgent errands that must arrive in time")
+        self.assertEqual((pr["practice_dragon_hunters"]["text"]["name"], pr["practice_dragon_hunters"]["text"]["gives"]),
+                         ("they hunt dragons", "the great hunt, the dragon's hoard"))
 
     def test_signs_and_powers(self):
         signs = {r["id"]: r for r in rows("institution_sign")}
@@ -217,7 +217,7 @@ class Institution(unittest.TestCase):
             "power_love": "resistance religious guild", "power_sanctity": "religious", "power_treasure": "trade guild state criminal",
             "power_creature_bond": "martial religious scholarly resistance", "power_privilege": "guild trade scholarly martial",
             "power_fear": "criminal martial state"}.items()})
-        self.assertEqual(powers["power_privilege"]["tr"]["name"], "imtiyaz: yönetimden alınmış bir hak")
+        self.assertEqual(powers["power_privilege"]["text"]["name"], "privilege: a right granted by the rulers")
 
 
 class Phenomenon(unittest.TestCase):
@@ -365,7 +365,7 @@ class Rules(unittest.TestCase):
                 with self.subTest(row=r["id"]):
                     self.assertNotIn("(", t)
                     self.assertIsNone(ATTRACTORS.search(t), t)
-                    self.assertNotRegex(t, r"büyü(yü)? sat|büyüye sahip", "no row owns or sells magic")
+                    self.assertNotRegex(t, r"(?i)sells? magic|owns? magic|magic for sale", "no row owns or sells magic")
 
     def test_the_usage_the_owner_set(self):
         """A trait, a practice, a rule another campaign drew is not drawn again; the rest may repeat."""

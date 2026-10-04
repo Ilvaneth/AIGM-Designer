@@ -60,7 +60,6 @@ tables:
       - id: tone_bright
         value: bright
         label: Bright
-        tr: {name: "Aydınlık"}
         weight: 2
         effects:
           ending_bias: [win]
@@ -73,7 +72,6 @@ tables:
       - id: tone_shadowed
         value: shadowed
         label: Shadowed
-        tr: {name: "Gölgeli"}
         weight: 3
         effects:
           ending_bias: [pyrrhic]
@@ -85,7 +83,6 @@ tables:
       - id: tone_dark
         value: dark
         label: Dark
-        tr: {name: "Karanlık"}
         weight: 1
         effects:
           ending_bias: [pyrrhic, loss]

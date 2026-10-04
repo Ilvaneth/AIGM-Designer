@@ -19,22 +19,22 @@ tables:
     hooks_common:
       - {phase: P3, must: "the people's settlements and region carry both traits"}
     rows:
-      - {id: "lineage_human", label: "Human", playable: true, weight: 4, tr: {"name": "insan"}}
-      - {id: "lineage_dwarf", label: "Dwarf", playable: true, weight_by: [{when: {any_of: ["land_underground", "land_mountain"]}, x: 3}], tr: {"name": "cüce"}}
-      - {id: "lineage_elf", label: "Elf", playable: true, weight_by: [{when: {any_of: ["land_forest"]}, x: 3}], tr: {"name": "elf"}}
-      - {id: "lineage_halfling", label: "Halfling", playable: true, weight_by: [{when: {any_of: ["land_plain", "land_river"]}, x: 3}], tr: {"name": "buçukluk"}}
-      - {id: "lineage_gnome", label: "Gnome", playable: true, weight_by: [{when: {any_of: ["land_underground"]}, x: 3}, {when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery"]}, x: 3}], tr: {"name": "gnom"}}
-      - {id: "lineage_half_elf", label: "Half-elf", playable: true, tr: {"name": "yarı-elf"}}
-      - {id: "lineage_half_orc", label: "Half-orc", playable: true, tr: {"name": "yarı-ork"}}
-      - {id: "lineage_dragonborn", label: "Dragonborn", playable: true, weight_by: [{when: {any_of: ["life_dragon_protection", "contest_humans_dragon", "ruin_age_of_dragons", "ruin_giants_and_dragons", "break_dragons_rule"]}, x: 3}], tr: {"name": "ejderdoğan"}}
-      - {id: "lineage_tiefling", label: "Tiefling", playable: true, weight_by: [{when: {any_of: ["land_thin_place", "ruin_planar_rift", "ruin_planar_invasion", "ruin_celestial_war", "spine_two_worlds"]}, x: 3}], tr: {"name": "tiefling"}}
-      - {id: "lineage_giant_kin", label: "Giant-kin", playable: false, weight_by: [{when: {any_of: ["land_mountain"]}, x: 3}, {when: {any_of: ["life_giant_peace", "contest_humans_giants", "ruin_giants_land", "ruin_giants_and_dragons"]}, x: 3}], note: "unplayable: a PC may have grown up among them", tr: {"name": "dev soyu"}}
-      - {id: "lineage_merfolk", label: "Sea folk (merfolk)", playable: false, weight_by: [{when: {any_of: ["land_coast"]}, x: 3}, {when: {any_of: ["life_sea_folk_hunt", "contest_land_sea_folk", "spine_above_below_sea", "ruin_great_flood"]}, x: 3}], note: "unplayable: a PC may have grown up among them", tr: {"name": "deniz halkı"}}
-      - {id: "lineage_lizardfolk", label: "Lizardfolk", playable: false, weight_by: [{when: {any_of: ["land_marsh"]}, x: 3}], note: "unplayable: a PC may have grown up among them", tr: {"name": "kertenkele halkı"}}
-      - {id: "lineage_centaur", label: "Centaurs", playable: false, weight_by: [{when: {any_of: ["land_steppe"]}, x: 3}], note: "unplayable: a PC may have grown up among them", tr: {"name": "kentaurlar"}}
-      - {id: "lineage_goblinoid", label: "Goblin or kobold people", playable: false, note: "unplayable: a PC may have grown up among them", weight_by: [{when: {any_of: ["break_monsters_have_treaties"]}, x: 3}], tr: {"name": "goblin ya da kobold halkı", "name_note": "kötü değil, bir kültür"}}
-      - {id: "lineage_fey", label: "Fey folk", playable: false, note: "unplayable: a PC may have grown up among them", weight_by: [{when: {any_of: ["life_fey_bargain", "contest_humans_fey", "ruin_elven_withdrawal"]}, x: 3}], tr: {"name": "fey halkı"}}
-      - {id: "lineage_mixed", label: "A mixed people", playable: true, tr: {"name": "karışık halk", "name_note": "kanla değil kültürle tanımlanan"}}
+      - {id: "lineage_human", label: "Human", playable: true, weight: 4}
+      - {id: "lineage_dwarf", label: "Dwarf", playable: true, weight_by: [{when: {any_of: ["land_underground", "land_mountain"]}, x: 3}]}
+      - {id: "lineage_elf", label: "Elf", playable: true, weight_by: [{when: {any_of: ["land_forest"]}, x: 3}]}
+      - {id: "lineage_halfling", label: "Halfling", playable: true, weight_by: [{when: {any_of: ["land_plain", "land_river"]}, x: 3}]}
+      - {id: "lineage_gnome", label: "Gnome", playable: true, weight_by: [{when: {any_of: ["land_underground"]}, x: 3}, {when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery"]}, x: 3}]}
+      - {id: "lineage_half_elf", label: "Half-elf", playable: true}
+      - {id: "lineage_half_orc", label: "Half-orc", playable: true}
+      - {id: "lineage_dragonborn", label: "Dragonborn", playable: true, weight_by: [{when: {any_of: ["life_dragon_protection", "contest_humans_dragon", "ruin_age_of_dragons", "ruin_giants_and_dragons", "break_dragons_rule"]}, x: 3}]}
+      - {id: "lineage_tiefling", label: "Tiefling", playable: true, weight_by: [{when: {any_of: ["land_thin_place", "ruin_planar_rift", "ruin_planar_invasion", "ruin_celestial_war", "spine_two_worlds"]}, x: 3}]}
+      - {id: "lineage_giant_kin", label: "Giant-kin", playable: false, weight_by: [{when: {any_of: ["land_mountain"]}, x: 3}, {when: {any_of: ["life_giant_peace", "contest_humans_giants", "ruin_giants_land", "ruin_giants_and_dragons"]}, x: 3}], note: "unplayable: a PC may have grown up among them"}
+      - {id: "lineage_merfolk", label: "Sea folk (merfolk)", playable: false, weight_by: [{when: {any_of: ["land_coast"]}, x: 3}, {when: {any_of: ["life_sea_folk_hunt", "contest_land_sea_folk", "spine_above_below_sea", "ruin_great_flood"]}, x: 3}], note: "unplayable: a PC may have grown up among them", text: {"name": "sea folk"}}
+      - {id: "lineage_lizardfolk", label: "Lizardfolk", playable: false, weight_by: [{when: {any_of: ["land_marsh"]}, x: 3}], note: "unplayable: a PC may have grown up among them"}
+      - {id: "lineage_centaur", label: "Centaurs", playable: false, weight_by: [{when: {any_of: ["land_steppe"]}, x: 3}], note: "unplayable: a PC may have grown up among them"}
+      - {id: "lineage_goblinoid", label: "Goblin or kobold people", playable: false, note: "unplayable: a PC may have grown up among them", weight_by: [{when: {any_of: ["break_monsters_have_treaties"]}, x: 3}], text: {"name": "goblin or kobold people", "name_note": "not evil, a culture"}}
+      - {id: "lineage_fey", label: "Fey folk", playable: false, note: "unplayable: a PC may have grown up among them", weight_by: [{when: {any_of: ["life_fey_bargain", "contest_humans_fey", "ruin_elven_withdrawal"]}, x: 3}]}
+      - {id: "lineage_mixed", label: "A mixed people", playable: true, text: {"name": "mixed people", "name_note": "defined by culture, not by blood"}}
 
   people_trait:
     roll: {"avoid_used": true}
@@ -46,45 +46,45 @@ tables:
       - {phase: P8, must: "the primer's culture section is this people's"}
       - {phase: P9, must: "a PC may belong to this people or have grown up among them"}
     rows:
-      - {id: "trait_skin_of_the_land", label: "Skin takes the land's colour", family: "body", kind: "visible", tr: {"name": "tenleri yaşadıkları toprağın rengini alır", "at_table": "bir yabancıyı ilk bakışta tanırlar"}}
-      - {id: "trait_horns_with_age", label: "Horns grow with age", family: "body", kind: "visible", tr: {"name": "yaşlandıkça boynuzları uzar; boynuz yaşın ve saygının ölçüsüdür", "at_table": "boynuzu kırılan biri onurunu kaybetmiştir"}}
-      - {id: "trait_no_shadows", label: "No shadows since the break", family: "body", kind: "visible", after_the_break: true, tr: {"name": "kırılmadan beri gölgeleri yok", "at_table": "gölgesi olan her yabancı dikkat çeker"}, requires: {none_of: ["time_coming"]}}
-      - {id: "trait_breathe_water", label: "They breathe under water", family: "body", kind: "visible", requires: {any_of: ["land_river", "land_lake", "land_coast", "land_island", "land_marsh"]}, tr: {"name": "suyun altında bir süre nefes alabilirler", "at_table": "sualtı yolları yalnızca onlarla açılır"}}
-      - {id: "trait_cold_proof", label: "They do not feel the cold", family: "body", kind: "visible", requires: {any_of: ["land_cold", "land_mountain", "land_highland"]}, tr: {"name": "soğuğu hissetmezler", "at_table": "kışın dağ yolları yalnızca onlarla geçilir"}}
-      - {id: "trait_lifeline_marks", label: "Their bodies bear the lifeline's mark", family: "body", kind: "visible", tr: {"name": "bedenleri can damarının izini taşır", "at_table": "kimin nereden geldiği bedeninden okunur", "name_note": "bakırcıların yeşil tırnakları, ipekçilerin ipek gibi saçları"}}
-      - {id: "trait_old_at_forty", label: "Old at forty", family: "body", kind: "visible", tr: {"name": "kırk yılda ihtiyarlarlar, her şeyi erken ve hızlı yaparlar", "at_table": "liderleri gençtir, sabırsızdır"}}
-      - {id: "trait_never_own_table", label: "Nobody eats at their own table", family: "custom", kind: "behaving", tr: {"name": "kimse kendi sofrasında yemez; her akşam başka bir evde yenir", "at_table": "her akşam yeni bir ev, yeni bir söylenti"}}
-      - {id: "trait_haggling_art", label: "Haggling is an art", family: "custom", kind: "behaving", tr: {"name": "pazarlık bir sanattır; fiyatı ilk söyleyen utanır", "at_table": "alışveriş bir sosyal karşılaşmaya döner"}}
-      - {id: "trait_decided_by_race", label: "Decisions by a race", family: "custom", kind: "behaving", tr: {"name": "önemli kararlar bir yarışla verilir", "at_table": "parti bir tarafın yarışçısı olabilir", "name_note": "at, kürek, tırmanış"}}
-      - {id: "trait_hidden_faces", label: "Faces hidden from strangers", family: "custom", kind: "behaving", tr: {"name": "yabancıya yüzlerini göstermezler; maske ya da peçe takarlar", "at_table": "kimin kim olduğu belirsizdir"}}
-      - {id: "trait_history_danced", label: "History is danced", family: "custom", kind: "behaving", weight_by: [{when: {any_of: ["break_no_writing"]}, x: 2}], tr: {"name": "tarihlerini şarkıyla değil dansla anlatırlar", "at_table": "bir ipucu bir dansın içinde saklıdır"}}
-      - {id: "trait_raised_with_a_beast", label: "Every child grows up with a young beast", family: "creature_bond", kind: "visible", tr: {"name": "her çocuk bir yavru hayvanla birlikte büyür; ikisi aynı gün yetişkin sayılır", "at_table": "hayvanına zarar veren kişiye zarar vermiş olur"}}
-      - {id: "trait_giant_birds", label: "They fly with giant birds", family: "creature_bond", kind: "visible", requires: {dial: {magic: ["medium", "high"]}}, weight_by: [{when: {any_of: ["life_griffon_eyries"]}, x: 3}], tr: {"name": "dev kuşlarla birlikte uçarlar", "at_table": "haberleri ve baskınları havadan gelir", "name_note": "büyü medium ve üstü"}}
-      - {id: "trait_bee_council", label: "They speak with bees", family: "creature_bond", kind: "visible", weight_by: [{when: {any_of: ["life_bee_forests"]}, x: 3}], tr: {"name": "arılarla konuşurlar; kovana bir meclis gibi danışılır", "at_table": "kovanın kararı köyün kararıdır"}}
-      - {id: "trait_giant_insect_homes", label: "Giant insects are their homes and ships", family: "creature_bond", kind: "visible", requires: [{dial: {magic: ["medium", "high"]}}, {any_of: ["land_underground"]}, {dial: {era: ["underground"]}}], weight_by: [{when: {any_of: ["life_giant_insects"]}, x: 3}], tr: {"name": "dev böcekler hem evleri hem gemileridir", "at_table": "köy yer değiştirebilir", "name_note": "büyü medium ve üstü ya da yeraltı"}}
-      - {id: "trait_hunt_with_wolves", label: "They hunt with wolves", family: "creature_bond", kind: "visible", requires: {any_of: ["land_forest", "land_highland", "land_cold", "land_steppe"]}, weight_by: [{when: {any_of: ["life_deer_migration"]}, x: 2}], tr: {"name": "kurtlarla birlikte avlanırlar; av kurtla paylaşılmazsa uğursuzluk gelir", "at_table": "ormanda kurtlar onların gözüdür"}}
-      - {id: "trait_dolphin_fishers", label: "They fish with dolphins", family: "creature_bond", kind: "visible", requires: {any_of: ["land_coast", "land_island"]}, weight_by: [{when: {any_of: ["life_fish_run", "life_oyster_beds"]}, x: 2}], tr: {"name": "balıkçılığı yunuslarla birlikte yapar, işaretle anlaşırlar", "at_table": "denizde yalnız değillerdir"}}
-      - {id: "trait_break_is_punishment", label: "The break is a punishment", family: "belief", kind: "behaving", tr: {"name": "kırılmayı bir ceza sayar, kefaretini ödemeye çalışırlar", "at_table": "kırılmaya karşı çıkana düşman olurlar"}}
-      - {id: "trait_break_is_a_gift", label: "The break is a gift", family: "belief", kind: "behaving", tr: {"name": "kırılmayı bir armağan sayar, onu büyütmek isterler", "at_table": "kırılmayı durdurmak isteyenlere direnirler"}}
-      - {id: "trait_world_turns_back", label: "The world will turn back", family: "belief", kind: "behaving", tr: {"name": "dünyanın bir gün tersine dönüp başa geleceğine inanırlar", "at_table": "her şeye bir döngünün işareti olarak bakarlar"}}
-      - {id: "trait_mountain_spirits", label: "Every mountain has a spirit", family: "belief", kind: "behaving", requires: {any_of: ["land_mountain", "land_highland", "land_volcanic"]}, weight_by: [{when: {any_of: ["life_copper_mine", "life_iron_coal", "life_quarry", "life_gemstones"]}, x: 2}], tr: {"name": "her dağın bir ruhu olduğuna, dağa sormadan kazılmayacağına inanırlar", "at_table": "maden açmak bir pazarlık gerektirir"}}
-      - {id: "trait_worship_the_lifeline", label: "They worship the lifeline", family: "belief", kind: "behaving", tr: {"name": "tanrılara değil can damarına taparlar", "at_table": "damara dokunmak kutsala dokunmaktır", "name_note": "nehre, sürüye, madene"}}
-      - {id: "trait_sacred_animal", label: "They hold one animal sacred", family: "belief", kind: "behaving", hooks: [{phase: P5, must: "the sacred animal is never the one the lifeline kills"}], tr: {"name": "bir hayvanı kutsal sayarlar; onu öldüren sürülür", "at_table": "kutsal hayvana dokunan bütün halkı karşısında bulur"}}
-      - {id: "trait_rulers_by_contest", label: "Rulers chosen by contests of craft", family: "social_order", kind: "behaving", tr: {"name": "yöneticilerini ustalık yarışmalarıyla seçerler", "at_table": "lider olmak için bir şey yapmak gerekir"}}
-      - {id: "trait_decisions_in_the_open", label: "Every decision in the open air", family: "social_order", kind: "behaving", tr: {"name": "her karar herkesin önünde, açık havada alınır; kapalı kapı ardında karar yoktur", "at_table": "gizli anlaşmalar büyük bir suçtur"}}
-      - {id: "trait_the_young_rule", label: "The youngest rule", family: "social_order", kind: "behaving", tr: {"name": "en gençler yönetir; kırkını geçen danışman olur", "at_table": "liderler cesur ama deneyimsizdir"}}
-      - {id: "trait_workshops_not_families", label: "Workshops instead of families", family: "social_order", kind: "behaving", weight_by: [{when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery"]}, x: 2}], tr: {"name": "aileler yerine atölyeler vardır: çocuk öğrendiği zanaatın adını taşır", "at_table": "birinin ustası onun ailesidir"}}
-      - {id: "trait_two_chiefs", label: "Two chiefs, for peace and for war", family: "social_order", kind: "behaving", tr: {"name": "biri barışta, biri savaşta olmak üzere iki başkanları vardır", "at_table": "savaş ilan edilince yönetim el değiştirir"}}
-      - {id: "trait_remember_before", label: "The only people who remember the world before", family: "break_relation", kind: "behaving", after_the_break: true, tr: {"name": "kırılmadan önceki dünyayı hatırlayan tek halktır", "at_table": "geçmişin bilgisi onlardadır"}, requires: {none_of: ["time_coming"]}}
-      - {id: "trait_first_changed", label: "The first generation the break changed", family: "break_relation", kind: "behaving", after_the_break: true, weight_by: [{when: {any_of: ["scar_new_people"]}, x: 3}], tr: {"name": "kırılmanın dönüştürdüğü ilk kuşaktır", "at_table": "eski halk onlardan korkar", "name_note": "yeni halk yarasıyla birleşir"}, requires: {none_of: ["time_coming"]}}
-      - {id: "trait_carry_the_wound", label: "They carry the break's wound in their bodies", family: "break_relation", kind: "behaving", after_the_break: true, tr: {"name": "kırılmanın yarasını bedenlerinde taşırlar", "at_table": "yaraya en yakın onlardır"}, requires: {none_of: ["time_coming"]}}
-      - {id: "trait_fled_the_break", label: "They fled the break", family: "break_relation", kind: "behaving", after_the_break: true, weight_by: [{when: {any_of: ["scar_people_displaced"]}, x: 3}], tr: {"name": "kırılmadan kaçıp buraya gelmişlerdir; eski yurtları yaranın içinde kaldı", "at_table": "geri dönmek isterler"}, requires: {none_of: ["time_coming"]}}
-      - {id: "trait_foresaw_the_break", label: "They foresaw the break", family: "break_relation", kind: "behaving", tr: {"name": "kırılmayı önceden sezip hazırlanmışlardır; şimdi en güçlü onlardır", "at_table": "neyi nasıl bildikleri merak edilir"}}
-      - {id: "trait_won_by_the_break", label: "The break's winners", family: "break_relation", kind: "behaving", after_the_break: true, tr: {"name": "kırılmadan kazananlardır, bu yüzden sevilmezler", "at_table": "kıskançlığın hedefidirler"}, requires: {none_of: ["time_coming"]}}
-      - {id: "trait_break_site_sacred", label: "The break's site is sacred to them", family: "break_relation", kind: "behaving", after_the_break: true, tr: {"name": "kırılmanın olduğu yeri kutsal sayar, kimseyi yaklaştırmazlar", "at_table": "kırılmanın kalbine giden yol onlardan geçer"}, requires: {none_of: ["time_coming"]}}
-      - {id: "trait_live_vertically", label: "They live vertically", family: "place_movement", kind: "visible", requires: {any_of: ["land_mountain", "land_highland", "land_volcanic"]}, tr: {"name": "dikey yaşarlar; evleri yamaçlara ve uçurumlara oyulmuştur", "at_table": "köyleri tırmanılarak gezilir"}}
-      - {id: "trait_underground_by_day", label: "Underground by day, on the surface by night", family: "place_movement", kind: "visible", requires: {any_of: ["land_underground"]}, weight_by: [{when: {any_of: ["break_night_is_safe"]}, x: 2}], tr: {"name": "gündüz yeraltında, gece yüzeyde yaşarlar", "at_table": "gündüz köyleri boş görünür"}}
-      - {id: "trait_live_in_treetops", label: "They live in the treetops", family: "place_movement", kind: "visible", requires: {any_of: ["land_forest"]}, tr: {"name": "ağaçların tepesinde yaşarlar; yere inmek bir törendir", "at_table": "yerde karşılaşılırlarsa bir sebebi vardır"}}
+      - {id: "trait_skin_of_the_land", label: "Skin takes the land's colour", family: "body", kind: "visible", text: {"name": "their skin takes the colour of the land they live on", "at_table": "they know a stranger at first glance"}}
+      - {id: "trait_horns_with_age", label: "Horns grow with age", family: "body", kind: "visible", text: {"name": "their horns grow longer as they age; the horn is the measure of age and of respect", "at_table": "one whose horn is broken has lost their honour"}}
+      - {id: "trait_no_shadows", label: "No shadows since the break", family: "body", kind: "visible", after_the_break: true, text: {"name": "they have had no shadows since the break", "at_table": "every stranger who has a shadow draws attention"}, requires: {none_of: ["time_coming"]}}
+      - {id: "trait_breathe_water", label: "They breathe under water", family: "body", kind: "visible", requires: {any_of: ["land_river", "land_lake", "land_coast", "land_island", "land_marsh"]}, text: {"name": "they can breathe under water for a while", "at_table": "the underwater ways open only with them"}}
+      - {id: "trait_cold_proof", label: "They do not feel the cold", family: "body", kind: "visible", requires: {any_of: ["land_cold", "land_mountain", "land_highland"]}, text: {"name": "they do not feel the cold", "at_table": "in winter the mountain roads are crossed only with them"}}
+      - {id: "trait_lifeline_marks", label: "Their bodies bear the lifeline's mark", family: "body", kind: "visible", text: {"name": "their bodies bear the mark of the lifeline", "at_table": "where someone comes from is read from their body", "name_note": "the coppersmiths' green nails, the silk workers' silk-like hair"}}
+      - {id: "trait_old_at_forty", label: "Old at forty", family: "body", kind: "visible", text: {"name": "they grow old in forty years, and do everything early and fast", "at_table": "their leaders are young and impatient"}}
+      - {id: "trait_never_own_table", label: "Nobody eats at their own table", family: "custom", kind: "behaving", text: {"name": "nobody eats at their own table; every evening the meal is eaten in another house", "at_table": "every evening a new house, a new rumour"}}
+      - {id: "trait_haggling_art", label: "Haggling is an art", family: "custom", kind: "behaving", text: {"name": "haggling is an art; whoever names the price first is shamed", "at_table": "shopping turns into a social encounter"}}
+      - {id: "trait_decided_by_race", label: "Decisions by a race", family: "custom", kind: "behaving", text: {"name": "important decisions are made by a race", "at_table": "the party can be one side's racer", "name_note": "horse, oar, climb"}}
+      - {id: "trait_hidden_faces", label: "Faces hidden from strangers", family: "custom", kind: "behaving", text: {"name": "they do not show their faces to strangers; they wear a mask or a veil", "at_table": "who is who is uncertain"}}
+      - {id: "trait_history_danced", label: "History is danced", family: "custom", kind: "behaving", weight_by: [{when: {any_of: ["break_no_writing"]}, x: 2}], text: {"name": "they tell their history by dance, not by song", "at_table": "a clue is hidden inside a dance"}}
+      - {id: "trait_raised_with_a_beast", label: "Every child grows up with a young beast", family: "creature_bond", kind: "visible", text: {"name": "every child grows up together with a young animal; the two are counted adult on the same day", "at_table": "whoever harms someone's animal has harmed that person"}}
+      - {id: "trait_giant_birds", label: "They fly with giant birds", family: "creature_bond", kind: "visible", requires: {dial: {magic: ["medium", "high"]}}, weight_by: [{when: {any_of: ["life_griffon_eyries"]}, x: 3}], text: {"name": "they fly with giant birds", "at_table": "their news and their raids come from the air", "name_note": "magic medium and above"}}
+      - {id: "trait_bee_council", label: "They speak with bees", family: "creature_bond", kind: "visible", weight_by: [{when: {any_of: ["life_bee_forests"]}, x: 3}], text: {"name": "they speak with bees; the hive is consulted like a council", "at_table": "the hive's decision is the village's decision"}}
+      - {id: "trait_giant_insect_homes", label: "Giant insects are their homes and ships", family: "creature_bond", kind: "visible", requires: [{dial: {magic: ["medium", "high"]}}, {any_of: ["land_underground"]}, {dial: {era: ["underground"]}}], weight_by: [{when: {any_of: ["life_giant_insects"]}, x: 3}], text: {"name": "giant insects are both their homes and their ships", "at_table": "the village can change its place", "name_note": "magic medium and above, or underground"}}
+      - {id: "trait_hunt_with_wolves", label: "They hunt with wolves", family: "creature_bond", kind: "visible", requires: {any_of: ["land_forest", "land_highland", "land_cold", "land_steppe"]}, weight_by: [{when: {any_of: ["life_deer_migration"]}, x: 2}], text: {"name": "they hunt together with wolves; if the kill is not shared with the wolf, ill luck comes", "at_table": "in the forest the wolves are their eyes"}}
+      - {id: "trait_dolphin_fishers", label: "They fish with dolphins", family: "creature_bond", kind: "visible", requires: {any_of: ["land_coast", "land_island"]}, weight_by: [{when: {any_of: ["life_fish_run", "life_oyster_beds"]}, x: 2}], text: {"name": "they fish together with dolphins and communicate with them by signs", "at_table": "at sea they are not alone"}}
+      - {id: "trait_break_is_punishment", label: "The break is a punishment", family: "belief", kind: "behaving", text: {"name": "they hold the break to be a punishment and try to atone for it", "at_table": "they become enemies of whoever opposes the break"}}
+      - {id: "trait_break_is_a_gift", label: "The break is a gift", family: "belief", kind: "behaving", text: {"name": "they hold the break to be a gift and want to make it grow", "at_table": "they resist those who want to stop the break"}}
+      - {id: "trait_world_turns_back", label: "The world will turn back", family: "belief", kind: "behaving", text: {"name": "they believe the world will one day turn back and return to its beginning", "at_table": "they look at everything as the sign of a cycle"}}
+      - {id: "trait_mountain_spirits", label: "Every mountain has a spirit", family: "belief", kind: "behaving", requires: {any_of: ["land_mountain", "land_highland", "land_volcanic"]}, weight_by: [{when: {any_of: ["life_copper_mine", "life_iron_coal", "life_quarry", "life_gemstones"]}, x: 2}], text: {"name": "they believe every mountain has a spirit and that no one may dig without asking the mountain", "at_table": "opening a mine requires a bargain"}}
+      - {id: "trait_worship_the_lifeline", label: "They worship the lifeline", family: "belief", kind: "behaving", text: {"name": "they worship the lifeline, not the gods", "at_table": "to touch the lifeline is to touch the sacred", "name_note": "the river, the herd, the mine"}}
+      - {id: "trait_sacred_animal", label: "They hold one animal sacred", family: "belief", kind: "behaving", hooks: [{phase: P5, must: "the sacred animal is never the one the lifeline kills"}], text: {"name": "they hold one animal sacred; whoever kills it is cast out", "at_table": "whoever touches the sacred animal finds the whole people against them"}}
+      - {id: "trait_rulers_by_contest", label: "Rulers chosen by contests of craft", family: "social_order", kind: "behaving", text: {"name": "they choose their rulers by contests of craft", "at_table": "to become a leader one has to do something"}}
+      - {id: "trait_decisions_in_the_open", label: "Every decision in the open air", family: "social_order", kind: "behaving", text: {"name": "every decision is made in front of everyone, in the open air; there is no decision behind closed doors", "at_table": "secret agreements are a grave crime"}}
+      - {id: "trait_the_young_rule", label: "The youngest rule", family: "social_order", kind: "behaving", text: {"name": "the youngest rule; whoever passes forty becomes an adviser", "at_table": "the leaders are brave but inexperienced"}}
+      - {id: "trait_workshops_not_families", label: "Workshops instead of families", family: "social_order", kind: "behaving", weight_by: [{when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery"]}, x: 2}], text: {"name": "there are workshops instead of families: a child bears the name of the craft it learned", "at_table": "a person's master is their family"}}
+      - {id: "trait_two_chiefs", label: "Two chiefs, for peace and for war", family: "social_order", kind: "behaving", text: {"name": "they have two chiefs, one in peace and one in war", "at_table": "when war is declared, rule changes hands"}}
+      - {id: "trait_remember_before", label: "The only people who remember the world before", family: "break_relation", kind: "behaving", after_the_break: true, text: {"name": "they are the only people who remember the world before the break", "at_table": "the knowledge of the past is with them"}, requires: {none_of: ["time_coming"]}}
+      - {id: "trait_first_changed", label: "The first generation the break changed", family: "break_relation", kind: "behaving", after_the_break: true, weight_by: [{when: {any_of: ["scar_new_people"]}, x: 3}], text: {"name": "they are the first generation the break transformed", "at_table": "the old people fear them", "name_note": "merges with the 'new people' wound"}, requires: {none_of: ["time_coming"]}}
+      - {id: "trait_carry_the_wound", label: "They carry the break's wound in their bodies", family: "break_relation", kind: "behaving", after_the_break: true, text: {"name": "they carry the wound of the break in their bodies", "at_table": "they are the ones closest to the wound"}, requires: {none_of: ["time_coming"]}}
+      - {id: "trait_fled_the_break", label: "They fled the break", family: "break_relation", kind: "behaving", after_the_break: true, weight_by: [{when: {any_of: ["scar_people_displaced"]}, x: 3}], text: {"name": "they fled the break and came here; their old homeland was left inside the wound", "at_table": "they want to go back"}, requires: {none_of: ["time_coming"]}}
+      - {id: "trait_foresaw_the_break", label: "They foresaw the break", family: "break_relation", kind: "behaving", text: {"name": "they sensed the break beforehand and prepared; now they are the strongest", "at_table": "people wonder what they knew and how"}}
+      - {id: "trait_won_by_the_break", label: "The break's winners", family: "break_relation", kind: "behaving", after_the_break: true, text: {"name": "they are the ones who gained from the break, and so they are not loved", "at_table": "they are the target of envy"}, requires: {none_of: ["time_coming"]}}
+      - {id: "trait_break_site_sacred", label: "The break's site is sacred to them", family: "break_relation", kind: "behaving", after_the_break: true, text: {"name": "they hold the place where the break happened sacred and let no one near it", "at_table": "the road to the heart of the break passes through them"}, requires: {none_of: ["time_coming"]}}
+      - {id: "trait_live_vertically", label: "They live vertically", family: "place_movement", kind: "visible", requires: {any_of: ["land_mountain", "land_highland", "land_volcanic"]}, text: {"name": "they live vertically; their homes are carved into slopes and cliffs", "at_table": "their villages are walked by climbing"}}
+      - {id: "trait_underground_by_day", label: "Underground by day, on the surface by night", family: "place_movement", kind: "visible", requires: {any_of: ["land_underground"]}, weight_by: [{when: {any_of: ["break_night_is_safe"]}, x: 2}], text: {"name": "they live underground by day and on the surface by night", "at_table": "by day their villages look empty"}}
+      - {id: "trait_live_in_treetops", label: "They live in the treetops", family: "place_movement", kind: "visible", requires: {any_of: ["land_forest"]}, text: {"name": "they live in the treetops; coming down to the ground is a ceremony", "at_table": "if they are met on the ground, there is a reason for it"}}
 
   people_attitude:
     roll: {"avoid_used": false}
@@ -92,12 +92,12 @@ tables:
     hooks_common:
       - {phase: P5, must: "the people's NPCs meet strangers this way"}
     rows:
-      - {id: "stranger_hospitable", label: "Hospitable and curious", tr: {"name": "misafirperver ve meraklı", "name_note": "kapılar açık, sorular çok"}}
-      - {id: "stranger_merchant", label: "Merchants", weight_by: [{when: {any_of: ["trait_haggling_art"]}, x: 2}], tr: {"name": "tüccar", "name_note": "yabancı bir alışveriş fırsatıdır"}}
-      - {id: "stranger_wary", label: "Wary", tr: {"name": "temkinli", "name_note": "yabancı önce sınanır"}}
-      - {id: "stranger_closed", label: "Closed", tr: {"name": "kapalı", "name_note": "yalnızca tek bir kapıdan konuşulur"}}
-      - {id: "stranger_hostile_for_cause", label: "Hostile, for a reason", tr: {"name": "nedenli bir düşmanlık", "name_note": "geçmişte yaşanmış bir şey yüzünden"}}
-      - {id: "stranger_divided", label: "Divided", tr: {"name": "ikiye bölünmüş", "name_note": "yarısı açık, yarısı kapalı"}}
+      - {id: "stranger_hospitable", label: "Hospitable and curious", text: {"name": "hospitable and curious", "name_note": "doors open, questions many"}}
+      - {id: "stranger_merchant", label: "Merchants", weight_by: [{when: {any_of: ["trait_haggling_art"]}, x: 2}], text: {"name": "merchant", "name_note": "a stranger is a chance to trade"}}
+      - {id: "stranger_wary", label: "Wary", text: {"name": "wary", "name_note": "a stranger is tested first"}}
+      - {id: "stranger_closed", label: "Closed", text: {"name": "closed", "name_note": "one speaks through a single door only"}}
+      - {id: "stranger_hostile_for_cause", label: "Hostile, for a reason", text: {"name": "a hostility with a reason", "name_note": "because of something that happened in the past"}}
+      - {id: "stranger_divided", label: "Divided", text: {"name": "split in two", "name_note": "half open, half closed"}}
 
   institution_form:
     roll: {"avoid_used": false}
@@ -105,20 +105,20 @@ tables:
     hooks_common:
       - {phase: P4, must: "the role's faction is the institution: its power sets its assets, its practice its services"}
     rows:
-      - {id: "form_order", label: "Order", form_word: "Order", hints: ["religious", "martial", "scholarly"], tr: {"name": "tarikat"}}
-      - {id: "form_guild", label: "Guild", form_word: "Guild", hints: ["guild", "trade"], tr: {"name": "lonca"}}
-      - {id: "form_company", label: "Company", form_word: "Company", hints: ["martial"], tr: {"name": "bölük"}}
-      - {id: "form_house", label: "House", form_word: "House", hints: ["state", "guild", "trade", "criminal"], tr: {"name": "hane", "name_note": "bir aile"}}
-      - {id: "form_council", label: "Council", form_word: "Council", hints: ["state"], tr: {"name": "meclis"}}
-      - {id: "form_league", label: "League", form_word: "League", hints: ["trade", "guild", "criminal"], tr: {"name": "birlik"}}
-      - {id: "form_school", label: "School", form_word: "School", hints: ["scholarly"], tr: {"name": "okul"}}
-      - {id: "form_brotherhood", label: "Brotherhood", form_word: "Brotherhood", hints: ["resistance", "religious", "guild", "martial", "criminal"], tr: {"name": "kardeşlik"}}
-      - {id: "form_cloister", label: "Cloister", form_word: "Cloister", hints: ["religious", "scholarly"], tr: {"name": "manastır"}}
-      - {id: "form_travelling", label: "Travelling company", form_word: "Travelling company", hints: ["guild", "trade", "criminal", "resistance"], tr: {"name": "gezgin topluluk", "name_note": "kervan, filo, tiyatro"}}
-      - {id: "form_society", label: "Society", form_word: "Society", hints: ["criminal", "scholarly", "resistance"], tr: {"name": "gizli cemiyet", "name_note": "kötü değil"}}
-      - {id: "form_chartered", label: "Privileged company", form_word: "Trading Company", hints: ["trade"], tr: {"name": "imtiyazlı şirket"}}
-      - {id: "form_confederacy", label: "Confederacy", form_word: "Confederacy", hints: ["state", "martial", "resistance"], tr: {"name": "boylar birliği"}}
-      - {id: "form_militia", label: "Militia", form_word: "Militia", hints: ["martial", "resistance"], tr: {"name": "milis"}}
+      - {id: "form_order", label: "Order", form_word: "Order", hints: ["religious", "martial", "scholarly"]}
+      - {id: "form_guild", label: "Guild", form_word: "Guild", hints: ["guild", "trade"]}
+      - {id: "form_company", label: "Company", form_word: "Company", hints: ["martial"]}
+      - {id: "form_house", label: "House", form_word: "House", hints: ["state", "guild", "trade", "criminal"], text: {"name": "house", "name_note": "a family"}}
+      - {id: "form_council", label: "Council", form_word: "Council", hints: ["state"]}
+      - {id: "form_league", label: "League", form_word: "League", hints: ["trade", "guild", "criminal"]}
+      - {id: "form_school", label: "School", form_word: "School", hints: ["scholarly"]}
+      - {id: "form_brotherhood", label: "Brotherhood", form_word: "Brotherhood", hints: ["resistance", "religious", "guild", "martial", "criminal"]}
+      - {id: "form_cloister", label: "Cloister", form_word: "Cloister", hints: ["religious", "scholarly"]}
+      - {id: "form_travelling", label: "Travelling company", form_word: "Travelling company", hints: ["guild", "trade", "criminal", "resistance"], text: {"name": "travelling company", "name_note": "caravan, fleet, theatre"}}
+      - {id: "form_society", label: "Society", form_word: "Society", hints: ["criminal", "scholarly", "resistance"], text: {"name": "secret society", "name_note": "not evil"}}
+      - {id: "form_chartered", label: "Privileged company", form_word: "Trading Company", hints: ["trade"]}
+      - {id: "form_confederacy", label: "Confederacy", form_word: "Confederacy", hints: ["state", "martial", "resistance"], text: {"name": "confederacy of clans"}}
+      - {id: "form_militia", label: "Militia", form_word: "Militia", hints: ["martial", "resistance"]}
 
   institution_practice:
     roll: {"avoid_used": true}
@@ -130,39 +130,39 @@ tables:
       - {phase: P7, must: "quests grow from its practice"}
       - {phase: P8, must: "what natives know of it"}
     rows:
-      - {id: "practice_hold_the_key_place", label: "They hold the spine's key place", family: "guard", hints: ["state", "martial", "guild"], tr: {"name": "omurganın kilit yerini tutarlar", "gives": "geçiş izni, oradaki görevler ve düşmanlar", "name_note": "geçit, köprü, boğaz"}}
-      - {id: "practice_keep_the_one_road", label: "Keepers of the one road", family: "guard", hints: ["state", "martial", "guild"], tr: {"name": "tek yolun bekçileridir", "gives": "kervan korumaları, yol haritaları"}}
-      - {id: "practice_hold_the_remnant_gate", label: "They hold the remnant's gate", family: "guard", hints: ["religious", "martial", "scholarly"], conflicts_with: ["contest_sealed_remnant"], weight_by: [{when: {any_of: ["break_ruins_forbidden"]}, x: 3}], tr: {"name": "kalıntının kapısını tutarlar", "gives": "kalıntıya girmenin tek yasal yolu"}}
-      - {id: "practice_players", label: "A travelling theatre that carries the news", family: "carry", hints: ["guild", "resistance", "criminal"], form: "form_travelling", tr: {"name": "haberi ve tarihi oyunlarla taşıyan gezgin tiyatrodur", "gives": "söylentiler, kılık değiştirme, halkın nabzı"}}
-      - {id: "practice_pilots", label: "Pilots of dangerous waters and roads", family: "carry", hints: ["guild", "trade", "criminal"], weight_by: [{when: {any_of: ["break_maps_are_illegal"]}, x: 3}], tr: {"name": "tehlikeli sularda ve yollarda kılavuzluk ederler", "gives": "rehberler, yol bilgisi"}}
-      - {id: "practice_couriers", label: "Couriers on giant birds or swift horses", family: "carry", hints: ["state", "guild", "trade"], tr: {"name": "dev kuşlarla ya da hızlı atlarla haber taşırlar", "gives": "haberler, yetiştirilmesi gereken acil işler"}}
-      - {id: "practice_caravan_masters", label: "They organise the caravans", family: "carry", hints: ["trade", "guild"], tr: {"name": "kervanları düzenlerler", "gives": "kervan işleri, uzak ülkelerle bağlantı"}}
-      - {id: "practice_ferrymen", label: "Raftsmen and boatmen of the river or strait", family: "carry", requires: {any_of: ["land_river", "land_coast", "land_lake"]}, hints: ["guild", "trade", "criminal"], tr: {"name": "nehrin ya da boğazın salcıları ve kayıkçılarıdır", "gives": "geçiş, kaçakçılık söylentileri"}}
-      - {id: "practice_keep_the_old_works", label: "They keep the remnant's works running", family: "make", hints: ["guild", "scholarly", "state"], tr: {"name": "kalıntının yapılarını onarıp çalışır tutarlar", "gives": "kalıntılara giriş, eski bilgiler", "name_note": "sarnıçlar, yollar, kuleler"}}
-      - {id: "practice_golem_founders", label: "They cast golems and machines", family: "make", hints: ["guild", "scholarly", "martial"], tr: {"name": "golem ve makine dökerler", "gives": "koruyucu yapılar, bozulan makineler"}}
-      - {id: "practice_ship_and_bridge", label: "They build ships and bridges", family: "make", hints: ["guild", "trade"], tr: {"name": "gemi ve köprü yaparlar", "gives": "gemi, köprü, yapım sırasında sabotaj"}}
-      - {id: "practice_mapmakers", label: "They draw and keep maps", family: "know", hints: ["scholarly", "guild", "state", "criminal"], tr: {"name": "harita çizer ve saklarlar", "gives": "haritalar, yasak topraklar"}}
-      - {id: "practice_study_the_remnant", label: "They study the remnant", family: "know", hints: ["scholarly", "religious"], tr: {"name": "kalıntıyı incelerler", "gives": "kazı görevleri, eski bilginin çözülmesi"}}
-      - {id: "practice_seek_the_lost", label: "They seek what was lost", family: "know", weight_by: [{when: {any_of: ["scar_lost_knowledge"]}, x: 3}], hints: ["scholarly", "religious"], tr: {"name": "kaybolanı ararlar", "gives": "arayış görevleri", "name_note": "kayıp bir bilgi ya da zanaat"}}
-      - {id: "practice_keep_the_dying", label: "They keep what is dying", family: "know", hints: ["scholarly", "religious", "resistance"], tr: {"name": "ölmekte olanı saklarlar", "gives": "koruma ve toplama görevleri", "name_note": "tohumlar, türler, şarkılar"}}
-      - {id: "practice_healers", label: "They are healers", family: "care", hints: ["religious", "guild", "scholarly", "resistance"], tr: {"name": "şifacıdırlar", "gives": "iyileşme, salgın görevleri"}}
-      - {id: "practice_keep_the_granaries", label: "They keep the famine granaries", family: "care", hints: ["state", "religious", "guild"], tr: {"name": "kıtlıkta halkı besleyen ambarları tutarlar", "gives": "ekinin dağıtımı, kıtlığın siyaseti"}}
-      - {id: "practice_midwives", label: "Midwives who watch the births", family: "care", hints: ["religious", "guild"], tr: {"name": "ebedirler, doğumları gözetirler", "gives": "doğan çocukların işaretleri"}}
-      - {id: "practice_herd_healers", label: "They heal herds and mounts", family: "care", hints: ["guild", "religious"], tr: {"name": "sürüleri ve binekleri iyileştirirler", "gives": "sürü hastalığı görevleri"}}
-      - {id: "practice_monster_hunters", label: "Monster hunters", family: "war", hints: ["martial", "guild", "resistance"], tr: {"name": "canavar avcılarıdır", "gives": "av sözleşmeleri, canavar bilgisi"}}
-      - {id: "practice_border_riders", label: "Riders of the border and its forts", family: "war", hints: ["martial", "state"], weight_by: [{when: {any_of: ["break_border_forbidden"]}, x: 3}], tr: {"name": "sınırın ve kalelerin süvarileridir", "gives": "sınır görevleri"}}
-      - {id: "practice_champions", label: "Champions who settle disputes in single combat", family: "war", hints: ["martial", "state"], weight_by: [{when: {any_of: ["break_war_is_ritual"]}, x: 3}], tr: {"name": "anlaşmazlıkları teke tek dövüşle çözen şampiyonlardır", "gives": "düellolar; parti bir tarafın şampiyonu olabilir"}}
-      - {id: "practice_free_company", label: "A mercenary company", family: "war", hints: ["martial"], form: "form_company", tr: {"name": "paralı bir bölüktür", "gives": "iş, rakipler, bozulan sözleşmeler"}}
-      - {id: "practice_dragon_hunters", label: "They hunt dragons", family: "war", weight_by: [{when: {any_of: ["life_dragon_protection", "contest_humans_dragon", "ruin_age_of_dragons", "ruin_giants_and_dragons", "break_dragons_rule"]}, x: 3}], hints: ["martial"], tr: {"name": "ejderha avlarlar", "gives": "büyük av, ejderhanın hazinesi"}}
-      - {id: "practice_monopoly", label: "The monopoly of one good", family: "trade", hints: ["trade", "guild", "state"], tr: {"name": "bir malın tekelini tutarlar", "gives": "ticaret görevleri, tekelin düşmanları"}}
-      - {id: "practice_sell_the_remnant", label: "They sell what comes out of the remnant", family: "trade", hints: ["trade", "criminal", "scholarly"], weight_by: [{when: {any_of: ["break_ruins_forbidden"]}, x: 3}], tr: {"name": "kalıntıdan çıkan eşyaları satarlar", "gives": "hazine, sahte eserler"}}
-      - {id: "practice_sole_seller", label: "Sole sellers of the lifeline's yield", family: "trade", hints: ["trade", "guild"], tr: {"name": "can damarının ürününü tek elden satarlar", "gives": "pazar, kaçakçılar"}}
-      - {id: "practice_foreign_house", label: "A foreign merchant house", family: "trade", hints: ["trade"], form: "form_house", tr: {"name": "uzak ülkelerle takas yapan yabancı bir tüccar evidir", "gives": "yabancı mallar, casusluk"}}
-      - {id: "practice_smugglers_union", label: "A half-hidden smugglers' union", family: "trade", hints: ["criminal"], form: "form_society", tr: {"name": "yarı gizli bir kaçakçılar birliğidir", "gives": "kaçak yollar, yasa dışı işler"}}
-      - {id: "practice_keep_the_lifeline_rite", label: "The rite that keeps the lifeline alive", family: "faith", hints: ["religious"], tr: {"name": "can damarını ayakta tutan ayini yaparlar", "gives": "ayin bozulursa her şey bozulur", "name_note": "her bahar nehri yola getiren ayin gibi"}}
-      - {id: "practice_pilgrim_guides", label: "They lead the pilgrims", family: "faith", hints: ["religious", "trade"], weight_by: [{when: {any_of: ["life_pilgrim_road"]}, x: 3}], tr: {"name": "hacıları kutsal yere götürürler", "gives": "hac yolu görevleri"}}
-      - {id: "practice_guard_the_holy_place", label: "They guard the holy place", family: "faith", hints: ["religious", "martial"], conflicts_with: ["contest_one_shrine"], tr: {"name": "kutsal yeri korurlar", "gives": "kutsal yerin sırları"}}
-      - {id: "practice_worship_the_break", label: "They read the break and worship it", family: "faith", weight_by: [{when: {any_of: ["scar_new_belief"]}, x: 3}], hints: ["religious", "resistance"], tr: {"name": "kırılmayı yorumlayıp ona taparlar", "gives": "yeni inancın müritleri ve düşmanları"}}
+      - {id: "practice_hold_the_key_place", label: "They hold the spine's key place", family: "guard", hints: ["state", "martial", "guild"], text: {"name": "they hold the key place of the spine", "gives": "leave to pass, the tasks and the enemies there", "name_note": "pass, bridge, strait"}}
+      - {id: "practice_keep_the_one_road", label: "Keepers of the one road", family: "guard", hints: ["state", "martial", "guild"], text: {"name": "they are the keepers of the one road", "gives": "caravan escorts, road maps"}}
+      - {id: "practice_hold_the_remnant_gate", label: "They hold the remnant's gate", family: "guard", hints: ["religious", "martial", "scholarly"], conflicts_with: ["contest_sealed_remnant"], weight_by: [{when: {any_of: ["break_ruins_forbidden"]}, x: 3}], text: {"name": "they hold the gate of the remnant", "gives": "the only lawful way into the remnant"}}
+      - {id: "practice_players", label: "A travelling theatre that carries the news", family: "carry", hints: ["guild", "resistance", "criminal"], form: "form_travelling", text: {"name": "they are the travelling theatre that carries news and history in plays", "gives": "rumours, disguise, the pulse of the people"}}
+      - {id: "practice_pilots", label: "Pilots of dangerous waters and roads", family: "carry", hints: ["guild", "trade", "criminal"], weight_by: [{when: {any_of: ["break_maps_are_illegal"]}, x: 3}], text: {"name": "they act as pilots on dangerous waters and roads", "gives": "guides, knowledge of the way"}}
+      - {id: "practice_couriers", label: "Couriers on giant birds or swift horses", family: "carry", hints: ["state", "guild", "trade"], text: {"name": "they carry news with giant birds or swift horses", "gives": "news, urgent errands that must arrive in time"}}
+      - {id: "practice_caravan_masters", label: "They organise the caravans", family: "carry", hints: ["trade", "guild"], text: {"name": "they organise the caravans", "gives": "caravan work, connections with far lands"}}
+      - {id: "practice_ferrymen", label: "Raftsmen and boatmen of the river or strait", family: "carry", requires: {any_of: ["land_river", "land_coast", "land_lake"]}, hints: ["guild", "trade", "criminal"], text: {"name": "they are the raftsmen and boatmen of the river or the strait", "gives": "passage, rumours of smuggling"}}
+      - {id: "practice_keep_the_old_works", label: "They keep the remnant's works running", family: "make", hints: ["guild", "scholarly", "state"], text: {"name": "they repair the remnant's works and keep them running", "gives": "entry to the remnants, old knowledge", "name_note": "cisterns, roads, towers"}}
+      - {id: "practice_golem_founders", label: "They cast golems and machines", family: "make", hints: ["guild", "scholarly", "martial"], text: {"name": "they cast golems and machines", "gives": "guardian constructs, machines that break down"}}
+      - {id: "practice_ship_and_bridge", label: "They build ships and bridges", family: "make", hints: ["guild", "trade"], text: {"name": "they build ships and bridges", "gives": "a ship, a bridge, sabotage during the building"}}
+      - {id: "practice_mapmakers", label: "They draw and keep maps", family: "know", hints: ["scholarly", "guild", "state", "criminal"], text: {"name": "they draw and keep maps", "gives": "maps, forbidden lands"}}
+      - {id: "practice_study_the_remnant", label: "They study the remnant", family: "know", hints: ["scholarly", "religious"], text: {"name": "they study the remnant", "gives": "excavation tasks, the deciphering of old knowledge"}}
+      - {id: "practice_seek_the_lost", label: "They seek what was lost", family: "know", weight_by: [{when: {any_of: ["scar_lost_knowledge"]}, x: 3}], hints: ["scholarly", "religious"], text: {"name": "they seek what was lost", "gives": "search tasks", "name_note": "a lost piece of knowledge or a lost craft"}}
+      - {id: "practice_keep_the_dying", label: "They keep what is dying", family: "know", hints: ["scholarly", "religious", "resistance"], text: {"name": "they keep what is dying", "gives": "protection and collection tasks", "name_note": "seeds, species, songs"}}
+      - {id: "practice_healers", label: "They are healers", family: "care", hints: ["religious", "guild", "scholarly", "resistance"], text: {"name": "they are healers", "gives": "healing, plague tasks"}}
+      - {id: "practice_keep_the_granaries", label: "They keep the famine granaries", family: "care", hints: ["state", "religious", "guild"], text: {"name": "they hold the granaries that feed the people in famine", "gives": "the distribution of the crop, the politics of famine"}}
+      - {id: "practice_midwives", label: "Midwives who watch the births", family: "care", hints: ["religious", "guild"], text: {"name": "they are midwives, they watch over the births", "gives": "the marks of the children who are born"}}
+      - {id: "practice_herd_healers", label: "They heal herds and mounts", family: "care", hints: ["guild", "religious"], text: {"name": "they heal herds and mounts", "gives": "herd sickness tasks"}}
+      - {id: "practice_monster_hunters", label: "Monster hunters", family: "war", hints: ["martial", "guild", "resistance"], text: {"name": "they are monster hunters", "gives": "hunting contracts, monster lore"}}
+      - {id: "practice_border_riders", label: "Riders of the border and its forts", family: "war", hints: ["martial", "state"], weight_by: [{when: {any_of: ["break_border_forbidden"]}, x: 3}], text: {"name": "they are the riders of the border and of the forts", "gives": "border tasks"}}
+      - {id: "practice_champions", label: "Champions who settle disputes in single combat", family: "war", hints: ["martial", "state"], weight_by: [{when: {any_of: ["break_war_is_ritual"]}, x: 3}], text: {"name": "they are champions who settle disputes by single combat", "gives": "duels; the party can be one side's champion"}}
+      - {id: "practice_free_company", label: "A mercenary company", family: "war", hints: ["martial"], form: "form_company", text: {"name": "they are a mercenary company", "gives": "work, rivals, broken contracts"}}
+      - {id: "practice_dragon_hunters", label: "They hunt dragons", family: "war", weight_by: [{when: {any_of: ["life_dragon_protection", "contest_humans_dragon", "ruin_age_of_dragons", "ruin_giants_and_dragons", "break_dragons_rule"]}, x: 3}], hints: ["martial"], text: {"name": "they hunt dragons", "gives": "the great hunt, the dragon's hoard"}}
+      - {id: "practice_monopoly", label: "The monopoly of one good", family: "trade", hints: ["trade", "guild", "state"], text: {"name": "they hold the monopoly of one good", "gives": "trade tasks, the monopoly's enemies"}}
+      - {id: "practice_sell_the_remnant", label: "They sell what comes out of the remnant", family: "trade", hints: ["trade", "criminal", "scholarly"], weight_by: [{when: {any_of: ["break_ruins_forbidden"]}, x: 3}], text: {"name": "they sell the objects that come out of the remnant", "gives": "treasure, forged artefacts"}}
+      - {id: "practice_sole_seller", label: "Sole sellers of the lifeline's yield", family: "trade", hints: ["trade", "guild"], text: {"name": "they are the sole sellers of the lifeline's yield", "gives": "a market, smugglers"}}
+      - {id: "practice_foreign_house", label: "A foreign merchant house", family: "trade", hints: ["trade"], form: "form_house", text: {"name": "they are a foreign merchant house that barters with far lands", "gives": "foreign goods, espionage"}}
+      - {id: "practice_smugglers_union", label: "A half-hidden smugglers' union", family: "trade", hints: ["criminal"], form: "form_society", text: {"name": "they are a half-hidden smugglers' union", "gives": "smuggling routes, illegal work"}}
+      - {id: "practice_keep_the_lifeline_rite", label: "The rite that keeps the lifeline alive", family: "faith", hints: ["religious"], text: {"name": "they perform the rite that keeps the lifeline standing", "gives": "if the rite fails, everything fails", "name_note": "like the rite that brings the river to heel every spring"}}
+      - {id: "practice_pilgrim_guides", label: "They lead the pilgrims", family: "faith", hints: ["religious", "trade"], weight_by: [{when: {any_of: ["life_pilgrim_road"]}, x: 3}], text: {"name": "they take the pilgrims to the holy place", "gives": "pilgrim road tasks"}}
+      - {id: "practice_guard_the_holy_place", label: "They guard the holy place", family: "faith", hints: ["religious", "martial"], conflicts_with: ["contest_one_shrine"], text: {"name": "they guard the holy place", "gives": "the secrets of the holy place"}}
+      - {id: "practice_worship_the_break", label: "They read the break and worship it", family: "faith", weight_by: [{when: {any_of: ["scar_new_belief"]}, x: 3}], hints: ["religious", "resistance"], text: {"name": "they interpret the break and worship it", "gives": "the new faith's followers and enemies"}}
 
   institution_sign:
     roll: {"avoid_used": false}
@@ -170,19 +170,19 @@ tables:
     hooks_common:
       - {phase: P5, must: "its members show the sign"}
     rows:
-      - {id: "isign_painted_mark", label: "A painted mark on face or hands", tr: {"name": "yüzlerine ya da ellerine bir işaret boyarlar"}}
-      - {id: "isign_one_colour", label: "They always wear one colour", tr: {"name": "hep tek bir renk giyerler"}}
-      - {id: "isign_animal_mask", label: "An animal mask", tr: {"name": "bir hayvan maskesi takarlar"}}
-      - {id: "isign_tool_of_the_trade", label: "The tool of their trade, always carried", tr: {"name": "mesleklerinin aletini hep üstlerinde taşırlar", "name_note": "bir anahtar, bir çekiç, bir halat"}}
-      - {id: "isign_initiation_scar", label: "An initiation scar", tr: {"name": "giriş töreninden kalan bir yara izi taşırlar"}}
-      - {id: "isign_animal_companion", label: "An animal always at hand", tr: {"name": "yanlarında hep bir hayvan taşırlar", "name_note": "bir şahin, bir kertenkele"}}
-      - {id: "isign_travel_in_pairs", label: "They travel only in pairs", tr: {"name": "yalnızca ikişer ikişer yolculuk ederler"}}
-      - {id: "isign_never_leave", label: "Whoever joins never leaves", tr: {"name": "kurumlarına bir kez giren bir daha çıkamaz"}}
-      - {id: "isign_give_half_away", label: "They give half their gains away", tr: {"name": "kazançlarının yarısını halka dağıtırlar"}}
-      - {id: "isign_own_language", label: "They speak only their own language", requires: {dial: {scale: ["standard", "epic"]}}, tr: {"name": "yalnızca kendi dillerini konuşurlar, dışarıyla tercümanla anlaşırlar"}}
-      - {id: "isign_uncut_hair", label: "They never cut their hair", tr: {"name": "saçlarını hiç kesmezler"}}
-      - {id: "isign_one_secret_each", label: "Each member keeps one secret to death", tr: {"name": "her üye bir sır taşır ve ölene dek saklar"}}
-      - {id: "isign_yearly_gathering", label: "Once a year all gather at the heart", tr: {"name": "yılda bir kez bütün üyeler kalpte toplanır"}}
+      - {id: "isign_painted_mark", label: "A painted mark on face or hands", text: {"name": "they paint a mark on their faces or their hands"}}
+      - {id: "isign_one_colour", label: "They always wear one colour", text: {"name": "they always wear a single colour"}}
+      - {id: "isign_animal_mask", label: "An animal mask", text: {"name": "they wear an animal mask"}}
+      - {id: "isign_tool_of_the_trade", label: "The tool of their trade, always carried", text: {"name": "they always carry the tool of their trade on them", "name_note": "a key, a hammer, a rope"}}
+      - {id: "isign_initiation_scar", label: "An initiation scar", text: {"name": "they bear a scar left from the initiation rite"}}
+      - {id: "isign_animal_companion", label: "An animal always at hand", text: {"name": "they always carry an animal with them", "name_note": "a hawk, a lizard"}}
+      - {id: "isign_travel_in_pairs", label: "They travel only in pairs", text: {"name": "they travel only two by two"}}
+      - {id: "isign_never_leave", label: "Whoever joins never leaves", text: {"name": "whoever once enters their institution can never leave it"}}
+      - {id: "isign_give_half_away", label: "They give half their gains away", text: {"name": "they give half of their earnings away to the people"}}
+      - {id: "isign_own_language", label: "They speak only their own language", requires: {dial: {scale: ["standard", "epic"]}}, text: {"name": "they speak only their own language and deal with outsiders through an interpreter"}}
+      - {id: "isign_uncut_hair", label: "They never cut their hair"}
+      - {id: "isign_one_secret_each", label: "Each member keeps one secret to death", text: {"name": "every member carries one secret and keeps it until death"}}
+      - {id: "isign_yearly_gathering", label: "Once a year all gather at the heart", text: {"name": "once a year all the members gather at the heart"}}
 
   institution_power:
     roll: {"avoid_used": false}
@@ -190,16 +190,16 @@ tables:
     hooks_common:
       - {phase: P4, must: "the institution's assets follow its power source"}
     rows:
-      - {id: "power_monopoly", label: "Monopoly", p4: "a monopoly asset", hints: ["trade", "guild", "state"], tr: {"name": "tekel", "name_note": "vazgeçilmezlik"}}
-      - {id: "power_place", label: "A place", p4: "a site asset", hints: ["state", "martial", "religious", "scholarly"], tr: {"name": "yer: kilit yeri ya da kalıntıyı tutarlar", "name_note": "bir mekân varlığı"}}
-      - {id: "power_knowledge", label: "Knowledge", p4: "intel and bargaining", hints: ["scholarly", "criminal", "guild", "trade", "resistance"], tr: {"name": "bilgi: yolu, haritayı ya da bir sırrı bilirler", "name_note": "casusluk, pazarlık"}}
-      - {id: "power_arms", label: "Arms", p4: "military assets", hints: ["martial", "state", "criminal", "resistance"], tr: {"name": "silah", "name_note": "askerî güç"}}
-      - {id: "power_love", label: "The people's love", p4: "unrest or support", hints: ["resistance", "religious", "guild"], tr: {"name": "halkın sevgisi", "name_note": "isyan ya da destek"}}
-      - {id: "power_sanctity", label: "Sanctity", p4: "immunity", hints: ["religious"], tr: {"name": "kutsallık", "name_note": "dokunulmazlık"}}
-      - {id: "power_treasure", label: "Treasure", p4: "purchase", hints: ["trade", "guild", "state", "criminal"], tr: {"name": "hazine", "name_note": "satın alma"}}
-      - {id: "power_creature_bond", label: "A bond with a creature", p4: "an unexpected force", hints: ["martial", "religious", "scholarly", "resistance"], tr: {"name": "bir yaratıkla bağ", "name_note": "beklenmedik güç"}}
-      - {id: "power_privilege", label: "A privilege", p4: "legal standing", hints: ["guild", "trade", "scholarly", "martial"], tr: {"name": "imtiyaz: yönetimden alınmış bir hak", "name_note": "yasal dayanak"}}
-      - {id: "power_fear", label: "Fear", p4: "intimidation", hints: ["criminal", "martial", "state"], tr: {"name": "korku", "name_note": "yıldırma"}}
+      - {id: "power_monopoly", label: "Monopoly", p4: "a monopoly asset", hints: ["trade", "guild", "state"], text: {"name": "monopoly", "name_note": "indispensability"}}
+      - {id: "power_place", label: "A place", p4: "a site asset", hints: ["state", "martial", "religious", "scholarly"], text: {"name": "place: they hold the key place or the remnant", "name_note": "a presence in a place"}}
+      - {id: "power_knowledge", label: "Knowledge", p4: "intel and bargaining", hints: ["scholarly", "criminal", "guild", "trade", "resistance"], text: {"name": "knowledge: they know the way, the map or a secret", "name_note": "espionage, bargaining"}}
+      - {id: "power_arms", label: "Arms", p4: "military assets", hints: ["martial", "state", "criminal", "resistance"], text: {"name": "arms", "name_note": "military power"}}
+      - {id: "power_love", label: "The people's love", p4: "unrest or support", hints: ["resistance", "religious", "guild"], text: {"name": "the people's love", "name_note": "uprising or support"}}
+      - {id: "power_sanctity", label: "Sanctity", p4: "immunity", hints: ["religious"], text: {"name": "sanctity", "name_note": "inviolability"}}
+      - {id: "power_treasure", label: "Treasure", p4: "purchase", hints: ["trade", "guild", "state", "criminal"], text: {"name": "treasure", "name_note": "buying"}}
+      - {id: "power_creature_bond", label: "A bond with a creature", p4: "an unexpected force", hints: ["martial", "religious", "scholarly", "resistance"], text: {"name": "a bond with a creature", "name_note": "unexpected power"}}
+      - {id: "power_privilege", label: "A privilege", p4: "legal standing", hints: ["guild", "trade", "scholarly", "martial"], text: {"name": "privilege: a right granted by the rulers", "name_note": "legal footing"}}
+      - {id: "power_fear", label: "Fear", p4: "intimidation", hints: ["criminal", "martial", "state"], text: {"name": "fear", "name_note": "intimidation"}}
 
   phenomenon_rule:
     roll: {"avoid_used": true}
@@ -212,46 +212,46 @@ tables:
       - {phase: P8, must: "what natives know of it"}
       - {phase: play, must: "the DM applies the rule in combat and travel"}
     rows:
-      - {id: "rule_echo", label: "Every spell leaves a readable echo", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}, {when: {any_of: ["break_casting_forbidden"]}, x: 2}], tr: {"name": "her büyü saatlerce orada kalan ve okunabilen bir yankı bırakır", "at_table": "gizlice büyü yapılamaz; iz süren biri bulur"}}
-      - {id: "rule_rebound", label: "Spells rebound from hard surfaces", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "sert bir yüzeye çarpan büyü geri dönebilir", "at_table": "taşın ve camın yakınında büyü risklidir"}}
-      - {id: "rule_inverted_element", label: "The element turns inside out", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "büyünün unsuru ters döner: ateş dondurur, buz yakar", "at_table": "düşmanın dirençleri ters işler"}}
-      - {id: "rule_spells_grow_life", label: "Spells make life grow", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "her büyü çevresinde bitki ve küçük canlılar büyütür", "at_table": "büyü yapılan savaş alanı ormana döner"}}
-      - {id: "rule_spell_twins", label: "Every spell has a distant twin", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "her büyünün uzakta bir yerde bir ikizi olur", "at_table": "başka bir yerde istenmeyen bir etki doğar"}}
-      - {id: "rule_shared_wounds", label: "A community shares its wounds", family: "body_blood", kind: "usable", users: ["user_the_people", "user_the_institution"], tr: {"name": "bir topluluk yaralarını paylaşır", "at_table": "birini yaralamak herkesi yaralar"}}
-      - {id: "rule_slow_change", label: "Those who live near the remnant change", family: "body_blood", kind: "self", tr: {"name": "kalıntının yakınında uzun yaşayanlar yavaş yavaş değişir", "at_table": "uzun kalan partide işaretler belirir"}}
-      - {id: "rule_beasts_sense_lies", label: "Animals sense lies", family: "body_blood", kind: "self", conflicts_with: ["break_no_direct_lies"], tr: {"name": "hayvanlar yalanı sezer, yalancıya yaklaşmaz", "at_table": "at ve köpek bir yalanı ele verir"}}
-      - {id: "rule_kin_doubles", label: "Kinship doubles magic", family: "body_blood", kind: "spell", tr: {"name": "kan bağı büyüyü güçlendirir; bir akrabanın büyüsü iki kat işler", "at_table": "aileler güçlü, akraba düşman tehlikeli"}}
-      - {id: "rule_spell_marks", label: "Every spell marks the caster's skin", family: "body_blood", kind: "spell", tr: {"name": "her büyü, yapanın teninde bir iz bırakır", "at_table": "kimin ne kadar büyü yaptığı bedeninden okunur"}}
-      - {id: "rule_visible_currents", label: "Magic flows along visible paths", family: "place_path", kind: "self", tr: {"name": "büyü görünür yollar boyunca akar", "at_table": "yolların kesiştiği yerler değerli ve çekişmeli"}}
-      - {id: "rule_mirror_doors", label: "Mirrors are doors", family: "place_path", kind: "usable", tr: {"name": "aynalar belli koşullarda kapıdır", "at_table": "kaçış ve baskın yolları"}}
-      - {id: "rule_roads_lead_where_needed", label: "Roads lead where you must go", family: "place_path", kind: "self", tr: {"name": "yollar yürüyeni istediği yere değil, gitmesi gereken yere götürür", "at_table": "yolculuk bir yön arayışına döner"}}
-      - {id: "rule_night_distances", label: "Distances change at night", family: "place_path", kind: "self", requires: {dial: {era: ["medieval", "renaissance", "ancient", "nautical"]}}, tr: {"name": "mesafeler gece değişir; gece yolculuğu kısa da sürebilir uzun da", "at_table": "gece yürüyüşü bir kumar"}}
-      - {id: "rule_shifting_doors", label: "Some doors open somewhere else each time", family: "place_path", kind: "self", tr: {"name": "bazı kapılar her açılışta başka bir yere açılır", "at_table": "kapılar bir harita olur"}}
-      - {id: "rule_remnant_drinks_magic", label: "The remnant's matter drinks magic", family: "matter", kind: "self", tr: {"name": "kalıntının maddesi büyüyü emer", "at_table": "o maddeden zırh büyüye karşı korur", "name_note": "cam, taş, kemik"}}
-      - {id: "rule_weightless_stone", label: "A stone loses its weight", family: "matter", kind: "self", tr: {"name": "bir taş ağırlığını kaybeder, havada durur", "at_table": "uçan yapılar, düşen şeyler"}}
-      - {id: "rule_water_remembers", label: "Water remembers its course", family: "matter", kind: "self", tr: {"name": "su bir kez aktığı yolu hatırlar ve oraya geri döner", "at_table": "su yönlendirilebilir, kuruyan yataklar geri gelir"}}
-      - {id: "rule_metal_wakes", label: "Metal wakes in a master's hand", family: "matter", kind: "usable", tr: {"name": "metal bir ustanın elinde canlanır", "at_table": "dökülen şeyler kendiliğinden kıpırdar"}}
-      - {id: "rule_smoke_shows_shape", label: "Fire's smoke shows what it burned", family: "matter", kind: "self", tr: {"name": "ateş yaktığı şeyin şeklini dumanında gösterir", "at_table": "duman okunur, iz sürülür"}}
-      - {id: "rule_time_differs", label: "Time runs differently near the remnant", family: "time", kind: "self", tr: {"name": "kalıntının yakınında zaman farklı akar", "at_table": "içeride bir gün, dışarıda bir hafta"}}
-      - {id: "rule_shadows_of_the_future", label: "What will happen casts its shadow ahead", family: "time", kind: "self", tr: {"name": "olacak bir şeyin gölgesi önceden düşer", "at_table": "pusu ve tuzak önceden sezilebilir"}}
-      - {id: "rule_repeating_moment", label: "A moment relives itself every day", family: "time", kind: "self", tr: {"name": "belli bir yerde bir an her gün yeniden yaşanır", "at_table": "tekrar eden an bir bilmecedir"}}
-      - {id: "rule_delayed_spells", label: "Spells take hold late", family: "time", kind: "spell", tr: {"name": "büyüler geç tutar; etkisi bir süre sonra gelir", "at_table": "büyü bir plan gerektirir"}}
-      - {id: "rule_casting_ages", label: "Casting ages the caster", family: "time", kind: "spell", tr: {"name": "büyü, yapanı yaşlandırır", "at_table": "büyücüler yaşlarından yaşlı görünür"}}
-      - {id: "rule_true_names", label: "A true name commands", family: "word_sign", kind: "usable", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "birinin gerçek adını bilen ona emredebilir", "at_table": "adlar saklanır"}}
-      - {id: "rule_signs_are_spells", label: "Every sign drawn true is a small spell", family: "word_sign", kind: "usable", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "doğru çizilen her işaret küçük bir büyüdür", "at_table": "duvarlarda işaretler, herkeste biraz büyü"}}
-      - {id: "rule_gesture_magic", label: "Magic is made by gesture, not word", family: "word_sign", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "büyü sözle değil hareketle yapılır; eli bağlı biri büyü yapamaz", "at_table": "büyücüyü susturmak değil, bağlamak gerekir"}}
-      - {id: "rule_tongue_of_magic", label: "A people's tongue is the tongue of magic", family: "word_sign", kind: "usable", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}, {when: {any_of: ["break_no_common_tongue"]}, x: 2}], users: ["user_the_people"], tr: {"name": "bir halkın dili büyünün dilidir; onu konuşan küçük büyüler yapar", "at_table": "dil öğrenmek güç kazanmaktır"}}
-      - {id: "rule_names_shape_places", label: "A named place grows like its name", family: "word_sign", kind: "self", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "ad konan bir yer yavaş yavaş adına benzer", "at_table": "yer adları bir silahtır"}}
-      - {id: "rule_feelings_make_weather", label: "Strong feeling changes the weather", family: "nature_creatures", kind: "self", requires: {dial: {era: ["medieval", "renaissance", "ancient", "nautical"]}}, tr: {"name": "güçlü bir duygu havayı değiştirir", "at_table": "öfkeli bir kalabalık fırtına getirir"}}
-      - {id: "rule_monsters_smell_magic", label: "Monsters come to the smell of magic", family: "nature_creatures", kind: "spell", tr: {"name": "canavarlar büyünün kokusuna gelir", "at_table": "her büyü bir karşılaşma riskidir"}}
-      - {id: "rule_seasons_bound_to_a_beast", label: "The seasons are bound to a creature", family: "nature_creatures", kind: "self", requires: {dial: {era: ["medieval", "renaissance", "ancient", "nautical"]}}, tr: {"name": "mevsimler bir canlıya bağlıdır; dev bir hayvanın uykusu kışı getirir", "at_table": "o canlıya dokunmak mevsimi bozar"}}
-      - {id: "rule_land_guards_lifeline", label: "The land guards the lifeline", family: "nature_creatures", kind: "self", tr: {"name": "toprak can damarını korur; damara zarar veren toprağın öfkesiyle karşılaşır", "at_table": "doğa bir taraf olur"}}
-      - {id: "rule_shadows_move", label: "Shadows move on their own", family: "nature_creatures", kind: "self", tr: {"name": "gölgeler kendi başına hareket eder", "at_table": "bir gölge casus olabilir"}}
-      - {id: "rule_one_way_magic", label: "Since the break magic works one way", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], after_the_break: true, tr: {"name": "kırılmadan beri büyü tek yönde çalışır", "at_table": "nerede durduğun, ne yapabileceğini belirler", "name_note": "kalpten dışarı ya da yukarıdan aşağı"}, requires: {none_of: ["time_coming"]}}
-      - {id: "rule_spells_feed_the_break", label: "Every spell widens the break", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "her büyü kırılmayı biraz daha büyütür", "at_table": "büyücüler sorumlu tutulur"}}
-      - {id: "rule_born_with_magic", label: "Since the break some are born with magic", family: "born_of_break", kind: "self", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], after_the_break: true, tr: {"name": "kırılmadan beri bazı insanlar büyüyle doğuyor", "at_table": "yeni yeteneklilerden korkulur"}, requires: {none_of: ["time_coming"]}}
-      - {id: "rule_geography_of_power", label: "Magic is strong near the break's target", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "büyü kırılmanın hedefine yakınken güçlü, uzakta zayıf", "at_table": "gücün bir coğrafyası olur"}}
-      - {id: "rule_half_spells", label: "Half of every spell comes out elsewhere", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], tr: {"name": "her büyünün yarısı başka bir yerde çıkar", "at_table": "büyü tam kontrol edilemez"}}
+      - {id: "rule_echo", label: "Every spell leaves a readable echo", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}, {when: {any_of: ["break_casting_forbidden"]}, x: 2}], text: {"name": "every spell leaves an echo that stays there for hours and can be read", "at_table": "no spell can be cast in secret; someone who tracks finds it"}}
+      - {id: "rule_rebound", label: "Spells rebound from hard surfaces", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "a spell that strikes a hard surface can come back", "at_table": "magic is risky near stone and glass"}}
+      - {id: "rule_inverted_element", label: "The element turns inside out", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "the element of a spell turns inside out: fire freezes, ice burns", "at_table": "the enemy's resistances work in reverse"}}
+      - {id: "rule_spells_grow_life", label: "Spells make life grow", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "every spell makes plants and small creatures grow around it", "at_table": "a battlefield where magic is cast turns into forest"}}
+      - {id: "rule_spell_twins", label: "Every spell has a distant twin", family: "magic_behaviour", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "every spell has a twin somewhere far away", "at_table": "an unwanted effect is born somewhere else"}}
+      - {id: "rule_shared_wounds", label: "A community shares its wounds", family: "body_blood", kind: "usable", users: ["user_the_people", "user_the_institution"], text: {"name": "a community shares its wounds", "at_table": "to wound one is to wound all"}}
+      - {id: "rule_slow_change", label: "Those who live near the remnant change", family: "body_blood", kind: "self", text: {"name": "those who live long near the remnant slowly change", "at_table": "marks appear on a party that stays long"}}
+      - {id: "rule_beasts_sense_lies", label: "Animals sense lies", family: "body_blood", kind: "self", conflicts_with: ["break_no_direct_lies"], text: {"name": "animals sense a lie and will not go near a liar", "at_table": "a horse and a dog give a lie away"}}
+      - {id: "rule_kin_doubles", label: "Kinship doubles magic", family: "body_blood", kind: "spell", text: {"name": "the blood tie strengthens magic; a relative's spell works twice over", "at_table": "families are strong, an enemy who is kin is dangerous"}}
+      - {id: "rule_spell_marks", label: "Every spell marks the caster's skin", family: "body_blood", kind: "spell", text: {"name": "every spell leaves a mark on its caster's skin", "at_table": "how much magic someone has cast is read from their body"}}
+      - {id: "rule_visible_currents", label: "Magic flows along visible paths", family: "place_path", kind: "self", text: {"name": "magic flows along visible paths", "at_table": "the places where the paths cross are valuable and contested"}}
+      - {id: "rule_mirror_doors", label: "Mirrors are doors", family: "place_path", kind: "usable", text: {"name": "mirrors are doors under certain conditions", "at_table": "ways of escape and of raid"}}
+      - {id: "rule_roads_lead_where_needed", label: "Roads lead where you must go", family: "place_path", kind: "self", text: {"name": "roads take the walker not where they want to go but where they need to go", "at_table": "travel turns into a search for direction"}}
+      - {id: "rule_night_distances", label: "Distances change at night", family: "place_path", kind: "self", requires: {dial: {era: ["medieval", "renaissance", "ancient", "nautical"]}}, text: {"name": "distances change at night; a night journey may turn out short or long", "at_table": "a night march is a gamble"}}
+      - {id: "rule_shifting_doors", label: "Some doors open somewhere else each time", family: "place_path", kind: "self", text: {"name": "some doors open onto a different place every time they are opened", "at_table": "the doors become a map"}}
+      - {id: "rule_remnant_drinks_magic", label: "The remnant's matter drinks magic", family: "matter", kind: "self", text: {"name": "the remnant's matter absorbs magic", "at_table": "armour made of that matter protects against magic", "name_note": "glass, stone, bone"}}
+      - {id: "rule_weightless_stone", label: "A stone loses its weight", family: "matter", kind: "self", text: {"name": "a stone loses its weight and hangs in the air", "at_table": "flying structures, falling things"}}
+      - {id: "rule_water_remembers", label: "Water remembers its course", family: "matter", kind: "self", text: {"name": "water remembers the course it once ran and returns to it", "at_table": "water can be directed, dried beds come back"}}
+      - {id: "rule_metal_wakes", label: "Metal wakes in a master's hand", family: "matter", kind: "usable", text: {"name": "metal comes alive in a master's hand", "at_table": "cast things stir of their own accord"}}
+      - {id: "rule_smoke_shows_shape", label: "Fire's smoke shows what it burned", family: "matter", kind: "self", text: {"name": "fire shows in its smoke the shape of what it burned", "at_table": "smoke is read, a trail is followed"}}
+      - {id: "rule_time_differs", label: "Time runs differently near the remnant", family: "time", kind: "self", text: {"name": "time flows differently near the remnant", "at_table": "a day inside, a week outside"}}
+      - {id: "rule_shadows_of_the_future", label: "What will happen casts its shadow ahead", family: "time", kind: "self", text: {"name": "the shadow of something that will happen falls beforehand", "at_table": "an ambush and a trap can be sensed beforehand"}}
+      - {id: "rule_repeating_moment", label: "A moment relives itself every day", family: "time", kind: "self", text: {"name": "in a certain place one moment is lived again every day", "at_table": "the repeating moment is a riddle"}}
+      - {id: "rule_delayed_spells", label: "Spells take hold late", family: "time", kind: "spell", text: {"name": "spells take hold late; the effect comes after a while", "at_table": "magic requires a plan"}}
+      - {id: "rule_casting_ages", label: "Casting ages the caster", family: "time", kind: "spell", text: {"name": "magic ages the one who casts it", "at_table": "spellcasters look older than their years"}}
+      - {id: "rule_true_names", label: "A true name commands", family: "word_sign", kind: "usable", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "whoever knows someone's true name can command them", "at_table": "names are kept hidden"}}
+      - {id: "rule_signs_are_spells", label: "Every sign drawn true is a small spell", family: "word_sign", kind: "usable", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "every sign drawn correctly is a small spell", "at_table": "signs on the walls, a little magic in everyone"}}
+      - {id: "rule_gesture_magic", label: "Magic is made by gesture, not word", family: "word_sign", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "magic is made by gesture, not by word; someone whose hands are bound cannot cast", "at_table": "a spellcaster has to be bound, not silenced"}}
+      - {id: "rule_tongue_of_magic", label: "A people's tongue is the tongue of magic", family: "word_sign", kind: "usable", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}, {when: {any_of: ["break_no_common_tongue"]}, x: 2}], users: ["user_the_people"], text: {"name": "one people's language is the language of magic; whoever speaks it casts small spells", "at_table": "learning the language is gaining power"}}
+      - {id: "rule_names_shape_places", label: "A named place grows like its name", family: "word_sign", kind: "self", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "a place that is given a name slowly comes to resemble its name", "at_table": "place names are a weapon"}}
+      - {id: "rule_feelings_make_weather", label: "Strong feeling changes the weather", family: "nature_creatures", kind: "self", requires: {dial: {era: ["medieval", "renaissance", "ancient", "nautical"]}}, text: {"name": "a strong feeling changes the weather", "at_table": "an angry crowd brings a storm"}}
+      - {id: "rule_monsters_smell_magic", label: "Monsters come to the smell of magic", family: "nature_creatures", kind: "spell", text: {"name": "monsters come to the smell of magic", "at_table": "every spell is the risk of an encounter"}}
+      - {id: "rule_seasons_bound_to_a_beast", label: "The seasons are bound to a creature", family: "nature_creatures", kind: "self", requires: {dial: {era: ["medieval", "renaissance", "ancient", "nautical"]}}, text: {"name": "the seasons are bound to a living creature; the sleep of a giant animal brings the winter", "at_table": "touching that creature upsets the season"}}
+      - {id: "rule_land_guards_lifeline", label: "The land guards the lifeline", family: "nature_creatures", kind: "self", text: {"name": "the land guards the lifeline; whoever harms the lifeline meets the land's wrath", "at_table": "nature becomes a side"}}
+      - {id: "rule_shadows_move", label: "Shadows move on their own", family: "nature_creatures", kind: "self", text: {"name": "shadows move on their own", "at_table": "a shadow can be a spy"}}
+      - {id: "rule_one_way_magic", label: "Since the break magic works one way", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], after_the_break: true, text: {"name": "since the break magic works in one direction only", "at_table": "where you stand decides what you can do", "name_note": "outward from the heart, or from above downward"}, requires: {none_of: ["time_coming"]}}
+      - {id: "rule_spells_feed_the_break", label: "Every spell widens the break", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "every spell makes the break a little bigger", "at_table": "spellcasters are held responsible"}}
+      - {id: "rule_born_with_magic", label: "Since the break some are born with magic", family: "born_of_break", kind: "self", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], after_the_break: true, text: {"name": "since the break some people are born with magic", "at_table": "the newly gifted are feared"}, requires: {none_of: ["time_coming"]}}
+      - {id: "rule_geography_of_power", label: "Magic is strong near the break's target", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "magic is strong near the target of the break, weak far from it", "at_table": "power comes to have a geography"}}
+      - {id: "rule_half_spells", label: "Half of every spell comes out elsewhere", family: "born_of_break", kind: "spell", weight_by: [{when: {dial: {magic: ["low"]}}, x: 0.5}], text: {"name": "half of every spell comes out somewhere else", "at_table": "magic cannot be fully controlled"}}
 
   phenomenon_sign:
     roll: {"avoid_used": false}
@@ -259,22 +259,22 @@ tables:
     hooks_common:
       - {phase: P8, must: "natives know the sign"}
     rows:
-      - {id: "psign_colour", label: "A colour in the air", tr: {"name": "havada bir renk"}}
-      - {id: "psign_smell", label: "A smell", tr: {"name": "bir koku", "name_note": "ozon, bakır, yanık şeker"}}
-      - {id: "psign_hum", label: "A hum or a crackle", tr: {"name": "bir uğultu ya da çıtırtı"}}
-      - {id: "psign_tremor", label: "A tremor in the ground", tr: {"name": "yerde bir titreşim"}}
-      - {id: "psign_frost", label: "Frost patterns on glass and water", tr: {"name": "camda ve suda kırağı desenleri"}}
-      - {id: "psign_body_marks", label: "Marks on the body", tr: {"name": "bedende işaretler"}}
-      - {id: "psign_restless_beasts", label: "Restless animals", tr: {"name": "hayvanların huzursuzluğu"}}
-      - {id: "psign_compasses", label: "Compasses stray", tr: {"name": "pusulaların sapması"}}
-      - {id: "psign_late_reflections", label: "Late reflections", tr: {"name": "geç kalan yansımalar"}}
-      - {id: "psign_wrong_shadows", label: "Shadows falling the wrong way", tr: {"name": "ters düşen gölgeler"}}
-      - {id: "psign_rings", label: "Rings on still water", tr: {"name": "durgun suda halkalar"}}
-      - {id: "psign_leaning_plants", label: "Plants leaning one way", tr: {"name": "bitkilerin bir yöne eğilmesi"}}
-      - {id: "psign_metal_taste", label: "A taste of metal", tr: {"name": "ağızda metal tadı"}}
-      - {id: "psign_hair_on_end", label: "Hair standing on end", tr: {"name": "dikleşen saçlar"}}
-      - {id: "psign_hanging_dust", label: "Dust hanging in the air", tr: {"name": "havada asılı kalan toz"}}
-      - {id: "psign_chill", label: "A sudden chill", tr: {"name": "ani bir serinlik"}}
+      - {id: "psign_colour", label: "A colour in the air"}
+      - {id: "psign_smell", label: "A smell", text: {"name": "a smell", "name_note": "ozone, copper, burnt sugar"}}
+      - {id: "psign_hum", label: "A hum or a crackle"}
+      - {id: "psign_tremor", label: "A tremor in the ground"}
+      - {id: "psign_frost", label: "Frost patterns on glass and water", text: {"name": "frost patterns on glass and on water"}}
+      - {id: "psign_body_marks", label: "Marks on the body"}
+      - {id: "psign_restless_beasts", label: "Restless animals", text: {"name": "the restlessness of animals"}}
+      - {id: "psign_compasses", label: "Compasses stray", text: {"name": "the straying of compasses"}}
+      - {id: "psign_late_reflections", label: "Late reflections", text: {"name": "reflections that come late"}}
+      - {id: "psign_wrong_shadows", label: "Shadows falling the wrong way", text: {"name": "shadows that fall the wrong way"}}
+      - {id: "psign_rings", label: "Rings on still water"}
+      - {id: "psign_leaning_plants", label: "Plants leaning one way", text: {"name": "plants leaning in one direction"}}
+      - {id: "psign_metal_taste", label: "A taste of metal", text: {"name": "a taste of metal in the mouth"}}
+      - {id: "psign_hair_on_end", label: "Hair standing on end"}
+      - {id: "psign_hanging_dust", label: "Dust hanging in the air", text: {"name": "dust that stays hanging in the air"}}
+      - {id: "psign_chill", label: "A sudden chill"}
 
   phenomenon_limit:
     roll: {"avoid_used": false}
@@ -282,14 +282,14 @@ tables:
     hooks_common:
       - {phase: P6, must: "the phenomenon's site uses its limit"}
     rows:
-      - {id: "limit_iron_cuts", label: "Iron cuts it", weight_by: [{when: {any_of: ["break_iron_is_sacred"]}, x: 2}], tr: {"name": "demir onu keser"}}
-      - {id: "limit_running_water", label: "It cannot cross running water", tr: {"name": "akan suyu geçemez"}}
-      - {id: "limit_not_on_sleepers", label: "It does not touch sleepers", tr: {"name": "uyuyanlara işlemez"}}
-      - {id: "limit_fire_scatters", label: "Fire scatters it", tr: {"name": "ateş onu dağıtır"}}
-      - {id: "limit_cold_strengthens", label: "Stronger in cold, weaker in heat", tr: {"name": "soğukta güçlenir, sıcakta zayıflar"}}
-      - {id: "limit_height_strengthens", label: "Stronger high, weaker low", tr: {"name": "yüksekte güçlenir, alçakta zayıflar"}}
-      - {id: "limit_bloodline_resists", label: "A lineage's blood resists it", tr: {"name": "bir soyun kanı ona karşı koyar", "name_note": "halk imzasına bağlanabilir"}}
-      - {id: "limit_institution_sign_stops", label: "The institution's sign stops it", tr: {"name": "kurumun işareti onu durdurur", "name_note": "kurum imzasına bağlanabilir"}}
+      - {id: "limit_iron_cuts", label: "Iron cuts it", weight_by: [{when: {any_of: ["break_iron_is_sacred"]}, x: 2}]}
+      - {id: "limit_running_water", label: "It cannot cross running water"}
+      - {id: "limit_not_on_sleepers", label: "It does not touch sleepers", text: {"name": "it does not work on sleepers"}}
+      - {id: "limit_fire_scatters", label: "Fire scatters it"}
+      - {id: "limit_cold_strengthens", label: "Stronger in cold, weaker in heat", text: {"name": "it grows stronger in cold and weaker in heat"}}
+      - {id: "limit_height_strengthens", label: "Stronger high, weaker low", text: {"name": "it grows stronger high up and weaker low down"}}
+      - {id: "limit_bloodline_resists", label: "A lineage's blood resists it", text: {"name": "the blood of one lineage resists it", "name_note": "can be tied to the people signature"}}
+      - {id: "limit_institution_sign_stops", label: "The institution's sign stops it", text: {"name": "the institution's sign stops it", "name_note": "can be tied to the institution signature"}}
 
   phenomenon_user:
     roll: {"avoid_used": false}
@@ -297,11 +297,11 @@ tables:
     hooks_common:
       - {phase: P5, must: "the phenomenon's users are NPCs"}
     rows:
-      - {id: "user_everyone", label: "Everyone", tr: {"name": "herkes"}}
-      - {id: "user_no_one", label: "No one: it happens by itself", tr: {"name": "kimse, olgu kendiliğinden olur"}}
-      - {id: "user_the_people", label: "Only the signature people", tr: {"name": "yalnızca imza halkı"}}
-      - {id: "user_the_institution", label: "Only the institution's trained", tr: {"name": "yalnızca imza kurumunun eğitimlileri"}}
-      - {id: "user_touched_by_the_break", label: "Only those the break touched", after_the_break: true, tr: {"name": "yalnızca kırılmanın dokundukları"}, requires: {none_of: ["time_coming"]}}
-      - {id: "user_children", label: "Only children", tr: {"name": "yalnızca çocuklar"}}
-      - {id: "user_casters", label: "Only spellcasters", tr: {"name": "yalnızca büyücüler"}}
-      - {id: "user_born_here", label: "Only those born in this land", tr: {"name": "yalnızca o toprakta doğanlar"}}
+      - {id: "user_everyone", label: "Everyone"}
+      - {id: "user_no_one", label: "No one: it happens by itself", text: {"name": "no one, the phenomenon happens by itself"}}
+      - {id: "user_the_people", label: "Only the signature people"}
+      - {id: "user_the_institution", label: "Only the institution's trained", text: {"name": "only the trained members of the signature institution"}}
+      - {id: "user_touched_by_the_break", label: "Only those the break touched", after_the_break: true, requires: {none_of: ["time_coming"]}}
+      - {id: "user_children", label: "Only children"}
+      - {id: "user_casters", label: "Only spellcasters"}
+      - {id: "user_born_here", label: "Only those born in this land", text: {"name": "only those born in that land"}}

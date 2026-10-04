@@ -33,7 +33,7 @@ class Rows(unittest.TestCase):
         self.assertFalse(set(GONE) & set(BREAKS))
         for rid in JOINED:
             r = BREAKS[rid]
-            self.assertTrue(r["statement"] and r["tr"]["name"] and r["tr"]["at_table"], rid)
+            self.assertTrue(r["statement"] and r["text"]["name"] and r["text"]["at_table"], rid)
             self.assertGreaterEqual(len(r["hooks"]), 2, rid)
         self.assertEqual({k for k in JOINED if BREAKS[k].get("prohibition")},
                          {"break_casting_forbidden", "break_ruins_forbidden", "break_night_forbidden"})
@@ -137,7 +137,7 @@ class Rows(unittest.TestCase):
     def test_the_text_changes_on_kept_rows(self):
         beast = BREAKS["break_beasts_own_land"]
         self.assertEqual(beast["label"], "Some lands' lord is a beast-person")
-        self.assertEqual(beast["tr"]["name"], "bazı toprakların beyi bir hayvan-insandır")
+        self.assertEqual(beast["text"]["name"], "the lord of some lands is a beast-person")
         for word in ("curse", "contagion", "alignment"):
             self.assertNotIn(word, beast["statement"])
         hooks = lambda rid: {h["phase"]: h["must"] for h in BREAKS[rid]["hooks"]}

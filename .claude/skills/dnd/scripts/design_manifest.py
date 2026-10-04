@@ -81,6 +81,15 @@ def save(campaign: str, data: dict, written_by: str) -> None:
     write_json_atomic(manifest_path(campaign), data)
 
 
+WRITE_LANG = "en"      # every file a new birth produces is English (owner, 2026-10-04); `lang` is the play language
+
+
+def writes_english(data: dict) -> bool:
+    """Is this birth written in English? Every birth since build item 13a is (`_meta.write_lang`); an earlier one
+    keeps the Turkish it was written in, and the door leaves its files as they are."""
+    return (data.get("_meta") or {}).get("write_lang") == WRITE_LANG
+
+
 def legacy_birth(data: dict) -> bool:
     """A birth whose P1 ran before the foundation existed (the archived test births, the hand-written fixture):
     P1 went past its preroll and design.json holds no `foundation`. The gates that read the foundation, the
@@ -158,7 +167,7 @@ def init(campaign: str, a) -> int:
     span = ARC_SHAPE[a.scale][2]
     data = {
         "_meta": {"schema_version": 1, "campaign": campaign, "fixture": bool(a.fixture),
-                  "designer_version": DESIGNER_VERSION, "ruleset": "2014", "lang": a.lang, "mode": "birth",
+                  "designer_version": DESIGNER_VERSION, "ruleset": "2014", "lang": a.lang, "write_lang": WRITE_LANG, "mode": "birth",
                   "git_root": git_root(campaign_dir(campaign)), "created": now_iso()},
         "dials": {"scale": a.scale, "tone": a.tone, "magic": a.magic, "era": a.era, "danger": a.danger,
                   "party_size": a.party_size, "start_level": a.start_level,

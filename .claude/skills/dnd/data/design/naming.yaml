@@ -18,7 +18,7 @@ hooks_common:
   - {phase: validator, must: "every registry name passes the blacklist and carries no Turkish letters"}
 
 rules:
-  world_language: "Names are English-language fantasy names, spelled in ASCII letters, never transliterated Turkish. Common nouns in prose stay Turkish (çarşı, han, hancı)."
+  world_language: "Names are English-language fantasy names, spelled in ASCII letters, never transliterated Turkish. The campaign is written in English (errata 24.2 #28); a name is written as it stands and never translated. How a name takes a Turkish suffix at the table is a play rule: data/play/turkish-suffixing.yaml."
   modes:
     person: "phonetic: 1-3 syllables from the family's banks; an optional byname from the lexicon (Ilme Stonecutter, Yesra Reedcarter)"
     god: "phonetic like a person, plus an epithet from `patterns.god_epithet` (Ormis, Ploughbearer)"
@@ -27,28 +27,6 @@ rules:
     people: "`patterns.people` (Stonebound, Marshfolk)"
     ship: "`patterns.ship` (the Vesper)"
     month_day: "`patterns.month` and `patterns.day` from the calendar's roots (Plowmonth, Flintday); months are 30 days"
-  turkish_suffixing:
-    principle: "The name keeps its English spelling; a Turkish suffix attaches after an apostrophe and harmonises with the LAST PRONOUNCED vowel, not the last letter."
-    rules:
-      - "back vowel sound (a, o, u, and English long i as in -side) → -a / -ı or -u / -da / -ın or -un"
-      - "front vowel sound (e, i, ö, ü) → -e / -i or -ü / -de / -in or -ün"
-      - "final silent e is not a vowel: Kettleside'a, Velune'a (pronounced -oon), Flintmere'e (pronounced -meer)"
-      - "final voiceless consonant (p, t, k, ch, s, sh, f) → -ta / -te, -tan / -ten: Karsgate'te, Brookmark'ta"
-      - "a name that ends in a pronounced vowel takes the buffer y or n: Ottavia'ya, Ottavia'nın, Umbra'da"
-    ending_table:
-      - {ending: "-side / -ide / -ine (long i)", harmony: back, example: "Kettleside'a, Kettleside'ın"}
-      - {ending: "-ham", harmony: back, example: "Brackham'a, Brackham'da"}
-      - {ending: "-mere / -meer", harmony: front, example: "Flintmere'e, Flintmere'in"}
-      - {ending: "-ford / -hold / -ton / -mouth / -moor", harmony: back, example: "Thornford'a, Thornford'un"}
-      - {ending: "-gate / -stead / -wick / -bury / -reach / -fen", harmony: front, example: "Karsgate'e, Oxstead'in"}
-      - {ending: "-crag / -march / -fall", harmony: back, example: "Goatcrag'a, Birchmarch'ın"}
-    examples:
-      - {name: Kettleside, dative: "Kettleside'a", locative: "Kettleside'da", genitive: "Kettleside'ın"}
-      - {name: Flintmere, dative: "Flintmere'e", locative: "Flintmere'de", genitive: "Flintmere'in"}
-      - {name: Brackham, dative: "Brackham'a", locative: "Brackham'da", genitive: "Brackham'ın"}
-      - {name: Karsgate, dative: "Karsgate'e", locative: "Karsgate'te", genitive: "Karsgate'in"}
-      - {name: Velune, dative: "Velune'a", locative: "Velune'da", genitive: "Velune'un"}
-      - {name: Ottavia, dative: "Ottavia'ya", locative: "Ottavia'da", genitive: "Ottavia'nın"}
   tr_suffix_friendly: "a family is suffix-friendly when its names end in a single pronounced consonant or a clear vowel; every family below is, and the mutation step must keep it so (no final -ough, -que, -gh)"
 
 tables:
@@ -388,7 +366,7 @@ blacklist:
   # in-campaign exact bans live in naming.json `banned[]` (name_registry seeds it)
   # Turkish common nouns a writer turns into a proper name ("Konsey", "Lonca"): a name, or an alias written with a capital,
   # equal to one of these is refused at the registry door (critique analysis 2026-09-26: turkish_proper_noun_konsey_lonca).
-  # A lowercase alias in Turkish ("hancı", "kayıp gemi") is a common-noun descriptor and stays allowed.
+  # Turkish common nouns that must never stand as a proper name (a legacy birth's lowercase Turkish alias stays allowed).
   turkish_as_name: [Konsey, Lonca, Meclis, Tarikat, Kardeşlik, Birlik, Cemiyet, Kumpanya, Ocak, Hane, Tapınak, Mahkeme, Loca, Tersane, Divan, Saray, Kale, Köy, Kasaba, Şehir, Liman, Kule, Han, Pazar, Muhafızlar, Bekçiler, Rahipler, Kardeşler, Sancak,
     # dry-3: a rolled god was named Sivil; common Turkish words spelled in ASCII only, which the letter check cannot see
     Sivil, Asil, Kara, Deniz, Umut, Bulut, Orman, Nehir, Kaya, Vadi, Toprak, Hava, Gece, Sabah, Bahar, Kalem, Kitap,

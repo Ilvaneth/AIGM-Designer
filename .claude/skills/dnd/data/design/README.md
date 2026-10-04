@@ -1,6 +1,6 @@
 # `data/design/` — the designer's tables
 
-Plan item 17. These tables are the Campaign Designer's creative DNA: the scripts orchestrate, the tables decide what can be rolled and how a rolled row must propagate. They are skill data, so they are English; generated content is in the narration language, and every proper noun the tables seed is an English-language fantasy name (errata 24.2 #17).
+Plan item 17. These tables are the Campaign Designer's creative DNA: the scripts orchestrate, the tables decide what can be rolled and how a rolled row must propagate. They are skill data, so they are English, and so is everything a birth writes from them (errata 24.2 #28: a campaign is written in English and narrated in Turkish at the table); every proper noun the tables seed is an English-language fantasy name (errata 24.2 #17). A row's prose beyond its `label` sits in `text` (`name`, `at_table`, `gives`, the foundation's fragments, the `*_note` asides).
 
 ## Convention
 

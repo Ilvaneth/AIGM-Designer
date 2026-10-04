@@ -40,9 +40,10 @@ class Tone(unittest.TestCase):
 
     def test_three_values_with_the_blank_roll_weights(self):
         tone = dt.rows("dials.yaml#tone")
-        self.assertEqual([(r["id"], r["value"], r["label"], r["tr"]["name"], r["weight"]) for r in tone],
-                         [("tone_bright", "bright", "Bright", "Aydınlık", 2), ("tone_shadowed", "shadowed", "Shadowed", "Gölgeli", 3),
-                          ("tone_dark", "dark", "Dark", "Karanlık", 1)], "English labels like every dial row; the Turkish name in tr")
+        self.assertEqual([(r["id"], r["value"], r["label"], r["weight"]) for r in tone],
+                         [("tone_bright", "bright", "Bright", 2), ("tone_shadowed", "shadowed", "Shadowed", 3),
+                          ("tone_dark", "dark", "Dark", 1)], "English labels like every dial row")
+        self.assertFalse(any("tr" in r or "text" in r for r in tone), "the Turkish names went with build item 13a; the label stands")
         self.assertEqual(dt.load("dials.yaml")["tables"]["tone"]["notation"], "d3")
 
     def test_it_carries_four_things_and_nothing_else(self):
@@ -177,7 +178,7 @@ class Era(unittest.TestCase):
             self.assertLessEqual(sum(1 for k in f["palette"] if fd.is_capped(pal[k])), cap[magic])
             ends = [v for p, v in f["layout"]["parts"].items() if p.startswith("end_")]
             self.assertEqual(len(ends), len(set(ends)))
-            self.assertNotIn("(", f["sentence_tr"])
+            self.assertNotIn("(", " ".join(x["text"] for x in f["rendering"]))
 
 
 class DangerAndMix(unittest.TestCase):

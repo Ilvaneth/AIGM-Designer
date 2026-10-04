@@ -9,6 +9,7 @@ lists; `phase begin / merge / check / card / approve / rerun` drive the fixture 
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -97,7 +98,7 @@ class NewBirth(unittest.TestCase):
         self.assertIsNone(m["phases"]["P0"]["approval"]["commit"], "a git-ignored test campaign is never committed")
         marker = json.loads(MARKER.read_text(encoding="utf-8"))
         self.assertEqual((marker["campaign"], marker["mode"]), (name, "birth"))
-        self.assertIn("zar: dial.scale", proc.stdout)
+        self.assertIn("roll: dial.scale", proc.stdout)
 
     def test_given_dials_are_not_rolled_and_a_real_birth_waits_for_onay(self):
         name = f"_test-real-birth-{os.getpid()}-{uuid.uuid4().hex[:6]}"   # git-ignored: nothing is ever committed
@@ -157,7 +158,11 @@ class NewBirth(unittest.TestCase):
         self.assertEqual(again.returncode, 1, "a second preroll of the same attempt is refused")
         found = m["foundation"]
         self.assertTrue(found["stamped"])
-        self.assertIn(found["sentence_tr"], proc.stdout)
+        for line in found["rendering"]:
+            self.assertIn(f"{line['label']}: {line['text']}", proc.stdout)
+        self.assertIsNone(re.search("[çğıöşüÇĞİÖŞÜ]", proc.stdout), "a new birth's preroll prints no Turkish letter")
+        self.assertIsNone(re.search("[çğıöşüÇĞİÖŞÜ]", json.dumps(m["dice_log"], ensure_ascii=False)), "nor does its public log hold one")
+        self.assertEqual(m["_meta"]["write_lang"], "en")
         self.assertEqual(sum(1 for l in pub if l.startswith("foundation.contest.")), 1)
         self.assertFalse(dm_legacy(m), "a birth with a foundation is no legacy birth")
         import designer

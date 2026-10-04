@@ -1,0 +1,25 @@
+# turkish-suffixing.yaml — how an English fantasy name takes a Turkish suffix in the DM's narration.
+# A play rule (moved from data/design/naming.yaml#rules by build item 13a: the campaign is written in English, Turkish is
+# spoken at the table only). SKILL.md's narration principles point here.
+turkish_suffixing:
+  principle: "The name keeps its English spelling; a Turkish suffix attaches after an apostrophe and harmonises with the LAST PRONOUNCED vowel, not the last letter."
+  rules:
+    - "back vowel sound (a, o, u, and English long i as in -side) → -a / -ı or -u / -da / -ın or -un"
+    - "front vowel sound (e, i, ö, ü) → -e / -i or -ü / -de / -in or -ün"
+    - "final silent e is not a vowel: Kettleside'a, Velune'a (pronounced -oon), Flintmere'e (pronounced -meer)"
+    - "final voiceless consonant (p, t, k, ch, s, sh, f) → -ta / -te, -tan / -ten: Karsgate'te, Brookmark'ta"
+    - "a name that ends in a pronounced vowel takes the buffer y or n: Ottavia'ya, Ottavia'nın, Umbra'da"
+  ending_table:
+    - {ending: "-side / -ide / -ine (long i)", harmony: back, example: "Kettleside'a, Kettleside'ın"}
+    - {ending: "-ham", harmony: back, example: "Brackham'a, Brackham'da"}
+    - {ending: "-mere / -meer", harmony: front, example: "Flintmere'e, Flintmere'in"}
+    - {ending: "-ford / -hold / -ton / -mouth / -moor", harmony: back, example: "Thornford'a, Thornford'un"}
+    - {ending: "-gate / -stead / -wick / -bury / -reach / -fen", harmony: front, example: "Karsgate'e, Oxstead'in"}
+    - {ending: "-crag / -march / -fall", harmony: back, example: "Goatcrag'a, Birchmarch'ın"}
+  examples:
+    - {name: Kettleside, dative: "Kettleside'a", locative: "Kettleside'da", genitive: "Kettleside'ın"}
+    - {name: Flintmere, dative: "Flintmere'e", locative: "Flintmere'de", genitive: "Flintmere'in"}
+    - {name: Brackham, dative: "Brackham'a", locative: "Brackham'da", genitive: "Brackham'ın"}
+    - {name: Karsgate, dative: "Karsgate'e", locative: "Karsgate'te", genitive: "Karsgate'in"}
+    - {name: Velune, dative: "Velune'a", locative: "Velune'da", genitive: "Velune'un"}
+    - {name: Ottavia, dative: "Ottavia'ya", locative: "Ottavia'da", genitive: "Ottavia'nın"}

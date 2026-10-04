@@ -319,15 +319,15 @@ class Cards(unittest.TestCase):
                                 "skeleton_verdicts": ["fix", "pass"]})
         self.c.run("design_approval.py", "card", "--phase", "P6", check=True)
         text = self.c.path("design/_approval/P6.card.md").read_text(encoding="utf-8")
-        self.assertIn("**Süre:** 3 dk", text, "minutes come from the phase's start when no Workflow seconds were recorded")
-        self.assertIn("**Bağlam (Workflow):** —", text, "unknown tokens are a dash, never 0")
-        self.assertIn("faz eleştirmeni fix", text)
-        self.assertIn("dilek eleştirmeni pass", text)
-        self.assertIn("iskelet fix → pass", text)
+        self.assertIn("**Time:** 3 min", text, "minutes come from the phase's start when no Workflow seconds were recorded")
+        self.assertIn("**Context (Workflow):** —", text, "unknown tokens are a dash, never 0")
+        self.assertIn("phase critic fix", text)
+        self.assertIn("wishes critic pass", text)
+        self.assertIn("skeleton fix → pass", text)
         self.assertIn("rubric_p6_only_here → site_sunken_pier (fix, same_room)", text)
         self.assertIn("| c1:fix → c1:pass |", text, "the entity row carries its own verdict chain")
-        self.assertIn("⚠ **Eksik:** site_never_written", text)
-        self.assertIn("onaylanamaz", text)
+        self.assertIn("⚠ **Incomplete:** site_never_written", text)
+        self.assertIn("cannot be approved", text)
 
     def test_language_column_inherits_through_settlement_and_falls_back_to_the_only_language(self):
         import design_approval as da

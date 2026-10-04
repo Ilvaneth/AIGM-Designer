@@ -35,8 +35,8 @@ from design_io import CONTAINER_PREFIXES, campaign_dir, design_dir, dm_only_dir,
 # one-liners (birth 2, R.6: the P7 card read as a plot synopsis to the owner, who is also the player).
 SPOILER_TYPES = ("arc", "beat", "chapter", "node", "socket", "thread")
 
-PHASE_TITLES = {"P0": "kadranlar", "P1": "premise", "P2": "kozmos", "P3": "topraklar", "P4": "güçler",
-                "P5": "insanlar", "P6": "mekânlar", "P7": "ark", "P8": "primer ve kapanış", "P9": "entegrasyon"}
+PHASE_TITLES = {"P0": "dials", "P1": "premise", "P2": "cosmos", "P3": "lands", "P4": "powers",
+                "P5": "people", "P6": "sites", "P7": "arc", "P8": "primer and closing", "P9": "integration"}
 BAND_KEYS = {"P2": [("god", "gods")], "P3": [("polity", "polities"), ("region", "regions")],
              "P4": [("faction", "factions.count")], "P5": [("npc", "named_npcs")], "P6": [("site", "sites.count")],
              "P7": [("seed", "quest_seeds")]}
@@ -203,7 +203,7 @@ def wish_ticks(ph: dict, wishes: dict) -> list[str]:
                 if f.get("rubric_id") == "rubric_wishes"]
     verdict_by = {f["entity_id"]: f["verdict"] for f in findings}
     lines = []
-    for kind, label in (("must", "olsun"), ("must_not", "olmasın")):
+    for kind, label in (("must", "must"), ("must_not", "must not")):
         for i, w in enumerate(wishes.get(kind) or [], 1):
             v = verdict_by.get(f"wish:{kind}:{i}")
             mark = "✓" if v == "pass" else "✗" if v in ("fix", "rerun") else "?"
@@ -216,30 +216,30 @@ def secret_abstract(campaign: str, ph: dict) -> list[str]:
     log = read_json(dm_only_dir(campaign) / "dice-log.json") or {"rolls": []}
     arche = next((r.get("row_id") for r in log["rolls"] if r.get("label") in ("secret_archetype", "P1.secret_archetype")), None)
     row = dt.row("secrets.yaml#archetype", arche) if arche else None
-    klass = (row or {}).get("hides_in", "bilinmiyor")
+    klass = (row or {}).get("hides_in", "unknown")
     try:
         import design_dice as dd
         gone = dd.rows_used_elsewhere(campaign, "secrets.yaml#archetype")
     except Exception:
         gone = set()
-    novel = "evet" if arche and arche not in gone else "hayır" if arche else "?"
+    novel = "yes" if arche and arche not in gone else "no" if arche else "?"
     clues_by_act: dict = {}
     for ent in canonical(campaign).values():
         if ent.get("type") == "premise":
             for c in (ent.get("dm_only") or {}).get("clues") or []:
                 clues_by_act[c.get("act")] = clues_by_act.get(c.get("act"), 0) + 1
-    clue_line = ", ".join(f"perde {a}: {n}" for a, n in sorted(clues_by_act.items(), key=lambda x: str(x[0]))) or "henüz yerleştirilmedi"
+    clue_line = ", ".join(f"act {a}: {n}" for a, n in sorted(clues_by_act.items(), key=lambda x: str(x[0]))) or "not placed yet"
     recs = [r for r in (ph.get("critique", {}).get("records") or []) if r.get("entity_id", "").startswith("premise_")]
     by_critic = {r.get("critic"): r.get("verdict") for r in recs}
-    agreement = "uyumlu" if len(by_critic) >= 2 and len(set(by_critic.values())) == 1 else "farklı" if len(by_critic) >= 2 else "tek eleştirmen"
-    return [f"- **Sır katmanı (spoiler'sız):** arketip sınıfı *{klass}* · yeni mi (used.json): {novel} · ipuçları: {clue_line} · eleştirmenler: {agreement}"]
+    agreement = "agree" if len(by_critic) >= 2 and len(set(by_critic.values())) == 1 else "differ" if len(by_critic) >= 2 else "one critic"
+    return [f"- **The secret layer (spoiler-safe):** archetype class *{klass}* · new (used.json): {novel} · clues: {clue_line} · critics: {agreement}"]
 
 
 def map_lines(campaign: str) -> list[str]:
     mp = read_json(design_dir(campaign) / "map.json") or {}
     nodes = [n for n in mp.get("nodes") or [] if n.get("secrecy", "public") == "public"]
     hubs = [n["id"] for n in nodes if n.get("hub")]
-    lines = [f"- **Oyuncu haritası (metin):** {len(nodes)} açık düğüm, merkez: {', '.join(hubs) or '—'}"]
+    lines = [f"- **Player map (text):** {len(nodes)} public nodes, hubs: {', '.join(hubs) or '—'}"]
     for n in nodes[:20]:
         lines.append(f"  - {n['id']} ({n.get('kind')}, {n.get('terrain', '')}) @ {n.get('x')},{n.get('y')}")
     return lines
@@ -248,8 +248,8 @@ def map_lines(campaign: str) -> list[str]:
 # errors a later phase resolves by design: not the approving phase's own until then (the gate over the archived births:
 # every premise without pre-placed clues would have stopped P1)
 EXPECTED_UNTIL = {"no_map": "P3", "clue_unplaced": "P6"}
-GATE_LABELS = {"render": "oyuncu dosyaları üretilemedi", "incomplete": "roster eksik", "band": "bant dışı", "critic_missing": "eleştirmen çalışmadı",
-               "validator": "doğrulayıcı hatası", "seed": "seed hatası", "orphan_stub": "sahipsiz taslak"}
+GATE_LABELS = {"render": "the player files could not be rendered", "incomplete": "roster incomplete", "band": "outside the band", "critic_missing": "a critic did not run",
+               "validator": "validator error", "seed": "seed error", "orphan_stub": "orphan stub"}
 
 
 def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
@@ -321,17 +321,17 @@ def gate_text(items: list[dict]) -> str:
 def gate_card_line(items: list[dict], proj: dict) -> str:
     """The card's line: public, non-arc ids by id; secret and arc rows only as a count (the card is the player's surface)."""
     if not items:
-        return "- **Kapı:** açık ✓"
+        return "- **Gate:** open ✓"
     parts = []
     for i in items:
         shown = [e for e in i["ids"] if e in proj and proj[e].get("type") not in SPOILER_TYPES
                  and proj[e].get("secrecy", "public") == "public"]
         hidden = len(i["ids"]) - len(shown)
         ids = ", ".join(shown[:6]) + (f" +{len(shown) - 6}" if len(shown) > 6 else "")
-        extra = " · ".join(x for x in (ids, f"{hidden} kapalı kayıt" if hidden else "") if x)
+        extra = " · ".join(x for x in (ids, f"{hidden} hidden record(s)" if hidden else "") if x)
         parts.append(GATE_LABELS.get(i["code"], i["code"]) + (f" ({extra})" if extra else ""))
-    return ("- ⛔ **Kapı kapalı:** " + " · ".join(parts)
-            + " — onay reddedilir; geçmek için `--force` ve bir gerekçe gerekir.")
+    return ("- ⛔ **Gate closed:** " + " · ".join(parts)
+            + " — approval is refused; passing needs `--force` and a reason.")
 
 
 LINK = re.compile(r"\[\[([a-z]+_[a-z0-9_]+)\]\]")
@@ -352,7 +352,7 @@ def real_cost_text(ph: dict) -> str:
     if not t.get("requests"):
         return ""
     fmt = lambda n: f"{int(n):,}".replace(",", ".")
-    return f" · **Gerçek çıktı:** {fmt(t['output'])} · **önbellekten okunan:** {fmt(t['cache_read'])} · **ajan:** {t['agents']}"
+    return f" · **Real output:** {fmt(t['output'])} · **read from cache:** {fmt(t['cache_read'])} · **agents:** {t['agents']}"
 
 
 def band_lines_of(campaign: str, phase: str) -> list[str]:
@@ -365,7 +365,7 @@ def band_lines_of(campaign: str, phase: str) -> list[str]:
         full = sum(1 for e in canon.values() if e.get("type") == etype)
         public = sum(1 for e in proj.values() if e.get("type") == etype)
         lo, hi = dt.band(dig(scale, key))
-        out.append(f"{etype}: {public} açık, bant {lo}-{hi} {'✓' if lo <= full <= hi else '✗'}")
+        out.append(f"{etype}: {public} public, band {lo}-{hi} {'✓' if lo <= full <= hi else '✗'}")
     return out
 
 
@@ -401,7 +401,7 @@ def build_card(campaign: str, phase: str) -> str:
     shown_rows = {eid: e for eid, e in mine.items() if eid not in spoilers}
     attempt = int(ph.get("attempt") or 1)
 
-    lines = [f"# Faz kartı — {phase} ({PHASE_TITLES.get(phase, phase)}) · {campaign} · deneme {attempt}",
+    lines = [f"# Phase card — {phase} ({PHASE_TITLES.get(phase, phase)}) · {campaign} · attempt {attempt}",
              f"<!-- attempt: {attempt} -->", f"<!-- ids: {','.join(sorted(mine))} -->",
              "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(shown_rows.items())) + " -->", ""]
     val = ph.get("validator") or {}
@@ -413,49 +413,49 @@ def build_card(campaign: str, phase: str) -> str:
     tokens_out = int((ph.get("tokens") or {}).get("out") or 0)
     per_module, findings = validator_summary(campaign, phase)
     gate_items = gate(campaign, phase, findings=findings)
-    lines.append(f"- **Durum:** {ph['status']} · **Doğrulayıcı:** {val.get('errors', '—')} hata, {val.get('warnings', '—')} uyarı · "
-                 f"**Başarısız:** {', '.join(failed) or '—'} · **Süre:** {elapsed_minutes(ph)} dk · "
-                 f"**Bağlam (Workflow):** {f'{tokens_out:,}'.replace(',', '.') + ' token' if tokens_out else '—'}"
+    lines.append(f"- **Status:** {ph['status']} · **Validator:** {val.get('errors', '—')} errors, {val.get('warnings', '—')} warnings · "
+                 f"**Failed:** {', '.join(failed) or '—'} · **Time:** {elapsed_minutes(ph)} min · "
+                 f"**Context (Workflow):** {f'{tokens_out:,}'.replace(',', '.') + ' tokens' if tokens_out else '—'}"
                  + real_cost_text(ph))
-    lines.append(f"- **Eleştiri:** faz eleştirmeni {phase_verdict} · dilek eleştirmeni {wishes_verdict}"
-                 + (f" · iskelet {' → '.join(skeleton_verdicts)}" if skeleton_verdicts else "")
-                 + f" · varlık düzeltme döngüsü {crit.get('entity_loops_total', 0)}"
-                 + (f" · eleştiri eksik {missing}" if missing else ""))
+    lines.append(f"- **Critique:** phase critic {phase_verdict} · wishes critic {wishes_verdict}"
+                 + (f" · skeleton {' → '.join(skeleton_verdicts)}" if skeleton_verdicts else "")
+                 + f" · entity fix loops {crit.get('entity_loops_total', 0)}"
+                 + (f" · critiques missing {missing}" if missing else ""))
     for pl in phase_lines[:8]:
-        lines.append(f"  - faz eleştirmeni: {pl}")
+        lines.append(f"  - phase critic: {pl}")
     if incomplete:
-        lines.append(f"- ⚠ **Eksik:** {', '.join(incomplete)} — faz tamamlanmadı; kayıt defterine girmeyen varlık var, bu kart onaylanamaz "
+        lines.append(f"- ⚠ **Incomplete:** {', '.join(incomplete)} — the phase is not complete; an entity never reached the registry, this card cannot be approved "
                      "(`phase begin --json` + fan-out, ya da `drop`).")
     not_passed = [eid for eid, ch in chains.items() if ch and ch[-1].split(":")[-1] in ("fix", "rerun")]
     if phase_verdict.split(" → ")[-1] in ("fix", "rerun"):
-        not_passed.append("faz eleştirmeni")
+        not_passed.append("phase critic")
     if skeleton_verdicts and skeleton_verdicts[-1] in ("fix", "rerun"):
-        not_passed.append("iskelet")
+        not_passed.append("skeleton")
     if not_passed:
-        lines.append(f"- ⚠ **Eleştirmen geçmedi:** {', '.join(not_passed)} — son karar `fix`; düzeltme döngüleri bitti, "
-                     "karar oyuncunun (bir düzeltme cümlesi ya da onay).")
+        lines.append(f"- ⚠ **A critic did not pass:** {', '.join(not_passed)} — the last verdict is `fix`; the fix loops are spent, "
+                     "the owner decides (one correction sentence, or approval).")
     lines.append(gate_card_line(gate_items, proj))
     minor = minor_orphans(campaign, phase) if phase in dm.PHASES and phase != "P0" else {}
     if minor:
-        lines.append("- ⚠ **Yazılmamış küçük taslak:** " + ", ".join(f"{t} ×{n}" for t, n in sorted(minor.items()))
-                     + " — sahibi bu faz ya da önceki bir faz; onayı durdurmaz.")
+        lines.append("- ⚠ **Unwritten minor stubs:** " + ", ".join(f"{t} ×{n}" for t, n in sorted(minor.items()))
+                     + " — owned by this phase or an earlier one; it does not stop the approval.")
     # scale band, script-side with the full count; the card prints the public count and a tick
     band_lines = band_lines_of(campaign, phase)
     if band_lines:
-        lines.append("- **Ölçek bandı:** " + " · ".join(band_lines))
+        lines.append("- **Scale band:** " + " · ".join(band_lines))
     wl = wish_ticks(ph, m["dials"].get("wishes") or {})
     if wl:
-        lines.append("- **Dilekler:** " + " · ".join(wl))
+        lines.append("- **Wishes:** " + " · ".join(wl))
     if phase == "P1":
         lines += secret_abstract(campaign, ph)
     if ph.get("directions"):
-        lines.append("- **Yönler (önceki turlardan):** " + " · ".join(ph["directions"]))
+        lines.append("- **Directions (from earlier rounds):** " + " · ".join(ph["directions"]))
     lines.append("")
 
     languages = list((naming.get("languages") or {}).keys())
     default_lang = languages[0] if len(languages) == 1 else "—"
-    lines.append("## Bu fazda doğanlar (herkese açık)")
-    lines.append("| id | ad | tür | dil | eleştiri | bir satır |")
+    lines.append("## Born in this phase (public)")
+    lines.append("| id | name | type | language | critique | one line |")
     lines.append("|---|---|---|---|---|---|")
     for eid, e in sorted(shown_rows.items()):
         one = readable(e.get("hook_tr") if e.get("type") == "seed" and e.get("hook_tr") else (e.get("summary") or ""), proj)
@@ -467,7 +467,7 @@ def build_card(campaign: str, phase: str) -> str:
             counts[e.get("type")] = counts.get(e.get("type"), 0) + 1
         lines.append("| — | — | " + ", ".join(f"{t} ×{n}" for t, n in sorted(counts.items())) + " | — | "
                      + (" · ".join(f"{t}: {' → '.join(chains[eid])}" for eid in sorted(spoilers) for t in [eid] if chains.get(eid)) or "—")
-                     + " | (arkın içeriği DM'e açık, oyuncuya kapalı; kart yalnız sayıları ve eleştiri kararlarını gösterir) |")
+                     + " | (the arc's content is open to the DM and closed to the player; the card shows counts and critique verdicts only) |")
     docs = []
     for rid in roster:
         if not rid.startswith(CONTAINER_PREFIXES):
@@ -479,24 +479,24 @@ def build_card(campaign: str, phase: str) -> str:
         status = m["entities"].get(rid, {}).get("status", "pending")
         docs.append(f"- `{rid}` — {status}" + (f" · {pfile}" if pfile else "")
                     + (" · " + ", ".join(f"{k} {v}" for k, v in counts.items()) if counts else "")
-                    + (f" · eleştiri {' → '.join(chains[rid])}" if chains.get(rid) else ""))
+                    + (f" · critique {' → '.join(chains[rid])}" if chains.get(rid) else ""))
     if not mine and not docs:
-        lines.append("| — | — | — | — | — | (bu faz henüz varlık üretmedi) |")
+        lines.append("| — | — | — | — | — | (this phase has produced no entity yet) |")
     if docs:
         lines.append("")
-        lines.append("## Belgeler (bu fazın dosyaları)")
+        lines.append("## Documents (this phase's files)")
         lines += docs
         if phase == "P8":
             primer = design_dir(campaign) / "player-primer.md"
-            lines.append(f"- oyuncu primer'ı: `design/player-primer.md`"
-                         + (f" ({len(primer.read_text(encoding='utf-8')):,} karakter)".replace(",", ".") if primer.is_file() else " (henüz üretilmedi)"))
+            lines.append(f"- the player primer: `design/player-primer.md`"
+                         + (f" ({len(primer.read_text(encoding='utf-8')):,} characters)".replace(",", ".") if primer.is_file() else " (not rendered yet)"))
     lines.append("")
 
     if phase == "P3":
         lines += map_lines(campaign)
         lines.append("")
 
-    lines.append("## Bir yerlinin bildiği")
+    lines.append("## What a native knows")
     shown = 0
     for eid, e in sorted(shown_rows.items()):
         if e.get("summary") and e.get("secrecy", "public") == "public":
@@ -505,13 +505,13 @@ def build_card(campaign: str, phase: str) -> str:
             if shown >= 8:
                 break
     if not shown:
-        lines.append("- (henüz yok)")
+        lines.append("- (nothing yet)")
     lines.append("")
 
-    lines.append("## Doğrulayıcı (özet, kısaltılmış)")
+    lines.append("## Validator (summary, shortened)")
     if per_module:
         for mod, c in sorted(per_module.items()):
-            lines.append(f"- {mod}: {c['error']} hata, {c['warning']} uyarı")
+            lines.append(f"- {mod}: {c['error']} errors, {c['warning']} warnings")
         for f in findings[:30]:
             msg = str(f.get("message") or "")
             tail = "" if ("dm-only" in msg or not msg) else f" — {msg[:90]}"
@@ -525,18 +525,18 @@ def build_card(campaign: str, phase: str) -> str:
         added = sorted(set(mine) - prev["ids"])
         removed = sorted(prev["ids"] - set(mine))
         renamed = sorted(eid for eid in set(mine) & prev["ids"] if prev["names"].get(eid, "") != (mine[eid].get("name") or ""))
-        lines.append(f"## Önceki karta göre değişiklik (deneme {prev['attempt']} → {attempt})")
+        lines.append(f"## Changes from the previous card (attempt {prev['attempt']} → {attempt})")
         lines.append(f"- eklendi: {', '.join(added) or '—'}")
-        lines.append(f"- çıkarıldı: {', '.join(removed) or '—'}")
-        lines.append(f"- adı değişti: {', '.join(renamed) or '—'}")
+        lines.append(f"- removed: {', '.join(removed) or '—'}")
+        lines.append(f"- renamed: {', '.join(renamed) or '—'}")
         lines.append("")
 
     lines.append("## Onay")
     if m["_meta"].get("auto_approve"):
-        lines.append("- Test doğumu: kart otomatik onaylanır (owner kararı 2026-09-25).")
+        lines.append("- A test birth: the card is approved automatically (owner ruling 2026-09-25).")
     else:
-        lines.append("- Onaylamak için tam olarak `onay` yaz; bir düzeltme tek cümledir (en çok üç tur). Sonraki faz `devam` ile başlar.")
-    lines.append(f"- Üretildi: {now_iso()}")
+        lines.append("- To approve, type exactly `onay`; a correction is one sentence (three rounds at most). The next phase starts with `devam`.")
+    lines.append(f"- Produced: {now_iso()}")
     return "\n".join(lines) + "\n"
 
 
