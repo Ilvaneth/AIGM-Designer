@@ -93,3 +93,34 @@ phandalin saltmarsh barovia
 ## What the build reports for the audit
 
 For each of the seventeen bags, a file of 200 generated names (fixed seed) under the scratch output of the summary, plus the count the two lists dropped per bag over 2,000 draws; for the place generator, 200 compounds from a fixed seed and the count dropped. The development tab reads the samples (the owner does not need to) and extends the lists before the commit.
+
+## Added at the audit of build 11a (2026-10-04)
+
+The development tab read the 3,069 sample names the build drew (seventeen bags, up to 200 each). What slipped through, to add to the lists:
+
+Real given names, mythic names and names from known books (to `real_given`):
+
+```text
+ishan
+europe philia aristides androkles iphis pelope kallippos alkimos lykias xanthia aristeus hermokles menia olympas
+tullia fulvius antenor laurene silene rufius
+milosh radana tikhomir vseslav bratoslav mileta zdanko vitko zorko dragomil gostomir lubimir lyudomir zlatimir milik
+torsten
+reija raimo ilmatar heikko heili
+arwen vesna
+moran cynan cariad merion aeryn
+morana
+halvor gunhild hallveig yngvar svanborg svandis gudbjorn gudlaug asgard ingleif egfrid arngerd hildrun gunstein hrothmund jorstein dagolf gunleif
+donnell ailin
+irune sarria goiko araneta
+tamaki
+```
+
+Plain words (see the split below):
+
+```text
+koran naval males marne fulan penys pellet pardun
+```
+
+**The split.** `real_given` holds two different things: real names, which the rustic bag may spell (owner: a real English name suits a villager), and plain words, which no bag should spell (the rustic sample holds "Pellet"). The plain-words block of this file, with the words above, becomes its own list `blacklist.plain_words`, applied to every bag, `real_ok` or not; `real_given` keeps the names and stays off for a `real_ok` bag.
+
