@@ -483,7 +483,7 @@ Removed at the review: pot, cord, awl, weave. `mill` comes from the crop tag.
 | ferry | either | road |
 | wain | head | road |
 | mile | head | road |
-| inn | tail | road |
+| inn | head | road |
 | rest | tail | road |
 | halt | tail | road |
 | post | tail | road |
@@ -649,3 +649,4 @@ Removed at the review: war, host, bow.
 Removed at the review: saint, friar, chapel, priory, god, prayer.
 
 **Corrected at the audit of build 11b (2026-10-04):** `song`, `root`, `leaf`, `wing`, `brand`, `smith`, `wright` and `bough` are heads only; they did not end a place name well.
+`inn` is a head only as well (build 11c).

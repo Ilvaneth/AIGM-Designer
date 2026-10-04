@@ -219,3 +219,12 @@ Found by reading the three sample pools the build printed. Each is a rule in dat
 
 Accepted as the coding tab reported them: the language keys are the owner words; the other side is role `b` when the people holds the third or fourth role or none; a root carrying a land tag the palette does not call stays out of the called half; the stocks are sized as shares of three times the campaign's need; the inn, building and ship stocks follow the settlement count; the secret stock's sizes; the old tongue's site words stand one letter apart; the calendar's real-word filter; the schema document's new record.
 
+## Part 11c — two small rules from the second reading of the pools (2026-10-04; one small green commit before item 12)
+
+Commit message: `Plan item 25, build 11c: two name rules from the pools' second reading`. The seven corrections of 11b hold in the reprinted pools (no root of the eight ends a place, the region words follow the palette, ships are creatures, the epithets read well). Two things the second reading showed:
+
+1. **`inn` is a head only.** As a place's tail it gave "Sedgeinn", "Stillinn". `docs/p1-build-11-lexicon.md` is corrected.
+2. **A season root names no month under the `fall` pattern** ("Springfall"). The four roots of `not_days` are also barred from the month names when the campaign's month pattern is `pattern_month_fall`; under `month` and `moon` they stay ("Wintermoon").
+
+Each a rule in data with a test; the suite green; summary: the count and the exit code.
+
