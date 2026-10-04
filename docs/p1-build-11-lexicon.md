@@ -4,7 +4,7 @@
 
 ## Untagged roots (stay in the lexicon, errata 24.2 #18; called by nothing, base chance only)
 
-barrow (either) · still (head) · salt (head) · tide (head) · wake (tail) · lantern (head) · lamp (head) · candle (head) · tallow (head) · wax (head) · toll (head) · hush (head) · bell (head) · choir (tail) · song (either) · mourn (head) · grave (head) · coin (head) · tithe (head) · debt (head) · crown (either)
+barrow (either) · still (head) · salt (head) · tide (head) · wake (tail) · lantern (head) · lamp (head) · candle (head) · tallow (head) · wax (head) · toll (head) · hush (head) · bell (head) · choir (tail) · song (head) · mourn (head) · grave (head) · coin (head) · tithe (head) · debt (head) · crown (either)
 
 ## 1. heights — called by mountain, highland (21)
 
@@ -86,9 +86,9 @@ Removed at the review: wide, turf, flat.
 | bracken | head | forest |
 | bramble | head | forest |
 | ivy | head | forest |
-| bough | tail | forest |
-| leaf | either | forest |
-| root | either | forest |
+| bough | head | forest |
+| leaf | head | forest |
+| root | head | forest |
 
 Removed at the review: copse, weald, fir.
 
@@ -203,7 +203,7 @@ Removed at the review: thirst, drought, parch, fig, oasis. `sand` comes from the
 | smoke | head | fire |
 | fire | head | fire |
 | flame | head | fire |
-| brand | either | fire |
+| brand | head | fire |
 | char | head | fire |
 | soot | head | fire |
 | scorch | head | fire |
@@ -290,7 +290,7 @@ Removed at the review: drip, blind, lichen.
 | dusk | head | sky |
 | sky | head | sky |
 | cloud | head | sky |
-| wing | either | sky |
+| wing | head | sky |
 | feather | head | sky |
 | kite | head | sky + animal |
 | eagle | head | sky + animal |
@@ -459,8 +459,8 @@ Removed at the review: lead, nugget, adamant. `coal` comes from the fire tag.
 | needle | head | craft |
 | spindle | head | craft |
 | bellows | head | craft |
-| smith | either | craft |
-| wright | tail | craft |
+| smith | head | craft |
+| wright | head | craft |
 | tar | head | craft |
 | pitch | head | craft |
 
@@ -647,3 +647,5 @@ Removed at the review: war, host, bow.
 | rune | head | holy and oath |
 
 Removed at the review: saint, friar, chapel, priory, god, prayer.
+
+**Corrected at the audit of build 11b (2026-10-04):** `song`, `root`, `leaf`, `wing`, `brand`, `smith`, `wright` and `bough` are heads only; they did not end a place name well.
