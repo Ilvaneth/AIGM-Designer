@@ -237,3 +237,24 @@ Removed at the review: "The horde at the wall" and "The shore folk and the beast
 ## The count
 
 Thirty-one public rows: 13 ruin sources (the table goes from 40 to 53), 11 contests (40 to 51), 5 trope breaks (31 to 36), 1 lifeline (60 to 61), 1 institution practice (33 to 34).
+
+## Part 16d — the new contests' dial weights (owner-approved 2026-10-04, after the audit of 16b)
+
+One small green commit after 16c: `Plan item 25, build 16d: the general themes' dial weights`. Of the old forty contests fifteen weigh ×2 under the politics mix, ten ×2 under the war mix, two ×3 under an era, thirteen carry no dial weight; no contest was called by exploration, horror or mystery. The eleven new contests get:
+
+| Contest | Weight |
+|---|---|
+| `contest_living_dead` | content mix `horror` ×2 |
+| `contest_coven` | content mix `horror` ×2 |
+| `contest_fiend_pact` | content mix `mystery` ×2 |
+| `contest_prophecy` | content mix `mystery` ×2 |
+| `contest_relic_pieces` | content mix `exploration` ×2 (beside its ×3 with the sundered relic) |
+| `contest_dark_lord` | content mix `war` ×2 (beside its ×2 with the dark lord's fall) |
+| `contest_two_empires` | content mix `war` ×2 |
+| `contest_slavers` | content mix `war` ×2 |
+| `contest_thieves_guild` | content mix `politics` ×2 |
+| `contest_pirates` | era `nautical` ×3, as `contest_land_sea_folk` |
+| `contest_elemental_lord` | none |
+
+Written as the old rows write theirs (`weight_by` with a `dial` condition). Tests: the eleven rows carry exactly these; the many-seeds tests stay green. Summary: the suite's count and exit code.
+

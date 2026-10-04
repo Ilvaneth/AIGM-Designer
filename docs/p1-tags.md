@@ -729,3 +729,15 @@ Accepted as reported: the writing language is a fixed manifest field (`write_lan
 - the new contests carry no content-mix weight (36 of the old 40 do); no ruling asked for one.
 The technical fields the coding tab wrote (remnant kinds, sites, rule families, texts, escalation steps, hooks) are listed in `docs/reports/item16b-technical-fields.md`; the hints and prizes are the development tab's proposals, unchanged. Measured by the coding tab over 2,700 seeds: every new row drawn, no empty pool, the floors hold (the smallest five).
 
+**Build item 16b committed as `80a4bc4` and pushed. The owner then approved dial weights for the eleven new contests (`docs/p1-build-16.md`, Part 16d): horror, mystery and exploration call a contest for the first time.**
+
+**Build item 16c, audited 2026-10-04 (every added secret and villain row read against the seven criteria; the public-figure rule read in `design_identity.py`; the suite run on the working tree: 622 tests, exit code 0). Counts only; the row-level notes are in `docs/reports/item16c-audit-SPOILER.md`, which the owner does not open.**
+
+| Sub-table | Before | Added | After | Pass every criterion | To correct |
+|---|---|---|---|---|---|
+| secret: archetype | 26 | 5 | 31 | 4 | 1 (its first clue is an ordinary sight beside two public rows: two conflicts to add) |
+| villain: shape | 19 | 2 | 21 | 2 | 0 |
+| villain: origin | 10 | 3 | 13 | 2 | 1 (the living person's choice is not stated in the row) |
+
+The fifth criterion is read as the owner's ruling of 2026-10-04 changed it: the dead and the undead are general material; courts, money and debt, light as a fuel, hush and bells, tides and salt stay out. The rule for the public dark lord does what the specification asked: with the contest rolled and the villain's visibility the known one, the villain is that public figure (the shape set, not rolled; its pole that role's when the contest is the main one); with any other visibility the villain is someone else; without the contest nothing changes. Accepted as reported: the attractor word list of build 9's test lost the seven words of the dead. Measured by the coding tab over 1,800 seeds: no empty pool, no conflicting set, the chooser and tie equivalence holds, no secret row in a public record, the archetype pool's smallest size 25.
+
