@@ -53,6 +53,7 @@ rules:
       special_months: 4            # `High` / `Last` names
       tags: [crop, "weather and season", cold, animal, forest, sky, "fresh water"]
       not_days: [spring, summer, autumn, winter]             # a season names no day (Summerday)
+      not_months_under: [pattern_month_fall]                 # nor a month under these month patterns (Springfall)
       # real words a calendar root and its pattern's tail would spell
       real_words: [sunday, monday, tuesday, wednesday, thursday, friday, saturday, midday, holiday, hollyday, rainfall,
                    snowfall, nightfall, windfall, dewfall, landfall, waterfall, honeymoon]
@@ -641,7 +642,7 @@ lexicon:
     - {root: ferry, pos: either, tags: ["road"]}
     - {root: wain, pos: head, tags: ["road"]}
     - {root: mile, pos: head, tags: ["road"]}
-    - {root: inn, pos: tail, tags: ["road"]}
+    - {root: inn, pos: head, tags: ["road"]}
     - {root: rest, pos: tail, tags: ["road"]}
     - {root: halt, pos: tail, tags: ["road"]}
     - {root: post, pos: tail, tags: ["road"]}

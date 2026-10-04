@@ -94,8 +94,8 @@ class Lexicon(unittest.TestCase):
             self.assertIn(r["pos"], ("head", "tail", "either"))
             self.assertTrue(len(r["tags"]) <= 2 and not set(r["tags"]) - set(TAGS), r["root"])
             self.assertNotIn("settlement", r["tags"], "the settlement tails are their own list")
-        self.assertEqual(Counter(r["pos"] for r in ROOTS if r["tags"]), {"head": 309, "tail": 116, "either": 37},
-                         "302 heads, 140 tails with the 22, 42 either; the audit of build 11b made seven tagged roots heads only")
+        self.assertEqual(Counter(r["pos"] for r in ROOTS if r["tags"]), {"head": 310, "tail": 115, "either": 37},
+                         "302 heads, 140 tails with the 22, 42 either; the audit of build 11b made seven tagged roots heads only, build 11c `inn`")
         untagged = {r["root"] for r in ROOTS if not r["tags"]}
         self.assertTrue({"salt", "tide", "lantern", "candle", "bell", "hush", "debt", "crown"} <= untagged, "the attractor's roots stay, called by nothing")
         self.assertTrue({"ash", "ember", "cinder"} <= {r["root"] for r in ROOTS if r["tags"][:1] == ["fire"]})

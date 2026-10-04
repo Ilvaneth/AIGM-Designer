@@ -485,6 +485,7 @@ def roll(R, dials: dict, foundation: dict, identity: dict) -> dict:
     pattern = rollable[face - 1]
     _items(R, "naming_calendar.pattern", [pattern["id"]], notation=f"d{len(rollable)}", raw=face)
     cal_tags, real_words, no_day = set(cal["tags"]), set(cal["real_words"]), set(cal["not_days"])
+    seasons_barred = {"day": True, "month": pattern["id"] in (cal.get("not_months_under") or [])}
     calls = palette_tags(kinds)
     max_letters = int(rules["compound_max_letters"])
     out_cal = {"month_pattern": pattern["id"]}
@@ -493,7 +494,7 @@ def roll(R, dials: dict, foundation: dict, identity: dict) -> dict:
         roots, called, short, spent = _pick_roots(
             rng, ["noun"] * count, math.ceil(count * share), lambda r: _is_called(r, calls, barred), taken, used,
             extra=lambda r, suffix=suffix, key=key: bool(set(r["tags"]) & cal_tags) and joins(r["root"], suffix, max_letters)
-            and (r["root"] + suffix) not in real_words and not (key == "day" and r["root"] in no_day))
+            and (r["root"] + suffix) not in real_words and not (seasons_barred[key] and r["root"] in no_day))
         taken |= set(roots)
         _items(R, f"naming_calendar.{key}s", roots, called=called, called_short=short, lexicon_spent=spent, used_keys={LEX: roots})
         out_cal.update({f"{key}_roots": roots, f"{key}_called": called})

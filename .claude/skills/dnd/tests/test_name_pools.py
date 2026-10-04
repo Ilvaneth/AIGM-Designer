@@ -499,6 +499,31 @@ class AuditCorrections(unittest.TestCase):
             self.assertFalse(spelled & set(cal["real_words"]), spelled & set(cal["real_words"]))
 
 
+class SecondReading(unittest.TestCase):
+    """Build 11c (docs/p1-build-11.md, Part 11c): two rules from the second reading of the pools."""
+
+    def test_inn_is_a_head_only(self):
+        self.assertEqual(ROOTS["inn"]["pos"], "head")
+        for b in births(POOL_SEEDS):
+            for lid in living(b):
+                for e in pooled(b)["languages"][lid]["places"]:
+                    self.assertFalse(e["name"].lower().endswith("inn") and e["head"] != "inn", e["name"])
+
+    def test_a_season_names_no_month_under_the_fall_pattern(self):
+        cal = RULES["calendar"]
+        self.assertEqual(cal["not_months_under"], ["pattern_month_fall"])
+        seasons = set(cal["not_days"])
+        kept = Counter()
+        for b in births(SEEDS):
+            c = b["naming"]["calendar"]
+            hit = seasons & set(c["month_roots"])
+            if c["month_pattern"] == "pattern_month_fall":
+                self.assertFalse(hit, f"{sorted(hit)} under the fall pattern")
+            elif hit:
+                kept[c["month_pattern"]] += 1
+        self.assertEqual(set(kept), {"pattern_month_month", "pattern_month_moon"}, "under month and moon the seasons stay")
+
+
 class FullPools(unittest.TestCase):
     """The bag stocks and the secret stock, on a few births of every scale (a full epic pool takes seconds)."""
 
