@@ -257,9 +257,9 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
 
     # 7. the villain
     visibility = R.table("bbeg_visibility", VILLAIN + "visibility", secret=True)["row_id"]
-    shape = R.table("bbeg_shape", VILLAIN + "villain_shape", secret=True)["row_id"]        # the forbidden shapes never enter
+    shape = R.table("bbeg_shape", VILLAIN + "villain_shape", secret=True)["row_id"]
     spent = {o["id"] for o in dt.rows(VILLAIN + "origin") if dd.hashed(f"{shape}|{o['id']}") in used_pairs}
-    rec = R.table("bbeg_origin", VILLAIN + "origin", secret=True, also_used=spent)        # nor the awakened ancient evil
+    rec = R.table("bbeg_origin", VILLAIN + "origin", secret=True, also_used=spent)
     origin = rec["row_id"]
     rec["used_keys"] = {VILLAIN_PAIR_KEY: f"{shape}|{origin}"}       # approve writes it hashed; the pair never repeats
     if chooser == "chooser_the_villain":

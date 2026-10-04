@@ -29,7 +29,6 @@ SEEDS = 1800
 P1_SECRET = ("secret_archetype", "secret_chooser", "secret_twist", "secret_trail",
              "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_tie", "bbeg_pole")
 MOVED = ("bbeg_visibility", "bbeg_shape", "bbeg_origin")
-FORBIDDEN = {r["id"] for sub in ("villain_shape", "origin") for r in dt.rows(V + sub) if r.get("forbidden")}
 SECRET_IDS = dt.secret_row_ids()
 
 
@@ -99,9 +98,12 @@ class ManySeeds(unittest.TestCase):
         self.assertGreater(coming, 100)
         self.assertEqual(bad, 0)
 
-    def test_no_forbidden_shape_or_origin(self):
-        hit = sum(1 for d, p1, p4 in self.runs for r in p1.secret + p4.secret if r.get("row_id") in FORBIDDEN)
-        self.assertEqual(hit, 0)
+    def test_every_shape_and_origin_is_drawn(self):
+        """Build item 16a: no shape or origin is barred; over the seeds every row of the two tables comes up."""
+        for label, sub in (("bbeg_shape", "villain_shape"), ("bbeg_origin", "origin")):
+            self.assertFalse(any(r.get("forbidden") for r in dt.rows(V + sub)))
+            drawn = {p1.by_label[label]["row_id"] for d, p1, p4 in self.runs}
+            self.assertEqual(len(drawn), len(dt.rows(V + sub)), f"{sub}: {len(dt.rows(V + sub)) - len(drawn)} row(s) never drawn")
 
     def test_the_floor(self):
         """The secret's non-repeating tables keep five rows after the constraints; the villain's shape and origin

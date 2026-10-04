@@ -495,24 +495,21 @@ class Floors(unittest.TestCase):
         for r in dt.rows("factions.yaml#secret_kind"):
             self.assertIn(r["tier"], ("discoverable", "secret"), r["id"])
 
-    def test_forbidden_structural_checks_point_at_real_closed_lists(self):
-        """Every forbidden row's structural field names a table row set whose `value`s include the forbidden ones, flagged."""
-        present = {n[:-5] for n in dt.list_tables()}
-        checked = 0
-        for r in dt.rows("forbidden.yaml"):
-            table, _, sub = r["structural"]["table"].partition("#")
-            if table[:-5] not in present:
-                continue
-            rows = dt.rows(f"{table}#{sub}")
-            if not rows or "value" not in rows[0]:
-                continue   # a field on rows (npcs.yaml#demographic alignment_fixed), not a closed list
-            values = {x["value"]: x for x in rows}
-            for v in r["structural"]["forbidden_values"]:
-                with self.subTest(forbidden=r["id"], value=v):
-                    self.assertIn(v, values)
-                    self.assertTrue(values[v].get("forbidden"), f"{v} must be flagged forbidden in {table}#{sub}")
-                    checked += 1
-        self.assertGreaterEqual(checked, 8)
+    def test_the_only_barred_rows_guard_a_mechanism(self):
+        """Build item 16a: no row is barred for taste. Three rows never enter a pool, each as its table's own rule: a
+        faction always has a fracture (the simulation needs something to lose piece by piece), a rolled cult doctrine
+        states a belief, a mission is an active verb."""
+        barred = {r["id"]: (name, sub) for name, sub, r in every_row() if r.get("forbidden")}
+        self.assertEqual(barred, {"fracture_none": ("factions.yaml", "fracture"), "cultdoc_unspecified": ("factions.yaml", "cult_doctrine"),
+                                  "verb_find_out_who": ("threads.yaml", "mission_verb")})
+        self.assertFalse([r["id"] for _, _, r in every_row() if r.get("allowed_via") and r["id"] != "forbidden_inherently_evil_races"])
+        notes = dt.load("factions.yaml")["tables"]
+        self.assertIn("something it can lose piece by piece", notes["fracture"]["note"])
+        self.assertIn("own rule, not a cliché rule", notes["fracture"]["note"])
+        self.assertIn("own rule, not a cliché rule", notes["cult_doctrine"]["note"])
+        self.assertIn("own rule, not a cliché rule", dt.load("threads.yaml")["tables"]["mission_verb"]["note"])
+        cults = {r["value"]: r for r in dt.rows("factions.yaml#cult_doctrine")}
+        self.assertNotIn("forbidden", cults["evil_for_its_own_sake"])
 
     def test_antagonists_visibility_fronts_dooms_and_stages(self):
         self.assertEqual(len(dt.rows("antagonists.yaml#visibility")), 5)
@@ -520,13 +517,12 @@ class Floors(unittest.TestCase):
         shapes = dt.rows("antagonists.yaml#villain_shape")
         self.assertGreaterEqual(len([s for s in shapes if not s.get("forbidden")]), 14)
         origins = dt.rows("antagonists.yaml#origin")
-        self.assertEqual(len([o for o in origins if not o.get("forbidden")]), 9)
+        self.assertEqual(len(origins), 10)
+        self.assertFalse(any(r.get("forbidden") for r in shapes + origins), "build item 16a: every shape and origin can be drawn")
         self.assertEqual(len(dt.rows("antagonists.yaml#break_tie")), 6)
         bfa = {r["value"]: r for r in dt.rows("antagonists.yaml#bbeg_faction_archetype")}
         self.assertEqual(set(bfa), {a["value"] for a in dt.rows("factions.yaml#archetype")})
-        self.assertTrue(bfa["religious"]["forbidden"])
-        ids = {r["id"] for _, _, r in every_row()}
-        self.assertTrue(set(bfa["religious"]["allowed_via"]) <= ids)
+        self.assertFalse(any(r.get("forbidden") or r.get("allowed_via") for r in bfa.values()), "the religious villain faction is an ordinary row")
         kinds = {r["value"] for r in dt.rows("factions.yaml#step_kind")}
         fronts = dt.rows("antagonists.yaml#front_template")
         self.assertGreaterEqual(len(fronts), 6)
@@ -751,13 +747,22 @@ class Floors(unittest.TestCase):
         kinds = {r["value"] for r in dt.rows("npcs.yaml#relationship_kind")}
         self.assertTrue({"knows", "owes", "hates", "fears", "allied", "controls", "commands", "heir_of"} <= kinds)
 
-    def test_forbidden_defaults_from_item_4_5_are_all_present(self):
-        ids = {r["id"] for r in dt.rows("forbidden.yaml")}
-        for needed in ("forbidden_awakening_ancient_evil", "forbidden_chosen_one", "forbidden_prophecy",
-                       "forbidden_dark_lord_black_tower", "forbidden_generic_evil_cult",
-                       "forbidden_corrupt_church_default_villain", "forbidden_amnesiac_hero",
-                       "forbidden_tavern_opening", "forbidden_monolithic_empire", "forbidden_inherently_evil_races"):
-            self.assertIn(needed, ids)
+    def test_the_forbidden_list_holds_one_row(self):
+        """Owner rulings 2026-10-04 (errata 24.2 #31): twelve defaults went; "no people is evil by birth" stays."""
+        self.assertEqual([r["id"] for r in dt.rows("forbidden.yaml")], ["forbidden_inherently_evil_races"])
+        gone = re.compile(r"forbidden_(awakening_ancient_evil|chosen_one|prophecy|dark_lord_black_tower|generic_evil_cult|"
+                          r"corrupt_church_default_villain|amnesiac_hero|tavern_opening|monolithic_empire|collect_the_pieces|"
+                          r"evil_advisor|secretly_evil_ruler)")
+        skill = SCRIPTS.parent
+        files = [p for pat in ("data/design/*", "scripts/*.py", "prompts/design/*.md", "prompts/play/*.md", "templates/design/*.md", "SKILL*.md")
+                 for p in sorted(skill.glob(pat)) if p.is_file()]
+        files += sorted((skill.parents[1] / "workflows").glob("*.js"))
+        self.assertGreater(len(files), 80)
+        for p in files:
+            self.assertIsNone(gone.search(p.read_text(encoding="utf-8", errors="replace")), f"{p.name} still names a deleted default")
+        rubric = dt.row("rubrics.yaml#rubric", "rubric_p1_forbidden") if "rubric" in (dt.load("rubrics.yaml").get("tables") or {}) else \
+            next(r for _, _, r in every_row() if r["id"] == "rubric_p1_forbidden")
+        self.assertIn("evil by birth", rubric["question"])
 
 
 class ForbiddenDetection(unittest.TestCase):
@@ -775,8 +780,9 @@ class ForbiddenDetection(unittest.TestCase):
 
     def test_lexical_patterns_catch_the_cliche_and_not_the_fixture(self):
         pats = [re.compile(p, re.IGNORECASE) for r in dt.rows("forbidden.yaml") for p in r["lexical"]["en"]]
-        self.assertTrue(any(p.search("an ancient evil awakens from its slumber") for p in pats))
-        self.assertTrue(any(p.search("you all meet in a tavern") for p in pats))
+        self.assertTrue(any(p.search("goblins are inherently evil") for p in pats))
+        self.assertFalse(any(p.search("an ancient evil awakens from its slumber") for p in pats), "a theme, no longer refused")
+        self.assertFalse(any(p.search("you all meet in a tavern") for p in pats))
         clean = "Lanternside'ın eski iskelesi üç yıl önce çöktü; Court of Mourners okumayı reddetti."
         self.assertFalse(any(p.search(clean) for p in pats))
 
@@ -925,10 +931,11 @@ class Rubrics(unittest.TestCase):
         self.assertEqual({e["id"] for e in dt.rows("arc.yaml#ending")}, {"ending_win", "ending_loss", "ending_pyrrhic"})
         self.assertGreaterEqual(len(dt.rows("arc.yaml#planted_hook_kind")), 5)
         opens = {o["value"]: o for o in dt.rows("arc.yaml#opening_scene_type")}
-        self.assertTrue(opens["tavern"]["forbidden"] and opens["stranger_with_a_job"]["forbidden"])
-        self.assertGreaterEqual(len([o for o in opens.values() if not o.get("forbidden")]), 6)
+        self.assertFalse(any(o.get("forbidden") for o in opens.values()), "build item 16a: the tavern and the stranger are ordinary rows")
+        self.assertEqual(len(opens), 10)
         engines = {e["value"]: e for e in dt.rows("arc.yaml#plot_engine")}
-        self.assertTrue(engines["prophecy"]["forbidden"] and engines["collect_pieces"]["forbidden"])
+        self.assertFalse(any(e.get("forbidden") for e in engines.values()), "build item 16a: prophecy and collect-the-pieces are ordinary rows")
+        self.assertTrue({"prophecy", "collect_pieces"} <= set(engines))
 
     def test_threads_sockets_truths_missions_and_crossings(self):
         sockets = dt.rows("threads.yaml#socket_type")
@@ -938,13 +945,13 @@ class Rubrics(unittest.TestCase):
             self.assertTrue(s["binds"], s["id"])
         truths = {t["value"]: t for t in dt.rows("threads.yaml#truth_kind")}
         for v in ("chosen", "destined", "amnesia"):
-            self.assertTrue(truths[v]["forbidden"], v)
-        self.assertGreaterEqual(len([t for t in truths.values() if not t.get("forbidden")]), 8)
+            self.assertNotIn("forbidden", truths[v], f"build item 16a: {v} is an ordinary row")
+        self.assertEqual(len(truths), 13)
         layers = dt.rows("threads.yaml#layer")
         self.assertEqual([l["id"] for l in layers], ["layer_1", "layer_2", "layer_3"])
         self.assertEqual(layers[2]["tier"], "secret")
         verbs = {v["value"]: v for v in dt.rows("threads.yaml#mission_verb")}
-        self.assertTrue(verbs["find_out_who"]["forbidden"])
+        self.assertTrue(verbs["find_out_who"]["forbidden"], "the verb table's own rule: a mission is an active verb")
         self.assertTrue({"take_back", "prove", "destroy"} <= set(verbs))
         self.assertGreaterEqual(len(dt.rows("threads.yaml#crossing")), 5)
         self.assertGreaterEqual(len(dt.rows("threads.yaml#antagonist_binding")), 5)

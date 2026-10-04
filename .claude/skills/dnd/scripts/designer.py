@@ -454,11 +454,11 @@ def preroll_p4(R: Roller, m: dict) -> None:
                     where=lambda row: row.get("id") in pool, why="quota_pool")
         else:
             R.table(f"faction.{n}.archetype", "factions.yaml#archetype", avoid=False)
-        R.table(f"faction.{n}.fracture", "factions.yaml#fracture")      # fracture_none is forbidden
+        R.table(f"faction.{n}.fracture", "factions.yaml#fracture")      # never `none`: the fracture table's own rule
         R.table(f"faction.{n}.endgame", "factions.yaml#endgame")
         R.table(f"faction.{n}.secret", "factions.yaml#secret_kind", secret=True)
         if R.row(f"faction.{n}.archetype") == "archetype_cult":
-            R.table(f"faction.{n}.cult_doctrine", "factions.yaml#cult_doctrine")   # the forbidden doctrines never enter
+            R.table(f"faction.{n}.cult_doctrine", "factions.yaml#cult_doctrine")   # never `unspecified`: the doctrine table's own rule
         rungs: list[str] = []
         for k in range(1, R.count(f"faction.{n}.rungs_count", [3, 4]) + 1):
             excl = set(rungs) | ({"rung_war"} if k == 1 else set())
@@ -471,8 +471,8 @@ def preroll_p4(R: Roller, m: dict) -> None:
     import design_identity as di
     if not di.villain_in_context(R.ctx):
         R.table("bbeg_visibility", "antagonists.yaml#visibility", secret=True)
-        R.table("bbeg_shape", "antagonists.yaml#villain_shape", secret=True)       # the forbidden shapes never enter
-        R.table("bbeg_origin", "antagonists.yaml#origin", secret=True)             # nor the awakened ancient evil
+        R.table("bbeg_shape", "antagonists.yaml#villain_shape", secret=True)
+        R.table("bbeg_origin", "antagonists.yaml#origin", secret=True)
     # religious only when a rolled secret or break admits it (`allowed_via`): the arbiter reads every rolled row
     R.table("bbeg_faction_archetype", "antagonists.yaml#bbeg_faction_archetype", secret=True, avoid=False)
     R.table("front_template", "antagonists.yaml#front_template", secret=True)
@@ -571,8 +571,8 @@ def preroll_p7(R: Roller, m: dict) -> None:
     _, new = net_count(R, "seeds_count", sc["quest_seeds"], existing, "seeds")
     for k in range(1, stubs + new + 1):      # a shape for every seed stub to fill and every new seed; filled seeds keep theirs
         R.table(f"seed.{k}", "arc.yaml#seed_shape", avoid=False)
-    R.table("opening", "arc.yaml#opening_scene_type", avoid=False)       # the tavern and the stranger are forbidden
-    R.table("plot_engine", "arc.yaml#plot_engine", avoid=False)          # prophecy and collect-the-pieces are forbidden
+    R.table("opening", "arc.yaml#opening_scene_type", avoid=False)
+    R.table("plot_engine", "arc.yaml#plot_engine", avoid=False)
     socket_uses: dict[str, int] = {}
     n_sockets = len(dt.rows("threads.yaml#socket_type"))
     for k in range(1, int(dials_of(m)["party_size"]) * int(sc["sockets_per_pc"]) + 1):
@@ -589,9 +589,9 @@ def preroll_p9(R: Roller, m: dict) -> None:
     party = int(dials_of(m)["party_size"])
     sc = scale_of(m)
     for n in range(1, party + 1):
-        R.table(f"pc.{n}.truth", "threads.yaml#truth_kind", secret=True, avoid=False)   # chosen, destined, amnesia: forbidden
+        R.table(f"pc.{n}.truth", "threads.yaml#truth_kind", secret=True, avoid=False)
         R.table(f"pc.{n}.antagonist", "threads.yaml#antagonist_binding", secret=True, avoid=False)
-        R.table(f"pc.{n}.mission_verb", "threads.yaml#mission_verb", avoid=False)   # find-out-who is forbidden
+        R.table(f"pc.{n}.mission_verb", "threads.yaml#mission_verb", avoid=False)   # never find-out-who: the verb table's own rule
     if party > 1:
         for act in range(1, int(sc["acts"]) + 1):
             R.table(f"crossing.{act}", "threads.yaml#crossing", avoid=False)

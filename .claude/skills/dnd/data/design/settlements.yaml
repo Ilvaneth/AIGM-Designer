@@ -361,7 +361,7 @@ tables:
       - {id: sp_gate, label: A district gate, services: [entry, curfew], hooks: [{phase: play, must: "the watch's questions"}]}
       - {id: sp_well, label: A well, services: [water, gossip], hooks: [{phase: play, must: "a fear seed if the well is the settlement's"}]}
       - {id: sp_warehouse, label: Warehouse, services: [storage, a faction's goods], hooks: [{phase: play, must: "a faction asset"}]}
-      - {id: sp_tavern, label: Tavern (no rooms), services: [drink, a fight, a rumour], hooks: [{phase: play, must: "never the opening scene (forbidden_tavern_opening)"}]}
+      - {id: sp_tavern, label: Tavern (no rooms), services: [drink, a fight, a rumour], hooks: [{phase: play, must: "a place to drink, to fight and to hear a rumour"}]}
       - {id: sp_washhouse, label: Wash-house, services: [gossip, laundry], hooks: [{phase: play, must: "the women's Known Facts"}]}
       - {id: sp_scriptorium, label: Scriptorium, services: [copies, letters written, a reader], hooks: [{phase: play, must: "a discoverable source"}]}
       - {id: sp_ropewalk, label: Ropewalk, services: [rope, a long covered walk], hooks: [{phase: play, must: "a meeting place"}]}

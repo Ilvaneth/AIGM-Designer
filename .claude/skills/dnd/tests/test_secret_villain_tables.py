@@ -117,9 +117,9 @@ class Counts(unittest.TestCase):
         self.assertEqual(len(rows("antagonists.yaml#break_tie")), 6)
         self.assertEqual(len(rows("antagonists.yaml#visibility")), 5)
         self.assertGreaterEqual(len(usable("antagonists.yaml#villain_shape")), 14)
-        self.assertEqual(len(rows("antagonists.yaml#villain_shape")) - len(usable("antagonists.yaml#villain_shape")), 3)
-        self.assertEqual(len(usable("antagonists.yaml#origin")), 9)
-        self.assertEqual(len(rows("antagonists.yaml#origin")) - len(usable("antagonists.yaml#origin")), 1)
+        self.assertEqual(len(rows("antagonists.yaml#villain_shape")), len(usable("antagonists.yaml#villain_shape")), "no shape is barred (16a)")
+        self.assertGreaterEqual(len(usable("antagonists.yaml#origin")), 10)
+        self.assertEqual(len(rows("antagonists.yaml#origin")), len(usable("antagonists.yaml#origin")), "no origin is barred (16a)")
 
     def test_every_roll_is_secret(self):
         for ref in SECRET + VILLAIN:
@@ -157,25 +157,13 @@ class Counts(unittest.TestCase):
 
 class Forbidden(unittest.TestCase):
 
-    def test_no_forbidden_row_can_be_drawn(self):
-        """The dark lord, the whispering advisor, the secretly evil ruler and the awakened ancient evil never enter a
-        pool, whatever was rolled before: they name no row that admits them."""
-        everything = arb.Context(rolled={rid: False for rid in ALL_IDS})
-        for ref in ("antagonists.yaml#villain_shape", "antagonists.yaml#origin"):
-            barred = [r for r in rows(ref) if r.get("forbidden")]
-            self.assertFalse(any(r.get("allowed_via") for r in barred), ref)
-            for ctx in (arb.Context(), everything):
-                try:
-                    pool = arb.arbitrate(ref, rows(ref), ctx, secret=True)["pool"]
-                except arb.EmptyPool:
-                    pool = []
-                self.assertFalse(any(r.get("forbidden") for r in pool), ref)
-            self.assertTrue(arb.arbitrate(ref, rows(ref), arb.Context(), secret=True)["pool"], ref)
-
-    def test_the_religious_villain_faction_is_admitted_by_rows_that_exist(self):
-        bfa = dt.row("antagonists.yaml#bbeg_faction_archetype", "bfa_religious")
-        self.assertTrue(bfa["allowed_via"])
-        self.assertFalse(set(bfa["allowed_via"]) - ALL_IDS)
+    def test_every_row_can_be_drawn(self):
+        """Build item 16a: no shape, origin or villain faction archetype is barred; on an empty context every row of
+        the three tables is in the pool."""
+        for ref in ("antagonists.yaml#villain_shape", "antagonists.yaml#origin", "antagonists.yaml#bbeg_faction_archetype"):
+            self.assertFalse(any(r.get("forbidden") or r.get("allowed_via") for r in rows(ref)), ref)
+            pool = arb.arbitrate(ref, rows(ref), arb.Context(), secret=True)["pool"]
+            self.assertEqual(len(pool), len(rows(ref)), ref)
 
 
 class Attractor(unittest.TestCase):
@@ -221,7 +209,7 @@ class References(unittest.TestCase):
                   "break_rule_by_lottery", "break_no_direct_lies", "break_no_writing", "rule_true_names")
         self.assertFalse(set(listed) - ALL_IDS)
         secret_public = pairs_between(SECRET, is_public)
-        self.assertGreaterEqual(len(secret_public), 32)
+        self.assertGreaterEqual(len(secret_public), 31)
         barring = {o for p in pairs_between(SECRET + VILLAIN, is_public) for o in p} & set(listed)
         self.assertEqual(len(barring), 15,
                          "three listed rows bar nothing: each tells a different thing from what any archetype hides")
@@ -311,10 +299,13 @@ class ManySeeds(unittest.TestCase):
             bad += bool(arb.conflicting_pairs(rolled, tokens=list(p4.ctx.tokens), exempt=p1.exempt))
         self.assertEqual(bad, 0, f"{bad} seed(s) rolled a conflicting set")
 
-    def test_no_forbidden_row_was_rolled(self):
-        forbidden = {r["id"] for ref in ("antagonists.yaml#villain_shape", "antagonists.yaml#origin") for r in rows(ref) if r.get("forbidden")}
-        hit = sum(1 for p1, p4 in self.runs for r in p1.secret + p4.secret if r.get("row_id") in forbidden)
-        self.assertEqual(hit, 0)
+    def test_every_shape_origin_and_faction_archetype_is_drawn(self):
+        """The freed rows come up like any other (build item 16a)."""
+        for label, ref in (("bbeg_shape", "antagonists.yaml#villain_shape"), ("bbeg_origin", "antagonists.yaml#origin")):
+            drawn = {p1.by_label[label]["row_id"] for p1, _ in self.runs}
+            self.assertEqual(len(drawn), len(rows(ref)), f"{ref}: {len(rows(ref)) - len(drawn)} row(s) never drawn")
+        drawn = {p4.by_label["bbeg_faction_archetype"]["row_id"] for _, p4 in self.runs}
+        self.assertEqual(len(drawn), len(rows("antagonists.yaml#bbeg_faction_archetype")))
 
     def test_the_archetypes_floor(self):
         smallest = min(p1.pools["secrets.yaml#archetype"] for p1, _ in self.runs)

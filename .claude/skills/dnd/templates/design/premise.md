@@ -28,8 +28,8 @@ mirror: design/dm-only/premise-secret.md
 ### Trope break(s)
 - `<break id>` — **<the break in one line>**. How it shows: <where the player will feel it in the first three sessions>. Touches: [[<id>]], [[<id>]], [[<id>]], [[<id>]], [[<id>]] *(≥5, validator counts)*
 
-### Forbidden defaults — checked
-*<one line per forbidden default that the premise was tempted by and how it was avoided, or "none tempted">*
+### No people evil by birth — checked
+*<one line: which peoples the premise names, and that none of them is evil, cruel or monstrous by nature>*
 
 ### Naming languages
 - `<language key>` — <culture>, sound family `<family>`; samples: <three names>

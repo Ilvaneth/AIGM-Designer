@@ -1,6 +1,6 @@
 # threads.yaml — the character integration pass (item 12, run by P9 after every PC exists): socket
 # types the primer rephrases as spoiler-free questions (item 11.6), the truth-kind closed list
-# (forbidden.yaml names `chosen`, `destined`, `amnesia`), the three layers and where they surface,
+# (`chosen`, `destined` and `amnesia` are ordinary rows since build item 16a), the three layers and where they surface,
 # personal-antagonist binding rules, mission verbs (active, never "find out who"), crossing
 # templates (one per act, skipped for a solo party: errata 24.2 #12), the personal mechanical track
 # template (only when the signature mechanic was rolled) and the equal-weight metrics (≤ 35%).
@@ -43,7 +43,7 @@ tables:
       - {id: socket_carries_item, label: Carries an item that matters, question: "Do you carry anything you were told never to sell?", binds: [item], hooks: [{phase: P6, must: "an item_ with a stamped act; a site wants it"}]}
 
   truth_kind:
-    note: "closed list for `truth_kind`: something about their past or nature they do not know, pinned to an event and a faction or NPC; the forbidden values exist for the validator"
+    note: "closed list for `truth_kind`: something about their past or nature they do not know, pinned to an event and a faction or NPC"
     rows:
       - {id: truth_parents_deed, value: parents_deed, label: A parent's deed, hooks: [{phase: P2, must: "the deed is an event's as-happened layer"}]}
       - {id: truth_debt_inherited, value: debt_inherited, label: A debt inherited, hooks: [{phase: P4, must: "the creditor faction holds the paper"}]}
@@ -55,9 +55,9 @@ tables:
       - {id: truth_chose_not_to_know, value: chose_not_to_know, label: They chose not to know, hooks: [{phase: P5, must: "someone they trust kept it from them at their own request"}]}
       - {id: truth_sibling_other_side, value: sibling_other_side, label: A sibling on the other side, hooks: [{phase: P5, must: "the sibling is a roster NPC in an enemy faction"}]}
       - {id: truth_oath_broken_for_them, value: oath_broken_for_them, label: An oath broken for their sake, hooks: [{phase: P2, must: "the oath's god or festival"}]}
-      - {id: truth_chosen, value: chosen, label: The chosen one (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_chosen_one)"}]}
-      - {id: truth_destined, value: destined, label: Destined (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_chosen_one)"}]}
-      - {id: truth_amnesia, value: amnesia, label: Amnesia (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_amnesiac_hero)"}]}
+      - {id: truth_chosen, value: chosen, label: The chosen one, hooks: [{phase: P2, must: "who chose them and for what is a god's or a power's secret field"}]}
+      - {id: truth_destined, value: destined, label: Destined, hooks: [{phase: P7, must: "the destiny is one of the arc's endings; the others stay open to them"}]}
+      - {id: truth_amnesia, value: amnesia, label: Amnesia, hooks: [{phase: P5, must: "someone in the roster knows what they forgot, and why it was taken or given up"}]}
 
   layer:
     rows:
@@ -75,7 +75,7 @@ tables:
       - {id: bind_former_ally, label: A former ally, now a convert, hooks: [{phase: P5, must: "lt_convert or a roster NPC's turn"}]}
 
   mission_verb:
-    note: "closed list; a mission is active; `find_out_who` is the forbidden passive form"
+    note: "closed list. The table's own rule, not a cliché rule: a mission is an active verb the thread system can track, so `find_out_who`, a question, never enters a pool (it stays so the validator can name it)"
     rows:
       - {id: verb_take_back, value: take_back, label: Take back, hooks: [{phase: P9, must: "the object is an asset or a place"}]}
       - {id: verb_prove, value: prove, label: Prove, hooks: [{phase: P9, must: "the proof is an item_ or a testimony"}]}
@@ -85,7 +85,7 @@ tables:
       - {id: verb_claim, value: claim, label: Claim, hooks: [{phase: P9, must: "a seat or a title with an access chain"}]}
       - {id: verb_end, value: end, label: End, hooks: [{phase: P9, must: "a rite, a debt, a war or a life"}]}
       - {id: verb_expose, value: expose, label: Expose, hooks: [{phase: P9, must: "a secret with a path; exposure is a faction trigger"}]}
-      - {id: verb_find_out_who, value: find_out_who, label: Find out who (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error: a mission is never a question"}]}
+      - {id: verb_find_out_who, value: find_out_who, label: Find out who (never drawn), forbidden: true, hooks: [{phase: validator, must: "an error: a mission is never a question"}]}
 
   crossing:
     note: "one per act where two threads meet; skipped for a solo party"

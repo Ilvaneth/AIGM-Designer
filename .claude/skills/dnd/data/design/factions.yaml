@@ -140,7 +140,7 @@ tables:
         endgame_bias: [endgame_rite_completed, endgame_god_answered, endgame_the_phenomenon_owned]
         fracture_bias: [fracture_the_one_who_knows, fracture_doctrine_split, fracture_a_debt]
         hooks:
-          - {phase: P4, must: "its cult_doctrine row is one a reasonable person could hold (forbidden_generic_evil_cult)"}
+          - {phase: P4, must: "its doctrine is the rolled row of factions.yaml#cult_doctrine"}
       - id: archetype_trade
         value: trade
         label: Trade consortium
@@ -157,7 +157,7 @@ tables:
 
   fracture:
     notation: d12
-    note: "closed list; `none` exists only so the validator can name it, and is forbidden"
+    note: "closed list. The table's own rule, not a cliché rule (build item 16a): `none` never enters a pool, because the living-world simulation needs every polity to have something it can lose piece by piece; the row stays so the validator can name it"
     rows:
       - {id: fracture_succession, value: succession, label: A contested succession, hooks: [{phase: P5, must: "the heir and the betrayal candidate are the two claimants"}]}
       - {id: fracture_doctrine_split, value: doctrine_split, label: A doctrinal split, hooks: [{phase: P4, must: "the two readings are both in the dossier; one is the leader's"}]}
@@ -171,7 +171,7 @@ tables:
       - {id: fracture_paid_and_believers, value: paid_vs_believers, label: The paid against the believers, hooks: [{phase: P4, must: "a loss trigger makes the paid leave"}]}
       - {id: fracture_member_of_the_enemy, value: member_of_the_enemy, label: A member who belongs to the enemy, hooks: [{phase: P5, must: "the member is the betrayal candidate; their true faction is secret"}]}
       - {id: fracture_the_metric, value: the_metric, label: A quota that corrupts, hooks: [{phase: P4, must: "the operation's metric is the corruption; hitting the target costs someone"}]}
-      - {id: fracture_none, value: none, label: No fracture (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error: every faction has a fracture (forbidden_monolithic_empire)"}]}
+      - {id: fracture_none, value: none, label: No fracture (never drawn), forbidden: true, hooks: [{phase: validator, must: "an error: every faction has a fracture; without one the simulation has nothing to move"}]}
 
   endgame:
     notation: d12
@@ -205,7 +205,7 @@ tables:
       - {id: fsecret_books_false, label: The books are false, tier: discoverable, hooks: [{phase: P4, must: "the metric is wrong; the asset list is smaller than claimed"}]}
 
   cult_doctrine:
-    note: "true beliefs a reasonable person could hold; the two forbidden values exist only for the validator"
+    note: "what a cult believes. The table's own rule, not a cliché rule (build item 16a): `unspecified` never enters a pool, because a rolled doctrine must state a belief for P4 to build on; the row stays so the validator can name it"
     rows:
       - {id: cultdoc_world_reborn, value: world_reborn, label: The world must end to be reborn, hooks: [{phase: P4, must: "the ending it wants is one of the arc's endings"}]}
       - {id: cultdoc_god_imprisoned, value: god_imprisoned, label: Our god is imprisoned and we will free it, hooks: [{phase: P2, must: "godsecret_bound or the pantheon's silence"}]}
@@ -215,8 +215,8 @@ tables:
       - {id: cultdoc_end_can_be_bought, value: end_can_be_bought, label: The end is scheduled and can be bought off, hooks: [{phase: P7, must: "the doom is the schedule; the cult's front is the payment"}]}
       - {id: cultdoc_only_the_marked, value: only_the_marked, label: Only the marked are real people, hooks: [{phase: P5, must: "the marked are a demographic row or the touched"}]}
       - {id: cultdoc_the_founder_will_return, value: founder_returns, label: The founder will return and count us, hooks: [{phase: P2, must: "the founder is an event_ or a dead god"}]}
-      - {id: cultdoc_evil_for_its_own_sake, value: evil_for_its_own_sake, label: Evil for its own sake (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_generic_evil_cult)"}]}
-      - {id: cultdoc_unspecified, value: unspecified, label: Unspecified (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error: a cult without a doctrine is a monster with a hat"}]}
+      - {id: cultdoc_evil_for_its_own_sake, value: evil_for_its_own_sake, label: Evil for its own sake, hooks: [{phase: P4, must: "the doctrine names what the harm is done to and what its members get from it"}]}
+      - {id: cultdoc_unspecified, value: unspecified, label: Unspecified (never drawn), forbidden: true, hooks: [{phase: validator, must: "an error: a cult without a doctrine gives P4 nothing to build"}]}
 
   trigger:
     note: "the six canonical doctrine triggers; `counts_as` is what the simulation and `react` recognise; `weights_template` is the default move mix before the archetype and the skeleton adjust it"

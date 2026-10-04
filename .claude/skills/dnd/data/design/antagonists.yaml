@@ -1,6 +1,6 @@
 # antagonists.yaml — the antagonist hierarchy (item 7.5): BBEG visibility patterns (a secret roll
 # so it is never the same twice), the closed lists the validator checks (villain shape, origin,
-# faction archetype: risk 24.1 #10, forbidden.yaml), front templates (4-6 portents on calendar days
+# faction archetype: risk 24.1 #10), front templates (4-6 portents on calendar days
 # as operation steps), lieutenant roles, doom shapes, the five threat-escalation stages the fronts
 # drive, and the buy-time levers every front must carry (risk 24.1 #16).
 #
@@ -28,7 +28,7 @@ rules:
 hooks_common:
   - {phase: P4, must: "each antagonist is an npc_ with a faction, a front (or a place on the faction's operation) and a dossier at the effort the plan sets (BBEG, lieutenants: high, two critics)"}
   - {phase: P7, must: "each beat's world_pressure is one of the front's steps; the doom is the loss ending's world_after"}
-  - {phase: validator, must: "villain_shape, origin and bbeg_faction_archetype are values from these lists and not forbidden ones"}
+  - {phase: validator, must: "villain_shape, origin and bbeg_faction_archetype are values from these lists"}
 
 tables:
 
@@ -61,13 +61,13 @@ tables:
       - id: vis_process_or_institution
         label: A body or a working, not a face
         rule: "the antagonist acts as an institution or as a working someone set going (a rite, a market, a migration, a sickness); the one who set it going still steers it, and its officers are the faces"
-        conflicts_with: [shape_heir, shape_rival, shape_parent, shape_convert, shape_survivor, shape_beloved, shape_stranger, shape_champion, shape_oathkeeper]
+        conflicts_with: [shape_heir, shape_rival, shape_parent, shape_convert, shape_survivor, shape_beloved, shape_stranger, shape_champion, shape_oathkeeper, shape_dark_lord, shape_whispering_advisor, shape_secretly_evil_ruler]
         hooks:
           - {phase: P4, must: "the BBEG entity is a faction or a signature_ with the steering person in dm-only; the lieutenants are its officers; the doom is the working completed"}
 
   villain_shape:
     roll: {avoid_used: false}
-    note: "the rows may repeat across campaigns; the shape and origin PAIR is written at approve (hashed) and never drawn again (design_identity.py). Closed list for the registry field `villain_shape` (risk 24.1 #10); the three forbidden shapes never enter a pool and exist only so forbidden.yaml can name them. Every usable shape has a reason a decent person could defend and nothing in it spares the party."
+    note: "the rows may repeat across campaigns; the shape and origin PAIR is written at approve (hashed) and never drawn again (design_identity.py). Closed list for the registry field `villain_shape` (risk 24.1 #10); no shape is barred (build item 16a: the dark lord, the whispering advisor and the ruler with a hidden purpose are ordinary rows). Every shape has a reason a decent person could defend and nothing in it spares the party."
     rows:
       - {id: shape_reformer, value: reformer, label: The reformer, rule: "wants to fix the world and has chosen the cost", hooks: [{phase: P1, must: "fits secret_break_was_the_cure; the win ending must answer the reform"}]}
       - {id: shape_collector, value: collector, label: The collector, rule: "gathers what was scattered (relics, lands, oaths, people) because the whole, once together again, would mend a harm everyone has learned to live with; will not stop one short", hooks: [{phase: P7, must: "the metric is the collection; portents are acquisitions"}]}
@@ -85,13 +85,13 @@ tables:
       - {id: shape_champion, value: champion, label: The champion, rule: "fights for a people or a cause that was truly wronged and has stopped counting what the fight costs anyone else", hooks: [{phase: P5, must: "the wronged are in the demographic table; one of them disowns the champion"}]}
       - {id: shape_builder, value: builder, label: The builder, rule: "is making something meant to outlast everyone (a wall, a city, a line, a peace) and spends lives on it as material", hooks: [{phase: P3, must: "the work is a landmark that grows with the front's steps"}]}
       - {id: shape_oathkeeper, value: oathkeeper, label: The oath-keeper, rule: "swore to do a thing and will do it though the reason has gone; to break the oath would unmake who they are", hooks: [{phase: P2, must: "the oath is a dated event with witnesses"}]}
-      - {id: shape_dark_lord, value: dark_lord, label: Dark lord in a black tower (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_dark_lord_black_tower)"}]}
-      - {id: shape_whispering_advisor, value: whispering_advisor, label: The whispering advisor (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_evil_advisor)"}]}
-      - {id: shape_secretly_evil_ruler, value: secretly_evil_ruler, label: The secretly evil ruler (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_secretly_evil_ruler)"}]}
+      - {id: shape_dark_lord, value: dark_lord, label: The dark lord, rule: "rules by fear from a seat of power and means to rule everything; holds that only one will can keep the world from tearing itself apart, and has the armies to prove it", hooks: [{phase: P3, must: "the seat is a site on the map with a fixed tier; its shadow is on every neighbouring region's travel table"}]}
+      - {id: shape_whispering_advisor, value: whispering_advisor, label: The whispering advisor, rule: "stands behind a ruler and steers by counsel; serves a cause held higher than the throne and will spend the ruler to reach it", hooks: [{phase: P5, must: "the ruler is a major NPC with a will of their own; one scene shows the ruler refusing the advice and what it costs them"}]}
+      - {id: shape_secretly_evil_ruler, value: secretly_evil_ruler, label: The ruler with a hidden purpose, rule: "holds the seat openly and keeps what it is for hidden; believes the realm must be spent for something greater, and rules well until the day it is", conflicts_with: [vis_known_untouchable], hooks: [{phase: P4, must: "the ruler's faction is the leading faction; its public operations are sound, its hidden one is the front"}]}
 
   origin:
     roll: {avoid_used: false}
-    note: "the rows may repeat across campaigns; the shape and origin pair never does. Closed list for the registry field `bbeg_origin`; the origin is a choice made by a living person within the history's span"
+    note: "the rows may repeat across campaigns; the shape and origin pair never does. Closed list for the registry field `bbeg_origin`; none is barred (build item 16a). Behind every origin stands a choice made by a living person within the history's span"
     rows:
       - {id: origin_choice_in_history, value: choice_in_history, label: A choice at a dated event, hooks: [{phase: P2, must: "the event is within years_covered and has a divergence"}]}
       - {id: origin_bargain, value: bargain, label: A bargain with a power, hooks: [{phase: P2, must: "the power is a rank_power god or a plane's keeper"}]}
@@ -102,7 +102,7 @@ tables:
       - {id: origin_ambition_for_a_seat, value: ambition_for_a_seat, label: An ambition for a seat, conflicts_with: [break_rule_by_lottery], hooks: [{phase: P4, must: "the seat belongs to the leading faction; its access chain is the way they climbed"}]}
       - {id: origin_wrong_done, value: wrong_done, label: A wrong done to them, hooks: [{phase: P5, must: "the wrongdoer is in the roster or the history"}]}
       - {id: origin_made_by_institution, value: made_by_institution, label: Made by the institution, hooks: [{phase: P1, must: "the signature institution raised or shaped them"}]}
-      - {id: origin_awakened_ancient, value: awakened_ancient, label: Awakened ancient evil (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_awakening_ancient_evil)"}]}
+      - {id: origin_awakened_ancient, value: awakened_ancient, label: Awakened from an older age, conflicts_with: [bond_product_of_it], hooks: [{phase: P2, must: "what they were is an event of the history's deep layer; what woke them is a dated act within living memory, done by someone alive"}]}
 
   break_tie:
     roll: {avoid_used: false}
@@ -117,7 +117,7 @@ tables:
       - {id: bond_product_of_it, label: Is its product, rule: "the break made the villain what they are; they were born with it", conflicts_with: [time_coming, origin_inheritance, origin_ambition_for_a_seat, origin_made_by_institution], hooks: [{phase: P2, must: "the villain's first day is the break's dated event"}]}
 
   bbeg_faction_archetype:
-    note: "which archetype the BBEG's faction may have; religious only through an allowed secret or break (forbidden_corrupt_church_default_villain)"
+    note: "which archetype the BBEG's faction may have; none is barred (build item 16a)"
     rows:
       - {id: bfa_state, value: state, label: State, hooks: [{phase: P4, must: "the BBEG holds a seat or is the ruler's rival"}]}
       - {id: bfa_guild, value: guild, label: Guild, hooks: [{phase: P4, must: "the BBEG is a master or the regulator's head"}]}
@@ -127,7 +127,7 @@ tables:
       - {id: bfa_resistance, value: resistance, label: Resistance, hooks: [{phase: P4, must: "the villain's answer is the resistance's endgame"}]}
       - {id: bfa_cult, value: cult, label: Cult, hooks: [{phase: P4, must: "the cult doctrine is the villain's answer"}]}
       - {id: bfa_trade, value: trade, label: Trade, hooks: [{phase: P4, must: "the doom is a monopoly or a debt"}]}
-      - {id: bfa_religious, value: religious, label: Religious (forbidden by default), forbidden: true, allowed_via: [secret_cure_is_the_cause, secret_gods_are_prisoners], hooks: [{phase: validator, must: "an error unless an allowed_via id is in the campaign's rolls"}]}
+      - {id: bfa_religious, value: religious, label: Religious, hooks: [{phase: P4, must: "the BBEG leads or has captured a church of the pantheon; its doctrine carries the villain's answer"}]}
 
   front_template:
     note: "4-6 portents as operation steps; `at` is the fraction of the doom clock each portent lands at; kinds are factions.yaml step kinds"

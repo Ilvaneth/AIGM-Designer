@@ -3,7 +3,7 @@
 # state_after (risk 24.1 #10), the forbidden phrasings the critic and the validator reject, the
 # three pre-written fallbacks every beat carries (`arc fallback` picks one in play, errata 24.2 #7),
 # chapter node templates (hub-and-spoke situations entered in any order), the three endings, planted
-# hook kinds, quest seed shapes, and the opening-scene and plot-engine closed lists forbidden.yaml
+# hook kinds, quest seed shapes, and the opening-scene and plot-engine closed lists (no value of them is barred
 # names. World pressure is always a front step from antagonists.yaml; the threat stage advances on
 # steps, never on DM feel.
 schema_version: 1
@@ -136,7 +136,7 @@ tables:
       - {id: seed_a_second_body, label: A second body, hooks: [{phase: P6, must: "an urban site"}]}
 
   opening_scene_type:
-    note: "closed list for `opening_scene_type` (chapter 1; the session-1 pack offers two candidates); the two forbidden values exist for the validator"
+    note: "closed list for `opening_scene_type` (chapter 1; the session-1 pack offers two candidates)"
     rows:
       - {id: open_socket_bang, value: socket_bang, label: A bang at a socket, weight: 3, hooks: [{phase: P9, must: "a PC's socket NPC arrives with the problem in the first ten minutes"}]}
       - {id: open_death, value: death_in_first_hour, label: A death in the first hour, hooks: [{phase: P5, must: "a named minor NPC; the first news record"}]}
@@ -146,8 +146,8 @@ tables:
       - {id: open_road_closes, value: road_closes_behind, label: The road closes behind them, hooks: [{phase: P3, must: "a map edge's season flag or a portent"}]}
       - {id: open_summons, value: summons, label: A summons, hooks: [{phase: P4, must: "a faction's access chain opens one link"}]}
       - {id: open_washed_ashore, value: thing_washes_ashore, label: The thing washes ashore, hooks: [{phase: P6, must: "a telegraph of the first site"}]}
-      - {id: open_tavern, value: tavern, label: The tavern (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_tavern_opening)"}]}
-      - {id: open_stranger_job, value: stranger_with_a_job, label: A stranger with a job (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_tavern_opening)"}]}
+      - {id: open_tavern, value: tavern, label: The tavern, hooks: [{phase: P3, must: "the tavern is a named place of the starting settlement; something is at stake in it within the first ten minutes"}]}
+      - {id: open_stranger_job, value: stranger_with_a_job, label: A stranger with a job, hooks: [{phase: P5, must: "the stranger is a roster NPC with a faction and a reason of their own for wanting it done"}]}
 
   plot_engine:
     note: "closed list for `plot_engine`; the consequence spine is the default and the others are shapes it may take"
@@ -158,5 +158,5 @@ tables:
       - {id: engine_contest, value: contest, label: A contest between two factions, hooks: [{phase: P4, must: "the party's stance with both is the arc"}]}
       - {id: engine_pilgrimage, value: pilgrimage, label: A pilgrimage with stations, hooks: [{phase: P3, must: "chapters are stations on a route"}]}
       - {id: engine_siege, value: siege, label: A siege, hooks: [{phase: P4, must: "the settlement is the party's asset by Act 2"}]}
-      - {id: engine_prophecy, value: prophecy, label: Prophecy (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_prophecy)"}]}
-      - {id: engine_collect_pieces, value: collect_pieces, label: Collect the pieces (forbidden), forbidden: true, hooks: [{phase: validator, must: "an error (forbidden_collect_the_pieces)"}]}
+      - {id: engine_prophecy, value: prophecy, label: A prophecy, hooks: [{phase: P7, must: "the prophecy's lines are the beats; each can be fulfilled, bent or broken by what the party does"}]}
+      - {id: engine_collect_pieces, value: collect_pieces, label: Collect the pieces, hooks: [{phase: P6, must: "each piece is an item_ entity and a site's payoff; someone else is collecting too"}]}

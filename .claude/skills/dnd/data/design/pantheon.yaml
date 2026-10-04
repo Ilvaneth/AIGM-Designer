@@ -257,7 +257,7 @@ tables:
         fracture_seed: "a degree that learned the secret and left"
         faction_archetype: cult
         hooks:
-          - {phase: P4, must: "the cult has a true belief a reasonable person could hold (forbidden.yaml)"}
+          - {phase: P4, must: "the cult's belief is the rolled row of factions.yaml#cult_doctrine"}
       - id: church_household_rite
         label: Household rite
         hierarchy: "none; the eldest keeps the rite; no clergy, no building"

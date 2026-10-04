@@ -1901,8 +1901,8 @@ tables:
       - id: scar_new_belief
         label: "A new belief"
         floors: [P2, P4]
-        note: "a side, never the forbidden evil cult; the institution practice 'they interpret the break' may join it"
-        text: {"name": "a new belief", "name_note": "not the forbidden \"evil cult\", a side"}
+        note: "a side; the institution practice 'they interpret the break' may join it"
+        text: {"name": "a new belief", "name_note": "a side"}
         hooks:
           - {phase: P2, must: "the belief has its place in the pantheon"}
           - {phase: P4, must: "a faction holds it"}

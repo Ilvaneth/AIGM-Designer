@@ -16,7 +16,7 @@ One finding per check, `pass` / `fix` / `note`, one Turkish sentence each (plan 
 - `three_sentences_b` — the same for B.
 - `question_distinct` — the two thematic questions differ in kind, not only in wording.
 - `signatures_distinct` — no signature of one is a reskin of a signature of the other.
-- `defaults_absent` — neither premise leans on a forbidden default (a chosen one, a prophecy, an awakening ancient evil, a dark lord's tower, a generic evil cult, a corrupt church as the default villain, an amnesiac hero, a tavern opening, a monolithic empire, inherently evil races, collect-the-pieces, an evil advisor, a secretly evil ruler) unless it names the break consciously.
+- `defaults_absent` — neither premise makes a people evil by birth (the one unchanging rule; no other theme is excluded, and a classic theme in both premises is no fault by itself).
 
 Overall `fix` if `same_campaign` is `fix` or two other checks are. Return exactly:
 ```json
