@@ -17,6 +17,7 @@
 ## Part 16a — the forbidden list
 
 - `forbidden.yaml` keeps one row, `forbidden_inherently_evil_races`, unchanged (ruling 3). The other twelve rows go with their `structural` checks, their `lexical` patterns and their `allowed_via` lists; every reference to them goes (rows' `forbidden: true` flags and `allowed_via` fields in `antagonists.yaml` and elsewhere, validators, rubrics, prompts, tests).
+- `scar_new_belief`'s note ("not the forbidden 'evil cult', a side") loses its first half: the cult is no longer forbidden (found at the audit of build 13a).
 - The P1 rolls draw the three villain shapes, the one origin and the one faction archetype that were barred; the tests that assert "no forbidden shape or origin" assert instead that every row can be drawn.
 - **One thing is not a cliché rule and stays as a table's own rule:** `factions.yaml#fracture` never takes `none`, because the living-world simulation needs a polity to have something to lose piece by piece. Keep that as the fracture table's own constraint, worded so, and say in the summary where you put it. If you find another barred value that guards a mechanism and not a taste, do the same and report it.
 - The tables of P4, P7 and P9 that the freed values live in (`threads.yaml#truth_kind`, `arc.yaml#plot_engine`, `arc.yaml#opening_scene_type`, `factions.yaml#cult_doctrine`) simply lose the bar; nothing else of those floors changes here.
