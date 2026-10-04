@@ -11,6 +11,7 @@ import unittest
 from _campaign import SCRIPTS
 
 sys.path.insert(0, str(SCRIPTS))
+import design_arbiter as arb  # noqa: E402
 import design_foundation as fd  # noqa: E402
 import design_tables as dt  # noqa: E402
 
@@ -125,6 +126,28 @@ class Pairs(unittest.TestCase):
         self.assertEqual(oath, {r["id"]: 2 for r in LIFE.values() if r["family"] == "treaty"})
         self.assertEqual(weights(BREAK["break_magic_sold"]), {"life_enchanters": 2})
         self.assertEqual(weights(PRACTICE["practice_enchanted_goods"]), {"break_magic_sold": 2})
+
+    def test_the_dial_weights(self):
+        """Build item 16d: the eleven new contests weigh under the dials as the old forty do, and exactly so."""
+        want = {"contest_living_dead": {"content_mix": (["horror"], 2)}, "contest_coven": {"content_mix": (["horror"], 2)},
+                "contest_fiend_pact": {"content_mix": (["mystery"], 2)}, "contest_prophecy": {"content_mix": (["mystery"], 2)},
+                "contest_relic_pieces": {"content_mix": (["exploration"], 2)}, "contest_dark_lord": {"content_mix": (["war"], 2)},
+                "contest_two_empires": {"content_mix": (["war"], 2)}, "contest_slavers": {"content_mix": (["war"], 2)},
+                "contest_thieves_guild": {"content_mix": (["politics"], 2)}, "contest_pirates": {"era": (["nautical"], 3)},
+                "contest_elemental_lord": {}}
+        self.assertEqual(set(want), set(CONTESTS))
+        for cid, dials in want.items():
+            got = {dial: (values, w["x"]) for w in CONTEST[cid].get("weight_by") or [] for dial, values in (w["when"].get("dial") or {}).items()}
+            self.assertEqual(got, dials, cid)
+        sea = [w for w in CONTEST["contest_land_sea_folk"]["weight_by"] if (w["when"].get("dial") or {}).get("era")]
+        self.assertEqual((sea[0]["when"]["dial"]["era"], sea[0]["x"]), (["nautical"], 3), "the pirates weigh as the land and sea folk do")
+        ctx = arb.Context(dials={"content_mix": ["war", "horror", "mystery"], "era": "nautical"}, rolled={"ruin_dark_lords_fall": False})
+        self.assertEqual(arb.weight_of(CONTEST["contest_dark_lord"], ctx), 4, "×2 with the dark lord's fall, ×2 under the war mix")
+        self.assertEqual(arb.weight_of(CONTEST["contest_pirates"], ctx), 3)
+        self.assertEqual(arb.weight_of(CONTEST["contest_elemental_lord"], ctx), 1)
+        # the ruled fits stand beside the dial weights
+        self.assertEqual(weights(CONTEST["contest_relic_pieces"]), {"ruin_sundered_relic": 3})
+        self.assertEqual(weights(CONTEST["contest_dark_lord"]), {"ruin_dark_lords_fall": 2})
 
     def test_the_merges(self):
         self.assertEqual(BREAK["break_monsters_have_treaties"]["merges_with"]["contest_living_dead"], "the treaty people is the dead")

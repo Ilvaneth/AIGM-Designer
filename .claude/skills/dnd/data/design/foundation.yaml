@@ -1747,6 +1747,7 @@ tables:
           b: {text: "the undying lord and its risen subjects", hint: null}
           third: {text: "the priests who can lay the dead", hint: religious}
           fourth: {text: "those who trade across the line", hint: trade}
+        weight_by: [{when: {dial: {content_mix: ["horror"]}}, x: 2}]
         escalation: ["the unburied walk", "the border forts fall", "the living city besieged"]
         text: {"name": "the living and the dead"}
       - id: contest_fiend_pact
@@ -1759,6 +1760,7 @@ tables:
           b: {text: "its rival", hint: state}
           third: {text: "the fiend's envoy", hint: null}
           fourth: {text: "the fiend hunters", hint: martial}
+        weight_by: [{when: {dial: {content_mix: ["mystery"]}}, x: 2}]
         escalation: ["favours that come too easily", "the rival's ruin", "the pact comes due"]
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
         text: {"name": "the fiend behind the pact"}
@@ -1783,7 +1785,7 @@ tables:
           b: {text: "a house that holds another", hint: state}
           third: {text: "the order sworn to keep the pieces apart", hint: religious}
           fourth: {text: "a finder with no banner", hint: null}
-        weight_by: [{when: {any_of: [ruin_sundered_relic]}, x: 3}]
+        weight_by: [{when: {any_of: [ruin_sundered_relic]}, x: 3}, {when: {dial: {content_mix: ["exploration"]}}, x: 2}]
         escalation: ["a piece changes hands", "open raids for the pieces", "two pieces joined"]
         text: {"name": "the pieces of the relic"}
       - id: contest_prophecy
@@ -1795,6 +1797,7 @@ tables:
           b: {text: "those who work to prevent it", hint: state}
           third: {text: "the keepers of the prophecy", hint: scholarly}
           fourth: {text: "the one it names", hint: null}
+        weight_by: [{when: {dial: {content_mix: ["mystery"]}}, x: 2}]
         escalation: ["signs argued over", "the named one hunted", "the foretold day"]
         text: {"name": "the prophecy's two readings"}
       - id: contest_dark_lord
@@ -1806,7 +1809,7 @@ tables:
           b: {text: "the last free realm", hint: state}
           third: {text: "those who have made terms", hint: trade}
           fourth: {text: "the exiles", hint: resistance}
-        weight_by: [{when: {any_of: [ruin_dark_lords_fall]}, x: 2}]
+        weight_by: [{when: {any_of: [ruin_dark_lords_fall]}, x: 2}, {when: {dial: {content_mix: ["war"]}}, x: 2}]
         merges_with: {ruin_dark_lords_fall: "the fallen lord's dominion has risen again"}
         escalation: ["tribute demanded", "the border overrun", "the march on the last free city"]
         text: {"name": "the dark lord and the free lands"}
@@ -1819,6 +1822,7 @@ tables:
           b: {text: "its rival", hint: null}
           third: {text: "the kingdom between them", hint: state}
           fourth: {text: "that kingdom's exiles", hint: resistance}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["envoys and gifts", "garrisons by invitation", "war on the kingdom's soil"]
         text: {"name": "two empires, one border kingdom", "name_note": "both empires are foreign polities"}
       - id: contest_coven
@@ -1830,6 +1834,7 @@ tables:
           b: {text: "those who would break it", hint: resistance}
           third: {text: "the coven", hint: null}
           fourth: {text: "the child that was promised", hint: null}
+        weight_by: [{when: {dial: {content_mix: ["horror"]}}, x: 2}]
         escalation: ["a payment refused", "blight on the fields", "the coven comes to collect"]
         text: {"name": "the coven's bargain"}
       - id: contest_pirates
@@ -1842,6 +1847,7 @@ tables:
           third: {text: "a foreign navy", hint: martial}
           fourth: {text: "the smugglers who serve both", hint: criminal}
         requires: {any_of: ["land_coast", "land_island"]}
+        weight_by: [{when: {dial: {era: ["nautical"]}}, x: 3}]
         escalation: ["ships taken", "a harbour blockaded", "the fleet against the pirate port"]
         text: {"name": "the pirate lords and the harbour towns"}
       - id: contest_slavers
@@ -1853,6 +1859,7 @@ tables:
           b: {text: "the escaped and those who hide them", hint: resistance}
           third: {text: "those who buy", hint: trade}
           fourth: {text: "a people taken whole", hint: null, people_role: true}
+        weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["raids", "hunts for the escaped", "open revolt"]
         text: {"name": "slavers and the chained"}
       - id: contest_thieves_guild
@@ -1865,6 +1872,7 @@ tables:
           b: {text: "the city's rulers, most of them on its payroll", hint: state}
           third: {text: "a rival guild from outside", hint: criminal}
           fourth: {text: "the watch captain no one can buy", hint: martial}
+        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["a killing in daylight", "war in the alleys", "the guild names the next ruler"]
         text: {"name": "the thieves' guild that owns the city", "name_note": "the guild at the heart"}
 
