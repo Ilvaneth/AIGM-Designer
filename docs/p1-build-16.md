@@ -188,7 +188,7 @@ Removed at the review: "The cult that outgrew its cellar" (a contest; the cult i
 
 | id | table | label | statement |
 |---|---|---|---|
-| `lifeline_enchanters` | lifeline, craft family | The enchanters' workshops | The land's wealth is enchanted goods, made to order and sold abroad. |
+| `life_enchanters` | lifeline, craft family | The enchanters' workshops | The land's wealth is enchanted goods, made to order and sold abroad. |
 | `practice_enchanted_goods` | institution practice, guild and trade archetypes | They make and sell enchanted goods | Gives the party: enchanted goods to buy and to order. |
 
 Removed at the review: "The horde at the wall" and "The shore folk and the beast of the deep" (contests too like existing rows), "The whale and sea-serpent hunt" (a lifeline).
@@ -210,7 +210,7 @@ Removed at the review: "The horde at the wall" and "The shore folk and the beast
 | `break_magic_sold` with the ruin "The spring that ran dry" | clash: the later row leaves the pool |
 | `break_magic_sold` with "Casting is forbidden" | both of the knowledge family; never drawn together |
 | `break_magic_sold` with "Magic is nobility" | no clash: the nobles sell it |
-| `lifeline_enchanters`, `practice_enchanted_goods` | require the magic dial at medium or high |
+| `life_enchanters`, `practice_enchanted_goods` | require the magic dial at medium or high |
 | the same two with "Casting is forbidden" | no clash: a prohibition is not an impossibility; the workshops run unlicensed |
 | the same two with `break_magic_sold` | fits: ×2 |
 | `contest_coven` with the lifeline "The bargain with the fey" | no clash: two bargains, two powers |
