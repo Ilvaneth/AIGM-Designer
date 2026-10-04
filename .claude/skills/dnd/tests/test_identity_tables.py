@@ -2,7 +2,7 @@
 test_identity_tables.py — the identity's three signatures (plan item 25 step 2; docs/p1-build-8.md, after the tag
 review in docs/p1-tags.md): the approved counts and families, a visible and a behaving piece, the archetype headings
 of the form, the practice and the power, the rule kinds, the gates, the rows that need a break that has happened, the
-phenomenon rule families every ruin source can reach, the waits, clean phrases, no row that owns or sells magic, no
+phenomenon rule families every ruin source can reach, the waits, clean phrases, no
 claim, no removed id, every named row real, every row stamped.
 """
 
@@ -136,7 +136,7 @@ class Institution(unittest.TestCase):
                 self.assertFalse(set(r["hints"]) - set(HEADINGS), r["id"])
                 self.assertEqual(len(r["hints"]), len(set(r["hints"])), r["id"])
         self.assertEqual(per_heading("institution_practice"),
-                         {"guild": 18, "religious": 12, "trade": 10, "martial": 10, "state": 9, "scholarly": 9, "criminal": 6,
+                         {"guild": 19, "religious": 12, "trade": 11, "martial": 10, "state": 9, "scholarly": 9, "criminal": 6,
                           "resistance": 5})
         for sub, floor in (("institution_practice", 5), ("institution_form", 3), ("institution_power", 3)):
             got = per_heading(sub)
@@ -161,9 +161,9 @@ class Institution(unittest.TestCase):
 
     def test_practices_thirty_three(self):
         pr = {r["id"]: r for r in rows("institution_practice")}
-        self.assertEqual(len(pr), 33)
+        self.assertEqual(len(pr), 34, "33 after the tag review and the enchanted goods (16b)")
         self.assertEqual(Counter(r["family"] for r in pr.values()),
-                         {"guard": 3, "carry": 5, "make": 3, "know": 4, "care": 4, "war": 5, "trade": 5, "faith": 4})
+                         {"guard": 3, "carry": 5, "make": 4, "know": 4, "care": 4, "war": 5, "trade": 5, "faith": 4})
         for r in pr.values():
             self.assertTrue(r["text"]["gives"], r["id"])
         self.assertTrue(dt.roll_header(S + "institution_practice")["avoid_used"])
@@ -191,7 +191,9 @@ class Institution(unittest.TestCase):
                 "practice_dragon_hunters": dragons}
         for rid, others in want.items():
             self.assertEqual(weights(pr[rid]), {o: 3 for o in others}, rid)
-        self.assertEqual({k for k, r in pr.items() if r.get("weight_by")}, set(want))
+        self.assertEqual(weights(pr["practice_enchanted_goods"]), {"break_magic_sold": 2})
+        self.assertEqual(pr["practice_enchanted_goods"]["requires"], {"dial": {"magic": ["medium", "high"]}})
+        self.assertEqual({k for k, r in pr.items() if r.get("weight_by")}, set(want) | {"practice_enchanted_goods"})
         self.assertEqual(pr["practice_champions"]["text"]["name"], "they are champions who settle disputes by single combat")
         self.assertEqual(pr["practice_monopoly"]["text"]["name"], "they hold the monopoly of one good")
         self.assertNotIn("royal", pr["practice_monopoly"]["label"].lower())
@@ -365,7 +367,6 @@ class Rules(unittest.TestCase):
                 with self.subTest(row=r["id"]):
                     self.assertNotIn("(", t)
                     self.assertIsNone(ATTRACTORS.search(t), t)
-                    self.assertNotRegex(t, r"(?i)sells? magic|owns? magic|magic for sale", "no row owns or sells magic")
 
     def test_the_usage_the_owner_set(self):
         """A trait, a practice, a rule another campaign drew is not drawn again; the rest may repeat."""

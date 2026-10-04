@@ -334,7 +334,7 @@ def lay_out(R, spine: dict, kinds: list[str], life: dict, contests: list[dict], 
             seat = {r: (free.pop(0) if free else "along") for r in ("a", "b", "third")}
         seat = {r: p for r, p in seat.items() if r in c["roles"]}
         taken |= {p for p in seat.values() if p != "along"}
-        prize = row["prize"]
+        prize = (row.get("prize_with") or {}).get(out["ruin"], row["prize"])     # the relic's pieces: the ruin's remnant, else new
         at = (row.get("seats") or {}).get("prize")
         if at == "thin_place":
             at = next((p for p, k in parts.items() if k == "land_thin_place"), "along:land_thin_place")

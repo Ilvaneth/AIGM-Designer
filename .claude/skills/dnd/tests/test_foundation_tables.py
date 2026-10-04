@@ -186,11 +186,11 @@ class Spine(unittest.TestCase):
 
 class RuinSource(unittest.TestCase):
 
-    def test_forty_in_eight_families_of_five(self):
-        self.assertEqual(len(RUIN), 40)
+    def test_fifty_three_in_eight_families(self):
+        """Forty of the foundation's first build, five to a family, and the thirteen of the general themes (16b)."""
+        self.assertEqual(len(RUIN), 53)
         self.assertEqual(Counter(r["family"] for r in RUIN),
-                         {f: 5 for f in ("fallen_kingdoms", "wars", "gods", "magic", "catastrophe", "toil",
-                                         "old_peoples", "planes")})
+                         {"fallen_kingdoms": 7, "wars": 7, "gods": 5, "magic": 7, "catastrophe": 6, "toil": 5, "old_peoples": 8, "planes": 8})
 
     def test_every_ruin_carries_its_columns(self):
         for r in RUIN:
@@ -235,8 +235,8 @@ class RuinSource(unittest.TestCase):
         by = {r["id"]: r for r in RUIN}
         self.assertEqual(by["ruin_giants_and_dragons"]["olgu_families"], ["magic_behaviour", "matter"])
 
-    def test_the_only_tomb_is_the_khans(self):
-        self.assertEqual([r["id"] for r in RUIN if "site_dungeon_tomb" in r["sites"]], ["ruin_steppe_union"])
+    def test_the_tombs_are_the_khans_and_the_undying_kings(self):
+        self.assertEqual([r["id"] for r in RUIN if "site_dungeon_tomb" in r["sites"]], ["ruin_steppe_union", "ruin_kingdom_of_the_dead"])
 
     def test_the_family_waits_three_births(self):
         head = dt.roll_header("foundation.yaml#ruin_source")
@@ -246,10 +246,10 @@ class RuinSource(unittest.TestCase):
 
 class Lifeline(unittest.TestCase):
 
-    def test_sixty_in_seven_families(self):
-        self.assertEqual(len(LIFE), 60)
+    def test_sixty_one_in_seven_families(self):
+        self.assertEqual(len(LIFE), 61)
         self.assertEqual(Counter(r["family"] for r in LIFE),
-                         {"water": 8, "passage": 9, "creatures": 9, "mine": 9, "crop": 9, "craft": 8, "treaty": 8})
+                         {"water": 8, "passage": 9, "creatures": 9, "mine": 9, "crop": 9, "craft": 9, "treaty": 8})
 
     def test_every_lifeline_carries_its_columns(self):
         for r in LIFE:
@@ -267,7 +267,7 @@ class Lifeline(unittest.TestCase):
                 self.assertFalse(set(where) - set(PALETTE))
                 req = r.get("requires")
                 if not where:
-                    self.assertIsNone(req)
+                    self.assertTrue(req is None or set(req) == {"dial"}, "an everywhere row needs no land; a dial gate may stand")
                     continue
                 conds = req if isinstance(req, list) else [req]
                 for c in conds:
@@ -285,11 +285,11 @@ class Lifeline(unittest.TestCase):
 
 class Contest(unittest.TestCase):
 
-    def test_forty_in_eight_families_of_five(self):
-        self.assertEqual(len(CONTEST), 40)
+    def test_fifty_one_in_eight_families(self):
+        """Forty of the foundation's first build, five to a family, and the eleven of the general themes (16b)."""
+        self.assertEqual(len(CONTEST), 51)
         self.assertEqual(Counter(r["family"] for r in CONTEST),
-                         {f: 5 for f in ("two_hands", "old_new", "strong_weak", "open_close", "race", "kin", "nonhuman",
-                                         "hidden_hand")})
+                         {"two_hands": 6, "old_new": 5, "strong_weak": 9, "open_close": 6, "race": 6, "kin": 5, "nonhuman": 8, "hidden_hand": 6})
 
     def test_every_contest_carries_its_roles_prize_and_escalation(self):
         for r in CONTEST:
@@ -515,7 +515,7 @@ class TagReview(unittest.TestCase):
     def test_the_peoples_roles_and_the_other_contest_changes(self):
         by = {r["id"]: r for r in CONTEST}
         people = {(k, key): role for k, r in by.items() for key, role in r["roles"].items() if role.get("people_role")}
-        self.assertEqual(len(people), 10)
+        self.assertEqual(len(people), 11, "ten of the tag review and the slavers' fourth (16b)")
         self.assertEqual({k: v.get("lineage_forced") for k, v in people.items() if v.get("lineage_forced")},
                          {("contest_humans_giants", "b"): "lineage_giant_kin", ("contest_humans_fey", "b"): "lineage_fey",
                           ("contest_land_sea_folk", "b"): "lineage_merfolk"})

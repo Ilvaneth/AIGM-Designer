@@ -260,10 +260,10 @@ class Floors(unittest.TestCase):
         """Item 25 step 2 #5 after the tag review (build item 7c-3): 31 rows in six families, each touching two
         phases; four ties; eight prohibition rows for the new-taboo scar. test_trope_claims checks the claims."""
         breaks = dt.rows("trope-breaks.yaml")
-        self.assertEqual(len(breaks), 31)
+        self.assertEqual(len(breaks), 36)
         from collections import Counter
         self.assertEqual(Counter(r["family"] for r in breaks),
-                         {"governance": 7, "peoples": 3, "gods": 5, "danger": 7, "time": 3, "knowledge": 6})
+                         {"governance": 7, "peoples": 3, "gods": 6, "danger": 9, "time": 3, "knowledge": 8})
         self.assertEqual({r["piece"] for r in dt.rows("trope-breaks.yaml#tie")}, {"lifeline", "ruin_source", "contest", "break"})
         self.assertEqual({r["id"] for r in breaks if r.get("prohibition")},
                          {"break_weapons_one_class", "break_border_forbidden", "break_god_name_forbidden", "break_underground_forbidden",

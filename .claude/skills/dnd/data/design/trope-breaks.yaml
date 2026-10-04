@@ -113,6 +113,7 @@ rows:
     statement: "Goblins, giants or another 'monster' people hold sworn treaties; breaking one is the crime, not meeting them."
     overrides: [{"default": "site_attitude_pool", "to": "negotiate on the treaty people's lairs; the horror mix's 'test or enslave' site is never one of them"}]
     weight_by: [{"when": {"any_of": ["life_giant_peace", "life_dragon_protection", "life_fey_bargain", "life_sea_folk_hunt", "contest_humans_giants", "contest_humans_dragon", "contest_humans_fey", "contest_surface_deep", "contest_land_sea_folk"]}, "x": 2}]
+    merges_with: {"contest_living_dead": "the treaty people is the dead"}
     text: {"name": "the monsters have treaties", "at_table": "every monster encounter is first a negotiation"}
     hooks:
       - {phase: P4, must: "the treaty people are a faction with a stance row and an operation"}
@@ -122,6 +123,7 @@ rows:
     label: "Some lands' lord is a beast-person"
     family: peoples
     statement: "A born lineage is both beast and person and holds land; a wood may have a lord who is a stag and walks as a man."
+    weight_by: [{"when": {"any_of": ["ruin_beast_blood"]}, "x": 2}]
     text: {"name": "the lord of some lands is a beast-person", "at_table": "the forest has an owner, and a say"}
     hooks:
       - {phase: P3, must: "a beast-lord holds one part of the map; its travel table is negotiated passage"}
@@ -271,7 +273,7 @@ rows:
     statement: "The taught war was lost; the party's people live under the victors, and life is better than the songs admit."
     overrides: [{"default": "state_identity", "to": "the victors"}]
     weight_by: [{"when": {"any_of": ["contest_occupier_resistance"]}, "x": 3}, {"when": {"any_of": ["ruin_besieged_land"]}, "x": 2}]
-    merges_with: {"contest_occupier_resistance": "the victors are role a; role third is the state faction under them"}
+    merges_with: {"contest_occupier_resistance": "the victors are role a; role third is the state faction under them", "contest_dark_lord": "the enemy that won is the dark lord (role a)"}
     text: {"name": "the old enemy won and everyone is fine", "at_table": "the world of the \"villains\" is an ordinary world"}
     hooks:
       - {phase: P2, must: "the founding event is the defeat; taught and true layers differ on how bad the victors are"}
@@ -362,3 +364,60 @@ rows:
       - {phase: P4, must: "one faction hunts casters and another shelters them"}
       - {phase: P5, must: "caster NPCs hide what they are"}
       - {phase: P8, must: "the primer says what befalls a caught caster"}
+  # ── the general themes (build item 16b; owner-approved 2026-10-04; hooks by the coding tab) ──
+  - id: break_dead_rise
+    label: "The dead rise unless they are laid"
+    family: danger
+    statement: "Anyone who dies without the rites rises within three nights."
+    weight_by: [{"when": {"any_of": ["contest_living_dead"]}, "x": 2}, {"when": {"any_of": ["ruin_plague"]}, "x": 2}]
+    text: {"name": "the dead rise unless they are laid", "at_table": "every corpse is a task; a battlefield is a countdown"}
+    hooks:
+      - {phase: P2, must: "the rite that lays the dead is written, with the god or the order that owns it"}
+      - {phase: P5, must: "every settlement has someone who lays the dead"}
+      - {phase: P6, must: "a site's unlaid dead rose where they fell; its ecology says so"}
+      - {phase: P8, must: "the primer says what is done with a body, and how soon"}
+  - id: break_chosen_are_many
+    label: "The chosen are many"
+    family: gods
+    statement: "In every generation the gods mark a hundred chosen. Being chosen is common, known, and a burden with rules."
+    text: {"name": "the chosen are many", "at_table": "a PC may be chosen, and it does not make them special"}
+    hooks:
+      - {phase: P2, must: "each great god's mark and the rules it lays on the marked are written"}
+      - {phase: P5, must: "chosen NPCs are in the roster, some of them unwilling"}
+      - {phase: P9, must: "a PC may carry a mark; it is a burden with rules, never a destiny"}
+  - id: break_dreams_are_a_place
+    label: "Dreams are a place"
+    family: danger
+    statement: "Sleepers walk one shared dream-land; what is done there holds on waking."
+    weight_by: [{"when": {"any_of": ["ruin_sleeping_realm"]}, "x": 2}]
+    text: {"name": "dreams are a place", "at_table": "a long rest is a journey; an encounter can come in sleep"}
+    hooks:
+      - {phase: P2, must: "the dream-land is a touched plane or a region of its own, with its rule of what holds on waking"}
+      - {phase: P3, must: "the dream-land has places that answer to places of the waking map"}
+      - {phase: P6, must: "one site can be entered only in sleep"}
+      - {phase: play, must: "a long rest may open a scene in the dream-land"}
+  - id: break_oath_curse
+    label: "A broken oath curses the breaker"
+    family: knowledge
+    statement: "Break a sworn oath and a curse falls on you. Everyone knows it, so oaths are few and heavy."
+    weight_by: [{"when": {"any_of": ["ruin_great_curse"]}, "x": 2}, {"when": {"any_of": ["life_giant_peace", "life_dragon_protection", "life_fey_bargain", "life_sea_folk_hunt", "life_hired_guard", "life_binding_marriage", "life_shared_water_right", "life_pilgrim_road"]}, "x": 2}]
+    text: {"name": "a broken oath curses the breaker", "at_table": "a promise the party gives is a mechanical burden"}
+    hooks:
+      - {phase: P4, must: "factions bind by few and heavy oaths; who has broken one is known"}
+      - {phase: P5, must: "one NPC lives under a broken oath's curse"}
+      - {phase: P8, must: "the primer says how an oath is sworn and what its breaking brings"}
+      - {phase: P9, must: "an oath a PC has sworn is recorded with what its breaking would bring"}
+  - id: break_magic_sold
+    label: "Magic is bought and sold like bread"
+    family: knowledge
+    statement: "Spells and enchanted goods are ordinary trade, with shops and prices."
+    claims: {"magic": "plentiful"}
+    requires: {"dial": {"magic": ["medium", "high"]}}
+    conflicts_with: ["ruin_dried_source"]
+    weight_by: [{"when": {"any_of": ["life_enchanters"]}, "x": 2}]
+    text: {"name": "magic is bought and sold like bread", "at_table": "a magic item is bought at the market"}
+    hooks:
+      - {phase: P3, must: "every town's goods carry enchanted goods and spell services, with prices"}
+      - {phase: P4, must: "a trade or guild faction lives by the magic trade"}
+      - {phase: P6, must: "a site's loot is priced against the market"}
+      - {phase: P8, must: "the primer says what a spell and an enchanted thing cost"}

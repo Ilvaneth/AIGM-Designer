@@ -314,6 +314,46 @@ class ManySeeds(unittest.TestCase):
             leaks += sum(1 for rid in secret if f'"{rid}"' in text)
         self.assertEqual(leaks, 0, f"{leaks} secret row id(s) in a public record or the identity")
 
+    # ── the general themes (build item 16b) ──
+
+    THEMES = ("ruin_kingdom_of_the_dead", "ruin_devils_bargain", "ruin_demon_gate", "ruin_deep_minds", "ruin_bound_elements",
+              "ruin_sundered_relic", "ruin_dark_lords_fall", "ruin_sleeper", "ruin_empire", "ruin_great_curse", "ruin_beast_blood",
+              "ruin_sleeping_realm", "ruin_fallen_order", "contest_living_dead", "contest_fiend_pact", "contest_elemental_lord",
+              "contest_relic_pieces", "contest_prophecy", "contest_dark_lord", "contest_two_empires", "contest_coven", "contest_pirates",
+              "contest_slavers", "contest_thieves_guild", "break_dead_rise", "break_chosen_are_many", "break_dreams_are_a_place",
+              "break_oath_curse", "break_magic_sold", "life_enchanters", "practice_enchanted_goods")
+
+    def test_every_general_theme_row_is_drawn_and_every_ruling_holds(self):
+        drawn = set()
+        prizes = set()
+        for d, R in self.runs:
+            f = R.foundation
+            rolled = {r["row_id"] for r in R.public if r.get("row_id")}
+            drawn |= rolled & set(self.THEMES)
+            palette = set(f["palette"]) | set(f["palette_extra"])
+            if "break_magic_sold" in rolled:
+                self.assertNotEqual(d["magic"], "low", R.master)
+                self.assertNotIn("ruin_dried_source", rolled, R.master)
+                self.assertNotIn("claim:magic=faded", R.ctx.tokens, R.master)
+                self.assertIn("claim:magic=plentiful", R.ctx.tokens)
+            if rolled & {"life_enchanters", "practice_enchanted_goods"}:
+                self.assertIn(d["magic"], ("medium", "high"), R.master)
+            if "ruin_deep_minds" in rolled:
+                self.assertTrue(palette & {"land_coast", "land_island", "land_lake", "land_underground"}, R.master)
+            if "contest_pirates" in rolled:
+                self.assertTrue(palette & {"land_coast", "land_island"}, R.master)
+            for c in f["layout"]["contests"]:
+                if c["contest"] == "contest_relic_pieces":
+                    want = "remnant" if f["ruin_source"] == "ruin_sundered_relic" else "new"
+                    self.assertEqual(c["prize"]["kind"], want, R.master)
+                    self.assertIsNotNone(c["prize"]["at"])
+                    prizes.add(want)
+            merged = {(b["id"], m["with"]) for b in R.identity["trope_breaks"] for m in b["merges"]}
+            for brk, other in (("break_monsters_have_treaties", "contest_living_dead"), ("break_the_enemy_won", "contest_dark_lord")):
+                self.assertEqual((brk, other) in merged, {brk, other} <= rolled, R.master)
+        self.assertEqual(set(self.THEMES) - drawn, set(), "a general-theme row was never drawn")
+        self.assertIn("new", prizes)
+
     def floors(self):
         """The smallest pool after the constraints, per group of each table whose rows are not drawn again."""
         out: dict = {}

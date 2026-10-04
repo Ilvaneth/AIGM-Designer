@@ -23,7 +23,7 @@ tables:
       - {id: "lineage_dwarf", label: "Dwarf", playable: true, weight_by: [{when: {any_of: ["land_underground", "land_mountain"]}, x: 3}]}
       - {id: "lineage_elf", label: "Elf", playable: true, weight_by: [{when: {any_of: ["land_forest"]}, x: 3}]}
       - {id: "lineage_halfling", label: "Halfling", playable: true, weight_by: [{when: {any_of: ["land_plain", "land_river"]}, x: 3}]}
-      - {id: "lineage_gnome", label: "Gnome", playable: true, weight_by: [{when: {any_of: ["land_underground"]}, x: 3}, {when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery"]}, x: 3}]}
+      - {id: "lineage_gnome", label: "Gnome", playable: true, weight_by: [{when: {any_of: ["land_underground"]}, x: 3}, {when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery", "life_enchanters"]}, x: 3}]}
       - {id: "lineage_half_elf", label: "Half-elf", playable: true}
       - {id: "lineage_half_orc", label: "Half-orc", playable: true}
       - {id: "lineage_dragonborn", label: "Dragonborn", playable: true, weight_by: [{when: {any_of: ["life_dragon_protection", "contest_humans_dragon", "ruin_age_of_dragons", "ruin_giants_and_dragons", "break_dragons_rule"]}, x: 3}]}
@@ -73,7 +73,7 @@ tables:
       - {id: "trait_rulers_by_contest", label: "Rulers chosen by contests of craft", family: "social_order", kind: "behaving", text: {"name": "they choose their rulers by contests of craft", "at_table": "to become a leader one has to do something"}}
       - {id: "trait_decisions_in_the_open", label: "Every decision in the open air", family: "social_order", kind: "behaving", text: {"name": "every decision is made in front of everyone, in the open air; there is no decision behind closed doors", "at_table": "secret agreements are a grave crime"}}
       - {id: "trait_the_young_rule", label: "The youngest rule", family: "social_order", kind: "behaving", text: {"name": "the youngest rule; whoever passes forty becomes an adviser", "at_table": "the leaders are brave but inexperienced"}}
-      - {id: "trait_workshops_not_families", label: "Workshops instead of families", family: "social_order", kind: "behaving", weight_by: [{when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery"]}, x: 2}], text: {"name": "there are workshops instead of families: a child bears the name of the craft it learned", "at_table": "a person's master is their family"}}
+      - {id: "trait_workshops_not_families", label: "Workshops instead of families", family: "social_order", kind: "behaving", weight_by: [{when: {any_of: ["life_famous_steel", "life_glassblowing", "life_carpet_weaving", "life_shipbuilding", "life_tile_ceramics", "life_leather_armour", "life_potions_medicine", "life_bowyery", "life_enchanters"]}, x: 2}], text: {"name": "there are workshops instead of families: a child bears the name of the craft it learned", "at_table": "a person's master is their family"}}
       - {id: "trait_two_chiefs", label: "Two chiefs, for peace and for war", family: "social_order", kind: "behaving", text: {"name": "they have two chiefs, one in peace and one in war", "at_table": "when war is declared, rule changes hands"}}
       - {id: "trait_remember_before", label: "The only people who remember the world before", family: "break_relation", kind: "behaving", after_the_break: true, text: {"name": "they are the only people who remember the world before the break", "at_table": "the knowledge of the past is with them"}, requires: {none_of: ["time_coming"]}}
       - {id: "trait_first_changed", label: "The first generation the break changed", family: "break_relation", kind: "behaving", after_the_break: true, weight_by: [{when: {any_of: ["scar_new_people"]}, x: 3}], text: {"name": "they are the first generation the break transformed", "at_table": "the old people fear them", "name_note": "merges with the 'new people' wound"}, requires: {none_of: ["time_coming"]}}
@@ -163,6 +163,7 @@ tables:
       - {id: "practice_pilgrim_guides", label: "They lead the pilgrims", family: "faith", hints: ["religious", "trade"], weight_by: [{when: {any_of: ["life_pilgrim_road"]}, x: 3}], text: {"name": "they take the pilgrims to the holy place", "gives": "pilgrim road tasks"}}
       - {id: "practice_guard_the_holy_place", label: "They guard the holy place", family: "faith", hints: ["religious", "martial"], conflicts_with: ["contest_one_shrine"], text: {"name": "they guard the holy place", "gives": "the secrets of the holy place"}}
       - {id: "practice_worship_the_break", label: "They read the break and worship it", family: "faith", weight_by: [{when: {any_of: ["scar_new_belief"]}, x: 3}], hints: ["religious", "resistance"], text: {"name": "they interpret the break and worship it", "gives": "the new faith's followers and enemies"}}
+      - {id: "practice_enchanted_goods", label: "They make and sell enchanted goods", family: "make", hints: ["guild", "trade"], requires: {dial: {magic: ["medium", "high"]}}, weight_by: [{when: {any_of: ["break_magic_sold"]}, x: 2}], text: {"name": "they make and sell enchanted goods", "gives": "enchanted goods to buy and to order"}}
 
   institution_sign:
     roll: {"avoid_used": false}
@@ -203,7 +204,7 @@ tables:
 
   phenomenon_rule:
     roll: {"avoid_used": true}
-    note: "the pool is filtered to the ruin source's olgu_families; with the magic-rule scar, family born_of_break alone and the phenomenon's home is the break (review #6); magic low halves families 1, 6 and 8; no row owns or sells magic; a rule another campaign drew is not drawn again; `kind` says who uses the rule: `spell` whoever casts, `self` no one, `usable` a rolled user (item 10 rolls the user for the usable rules only, from the row's `users` when it names them)"
+    note: "the pool is filtered to the ruin source's olgu_families; with the magic-rule scar, family born_of_break alone and the phenomenon's home is the break (review #6); magic low halves families 1, 6 and 8; a rule another campaign drew is not drawn again; `kind` says who uses the rule: `spell` whoever casts, `self` no one, `usable` a rolled user (item 10 rolls the user for the usable rules only, from the row's `users` when it names them)"
     hooks_common:
       - {phase: P2, must: "the magic system agrees with the rule"}
       - {phase: P3, must: "where the rule is strong and where it is weak"}

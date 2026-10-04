@@ -29,7 +29,7 @@ SURFACE = {"dial": {"era": ["medieval", "renaissance", "ancient", "nautical"]}}
 class Rows(unittest.TestCase):
 
     def test_eight_left_and_six_joined(self):
-        self.assertEqual(len(BREAKS), 31)
+        self.assertEqual(len(BREAKS), 36, "31 after the tag review, five of the general themes (16b)")
         self.assertFalse(set(GONE) & set(BREAKS))
         for rid in JOINED:
             r = BREAKS[rid]
@@ -55,7 +55,7 @@ class Rows(unittest.TestCase):
                          {"break_rule_by_lottery": {"rule": "by_lot"},
                           "break_no_kings_only_guilds": {"nobility": "none", "rule": "guild_council"},
                           "break_war_is_ritual": {"war": "by_champions"}, "break_magic_is_nobility": {"nobility": "exists"},
-                          "break_dragons_rule": {"rule": "dragon_sovereign"}})
+                          "break_dragons_rule": {"rule": "dragon_sovereign"}, "break_magic_sold": {"magic": "plentiful"}})
 
     def test_the_further_clashes_and_requirements(self):
         self.assertEqual({k: r["conflicts_with"] for k, r in BREAKS.items() if r.get("conflicts_with")},
@@ -63,10 +63,11 @@ class Rows(unittest.TestCase):
                           "break_gods_are_ancestors_known": ["ruin_dead_god"],
                           "break_underground_forbidden": ["claim:below_ground=lived_in"],
                           "break_ruins_forbidden": ["layout:remnant_on_heart"], "break_no_writing": ["claim:writing=printed"],
-                          "break_casting_forbidden": ["break_magic_is_nobility"]})
+                          "break_casting_forbidden": ["break_magic_is_nobility"], "break_magic_sold": ["ruin_dried_source"]})
         self.assertEqual({k: r["requires"] for k, r in BREAKS.items() if r.get("requires")},
                          {"break_night_is_safe": SURFACE, "break_night_forbidden": SURFACE,
-                          "break_casting_forbidden": {"dial": {"magic": ["low", "medium"]}}})
+                          "break_casting_forbidden": {"dial": {"magic": ["low", "medium"]}},
+                          "break_magic_sold": {"dial": {"magic": ["medium", "high"]}}})
         tie = {r["id"]: r for r in dt.rows("trope-breaks.yaml#tie")}
         self.assertEqual(tie["tie_break"]["conflicts_with"], ["time_coming"])
 
@@ -121,12 +122,22 @@ class Rows(unittest.TestCase):
         guild = BREAKS["break_no_kings_only_guilds"]["weight_by"][0]["when"]["any_of"]
         contests = {r["id"]: r for r in dt.rows("foundation.yaml#contest")}
         self.assertEqual(set(guild), {k for k, r in contests.items() if "guild" in (r["roles"]["a"]["hint"], r["roles"]["b"]["hint"])})
-        for rid in ("break_beasts_own_land", "break_lineage_homes_inverted", "break_night_is_safe", "break_lawless_day", "break_no_direct_lies"):
+        for rid in ("break_lineage_homes_inverted", "break_night_is_safe", "break_lawless_day", "break_no_direct_lies"):
             self.assertNotIn("weight_by", BREAKS[rid], rid)
+        # the general themes (16b): every ruled "fits"
+        self.assertEqual(w("break_beasts_own_land", rolled={"ruin_beast_blood": False}), 2)
+        self.assertEqual(w("break_dead_rise", rolled={"contest_living_dead": False, "ruin_plague": False}), 4)
+        self.assertEqual(w("break_dreams_are_a_place", rolled={"ruin_sleeping_realm": False}), 2)
+        self.assertEqual(w("break_oath_curse", rolled={"ruin_great_curse": False, "life_fey_bargain": False}), 4)
+        self.assertEqual(w("break_magic_sold", dials={"magic": "high"}, rolled={"life_enchanters": False}), 2)
+        treaties = {r["id"] for r in dt.rows("foundation.yaml#lifeline") if r["family"] == "treaty"}
+        self.assertEqual(set(BREAKS["break_oath_curse"]["weight_by"][1]["when"]["any_of"]), treaties)
+        self.assertNotIn("weight_by", BREAKS["break_chosen_are_many"])
 
     def test_the_merge_rules_and_the_combine_lines(self):
         self.assertEqual({k: sorted(r["merges_with"]) for k, r in BREAKS.items() if r.get("merges_with")},
-                         {"break_dragons_rule": ["contest_humans_dragon"], "break_the_enemy_won": ["contest_occupier_resistance"],
+                         {"break_dragons_rule": ["contest_humans_dragon"], "break_the_enemy_won": ["contest_dark_lord", "contest_occupier_resistance"],
+                          "break_monsters_have_treaties": ["contest_living_dead"],
                           "break_iron_is_sacred": ["life_famous_steel", "life_iron_coal"],
                           "break_magic_is_nobility": ["contest_casters_casterless"], "break_casting_forbidden": ["contest_casters_casterless"]})
         combines = {(c["default"], frozenset(c["rows"])) for c in REG["combines"]}

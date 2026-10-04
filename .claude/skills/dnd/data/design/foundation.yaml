@@ -706,6 +706,119 @@ tables:
         text: {"name": "the kingdom that reached for the stars", "what": "an observatory-kingdom called something from the stars", "remnant": "the observatories", "sites": "observatories, summoning chambers, the lairs of star creatures", "strangeness": "on certain nights the sky draws closer"}
 
   # ── 4. the lifeline: what they live on, what they cannot lose (7 families, 60) ──────────────────────
+      # ── the general themes (build item 16b; owner-approved 2026-10-04) ──
+      - id: ruin_kingdom_of_the_dead
+        label: The kingdom of the dead
+        family: fallen_kingdoms
+        statement: "Its kings would not die: they ruled on as the undead until the living rose and broke them. The tombs are palaces, and not all of the court was destroyed."
+        remnant_kind: city
+        sites: [site_dungeon_tomb, site_dungeon_planned, site_stronghold]
+        olgu_families: [body_blood, time]
+        text: {"name": "the kingdom of the dead", "what": "the kings who would not die ruled on as the undead until the living rose and broke them", "remnant": "the tomb-palaces of the undying kings", "sites": "tomb-palaces, sealed throne halls, the roads of the royal dead", "strangeness": "not all of the undying court was destroyed, and it still keeps its ranks"}
+      - id: ruin_devils_bargain
+        label: The realm that bargained with devils
+        family: planes
+        statement: "A kingdom bought its golden age from the Hells. When the bargain came due the devils took what was owed; its contracts still bind."
+        remnant_kind: structure
+        sites: [site_planar, site_stronghold, site_urban]
+        olgu_families: [word_sign, body_blood]
+        text: {"name": "the realm that bargained with devils", "what": "a kingdom bought its golden age from the Hells, and the devils took what was owed when the bargain came due", "remnant": "the gilded halls where the contracts were signed", "sites": "contract vaults, gilded palaces gone to ruin, the devils' embassies", "strangeness": "its contracts still bind whoever speaks their terms"}
+        hooks:
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
+      - id: ruin_demon_gate
+        label: The demon gate
+        family: planes
+        statement: "A gate to the Abyss stood open for a generation. The land around it was scoured, and what came through was never all hunted down."
+        remnant_kind: rift
+        sites: [site_planar, site_wilderness, site_dungeon_lair]
+        olgu_families: [nature_creatures, matter]
+        text: {"name": "the demon gate", "what": "a gate to the Abyss stood open for a generation and the land around it was scoured", "remnant": "the closed gate and the scoured land around it", "sites": "the gate's ruin, the scoured waste, the lairs of what came through", "strangeness": "what came through was never all hunted down, and the land near the gate still warps what lives on it"}
+        hooks:
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
+      - id: ruin_deep_minds
+        label: The drowned dominion of the deep minds
+        family: old_peoples
+        statement: "Before the peoples, aberrant minds ruled from sunken cities and kept thralls. Their dominion broke; their cities did not."
+        remnant_kind: city
+        sites: [site_dungeon_natural, site_dungeon_planned, site_dungeon_lair]
+        olgu_families: [body_blood, word_sign]
+        requires: {any_of: ["land_coast", "land_island", "land_lake", "land_underground"]}
+        text: {"name": "the drowned dominion of the deep minds", "what": "before the peoples, aberrant minds ruled from sunken cities and kept thralls, until their dominion broke", "remnant": "the sunken cities of the deep minds", "sites": "drowned cities, thrall pens, the chambers where the minds thought together", "strangeness": "the cities still think, and those who stay too long hear them"}
+      - id: ruin_bound_elements
+        label: The bound elements
+        family: magic
+        statement: "A people chained elementals to turn their mills and warm their cities. The bindings failed all at once."
+        remnant_kind: machine
+        sites: [site_dungeon_planned, site_urban, site_wilderness]
+        olgu_families: [matter, nature_creatures]
+        text: {"name": "the bound elements", "what": "a people chained elementals to turn their mills and warm their cities, and the bindings failed all at once", "remnant": "the binding works: mills, furnaces and channels with nothing left in them", "sites": "binding halls, stopped mills, the places where an elemental broke free", "strangeness": "some elementals never left, and the elements there still answer a binder's word"}
+      - id: ruin_sundered_relic
+        label: The relic that was sundered
+        family: magic
+        statement: "An artifact held the land together. It was broken on purpose, and its pieces were carried apart and hidden."
+        remnant_kind: object
+        sites: [site_dungeon_planned, site_stronghold, site_dungeon_ruin]
+        olgu_families: [matter, magic_behaviour]
+        text: {"name": "the relic that was sundered", "what": "an artifact that held the land together was broken on purpose, and its pieces were carried apart and hidden", "remnant": "the pieces of the sundered relic", "sites": "the hiding places of the pieces, the hall where it was broken", "strangeness": "each piece still does a part of what the whole did"}
+      - id: ruin_dark_lords_fall
+        label: The dark lord's fall
+        family: wars
+        statement: "A conqueror ruled from a black fortress until an alliance threw him down. His fortress, his captains' strongholds and his weapon remain."
+        remnant_kind: structure
+        sites: [site_stronghold, site_dungeon_planned, site_dungeon_ruin]
+        olgu_families: [body_blood, matter]
+        text: {"name": "the dark lord's fall", "what": "a conqueror ruled from a black fortress until an alliance threw him down", "remnant": "the black fortress, his captains' strongholds and his weapon", "sites": "the black fortress, the captains' strongholds, the field of the last alliance", "strangeness": "his weapon was never unmade, and what served him still knows its master's sign"}
+      - id: ruin_sleeper
+        label: The sleeper under the land
+        family: old_peoples
+        statement: "Something older than the gods was bound asleep, and a people that is gone kept the watch. The watch-posts stand empty."
+        remnant_kind: structure
+        sites: [site_dungeon_planned, site_stronghold, site_dungeon_natural]
+        olgu_families: [time, place_path]
+        text: {"name": "the sleeper under the land", "what": "something older than the gods was bound asleep, and the people that kept the watch is gone", "remnant": "the empty watch-posts over the sleeper", "sites": "watch-posts, the binding vault, the roads the watch walked", "strangeness": "the sleeper dreams, and near it the land does what it dreams"}
+      - id: ruin_empire
+        label: The empire that ruled everything
+        family: fallen_kingdoms
+        statement: "One throne held every land. It fell, and each province kept a piece of its law, its roads and its legions."
+        remnant_kind: network
+        sites: [site_stronghold, site_urban, site_dungeon_ruin]
+        olgu_families: [word_sign, place_path]
+        text: {"name": "the empire that ruled everything", "what": "one throne held every land, and when it fell each province kept a piece of its law, its roads and its legions", "remnant": "the imperial roads, forts and milestones that still cross every border", "sites": "legion forts, provincial capitals, the fallen throne-city", "strangeness": "the empire's law still holds on its roads, whoever rules beside them"}
+      - id: ruin_great_curse
+        label: The great curse
+        family: catastrophe
+        statement: "A wronged power cursed the land with its dying breath. Crops, births and luck all turned, and the realm emptied."
+        remnant_kind: wasteland
+        sites: [site_wilderness, site_dungeon_ruin, site_urban]
+        olgu_families: [nature_creatures, body_blood]
+        text: {"name": "the great curse", "what": "a wronged power cursed the land with its dying breath; crops, births and luck all turned, and the realm emptied", "remnant": "the emptied realm under the curse", "sites": "abandoned farms and towns, the place where the curse was spoken", "strangeness": "the curse still chooses: some who enter are spared and none can say why"}
+      - id: ruin_beast_blood
+        label: The beast-blood clans
+        family: old_peoples
+        statement: "Clans that took the shapes of beasts held the wilds until they were hunted out. Their blood still surfaces."
+        remnant_kind: structure
+        sites: [site_wilderness, site_dungeon_lair, site_stronghold]
+        olgu_families: [body_blood, nature_creatures]
+        text: {"name": "the beast-blood clans", "what": "clans that took the shapes of beasts held the wilds until they were hunted out", "remnant": "the clans' hill-forts and marked stones in the wilds", "sites": "hill-forts, marked stones, the dens of those who never changed back", "strangeness": "their blood still surfaces: a child of any family may take the shape"}
+      - id: ruin_sleeping_realm
+        label: The realm that fell asleep
+        family: planes
+        statement: "A whole realm fell into one dream and did not wake. The dream is still there, and it can be entered."
+        remnant_kind: city
+        sites: [site_planar, site_urban, site_dungeon_planned]
+        olgu_families: [time, place_path]
+        text: {"name": "the realm that fell asleep", "what": "a whole realm fell into one dream and did not wake", "remnant": "the sleeping realm and its dreamers", "sites": "the sleeping city, the dream that can be entered, the border where waking ends", "strangeness": "the dream is still there, and whoever sleeps near it walks in it"}
+        hooks:
+          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
+      - id: ruin_fallen_order
+        label: The fallen order of knights
+        family: wars
+        statement: "A sworn order held the frontier until it was betrayed and broken. Its commanderies stand empty and its oaths were never released."
+        remnant_kind: structure
+        sites: [site_stronghold, site_dungeon_planned, site_dungeon_ruin]
+        olgu_families: [word_sign, body_blood]
+        text: {"name": "the fallen order of knights", "what": "a sworn order held the frontier until it was betrayed and broken", "remnant": "the order's empty commanderies", "sites": "commanderies, chapter vaults, the field where it was broken", "strangeness": "its oaths were never released, and they still bind whoever takes up its arms"}
+
   lifeline:
     roll:
       avoid_used: true
@@ -1072,6 +1185,14 @@ tables:
         text: {"name": "the pilgrim road", "name_note": "the pilgrims come, the region lives by them", "who": "innkeepers, guides", "yields": "service", "weak_point": "if the pilgrims do not come"}
 
   # ── 5. the contest: the campaign's old fault line (8 families, 40) ────────────────────────────────
+      # ── the general themes (build item 16b) ──
+      - id: life_enchanters
+        label: "The enchanters' workshops"
+        family: craft
+        statement: "The land's wealth is enchanted goods, made to order and sold abroad."
+        requires: {dial: {magic: [medium, high]}}
+        text: {"name": "the enchanters' workshops", "who": "enchanters and their apprentices", "yields": "enchanted goods, made to order and sold abroad", "weak_point": "the masters' formulae; the rare materials that must come from elsewhere", "sense": "the smell of hot metal and the hum of a working that has not yet settled"}
+
   contest:
     roll:
       avoid_used: true
@@ -1190,8 +1311,8 @@ tables:
           b: {text: "those who bring a new alloy or machine", hint: scholarly}
           third: {text: "the workers left without work", hint: resistance}
           fourth: {text: "a state that wants the new method as a weapon", hint: null}
-        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}   # a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["boycott", "machine breaking", "blood"]
         text: {"name": "old craft, new craft"}
       - id: contest_old_gods_new_faith
@@ -1294,6 +1415,7 @@ tables:
           b: {text: "the keepers who want to keep it sealed", hint: religious}
           third: {text: "the looters who take pieces out in secret", hint: criminal}
           fourth: {text: "an outside power that gains if it is opened", hint: null}
+        weight_by: [{when: {any_of: [ruin_sleeper]}, x: 3}]
         escalation: ["requests for permission", "night digs", "clashes with the keepers"]
         text: {"name": "the sealed remnant", "name_note": "the remnant at the key place"}
       - id: contest_open_close_road
@@ -1329,8 +1451,8 @@ tables:
           b: {text: "the guild that keeps it secret", hint: guild}
           third: {text: "the spies who steal the knowledge and sell it", hint: criminal}
           fourth: {text: "a state that wants to turn the knowledge into a weapon", hint: null}
-        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}   # a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}, x: 3}]
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}]
         escalation: ["copying", "assassination"]
         text: {"name": "those who spread knowledge and those who keep it"}
       - id: contest_open_close_gate
@@ -1430,7 +1552,7 @@ tables:
           b: {text: "the young branch that breaks away", hint: resistance}
           third: {text: "the steward who holds the order's treasury", hint: guild}
           fourth: {text: "a rival faith that gains from the split", hint: null}
-        weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
+        weight_by: [{when: {any_of: [ruin_fallen_order]}, x: 2}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["expulsion from the order", "brothers' blood"]
         text: {"name": "the splitting of an order"}
       - id: contest_divided_city
@@ -1468,8 +1590,8 @@ tables:
           b: {text: "the branch that breaks away", hint: trade}
           third: {text: "the only master who knows the secret of the family craft", hint: null}
           fourth: {text: "a rival guild", hint: null}
-        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}   # a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["stealing customers", "sabotage", "murder"]
         text: {"name": "a family that splits"}
       - id: contest_humans_giants
@@ -1615,6 +1737,137 @@ tables:
         text: {"name": "the shapeshifter"}
 
   # ── 6. the break: built last, strikes one of the pieces (target · action · scars · time · winner) ─────
+      # ── the general themes (build item 16b; owner-approved 2026-10-04; hints, prizes, seats and steps by the coding tab) ──
+      - id: contest_living_dead
+        label: "The living and the dead"
+        family: nonhuman
+        prize: heart
+        roles:
+          a: {text: "the living realm's lords", hint: state}
+          b: {text: "the undying lord and its risen subjects", hint: null}
+          third: {text: "the priests who can lay the dead", hint: religious}
+          fourth: {text: "those who trade across the line", hint: trade}
+        escalation: ["the unburied walk", "the border forts fall", "the living city besieged"]
+        text: {"name": "the living and the dead"}
+      - id: contest_fiend_pact
+        label: "The fiend behind the pact"
+        family: hidden_hand
+        prize: lifeline
+        third_is_rumour: true
+        roles:
+          a: {text: "the house that signed", hint: state}
+          b: {text: "its rival", hint: state}
+          third: {text: "the fiend's envoy", hint: null}
+          fourth: {text: "the fiend hunters", hint: martial}
+        escalation: ["favours that come too easily", "the rival's ruin", "the pact comes due"]
+        hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
+        text: {"name": "the fiend behind the pact"}
+      - id: contest_elemental_lord
+        label: "Mortals and the elemental lord"
+        family: nonhuman
+        prize: lifeline
+        roles:
+          a: {text: "the settlers", hint: state}
+          b: {text: "the elemental lord whose domain they farm", hint: null}
+          third: {text: "those who serve it", hint: religious}
+          fourth: {text: "the binders who would chain it again", hint: scholarly}
+        escalation: ["offerings withheld", "flood and fire", "the binding attempted"]
+        text: {"name": "mortals and the elemental lord"}
+      - id: contest_relic_pieces
+        label: "The pieces of the relic"
+        family: race
+        prize: new
+        prize_with: {ruin_sundered_relic: remnant}      # with that ruin the relic is its remnant; without it the relic is a new prize
+        roles:
+          a: {text: "a house that holds one piece", hint: state}
+          b: {text: "a house that holds another", hint: state}
+          third: {text: "the order sworn to keep the pieces apart", hint: religious}
+          fourth: {text: "a finder with no banner", hint: null}
+        weight_by: [{when: {any_of: [ruin_sundered_relic]}, x: 3}]
+        escalation: ["a piece changes hands", "open raids for the pieces", "two pieces joined"]
+        text: {"name": "the pieces of the relic"}
+      - id: contest_prophecy
+        label: "The prophecy's two readings"
+        family: open_close
+        prize: new
+        roles:
+          a: {text: "those who work to fulfil it", hint: religious}
+          b: {text: "those who work to prevent it", hint: state}
+          third: {text: "the keepers of the prophecy", hint: scholarly}
+          fourth: {text: "the one it names", hint: null}
+        escalation: ["signs argued over", "the named one hunted", "the foretold day"]
+        text: {"name": "the prophecy's two readings"}
+      - id: contest_dark_lord
+        label: "The dark lord and the free lands"
+        family: strong_weak
+        prize: heart
+        roles:
+          a: {text: "the dark lord's dominion", hint: state}
+          b: {text: "the last free realm", hint: state}
+          third: {text: "those who have made terms", hint: trade}
+          fourth: {text: "the exiles", hint: resistance}
+        weight_by: [{when: {any_of: [ruin_dark_lords_fall]}, x: 2}]
+        merges_with: {ruin_dark_lords_fall: "the fallen lord's dominion has risen again"}
+        escalation: ["tribute demanded", "the border overrun", "the march on the last free city"]
+        text: {"name": "the dark lord and the free lands"}
+      - id: contest_two_empires
+        label: "Two empires, one border kingdom"
+        family: two_hands
+        prize: heart
+        roles:
+          a: {text: "one empire", hint: null}
+          b: {text: "its rival", hint: null}
+          third: {text: "the kingdom between them", hint: state}
+          fourth: {text: "that kingdom's exiles", hint: resistance}
+        escalation: ["envoys and gifts", "garrisons by invitation", "war on the kingdom's soil"]
+        text: {"name": "two empires, one border kingdom", "name_note": "both empires are foreign polities"}
+      - id: contest_coven
+        label: "The coven's bargain"
+        family: nonhuman
+        prize: lifeline
+        roles:
+          a: {text: "the villages bound by it", hint: state}
+          b: {text: "those who would break it", hint: resistance}
+          third: {text: "the coven", hint: null}
+          fourth: {text: "the child that was promised", hint: null}
+        escalation: ["a payment refused", "blight on the fields", "the coven comes to collect"]
+        text: {"name": "the coven's bargain"}
+      - id: contest_pirates
+        label: "The pirate lords and the harbour towns"
+        family: strong_weak
+        prize: lifeline
+        roles:
+          a: {text: "the council of pirate captains", hint: criminal}
+          b: {text: "the league of harbour towns", hint: trade}
+          third: {text: "a foreign navy", hint: martial}
+          fourth: {text: "the smugglers who serve both", hint: criminal}
+        requires: {any_of: ["land_coast", "land_island"]}
+        escalation: ["ships taken", "a harbour blockaded", "the fleet against the pirate port"]
+        text: {"name": "the pirate lords and the harbour towns"}
+      - id: contest_slavers
+        label: "Slavers and the chained"
+        family: strong_weak
+        prize: new
+        roles:
+          a: {text: "the slaver lords", hint: criminal}
+          b: {text: "the escaped and those who hide them", hint: resistance}
+          third: {text: "those who buy", hint: trade}
+          fourth: {text: "a people taken whole", hint: null, people_role: true}
+        escalation: ["raids", "hunts for the escaped", "open revolt"]
+        text: {"name": "slavers and the chained"}
+      - id: contest_thieves_guild
+        label: "The thieves' guild that owns the city"
+        family: strong_weak
+        prize: heart
+        seats: {"a": "heart"}
+        roles:
+          a: {text: "the guild that runs the streets", hint: criminal}
+          b: {text: "the city's rulers, most of them on its payroll", hint: state}
+          third: {text: "a rival guild from outside", hint: criminal}
+          fourth: {text: "the watch captain no one can buy", hint: martial}
+        escalation: ["a killing in daylight", "war in the alleys", "the guild names the next ruler"]
+        text: {"name": "the thieves' guild that owns the city", "name_note": "the guild at the heart"}
+
   break_target:
     roll: {avoid_used: false, note: "the target is a load-bearing piece; the thin place only when the palette holds it; the action must fit the target (the action's `targets` and its fit lists)"}
     hooks_common:
