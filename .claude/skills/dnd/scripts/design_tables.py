@@ -248,7 +248,9 @@ REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.
                    # build item 9: the secret and the villain (their stamps are kept under hashed keys, below)
                    "secrets.yaml#archetype", "secrets.yaml#chooser", "secrets.yaml#twist", "secrets.yaml#trail",
                    "antagonists.yaml#visibility", "antagonists.yaml#villain_shape", "antagonists.yaml#origin",
-                   "antagonists.yaml#break_tie")
+                   "antagonists.yaml#break_tie",
+                   # build item 11: the part bags; the lexicon, the patterns and the word lists are stamped by naming_stamps()
+                   "naming.yaml#family")
 
 
 def reviewed_path() -> Path:
@@ -279,6 +281,22 @@ def reviewed_rows() -> dict:
             secret = bool(roll_header(ref).get("secret"))
             for r in lst:
                 out[stamp_key(r["id"], secret)] = row_hash(r)
+    out.update(naming_stamps())
+    return out
+
+
+def naming_stamps() -> dict:
+    """The name tables that are no row lists (build item 11): every root, the settlement tails, every tag, every
+    pattern row and each word list, keyed `naming:<what>:<name>`."""
+    doc = load("naming.yaml")
+    lex = doc.get("lexicon") or {}
+    out = {f"naming:root:{r['root']}": row_hash(r) for r in lex.get("roots") or []}
+    out.update({f"naming:tag:{t['tag']}": row_hash(t) for t in lex.get("tags") or []})
+    out["naming:settlement_tails"] = row_hash({"tails": lex.get("settlement_tails") or []})
+    out["naming:lifeline_by_seat"] = row_hash(lex.get("lifeline_by_seat") or {})
+    for kind, rows_ in (doc.get("patterns") or {}).items():
+        out.update({f"naming:pattern:{r['id']}": row_hash(r) for r in rows_})
+    out.update({f"naming:words:{k}": row_hash({"words": v}) for k, v in (doc.get("words") or {}).items()})
     return out
 
 

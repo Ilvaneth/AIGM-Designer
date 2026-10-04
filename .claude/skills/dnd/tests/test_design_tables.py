@@ -789,34 +789,42 @@ class ForbiddenDetection(unittest.TestCase):
 
 class Naming(unittest.TestCase):
 
-    def test_families_have_banks_and_english_samples(self):
+    def test_families_are_part_bags_with_english_parts(self):
+        """Build item 11a: a family is a bag of openings, middles and endings (test_name_tables holds the counts,
+        the yield and the overlap). Suffix-friendly, in the new shape: every part is plain ASCII letters, so a name
+        ends in a letter a Turkish suffix can follow after the apostrophe."""
         for r in dt.rows("naming.yaml#family"):
             with self.subTest(family=r["id"]):
-                for bank in ("onsets", "nuclei", "codas"):
+                for bank in ("openings", "endings"):
                     self.assertTrue(r[bank], bank)
-                self.assertEqual(len(r["length"]), 2)
-                self.assertLessEqual(r["length"][0], r["length"][1])
-                self.assertIsInstance(r["forbidden_clusters"], list)
-                self.assertTrue(r["tr_suffix_friendly"])
-                for s in r["samples_person"] + r["samples_god"]:
+                self.assertIsInstance(r["middles"], list)
+                self.assertTrue(0 <= r["middle_chance"] <= 1)
+                self.assertIn(r["group"], "ABCDE")
+                for s in r["openings"] + r["middles"] + r["endings"]:
                     self.assertIsNone(TURKISH.search(s), s)
-                    self.assertRegex(s, r"^[A-Z][A-Za-z' -]*$", s)
+                    self.assertRegex(s, r"^[A-Za-z]+$", s)
+                for s in r["openings"]:
+                    self.assertTrue(s[0].isupper(), s)
+                for s in r["endings"]:
+                    self.assertNotRegex(s, r"(ough|que)$", "no ending a Turkish suffix cannot follow")
 
     def test_lexicon_is_english_and_large_enough(self):
         doc = dt.load("naming.yaml")
         roots = doc["lexicon"]["roots"]
-        self.assertGreaterEqual(len(roots), 60)
+        self.assertGreaterEqual(len(roots), 400)
         self.assertEqual(len({r["root"] for r in roots}), len(roots), "duplicate root")
+        tags = {t["tag"] for t in doc["lexicon"]["tags"]}
         for r in roots:
             self.assertRegex(r["root"], r"^[a-z]+$")
             self.assertIn(r["pos"], ("head", "tail", "either"))
-            self.assertTrue(r["domains"])
-        self.assertGreaterEqual(len(doc["lexicon"]["place_tails"]), 20)
-        for kind in ("place", "institution", "people", "god_epithet", "ship", "month", "day"):
+            self.assertFalse(set(r["tags"]) - tags, r["root"])
+            self.assertNotIn("meaning", r, "a root carries no gloss (decision 17)")
+        self.assertEqual(len(doc["lexicon"]["settlement_tails"]), 22)
+        for kind in ("place", "institution", "people", "phenomenon", "god_epithet", "ship", "month", "day", "old_tongue"):
             self.assertTrue(doc["patterns"][kind], kind)
             for p in doc["patterns"][kind]:
-                for ex in p["examples"]:
-                    self.assertIsNone(TURKISH.search(ex), ex)
+                self.assertNotIn("examples", p, "no example stands in the table: examples anchor")
+                self.assertIsNone(TURKISH.search(str(p)), p["id"])
 
     def test_worn_roots_are_allowed_and_only_names_are_banned(self):
         """Errata 24.2 #18: crown, hollow, ember may recur as roots; bans are names and name-stems."""
@@ -849,11 +857,9 @@ class Naming(unittest.TestCase):
             entries = json.loads(registry.read_text(encoding="utf-8")).get("entries", {})
             registered = {e["name"].lower() for e in entries.values() if e.get("name")}
         names = []
-        for fam in dt.rows("naming.yaml#family"):
-            names += fam["samples_person"] + fam["samples_god"]
-        for kind, pats in doc["patterns"].items():
-            for p in pats:
-                names += p["examples"]
+        for words in doc["words"].values():          # the tables hold no sample and no example since build item 11a
+            names += list(words)
+        names += [w for f in dt.rows("signatures.yaml#institution_form") for w in f["name_words"]]
         names += [ex["name"] for ex in play_suffixing()["examples"]]
         for n in names:
             low = n.lower()

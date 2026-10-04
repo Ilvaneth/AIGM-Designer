@@ -363,13 +363,16 @@ class Names(Base):
         refused = self.c.run("registry.py", "merge", "--phase", "P5")
         self.assertIn("a secret entity may not take a pool name", refused.stderr)
 
-    def test_the_courtly_family_keeps_its_length_free_and_carries_no_banned_onset(self):
+    def test_the_courtly_bag_carries_no_banned_opening_and_no_family_is_mutated(self):
+        """In the part-bag shape (build item 11a): no opening of any bag starts the owner's banned stems, and no
+        family row tells the writer to mutate it (decision 16; dry-2's fixed length came from a mutation hook)."""
         import design_tables as dt
-        fam = next(r for r in dt.rows("naming.yaml#family") if r["id"] == "family_courtly_latinate")
-        self.assertNotIn("cass", fam["onsets"], "Cassiv- is the owner's banned stem")
-        hooks = " ".join(h["must"] for h in fam["hooks"])
-        self.assertNotIn("mutate by fixing the length", hooks)
-        self.assertIn("never by fixing the length", hooks)
+        fams = dt.rows("naming.yaml#family")
+        courtly = next(r for r in fams if r["id"] == "family_courtly")
+        for stem in ("cass", "corv", "corw", "corr"):
+            self.assertFalse([o for r in fams for o in r["openings"] if o.lower().startswith(stem)], f"{stem}- is the owner's banned stem")
+        self.assertNotIn("Cass", courtly["openings"])
+        self.assertFalse(any("hooks" in r or "length" in r for r in fams))
 
 
 class ExitNotes(unittest.TestCase):

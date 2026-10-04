@@ -3,8 +3,10 @@
 design_names.py — the campaign's names, rolled by script (root-cause analysis 1, RC-13; the owner's ruling
 2026-09-27: a generator gives the name and the pipeline uses it; no agent invents a person's or a god's name).
 
-Person and god given names come from the campaign's naming languages (design/naming.json: onsets, nuclei, codas,
-length), drawn with the campaign seed and spread within the campaign: an ending or an opening is shared by few names,
+Person and god given names come from the campaign's naming languages (design/naming.json), drawn with the campaign
+seed and spread within the campaign. A language that names a `bag` (build item 11: a part bag of naming.yaml#family)
+joins one opening, a middle by the bag's chance and one ending under the shape rules of naming.yaml#rules.join; a
+legacy language (onsets, nuclei, codas, length, no bag) keeps the syllable generator it was born with. Either way: an ending or an opening is shared by few names,
 no name sits within a near-typo of another, and every candidate passes the door's own naming rules (the blacklists,
 Turkish letters, names another campaign registered). dry-2 showed why: ten of its twenty-two person names ended in
 -an, drawn by agents from one narrow bank.
@@ -75,6 +77,20 @@ def distance(a: str, b: str) -> int:
     return prev[-1]
 
 
+def within(a: str, b: str, limit: int) -> bool:
+    """Is the Levenshtein distance of two lower-case words at most `limit`? The same answer as `distance(a, b) <=
+    limit`, with a row that passed the limit everywhere ending the count early."""
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        if min(cur) > limit:
+            return False
+        prev = cur
+    return prev[-1] <= limit
+
+
 VOWELS = set("aeiouy")
 
 
@@ -100,27 +116,83 @@ def _raw_name(rng, lang: dict) -> str:
     return word
 
 
-def acceptable(name: str, lang: dict, taken: list[str], caps: dict, kind: str) -> bool:
-    """The candidate's shape, the door's naming rules and the campaign's spread."""
+def join(a: str, b: str, vowel_join: bool) -> str | None:
+    """Two parts joined (naming.yaml#rules.join): a doubled letter at the join is dropped; a vowel never meets a
+    vowel; a `vowel_join` bag never joins consonant to consonant."""
+    if a[-1].lower() == b[0].lower():
+        b = b[1:]
+    if not b or (a[-1].lower() in VOWELS and b[0].lower() in VOWELS):
+        return None
+    if vowel_join and a[-1].lower() not in VOWELS and b[0].lower() not in VOWELS:
+        return None
+    return a + b
+
+
+def bag_shape_ok(word: str) -> bool:
+    """At least five letters; no four consonants in a row; no two-letter chunk repeated at once and no three-letter
+    chunk repeated anywhere."""
+    low = word.lower()
+    return not (len(low) < 5 or re.search(r"[^aeiouy]{4}", low) or re.search(r"(..).?\1", low) or re.search(r"(...).*\1", low))
+
+
+def bag_of(lang: dict) -> dict | None:
+    """The part bag a language names (naming.yaml#family), or None for a legacy language."""
+    key = (lang or {}).get("bag")
+    return dt.row("naming.yaml#family", key) if key else None
+
+
+def _bag_name(rng, bag: dict) -> str | None:
+    """One opening, a middle by the bag's chance, one ending; None when a join or the shape refuses it."""
+    vj = bool(bag.get("vowel_join"))
+    word = rng.choice(bag["openings"])
+    if bag.get("middles") and rng.random() < float(bag.get("middle_chance") or 0):
+        word = join(word, rng.choice(bag["middles"]), vj)
+        if not word:
+            return None
+    word = join(word, rng.choice(bag["endings"]), vj)
+    return word if word and bag_shape_ok(word) else None
+
+
+def real_given() -> frozenset:
+    """naming.yaml#blacklist.real_given: real given names a bag can spell (the generator's filter; off for a
+    `real_ok` bag)."""
+    return frozenset(str(x).lower() for x in (dt.load("naming.yaml").get("blacklist") or {}).get("real_given") or [])
+
+
+def plain_words() -> frozenset:
+    """naming.yaml#blacklist.plain_words: plain words a bag can spell (the generator's filter; on for every bag)."""
+    return frozenset(str(x).lower() for x in (dt.load("naming.yaml").get("blacklist") or {}).get("plain_words") or [])
+
+
+def acceptable(name: str, lang: dict, taken: list[str], caps: dict, kind: str, bag: dict | None = None,
+               registered: set | None = None, real: frozenset | None = None, plain: frozenset | None = None) -> bool:
+    """The candidate's shape, the door's naming rules and the campaign's spread. For a bag language the plain-word
+    filter too, and the real-name filter unless the bag says `real_ok`; a bag has no `forbidden_clusters` and no
+    `onsets` to check."""
     import registry
     low = name.lower()
     if not 4 <= len(low) <= 9 or not low.isalpha() or re.search(r"(.)\1\1", low) or re.search(r"[aeiouy]{3,}", low):
+        return False
+    if bag is not None and low in (plain_words() if plain is None else plain):
+        return False
+    if bag is not None and not bag.get("real_ok") and low in (real_given() if real is None else real):
         return False
     if any(c and c in low for c in (lang.get("forbidden_clusters") or [])):
         return False
     if any(len(o) > 1 and low.count(o) > 1 for o in (lang.get("onsets") or [])):
         return False                                    # `Seraleotti`: one onset twice reads as a stutter
-    if registry.naming_errors("probe", {"type": "npc" if kind == "person" else "god", "name": name},
-                              registry.naming_blacklist(), registry.registered_elsewhere("")):
-        return False
-    if any(t.lower() == low or t.lower().startswith(low) or low.startswith(t.lower()) for t in taken):
-        return False                                    # dry-3: Ske beside Skeik
-    near = 1 if len(low) < 5 else 2
-    if any(distance(t, low) <= near for t in taken):
-        return False
+    # the checks below are independent; the cheap ones stand first (build item 11a: a bag is asked thousands of times)
     if sum(1 for t in taken if t.lower()[-2:] == low[-2:]) >= caps["ending"]:
         return False
     if sum(1 for t in taken if t.lower()[:2] == low[:2]) >= caps["opening"]:
+        return False
+    if any(t.lower() == low or t.lower().startswith(low) or low.startswith(t.lower()) for t in taken):
+        return False                                    # dry-3: Ske beside Skeik
+    if registry.naming_errors("probe", {"type": "npc" if kind == "person" else "god", "name": name},
+                              registry.naming_blacklist(), registry.registered_elsewhere("") if registered is None else registered):
+        return False
+    near = 1 if len(low) < 5 else 2
+    if any(abs(len(t) - len(low)) <= near and within(t.lower(), low, near) for t in taken):
         return False
     return True
 
@@ -129,15 +201,20 @@ def draw_names(rng, lang: dict, n: int, taken: list[str], kind: str = "person") 
     """n given names from one language, spread against `taken` (the campaign's names so far) and each other."""
     total = max(1, n + len(taken))
     caps = {"ending": max(2, math.ceil(total * 0.12)), "opening": max(2, math.ceil(total * 0.15))}
+    import registry
+    bag = bag_of(lang)
+    registered, real, plain = registry.registered_elsewhere(""), real_given(), plain_words()
     out: list[str] = []
     tries = 0
-    while len(out) < n and tries < 6000:
+    while len(out) < n and tries < (8000 if bag else 6000):
         tries += 1
-        if tries % 800 == 0:              # a narrow bank: loosen the spread one step rather than stop short
+        if not bag and tries % 800 == 0:  # a narrow legacy bank: loosen the spread one step rather than stop short
             caps = {k: v + 1 for k, v in caps.items()}
-        raw = _raw_name(rng, lang)
+        raw = _bag_name(rng, bag) if bag else _raw_name(rng, lang)
+        if not raw:
+            continue
         name = raw[:1].upper() + raw[1:]
-        if acceptable(name, lang, taken + out, caps, kind):
+        if acceptable(name, lang, taken + out, caps, kind, bag=bag, registered=registered, real=real, plain=plain):
             out.append(name)
     return out
 

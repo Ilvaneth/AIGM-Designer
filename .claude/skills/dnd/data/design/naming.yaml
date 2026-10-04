@@ -1,345 +1,768 @@
-# naming.yaml — sound families and the root lexicon that campaign naming languages are rolled from.
+# naming.yaml — what a campaign's names are made from (plan item 25 step 2 piece 8; build item 11; the owner's
+# decisions of 2026-10-04 are recorded in docs/p1-build-11.md).
 #
-# The world speaks English, the narration is Turkish (errata 24.2 #17): every family produces
-# English-language fantasy names. Two modes per language (risk 24.1 #18): `phonetic` for persons
-# and gods (onset / nucleus / coda banks below), `compound` for places and institutions (the root
-# lexicon and the patterns below). P1 rolls 2-3 families with --avoid-used, mutates each into a
-# campaign language (design/naming.json), assigns it to polities and peoples; every later phase
-# names through that file, and name_registry check runs across campaigns on full names only
-# (errata 24.2 #18: no stem soft-ban — crown, hollow, ember may recur).
+# A "language" is a naming style, spoken by nobody: one part bag (`family`) for person and god names, a handful of
+# rolled roots for place, institution, month and day names, and seven settlement tails of its own. The script rolls
+# the bags, the roots and every candidate (design_names.py); the writer invents no proper noun. A person or god name
+# is one opening, a middle by the bag's chance and one ending, joined under the shape rules; a compound name fills a
+# pattern's slots from the language's roots and the word lists. A root carries no gloss. Uniqueness across campaigns
+# is on full names only (errata 24.2 #18: no stem soft-ban).
 schema_version: 1
 table: naming
-consumed_by: [P1, P2, P3, P4, P5, P8]
-plan: "item 4.6, 8.7, 17 #8, errata 24.2 #17 #18, risk 24.1 #18"
-roll: {notation: d10, count_by_scale: {short: 2, standard: 3, epic: 3}, avoid_used: true, labels: [P1.naming_family.1, P1.naming_family.2, P1.naming_family.3]}
+consumed_by: [P1, P2, P3, P4, P5, P6, P8]
+plan: "item 25 step 2 #8, item 4.6, 8.7, 17 #8, errata 24.2 #17 #18 #20 #25 #27, risk 24.1 #18"
+roll: {notation: d17, count_by_scale: {short: 2, standard: 3, epic: 3}, avoid_used: true, labels: [P1.naming_family.1, P1.naming_family.2, P1.naming_family.3]}
 hooks_common:
-  - {phase: P1, must: "each rolled family is mutated (one bank changed, one cluster forbidden, one root set chosen) and written to naming.json with a `label_tr`"}
   - {phase: P5, must: "person names come from the NPC's culture's family; no first-name collision inside a campaign"}
   - {phase: validator, must: "every registry name passes the blacklist and carries no Turkish letters"}
 
 rules:
   world_language: "Names are English-language fantasy names, spelled in ASCII letters, never transliterated Turkish. The campaign is written in English (errata 24.2 #28); a name is written as it stands and never translated. How a name takes a Turkish suffix at the table is a play rule: data/play/turkish-suffixing.yaml."
   modes:
-    person: "phonetic: 1-3 syllables from the family's banks; an optional byname from the lexicon (Ilme Stonecutter, Yesra Reedcarter)"
-    god: "phonetic like a person, plus an epithet from `patterns.god_epithet` (Ormis, Ploughbearer)"
-    place: "compound from the lexicon: `patterns.place` (Kettleside, Flintmere, Brackham, Carters' Hall)"
-    institution: "`patterns.institution` (Court of Weirs, Flint Brotherhood)"
-    people: "`patterns.people` (Stonebound, Marshfolk)"
-    ship: "`patterns.ship` (the Vesper)"
-    month_day: "`patterns.month` and `patterns.day` from the calendar's roots (Plowmonth, Flintday); months are 30 days"
-  tr_suffix_friendly: "a family is suffix-friendly when its names end in a single pronounced consonant or a clear vowel; every family below is, and the mutation step must keep it so (no final -ough, -que, -gh)"
+    person: "the script joins one opening, a middle by the bag's `middle_chance` and one ending of the language's bag, under `join`; the writer takes the next unused name"
+    god: "a bag name like a person's; an epithet by `patterns.god_epithet`"
+    place: "the script fills `patterns.place` from the language's roots, its settlement tails and the word lists"
+    institution: "`patterns.institution`, with the rolled form's `name_words` (signatures.yaml#institution_form)"
+    people: "`patterns.people`"
+    phenomenon: "`patterns.phenomenon`, with `words.phenomenon_tails`"
+    month_day: "`patterns.month` (one of the three rollable patterns per campaign) and `patterns.day`, from the calendar's own roots"
+    old_tongue: "`patterns.old_tongue`: a word of the old tongue's bag, alone or with a site word; it names only the sites the ruin source left"
+    ship: "`patterns.ship`"
+  join:
+    doubled_letter: "a doubled letter at a join is dropped"
+    vowel_vowel: "a vowel never meets a vowel at a join"
+    vowel_join: "a `vowel_join` bag never joins consonant to consonant"
+    min_letters: 5
+    max_consonant_run: 3
+    repeats: "no two-letter chunk repeated at once, no three-letter chunk repeated anywhere"
+  adjectives: "a root whose first tag is `colour` or `direction and age` is an adjective; a pattern slot says whether it takes one (`adjective: true`)"
 
 tables:
 
   family:
-    notation: d10
+    notation: d17
+    note: "seventeen part bags in five sound groups (A 4, B 4, C 3, D 3, E 3); a campaign's living languages come from different groups and its old tongue from a group none of them uses (build item 11b). A campaign uses the whole bag; no mutation. `real_ok`: the real-name filter (`blacklist.real_given`) is off for the bag; `blacklist.plain_words` holds for every bag."
     rows:
-      - id: family_liquid_vowel
-        label: Liquid vowel-heavy
-        feel: "soft, open, coastal; easy on a Turkish tongue"
-        onsets: [v, m, r, l, s, n, y, ""]
-        nuclei: [a, e, i, o, u]
-        codas: [n, r, l, s, m, ""]
-        length: [2, 3]
-        forbidden_clusters: [rr, ll, sr, ii, uu]
-        best_for: [coastal, river, lowland]
-        samples_person: [Velune, Ormis, Sarven, Ilme, Yesra, Tolvan, Olmar, Ameli]
-        samples_god: [Velune, Ormis, Isken]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by replacing one onset and one coda; pick 12-20 roots from the lexicon's water, plant or light domains"}
-      - id: family_harsh_consonantal
-        label: Harsh consonantal
-        feel: "clipped, stony, upland; two syllables that end hard"
-        onsets: [d, t, k, v, g, dr, kr, gr, br]
-        nuclei: [a, o, u, e]
-        codas: [k, n, sk, rt, r, g, d]
-        length: [2, 2]
-        forbidden_clusters: [kk, tt, gg, dd]
-        best_for: [upland, mining, martial]
-        samples_person: [Draskun, Tegrik, Kortan, Vardek, Brogar, Torvask]
-        samples_god: [Draskun, Vurgan]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by adding one cluster onset; roots from stone, iron, oath, war domains"}
-      - id: family_sibilant_soft
-        label: Sibilant and soft
-        feel: "hissing, secretive, sacred; s and th everywhere"
-        onsets: [s, sh, th, z, ss, ""]
-        nuclei: [a, e, i, y, ai]
-        codas: [s, th, sh, n, l, ""]
-        length: [2, 3]
-        forbidden_clusters: [shsh, thth, zz, ss-s]
-        best_for: [priesthood, desert, secret_society]
-        samples_person: [Sethis, Ashael, Zisra, Sylith, Isseth, Shaal]
-        samples_god: [Sethis, Ythasa]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by forbidding one of s / sh / th; roots from holy, dark, smoke, silence domains"}
+      - id: family_hard_upland
+        label: Hard upland
+        group: A
+        openings: ["Teg", "Var", "Bro", "Dras", "Kor", "Gund", "Brak", "Durn", "Kelv", "Tor", "Hark", "Vosk", "Grim", "Dolg", "Ruk", "Skar", "Tarn", "Bold", "Krag", "Varg", "Dreg", "Gorm", "Hest", "Morg", "Uld", "Bren", "Dak", "Garn", "Hod", "Jark", "Kest", "Lund", "Murg", "Nark", "Ord", "Rag", "Trak", "Vend", "Bard", "Dorn", "Fenk", "Gred", "Hald", "Yarg", "Zend", "Brod", "Tusk", "Dunk", "Belg", "Pard"]
+        middles: []
+        middle_chance: 0
+        endings: ["rik", "dek", "gar", "kun", "vask", "dan", "rum", "gard", "bek", "tor", "ven", "ran", "dur", "mar", "sten", "rak", "lod", "nar", "brand", "dok", "gan", "kar", "mund", "nok", "rad", "rek", "ruk", "tan", "tar", "vad", "vor", "zak", "drun", "gren", "hok", "lak", "dun", "bor", "kan", "gost"]
+        vowel_join: false
+        real_ok: false
+      - id: family_northern
+        label: Northern
+        group: A
+        openings: ["Hrol", "Skar", "Ulv", "Sten", "Sval", "Hild", "Arn", "Eir", "Frod", "Gun", "Hak", "Ing", "Jor", "Ket", "Orm", "Sig", "Ulf", "Yng", "Asg", "Bryn", "Dag", "Eg", "Grim", "Hall", "Hjal", "Kol", "Rolf", "Snor", "Styr", "Svein", "Vig", "Halv", "Hauk", "Isk", "Stig", "Aud", "Geir", "Gud", "Herj", "Skold", "Varn", "Thrand", "Svan", "Hroth", "Skef", "Ljot", "Rund", "Vest", "Alf", "Hrim"]
+        middles: []
+        middle_chance: 0
+        endings: ["ulf", "ard", "vald", "mund", "hild", "grim", "leif", "stein", "vik", "dis", "run", "gerd", "var", "bjorn", "finn", "ald", "olf", "rid", "veig", "laug", "ne", "ar", "ir", "ur", "ke", "da", "la", "vor", "heid", "thra", "borg", "frid", "gunn", "trud", "lak", "kel", "fast", "und"]
+        vowel_join: false
+        real_ok: false
+      - id: family_guttural
+        label: Guttural
+        group: A
+        openings: ["Ghor", "Uzh", "Krug", "Zhur", "Mogh", "Ukr", "Grak", "Dhur", "Bozh", "Ghaz", "Khar", "Mazh", "Nagh", "Orgh", "Rukh", "Shag", "Thrag", "Urz", "Vugh", "Yagh", "Zogh", "Agh", "Brug", "Dugh", "Ghul", "Gruz", "Khor", "Mugh", "Nuzh", "Olg", "Ragh", "Snag", "Thok", "Ugr", "Vorg", "Zhag", "Azh", "Bugh", "Durz", "Gash", "Hurz", "Krazh", "Murz", "Narg", "Okh", "Rogh", "Skug", "Uzg", "Zug", "Drok"]
+        middles: []
+        middle_chance: 0
+        endings: ["rak", "mog", "gam", "rog", "ra", "rash", "ak", "uk", "og", "ash", "mak", "dush", "gul", "nak", "zag", "bag", "lug", "gor", "dak", "rum", "zum", "thak", "kra", "sha", "mur", "gash", "bur", "nok", "rakh", "zog", "gath", "mush", "dug", "kul", "zar", "mok", "grum", "bash", "hak", "urk"]
+        vowel_join: false
+        real_ok: false
+      - id: family_eastern
+        label: Eastern
+        group: A
+        openings: ["Vlad", "Drag", "Mir", "Bor", "Rad", "Stan", "Yar", "Zor", "Mil", "Dob", "Gor", "Lub", "Vel", "Brat", "Kaz", "Lesh", "Nev", "Ost", "Pred", "Rost", "Slav", "Svet", "Vse", "Zlat", "Bog", "Chest", "Dal", "Dush", "Kres", "Lyud", "Sob", "Tver", "Vit", "Voy", "Zhel", "Bran", "Cher", "Dom", "Gost", "Mal", "Nar", "Rud", "Sem", "Vuk", "Zdan", "Bel", "Yel", "Prav", "Tikh"]
+        middles: []
+        middle_chance: 0
+        endings: ["mir", "slav", "ko", "an", "ek", "osh", "imir", "omil", "ana", "ka", "ena", "isa", "ava", "ik", "in", "un", "ash", "ota", "eta", "il", "ilo", "oy", "uta", "ovan", "ost", "ich", "enko", "ila", "ina", "ora", "ush", "yan", "omir", "oslav", "gost", "bor", "vit", "rad", "mil", "dan"]
+        vowel_join: false
+        real_ok: false
+      - id: family_liquid_coast
+        label: Liquid coast
+        group: B
+        openings: ["Sar", "Il", "Yes", "Vel", "Or", "Tol", "Am", "Mer", "Lis", "Nav", "El", "Ol", "Sen", "Mar", "Rien", "Ves", "Thal", "Ful", "Ire", "Ose", "Un", "Cal", "Dev", "Arv", "Bel", "Len", "Mal", "Nel", "Ral", "Sol", "Tir", "Val", "Alm", "Erl", "Ilv", "Orl", "Ren", "Vir", "Lar", "Nar", "Ser", "Tal", "Ulm", "Vas", "Yel", "Ar", "Sel", "Mur", "Lor"]
+        middles: []
+        middle_chance: 0
+        endings: ["ven", "me", "ra", "une", "mis", "van", "mar", "eli", "lin", "wen", "ne", "dra", "ro", "les", "ri", "nia", "sel", "mir", "the", "na", "ris", "lan", "len", "mel", "nar", "ren", "rin", "sen", "val", "var", "vel", "lar", "lis", "lun", "nel", "ral", "ron", "rel", "sar", "mon"]
+        vowel_join: false
+        real_ok: false
       - id: family_nasal_round
-        label: Nasal and round
-        feel: "humming, warm, agricultural; m and n with round vowels"
-        onsets: [m, n, b, w, ""]
-        nuclei: [o, u, a, oo]
-        codas: [m, n, mb, nd, ""]
-        length: [2, 3]
-        forbidden_clusters: [nn, ww, oooo]
-        best_for: [farmland, river_delta, herding]
-        samples_person: [Ummon, Nemra, Bowan, Mondu, Onnam, Bumor]
-        samples_god: [Moonda, Ummon]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by adding one nucleus; roots from grain, cattle, hearth, earth domains"}
-      - id: family_northern_clipped
-        label: Northern clipped
-        feel: "cold, short, hard-won; one or two syllables with heavy codas"
-        onsets: [h, hr, sk, st, sv, ul, ""]
-        nuclei: [a, o, e, i]
-        codas: [lf, rd, rn, ik, ald, ""]
-        length: [1, 2]
-        forbidden_clusters: [hh, skst, rdrd]
-        best_for: [cold, seafaring, raiders]
-        samples_person: [Hrolf, Skarde, Ulvik, Stennard, Svala, Hild]
-        samples_god: [Skarde, Ulvard]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by dropping one onset cluster; roots from frost, sea, wolf, oath domains"}
-      - id: family_courtly_latinate
-        label: Courtly Latinate
-        feel: "long, formal, urban; three or four syllables, vowel endings common"
-        onsets: [c, v, l, aur, ser, ott, ""]
-        nuclei: [a, e, i, o]
-        codas: [n, r, l, us, ia, an, ""]
-        length: [3, 4]
-        forbidden_clusters: [uu, ii, cc]
-        best_for: [city, court, banking, scholarly]
-        samples_person: [Aurelan, Valorin, Liesander, Ottavien, Sabellin, Solenne]
-        samples_god: [Aurelan, Solenne]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by replacing one onset or coda, never by fixing the length (dry-2: a fixed three made one shape of every name); roots from law, coin, light, marble domains"}
-      - id: family_deep_guttural
-        label: Deep guttural
-        feel: "throat-deep, heavy; for giants, deep-dwellers, a made people"
-        onsets: [gh, uz, kr, zh, m, ""]
-        nuclei: [o, u, a]
-        codas: [k, g, rr, gh, sh, m]
-        length: [2, 2]
-        forbidden_clusters: [ghgh, zhzh, rrr]
-        best_for: [underground, giants, made_people]
-        samples_person: [Ghorrak, Uzhmog, Krugam, Zhurog, Moghra, Ukrash]
-        samples_god: [Ghorrak, Zhumma]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by softening one onset; roots from deep, stone, hunger, ash domains"}
-      - id: family_aspirate_airy
-        label: Aspirate and airy
-        feel: "breathy, light, high places; h and th with open vowels"
-        onsets: [h, th, wh, sh, ""]
-        nuclei: [a, e, i, ea, ei]
-        codas: [n, th, l, r, ""]
-        length: [2, 3]
-        forbidden_clusters: [thth, hh, whwh]
-        best_for: [mountain, sky, nomad, fey]
-        samples_person: [Hathen, Ishara, Thewa, Whelan, Eirath, Sheanor]
-        samples_god: [Hathen, Eirath]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by adding one nucleus diphthong; roots from wind, sky, mist, bird domains"}
-      - id: family_rustic_anglic
-        label: Rustic Anglic
-        feel: "short, homely, English-village; names that sound like tools and weather"
-        onsets: [w, b, t, h, d, p, ""]
-        nuclei: [a, o, i, e, u]
-        codas: [ck, nd, bb, tt, mm, ll]
-        length: [1, 2]
-        forbidden_clusters: [ckck, bbbb]
-        best_for: [village, farmland, guild, common_folk]
-        samples_person: [Wick, Brand, Tamsin, Hobb, Dunstan, Peck, Mabbot]
-        samples_god: [Old Brand, Mother Tallow]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by forbidding one coda; this family names places best: roots from any domain with the place tails"}
-      - id: family_sung_polysyllabic
-        label: Sung polysyllabic
-        feel: "long, vowel-rich, liquid; an old or long-lived people"
-        onsets: [l, s, r, th, el, il, ae, ""]
-        nuclei: [a, e, i, ae, ia, ie]
-        codas: [l, n, r, th, ""]
-        length: [3, 5]
-        forbidden_clusters: [rr, thth, aeae]
-        best_for: [ancient_people, forest, planar]
-        samples_person: [Ilathiel, Saeravan, Elarianel, Thiriel, Lorasithe, Aerenith]
-        samples_god: [Ilathiel, Saerava]
-        tr_suffix_friendly: true
-        hooks:
-          - {phase: P1, must: "mutate by capping the length at four; roots from star, song, leaf, age domains"}
+        label: Nasal round
+        group: B
+        openings: ["Um", "Dom", "Wun", "Bun", "Bem", "Nem", "Bow", "Mon", "On", "Nom", "Mun", "Bon", "Lom", "Hum", "Num", "Om", "Un", "Bol", "Mol", "Nol", "Dun", "Lum", "Rum", "Nab", "Wam", "Won", "Lun", "Mau", "Nau", "Bor", "Mor", "Nor", "Wor", "Wen", "Men", "Ben", "Ban", "Nan", "Man", "Dum"]
+        middles: ["a", "o", "u", "e"]
+        middle_chance: 0.6
+        endings: ["ben", "ra", "an", "du", "nam", "or", "wan", "do", "mo", "no", "bu", "ma", "na", "bo", "wo", "mun", "bun", "wun", "dun", "lun", "man", "ban", "nan", "wen", "men", "dom", "nom", "lom", "rum", "num", "mur", "nur", "bur", "da", "ba", "la", "ro", "lo"]
+        vowel_join: false
+        real_ok: false
+      - id: family_airy
+        label: Airy
+        group: B
+        openings: ["Hath", "Ish", "Thew", "Whel", "Eir", "Shean", "Hal", "Thal", "Heth", "Ath", "Eth", "Ith", "Hael", "Whin", "Shal", "Thir", "Hesh", "Hean", "Whar", "Hir", "Sheth", "Thel", "Hew", "Ael", "Eath", "Whis", "Shir", "Thun", "Hav", "Hesp", "Phal", "Pheth", "Fael", "Hiar", "Wheth", "Whal", "Hoth", "Thav", "Shav", "Hain", "Thain", "Whain", "Shain", "Heil", "Theil", "Sheil", "Shor", "Heath", "Thaw", "Ehl"]
+        middles: []
+        middle_chance: 0
+        endings: ["en", "ara", "wa", "an", "ath", "nor", "eth", "ir", "al", "ean", "ein", "eir", "ith", "ar", "el", "is", "as", "ael", "wen", "win", "wan", "hal", "hel", "thal", "thel", "ren", "rin", "ran", "lan", "len", "lin", "nan", "nen", "sha", "tha", "rha", "wha", "or", "il", "in"]
+        vowel_join: false
+        real_ok: false
+      - id: family_open_isle
+        label: Open-syllable isle
+        group: B
+        openings: ["Ka", "La", "Ma", "Na", "Ha", "Ke", "Le", "Me", "Ne", "He", "Ki", "Li", "Mi", "Ni", "Hi", "Ko", "Lo", "Mo", "No", "Ho", "Ku", "Lu", "Mu", "Nu", "Hu", "Pa", "Pe", "Pi", "Po", "Pu", "Wa", "We", "Wi", "Ta", "Te", "Ti", "To", "Tu", "Ala", "Iko", "Ula", "Ema", "Ono", "Aka", "Ile", "Umi", "Oha", "Eki"]
+        middles: ["la", "na", "ka", "ma", "ha", "li", "ni", "ki", "mi", "lo", "no", "ko", "mo", "lu", "nu", "ku"]
+        middle_chance: 1.0
+        endings: ["lani", "koa", "ni", "la", "na", "ka", "ma", "ha", "lo", "no", "ko", "mo", "lu", "nu", "ku", "mu", "hi", "li", "ki", "mi", "nui", "lea", "kea", "loa", "noa", "mea", "kai", "lei", "nai", "hau", "lau", "mau", "pua", "hua", "lua", "kua"]
+        vowel_join: false
+        real_ok: false
+      - id: family_sung
+        label: Sung
+        group: C
+        openings: ["Il", "Sae", "Tha", "Lor", "Ae", "Ith", "Nim", "Ser", "Val", "Myr", "An", "Or", "Er", "Lath", "Tir", "Gal", "Hal", "Is", "Ny", "Ul", "Vae", "Rin", "Sil", "Eth", "Mel", "Ael", "Cal", "Fin", "Lae", "Nae", "Rae", "Tae", "Ves", "Yl", "El", "Ol", "Ir", "Aer", "Ien", "Lin", "Mir", "Thir", "Sael", "Fael", "Lyth", "Nith", "Ryl", "Syl", "Thal", "Var"]
+        middles: ["a", "i", "ra", "la", "thi", "ri", "sa", "ne", "ve", "lo", "ma", "di", "na", "li", "re", "the"]
+        middle_chance: 0.7
+        endings: ["el", "van", "nith", "the", "ras", "lis", "reth", "mir", "nel", "thir", "dil", "ros", "lian", "ael", "ath", "eth", "ion", "ien", "ys", "yth", "ran", "rel", "sar", "sel", "thel", "thas", "vel", "ven", "lar", "las", "len", "lor", "mar", "nar", "nys", "rien", "ris"]
+        vowel_join: false
+        real_ok: false
+      - id: family_courtly
+        label: Courtly
+        group: C
+        openings: ["Aur", "Val", "Lies", "Ott", "Sab", "Sol", "Ser", "Marc", "Vit", "Flor", "Clar", "Dom", "Fab", "Gal", "Hort", "Laur", "Oct", "Pell", "Quint", "Rem", "Sev", "Tib", "Urs", "Ven", "Aem", "Bell", "Dec", "Fulv", "Gratt", "Hil", "Liv", "Man", "Nerv", "Ors", "Pont", "Ruf", "Sil", "Tert", "Varr", "Drus", "Mer", "Tull", "Vesp", "Ant", "Cal", "Per", "Luc"]
+        middles: []
+        middle_chance: 0
+        endings: ["elan", "orin", "ander", "avien", "ellin", "enne", "oran", "idan", "estin", "ovar", "essan", "antin", "ellar", "ioran", "amond", "esco", "ando", "etto", "ivar", "alis", "oris", "anis", "enor", "adin", "asto", "irand", "ellon", "uvian", "arese", "ian", "ius", "ia", "ina", "ora", "ane", "ard", "ona", "ene", "ilo"]
+        vowel_join: false
+        real_ok: false
+      - id: family_antique
+        label: Antique
+        group: C
+        openings: ["Phaed", "Lyk", "Dem", "Arist", "Kall", "Nik", "Xen", "Pher", "Hipp", "Eur", "Agath", "Alk", "Andr", "Chrys", "Epin", "Glauk", "Iph", "Leont", "Men", "Myr", "Nest", "Olymp", "Pel", "Phil", "Sophr", "Tel", "Thras", "Zen", "Akr", "Bas", "Dor", "Eud", "Gorg", "Hek", "Kor", "Mel", "Pan", "Pyrr", "Sthen", "Tim", "Xanth", "Eum", "Ast", "Kleom", "Polyd", "Herm", "Amph", "Eup", "Lamp", "Prax"]
+        middles: []
+        middle_chance: 0
+        endings: ["os", "eon", "andra", "ides", "ippos", "okles", "on", "as", "ias", "eus", "ylos", "anor", "arete", "ione", "ope", "yra", "esta", "athe", "emon", "enes", "imos", "odoros", "ophon", "ais", "ene", "ia", "is", "ys", "aon", "archos", "edon", "ikos", "agoras", "andros"]
+        vowel_join: false
+        real_ok: false
+      - id: family_rustic
+        label: Rustic
+        group: D
+        openings: ["Tam", "Dun", "Mab", "Hob", "Wat", "Bram", "Peg", "Net", "Odd", "Gam", "Hal", "Jop", "Kit", "Lam", "Ned", "Pim", "Ros", "Syb", "Tib", "Wen", "Had", "Col", "Bart", "Dob", "Fenn", "Alf", "Bess", "Cob", "Dag", "Ebb", "Gil", "Hew", "Jem", "Kem", "Lob", "Mag", "Nan", "Ott", "Pell", "Sam", "Tod", "Ull", "Wig", "Yan", "Ab", "Bax", "Cad", "Dill", "Hod", "Rudd"]
+        middles: []
+        middle_chance: 0
+        endings: ["sin", "stan", "bot", "kin", "ley", "wick", "by", "lin", "mund", "ric", "win", "ard", "ett", "ling", "den", "sey", "mer", "low", "cot", "son", "kins", "ock", "et", "en", "er", "ert", "old", "ward", "ick", "itt", "ot"]
+        vowel_join: false
+        real_ok: true
+      - id: family_misty_vale
+        label: Misty vale
+        group: D
+        openings: ["Gwen", "Gwyl", "Rhod", "Bryn", "Cad", "Em", "Gar", "Glyn", "Hyw", "Iol", "Llew", "Mad", "Mor", "Ner", "Pryd", "Rhi", "Tal", "Tud", "Aer", "Bed", "Car", "Cer", "Cyn", "Del", "Dyf", "Elid", "Gwal", "Gwer", "Heil", "Id", "Ith", "Llyr", "Mael", "Med", "Mer", "Nyf", "Pen", "Rhun", "Seis", "Tang", "Trah", "Ys", "Arth", "Bleid", "Dew", "Gruff", "Mab", "Rhydd", "Tegw", "Ang"]
+        middles: []
+        middle_chance: 0
+        endings: ["wyn", "wen", "an", "edd", "ydd", "og", "ys", "yr", "ian", "ion", "eth", "ach", "in", "on", "ael", "awg", "fan", "fyl", "goch", "ig", "lyn", "mor", "nwy", "od", "or", "ri", "ros", "wal", "wy", "yn", "eg", "en", "iad", "ain", "aeth", "ell", "ern", "arn"]
+        vowel_join: false
+        real_ok: false
+      - id: family_old_isle
+        label: Old isle
+        group: D
+        openings: ["Aed", "Con", "Fer", "Dair", "Eog", "Fiach", "Mur", "Ruad", "Tad", "Cath", "Diar", "Eim", "Fael", "Lorc", "Mid", "Muir", "Niam", "Orl", "Sorch", "Tuath", "Ail", "Bres", "Ech", "Fedl", "Lon", "Nem", "Scath", "Teth", "Uath", "Art", "Bec", "Cel", "Cuan", "Derm", "Donn", "Flann", "Garb", "Ler", "Cair", "Dall", "Eber", "Glas", "Ibar", "Ness", "Rath", "Brid", "Corm", "Sen", "Tig", "Uis"]
+        middles: []
+        middle_chance: 0
+        endings: ["an", "agh", "ell", "ach", "in", "ald", "id", "ech", "en", "ar", "oc", "og", "eth", "ic", "il", "ain", "aid", "uin", "ol", "al", "ed", "ir", "os", "anach", "elan", "oran", "ilin", "uagh"]
+        vowel_join: true
+        real_ok: false
+      - id: family_sibilant
+        label: Sibilant
+        group: E
+        openings: ["Seth", "Ash", "Zis", "Syl", "Iss", "Thes", "Sath", "Zesh", "Sith", "Yth", "Ass", "Esh", "Sas", "Zeth", "Thass", "Shis", "Saph", "Zal", "Sel", "Ser", "Shel", "This", "Zir", "Syr", "Yss", "Sais", "Zais", "Sheth", "Soth", "Zoth", "Hass", "Vess", "Vash", "Nass", "Nesh", "Liss", "Tash", "Rass", "Resh", "Aths", "Eths", "Oss", "Uss", "Zash", "Thish", "Soss", "Yesh", "Zyth", "Shal", "Zar"]
+        middles: []
+        middle_chance: 0
+        endings: ["is", "ael", "ith", "eth", "al", "an", "as", "ys", "ia", "ir", "or", "il", "ara", "ira", "era", "yra", "arin", "eris", "iral", "ulis", "oran", "aris", "enis", "yrith", "alis", "onis", "uan", "iar", "ethan", "ilar", "ovar"]
+        vowel_join: true
+        real_ok: false
+      - id: family_lake_folk
+        label: Lake folk
+        group: E
+        openings: ["Ai", "Il", "Kaar", "Tuuk", "Vai", "Lem", "Aht", "Jou", "Kul", "Lou", "Tap", "Ukk", "Vel", "Aat", "Eel", "Hei", "Iiv", "Juk", "Kaup", "Lau", "Mat", "Oll", "Paav", "Reij", "Sep", "Tuom", "Urh", "Vil", "Ant", "Ees", "Hann", "Ilm", "Jorm", "Kal", "Lass", "Mik", "Nii", "Osk", "Pek", "Rai", "Sak", "Tau", "Veik", "Sin", "Tel", "Kyl", "Suv", "Aam", "Hel", "Tor"]
+        middles: []
+        middle_chance: 0
+        endings: ["nen", "kka", "ri", "ro", "no", "la", "li", "ja", "nna", "tti", "kko", "ppo", "sto", "mo", "vi", "ni", "ski", "lmi", "ras", "nu", "tar", "kki", "lla", "ana", "ina", "ukka", "ikki", "aro", "eri", "ilo", "amo", "onen", "inen", "anen", "ari", "ola", "ula", "eli", "uri", "ikko", "akka", "ukko", "onna", "etti", "appo", "aski", "elmi", "aras", "inu", "atar", "illa"]
+        vowel_join: true
+        real_ok: false
+      - id: family_old_mountain
+        label: Old mountain
+        group: E
+        openings: ["Etx", "Aitz", "Ur", "Arr", "Bel", "Gar", "Har", "Ib", "Ir", "Itz", "Laz", "Mend", "Och", "Otx", "Zub", "Zum", "Aran", "Bid", "Gor", "Jaur", "Kem", "Lor", "Mun", "Nab", "Oih", "Sor", "Txom", "Xab", "Zal", "Agirr", "Alts", "Ber", "Ech", "Elk", "Goik", "Ibarr", "Larr", "Mark", "Orm", "Sarr", "Urd", "Uzt", "Zeb", "Ard", "Ezk", "Olab", "Erren", "Izt", "Ond", "Uga"]
+        middles: []
+        middle_chance: 0
+        endings: ["arri", "oitz", "egi", "eta", "aga", "uri", "alde", "ondo", "erri", "ain", "une", "ola", "ko", "txo", "tza", "zar", "berri", "gain", "buru", "iz", "az", "oz", "itz", "atz", "utz", "ene", "ane", "ia", "ar", "or", "ur"]
+        vowel_join: true
+        real_ok: false
 
 lexicon:
-  # roots for compound mode; `pos` head (first element) / tail (second element) / either
+  # 505 roots: 462 tagged and 21 untagged under `roots`, 22 settlement tails. `pos`: head (first element), tail (second
+  # element), either. A tag is called by a palette kind or a lifeline family (`called_by`); six tags and the untagged
+  # roots are called by nothing and come by base chance only.
+  tags:
+    - {tag: "heights", called_by: {palette: [land_mountain, land_highland]}}
+    - {tag: "flatland", called_by: {palette: [land_plain, land_steppe]}}
+    - {tag: "forest", called_by: {palette: [land_forest, land_giant_fungus, land_crystal_forest]}}
+    - {tag: "fresh water", called_by: {palette: [land_river, land_lake, land_marsh, land_sky_river]}}
+    - {tag: "sea", called_by: {palette: [land_coast, land_island, land_stone_sea]}}
+    - {tag: "arid", called_by: {palette: [land_desert, land_glass_desert]}}
+    - {tag: "fire", called_by: {palette: [land_volcanic]}}
+    - {tag: "cold", called_by: {palette: [land_cold]}}
+    - {tag: "deep", called_by: {palette: [land_underground]}}
+    - {tag: "sky", called_by: {palette: [land_floating_isles, land_sky_river]}}
+    - {tag: "stone", called_by: {palette: [land_crystal_forest, land_stone_sea, land_glass_desert]}}
+    - {tag: "animal", called_by: {lifeline_family: [creatures], palette: [land_giant_bones]}}
+    - {tag: "crop", called_by: {lifeline_family: [crop]}}
+    - {tag: "mine", called_by: {lifeline_family: [mine]}}
+    - {tag: "craft", called_by: {lifeline_family: [craft]}}
+    - {tag: "road", called_by: {lifeline_family: [passage]}}
+    - {tag: "settlement"}
+    - {tag: "colour"}
+    - {tag: "direction and age"}
+    - {tag: "weather and season"}
+    - {tag: "war and watch"}
+    - {tag: "holy and oath"}
+  lifeline_by_seat: {water: ["fresh water", "sea"]}     # the water family calls the one whose palette list holds the kind the lifeline sits on
+  # the treaty family, the thin place and the six uncalled tags call nothing
+  settlement_tails: [ham, stead, hold, wick, ton, by, thorpe, bury, worth, stow, garth, side, keep, end, hearth, hall, cote, stoke, burgh, stock, toft, fold]
   roots:
-    - {root: ash, meaning: "burnt, grey, remembrance", pos: head, domains: [fire, death]}
-    - {root: ember, meaning: "a fire not yet out", pos: head, domains: [fire, light]}
-    - {root: cinder, meaning: "what fire leaves", pos: head, domains: [fire]}
-    - {root: crown, meaning: "rule, a hilltop", pos: either, domains: [law, sky]}
-    - {root: hollow, meaning: "a low place, an emptiness", pos: either, domains: [earth, dark]}
-    - {root: mere, meaning: "a shallow lake", pos: tail, domains: [water]}
-    - {root: fen, meaning: "wet ground", pos: either, domains: [water, plant]}
-    - {root: moor, meaning: "open high ground", pos: either, domains: [earth, weather]}
-    - {root: marsh, meaning: "reed water", pos: head, domains: [water, plant]}
-    - {root: reed, meaning: "the marsh plant; hiding", pos: head, domains: [plant, water]}
-    - {root: salt, meaning: "preservation, memory, the sea", pos: head, domains: [water, death, trade]}
-    - {root: tide, meaning: "return, debt, the sea's schedule", pos: head, domains: [water, time]}
-    - {root: lantern, meaning: "a carried light, a warning", pos: head, domains: [light]}
-    - {root: lamp, meaning: "a kept light, mourning", pos: head, domains: [light, death]}
-    - {root: gate, meaning: "an entry, a control", pos: tail, domains: [law, craft]}
-    - {root: hold, meaning: "a fortified place", pos: tail, domains: [war, law]}
-    - {root: keep, meaning: "the inner fort", pos: tail, domains: [war]}
-    - {root: wick, meaning: "a dwelling, a dairy", pos: tail, domains: [craft]}
-    - {root: ham, meaning: "a village", pos: tail, domains: [home]}
-    - {root: stead, meaning: "a farm, a place", pos: tail, domains: [home]}
-    - {root: ford, meaning: "a river crossing", pos: tail, domains: [water, road]}
-    - {root: bridge, meaning: "a crossing, a bond", pos: either, domains: [road, craft]}
-    - {root: cross, meaning: "a meeting of roads", pos: either, domains: [road, holy]}
-    - {root: well, meaning: "a source", pos: either, domains: [water, holy]}
-    - {root: spring, meaning: "new water, the season", pos: head, domains: [water, time]}
-    - {root: brook, meaning: "a small stream", pos: tail, domains: [water]}
-    - {root: deep, meaning: "the far down, the sea floor", pos: either, domains: [water, dark]}
-    - {root: black, meaning: "dark, burnt, forbidden", pos: head, domains: [dark, colour]}
-    - {root: grey, meaning: "old, ash, uncertain", pos: head, domains: [colour, death]}
-    - {root: white, meaning: "bone, snow, purity", pos: head, domains: [colour, holy]}
-    - {root: red, meaning: "blood, iron, war", pos: head, domains: [colour, war]}
-    - {root: gold, meaning: "wealth, the sun", pos: head, domains: [trade, light]}
-    - {root: silver, meaning: "the moon, coin", pos: head, domains: [trade, sky]}
-    - {root: iron, meaning: "strength, law, the sacred metal", pos: head, domains: [craft, war, law]}
-    - {root: bone, meaning: "the dead, structure", pos: head, domains: [death, body]}
-    - {root: thorn, meaning: "defence, a border", pos: head, domains: [plant, war]}
-    - {root: briar, meaning: "a tangle", pos: head, domains: [plant]}
-    - {root: oak, meaning: "endurance, law", pos: head, domains: [plant, law]}
-    - {root: elm, meaning: "grief, a lane", pos: head, domains: [plant]}
-    - {root: yew, meaning: "death, the bow", pos: head, domains: [plant, death]}
-    - {root: willow, meaning: "water, sorrow", pos: head, domains: [plant, water]}
-    - {root: rowan, meaning: "warding", pos: head, domains: [plant, holy]}
-    - {root: crag, meaning: "a rock face", pos: either, domains: [earth]}
-    - {root: tor, meaning: "a rocky hill", pos: tail, domains: [earth]}
-    - {root: cliff, meaning: "the edge", pos: either, domains: [earth, sky]}
-    - {root: fell, meaning: "a bare hill", pos: tail, domains: [earth, weather]}
-    - {root: dale, meaning: "a valley", pos: tail, domains: [earth, home]}
-    - {root: vale, meaning: "a gentle valley", pos: tail, domains: [earth, home]}
-    - {root: glen, meaning: "a narrow valley", pos: tail, domains: [earth]}
-    - {root: ridge, meaning: "a spine of land", pos: tail, domains: [earth]}
-    - {root: barrow, meaning: "a burial mound", pos: either, domains: [death, earth]}
-    - {root: cairn, meaning: "a marker of stones", pos: either, domains: [death, road]}
-    - {root: grave, meaning: "the dead's place", pos: head, domains: [death]}
-    - {root: hallow, meaning: "holy ground", pos: either, domains: [holy]}
-    - {root: bell, meaning: "a summons, a warning", pos: head, domains: [holy, craft]}
-    - {root: choir, meaning: "voices together, law sung", pos: tail, domains: [holy, song]}
-    - {root: song, meaning: "memory, law", pos: either, domains: [song]}
-    - {root: hush, meaning: "silence, a ban", pos: head, domains: [silence]}
-    - {root: still, meaning: "unmoving, dead calm", pos: head, domains: [silence, water]}
-    - {root: wake, meaning: "the trail behind, the vigil", pos: tail, domains: [water, death]}
-    - {root: watch, meaning: "a guard, a vigil", pos: tail, domains: [war, law]}
-    - {root: ward, meaning: "protection", pos: tail, domains: [law, holy]}
-    - {root: march, meaning: "a border land", pos: tail, domains: [war, law]}
-    - {root: reach, meaning: "a stretch of river or land", pos: tail, domains: [water, road]}
-    - {root: end, meaning: "the last of something", pos: tail, domains: [road, death]}
-    - {root: edge, meaning: "a limit", pos: tail, domains: [road]}
-    - {root: high, meaning: "upper", pos: head, domains: [sky]}
-    - {root: low, meaning: "lower, humble", pos: head, domains: [earth]}
-    - {root: north, meaning: "cold quarter", pos: head, domains: [direction]}
-    - {root: south, meaning: "warm quarter", pos: head, domains: [direction]}
-    - {root: east, meaning: "dawn quarter", pos: head, domains: [direction]}
-    - {root: west, meaning: "dusk quarter", pos: head, domains: [direction]}
-    - {root: old, meaning: "before", pos: head, domains: [time]}
-    - {root: new, meaning: "after", pos: head, domains: [time]}
-    - {root: cold, meaning: "winter, unkind", pos: head, domains: [weather]}
-    - {root: frost, meaning: "the killing cold", pos: head, domains: [weather, death]}
-    - {root: thaw, meaning: "release, spring", pos: head, domains: [weather, time]}
-    - {root: storm, meaning: "violence from the sky", pos: head, domains: [weather, war]}
-    - {root: wind, meaning: "change, breath", pos: head, domains: [weather, sky]}
-    - {root: rain, meaning: "grief, growth", pos: head, domains: [weather, water]}
-    - {root: mist, meaning: "hiding, the fey", pos: head, domains: [weather, dark]}
-    - {root: fog, meaning: "the lost", pos: head, domains: [weather, dark]}
-    - {root: smoke, meaning: "offering, industry", pos: head, domains: [fire, craft]}
-    - {root: gull, meaning: "the coast, a scavenger", pos: head, domains: [animal, water]}
-    - {root: crow, meaning: "witness, the dead", pos: head, domains: [animal, death]}
-    - {root: raven, meaning: "memory, omen", pos: head, domains: [animal, sky]}
-    - {root: wolf, meaning: "the pack, winter", pos: head, domains: [animal, war]}
-    - {root: hart, meaning: "the hunt, nobility", pos: head, domains: [animal, law]}
-    - {root: boar, meaning: "stubborn, the forest", pos: head, domains: [animal]}
-    - {root: hound, meaning: "loyalty, pursuit", pos: head, domains: [animal, law]}
-    - {root: hawk, meaning: "sight, war", pos: head, domains: [animal, sky]}
-    - {root: eel, meaning: "the marsh, slipperiness", pos: head, domains: [animal, water]}
-    - {root: pike, meaning: "the river hunter; a spear", pos: head, domains: [animal, war]}
-    - {root: mill, meaning: "grain, industry", pos: either, domains: [craft]}
-    - {root: forge, meaning: "making, iron", pos: either, domains: [craft, fire]}
-    - {root: kiln, meaning: "firing, pottery", pos: either, domains: [craft, fire]}
-    - {root: tallow, meaning: "cheap light, the poor", pos: head, domains: [light, craft]}
-    - {root: wax, meaning: "seals, candles, the rich dead", pos: head, domains: [light, death]}
-    - {root: candle, meaning: "a vigil", pos: head, domains: [light, holy]}
-    - {root: coin, meaning: "money", pos: head, domains: [trade]}
-    - {root: mint, meaning: "where money is made", pos: either, domains: [trade, craft]}
-    - {root: tithe, meaning: "what is owed to the gods", pos: head, domains: [trade, holy]}
-    - {root: toll, meaning: "what is owed for passage", pos: head, domains: [trade, road]}
-    - {root: debt, meaning: "what is owed", pos: head, domains: [trade, law]}
-    - {root: oath, meaning: "a binding word", pos: head, domains: [law, holy]}
-    - {root: vow, meaning: "a promise to a god", pos: head, domains: [holy]}
-    - {root: mourn, meaning: "grief kept", pos: head, domains: [death]}
-    - {root: hearth, meaning: "home, hospitality", pos: head, domains: [home, fire]}
-    - {root: grain, meaning: "bread, survival", pos: head, domains: [plant, trade]}
-    - {root: star, meaning: "navigation, fate", pos: head, domains: [sky]}
-    - {root: moon, meaning: "cycle, the night", pos: head, domains: [sky, time]}
-    - {root: sun, meaning: "day, rule", pos: head, domains: [sky, light]}
-    - {root: night, meaning: "the dark half", pos: head, domains: [dark, time]}
-    - {root: dawn, meaning: "beginning", pos: head, domains: [light, time]}
-    - {root: dusk, meaning: "ending", pos: head, domains: [dark, time]}
-  place_tails: [side, ham, mere, ford, wick, stead, hold, gate, mouth, bury, ton, by, thorpe, moor, fen, crag, reach, march, cross, well, bridge, bourne, combe, den, field, ley, worth, minster, haven, stow, wold, hithe, ness, tor, fell, dale, vale, garth, hurst, end]
+    - {root: barrow, pos: either, tags: []}
+    - {root: still, pos: head, tags: []}
+    - {root: salt, pos: head, tags: []}
+    - {root: tide, pos: head, tags: []}
+    - {root: wake, pos: tail, tags: []}
+    - {root: lantern, pos: head, tags: []}
+    - {root: lamp, pos: head, tags: []}
+    - {root: candle, pos: head, tags: []}
+    - {root: tallow, pos: head, tags: []}
+    - {root: wax, pos: head, tags: []}
+    - {root: toll, pos: head, tags: []}
+    - {root: hush, pos: head, tags: []}
+    - {root: bell, pos: head, tags: []}
+    - {root: choir, pos: tail, tags: []}
+    - {root: song, pos: either, tags: []}
+    - {root: mourn, pos: head, tags: []}
+    - {root: grave, pos: head, tags: []}
+    - {root: coin, pos: head, tags: []}
+    - {root: tithe, pos: head, tags: []}
+    - {root: debt, pos: head, tags: []}
+    - {root: crown, pos: either, tags: []}
+    - {root: crag, pos: either, tags: ["heights"]}
+    - {root: tor, pos: tail, tags: ["heights"]}
+    - {root: cliff, pos: either, tags: ["heights"]}
+    - {root: fell, pos: tail, tags: ["heights"]}
+    - {root: ridge, pos: tail, tags: ["heights"]}
+    - {root: glen, pos: tail, tags: ["heights"]}
+    - {root: edge, pos: tail, tags: ["heights"]}
+    - {root: peak, pos: either, tags: ["heights"]}
+    - {root: knoll, pos: tail, tags: ["heights"]}
+    - {root: spur, pos: either, tags: ["heights"]}
+    - {root: scree, pos: head, tags: ["heights"]}
+    - {root: bluff, pos: tail, tags: ["heights"]}
+    - {root: crest, pos: either, tags: ["heights"]}
+    - {root: horn, pos: either, tags: ["heights", "animal"]}
+    - {root: hill, pos: tail, tags: ["heights"]}
+    - {root: mount, pos: head, tags: ["heights"]}
+    - {root: rise, pos: tail, tags: ["heights"]}
+    - {root: gap, pos: tail, tags: ["heights", "road"]}
+    - {root: ledge, pos: tail, tags: ["heights"]}
+    - {root: combe, pos: tail, tags: ["heights"]}
+    - {root: steep, pos: head, tags: ["heights"]}
+    - {root: moor, pos: either, tags: ["flatland"]}
+    - {root: dale, pos: tail, tags: ["flatland"]}
+    - {root: vale, pos: tail, tags: ["flatland"]}
+    - {root: field, pos: tail, tags: ["flatland", "crop"]}
+    - {root: wold, pos: tail, tags: ["flatland"]}
+    - {root: heath, pos: either, tags: ["flatland"]}
+    - {root: mead, pos: tail, tags: ["flatland"]}
+    - {root: lea, pos: tail, tags: ["flatland"]}
+    - {root: plain, pos: tail, tags: ["flatland"]}
+    - {root: grass, pos: head, tags: ["flatland"]}
+    - {root: heather, pos: head, tags: ["flatland"]}
+    - {root: thistle, pos: head, tags: ["flatland"]}
+    - {root: gorse, pos: head, tags: ["flatland"]}
+    - {root: broad, pos: head, tags: ["flatland"]}
+    - {root: long, pos: head, tags: ["flatland"]}
+    - {root: lark, pos: head, tags: ["flatland", "animal"]}
+    - {root: hare, pos: head, tags: ["flatland", "animal"]}
+    - {root: oak, pos: head, tags: ["forest"]}
+    - {root: elm, pos: head, tags: ["forest"]}
+    - {root: yew, pos: head, tags: ["forest"]}
+    - {root: willow, pos: head, tags: ["forest", "fresh water"]}
+    - {root: rowan, pos: head, tags: ["forest"]}
+    - {root: thorn, pos: either, tags: ["forest"]}
+    - {root: briar, pos: head, tags: ["forest"]}
+    - {root: hurst, pos: tail, tags: ["forest"]}
+    - {root: wood, pos: tail, tags: ["forest"]}
+    - {root: grove, pos: tail, tags: ["forest"]}
+    - {root: holt, pos: tail, tags: ["forest"]}
+    - {root: glade, pos: tail, tags: ["forest"]}
+    - {root: birch, pos: head, tags: ["forest"]}
+    - {root: beech, pos: head, tags: ["forest"]}
+    - {root: alder, pos: head, tags: ["forest"]}
+    - {root: hazel, pos: head, tags: ["forest"]}
+    - {root: holly, pos: head, tags: ["forest"]}
+    - {root: pine, pos: head, tags: ["forest"]}
+    - {root: larch, pos: head, tags: ["forest"]}
+    - {root: moss, pos: head, tags: ["forest"]}
+    - {root: fern, pos: head, tags: ["forest"]}
+    - {root: bracken, pos: head, tags: ["forest"]}
+    - {root: bramble, pos: head, tags: ["forest"]}
+    - {root: ivy, pos: head, tags: ["forest"]}
+    - {root: bough, pos: tail, tags: ["forest"]}
+    - {root: leaf, pos: either, tags: ["forest"]}
+    - {root: root, pos: either, tags: ["forest"]}
+    - {root: mere, pos: tail, tags: ["fresh water"]}
+    - {root: fen, pos: either, tags: ["fresh water"]}
+    - {root: marsh, pos: head, tags: ["fresh water"]}
+    - {root: reed, pos: head, tags: ["fresh water"]}
+    - {root: ford, pos: tail, tags: ["fresh water", "road"]}
+    - {root: well, pos: either, tags: ["fresh water"]}
+    - {root: spring, pos: head, tags: ["fresh water"]}
+    - {root: brook, pos: tail, tags: ["fresh water"]}
+    - {root: reach, pos: tail, tags: ["fresh water"]}
+    - {root: bourne, pos: tail, tags: ["fresh water"]}
+    - {root: mouth, pos: tail, tags: ["fresh water"]}
+    - {root: eel, pos: head, tags: ["fresh water", "animal"]}
+    - {root: pike, pos: head, tags: ["fresh water", "animal"]}
+    - {root: beck, pos: tail, tags: ["fresh water"]}
+    - {root: water, pos: tail, tags: ["fresh water"]}
+    - {root: lake, pos: either, tags: ["fresh water"]}
+    - {root: pool, pos: tail, tags: ["fresh water"]}
+    - {root: tarn, pos: tail, tags: ["fresh water"]}
+    - {root: weir, pos: either, tags: ["fresh water"]}
+    - {root: rush, pos: head, tags: ["fresh water"]}
+    - {root: sedge, pos: head, tags: ["fresh water"]}
+    - {root: mire, pos: tail, tags: ["fresh water"]}
+    - {root: bog, pos: either, tags: ["fresh water"]}
+    - {root: creek, pos: tail, tags: ["fresh water"]}
+    - {root: heron, pos: head, tags: ["fresh water", "animal"]}
+    - {root: otter, pos: head, tags: ["fresh water", "animal"]}
+    - {root: swan, pos: head, tags: ["fresh water", "animal"]}
+    - {root: trout, pos: head, tags: ["fresh water", "animal"]}
+    - {root: silt, pos: head, tags: ["fresh water"]}
+    - {root: eddy, pos: tail, tags: ["fresh water"]}
+    - {root: gull, pos: head, tags: ["sea", "animal"]}
+    - {root: haven, pos: tail, tags: ["sea"]}
+    - {root: ness, pos: tail, tags: ["sea"]}
+    - {root: sea, pos: head, tags: ["sea"]}
+    - {root: bay, pos: tail, tags: ["sea"]}
+    - {root: cove, pos: tail, tags: ["sea"]}
+    - {root: strand, pos: either, tags: ["sea"]}
+    - {root: shore, pos: tail, tags: ["sea"]}
+    - {root: sand, pos: head, tags: ["sea", "arid"]}
+    - {root: shell, pos: head, tags: ["sea"]}
+    - {root: wave, pos: head, tags: ["sea"]}
+    - {root: foam, pos: head, tags: ["sea"]}
+    - {root: kelp, pos: head, tags: ["sea"]}
+    - {root: cape, pos: tail, tags: ["sea"]}
+    - {root: firth, pos: tail, tags: ["sea"]}
+    - {root: holm, pos: tail, tags: ["sea"]}
+    - {root: isle, pos: tail, tags: ["sea"]}
+    - {root: skerry, pos: tail, tags: ["sea"]}
+    - {root: reef, pos: tail, tags: ["sea"]}
+    - {root: shoal, pos: tail, tags: ["sea"]}
+    - {root: port, pos: tail, tags: ["sea"]}
+    - {root: quay, pos: tail, tags: ["sea"]}
+    - {root: anchor, pos: head, tags: ["sea"]}
+    - {root: sail, pos: head, tags: ["sea"]}
+    - {root: keel, pos: head, tags: ["sea"]}
+    - {root: oar, pos: head, tags: ["sea"]}
+    - {root: whale, pos: head, tags: ["sea", "animal"]}
+    - {root: seal, pos: head, tags: ["sea", "animal"]}
+    - {root: tern, pos: head, tags: ["sea", "animal"]}
+    - {root: crab, pos: head, tags: ["sea", "animal"]}
+    - {root: pearl, pos: head, tags: ["sea"]}
+    - {root: wreck, pos: either, tags: ["sea"]}
+    - {root: drift, pos: head, tags: ["sea"]}
+    - {root: dune, pos: either, tags: ["arid"]}
+    - {root: dust, pos: head, tags: ["arid"]}
+    - {root: dry, pos: head, tags: ["arid"]}
+    - {root: sere, pos: head, tags: ["arid"]}
+    - {root: bare, pos: head, tags: ["arid"]}
+    - {root: waste, pos: tail, tags: ["arid"]}
+    - {root: wash, pos: tail, tags: ["arid"]}
+    - {root: gulch, pos: tail, tags: ["arid"]}
+    - {root: scrub, pos: either, tags: ["arid"]}
+    - {root: sage, pos: head, tags: ["arid"]}
+    - {root: palm, pos: head, tags: ["arid"]}
+    - {root: jackal, pos: head, tags: ["arid", "animal"]}
+    - {root: vulture, pos: head, tags: ["arid", "animal"]}
+    - {root: adder, pos: head, tags: ["arid", "animal"]}
+    - {root: viper, pos: head, tags: ["arid", "animal"]}
+    - {root: ochre, pos: head, tags: ["arid"]}
+    - {root: amber, pos: head, tags: ["arid"]}
+    - {root: ash, pos: head, tags: ["fire"]}
+    - {root: ember, pos: head, tags: ["fire"]}
+    - {root: cinder, pos: head, tags: ["fire"]}
+    - {root: smoke, pos: head, tags: ["fire"]}
+    - {root: fire, pos: head, tags: ["fire"]}
+    - {root: flame, pos: head, tags: ["fire"]}
+    - {root: brand, pos: either, tags: ["fire"]}
+    - {root: char, pos: head, tags: ["fire"]}
+    - {root: soot, pos: head, tags: ["fire"]}
+    - {root: scorch, pos: head, tags: ["fire"]}
+    - {root: coal, pos: head, tags: ["fire", "mine"]}
+    - {root: slag, pos: head, tags: ["fire"]}
+    - {root: fume, pos: head, tags: ["fire"]}
+    - {root: steam, pos: head, tags: ["fire"]}
+    - {root: blaze, pos: head, tags: ["fire"]}
+    - {root: spark, pos: head, tags: ["fire"]}
+    - {root: tinder, pos: head, tags: ["fire"]}
+    - {root: frost, pos: head, tags: ["cold"]}
+    - {root: cold, pos: head, tags: ["cold"]}
+    - {root: thaw, pos: head, tags: ["cold"]}
+    - {root: ice, pos: head, tags: ["cold"]}
+    - {root: snow, pos: head, tags: ["cold"]}
+    - {root: rime, pos: head, tags: ["cold"]}
+    - {root: sleet, pos: head, tags: ["cold"]}
+    - {root: hail, pos: head, tags: ["cold"]}
+    - {root: winter, pos: head, tags: ["cold"]}
+    - {root: floe, pos: tail, tags: ["cold"]}
+    - {root: hoar, pos: head, tags: ["cold"]}
+    - {root: bleak, pos: head, tags: ["cold"]}
+    - {root: stark, pos: head, tags: ["cold"]}
+    - {root: spruce, pos: head, tags: ["cold", "forest"]}
+    - {root: elk, pos: head, tags: ["cold", "animal"]}
+    - {root: bear, pos: head, tags: ["cold", "animal"]}
+    - {root: fox, pos: head, tags: ["cold", "animal"]}
+    - {root: mammoth, pos: head, tags: ["cold", "animal"]}
+    - {root: tusk, pos: head, tags: ["cold"]}
+    - {root: fur, pos: head, tags: ["cold"]}
+    - {root: pelt, pos: head, tags: ["cold"]}
+    - {root: deep, pos: either, tags: ["deep"]}
+    - {root: hollow, pos: either, tags: ["deep"]}
+    - {root: cave, pos: tail, tags: ["deep"]}
+    - {root: cavern, pos: tail, tags: ["deep"]}
+    - {root: delve, pos: either, tags: ["deep"]}
+    - {root: pit, pos: tail, tags: ["deep"]}
+    - {root: grotto, pos: tail, tags: ["deep"]}
+    - {root: chasm, pos: tail, tags: ["deep"]}
+    - {root: rift, pos: tail, tags: ["deep"]}
+    - {root: cleft, pos: tail, tags: ["deep"]}
+    - {root: sink, pos: tail, tags: ["deep"]}
+    - {root: vault, pos: tail, tags: ["deep"]}
+    - {root: den, pos: tail, tags: ["deep"]}
+    - {root: burrow, pos: tail, tags: ["deep"]}
+    - {root: warren, pos: tail, tags: ["deep"]}
+    - {root: pillar, pos: tail, tags: ["deep"]}
+    - {root: under, pos: head, tags: ["deep"]}
+    - {root: nether, pos: head, tags: ["deep"]}
+    - {root: dark, pos: head, tags: ["deep"]}
+    - {root: gloom, pos: head, tags: ["deep"]}
+    - {root: murk, pos: head, tags: ["deep"]}
+    - {root: dim, pos: head, tags: ["deep"]}
+    - {root: echo, pos: head, tags: ["deep"]}
+    - {root: bat, pos: head, tags: ["deep", "animal"]}
+    - {root: mole, pos: head, tags: ["deep", "animal"]}
+    - {root: worm, pos: head, tags: ["deep"]}
+    - {root: star, pos: head, tags: ["sky"]}
+    - {root: moon, pos: head, tags: ["sky"]}
+    - {root: sun, pos: head, tags: ["sky"]}
+    - {root: night, pos: head, tags: ["sky"]}
+    - {root: dawn, pos: head, tags: ["sky"]}
+    - {root: dusk, pos: head, tags: ["sky"]}
+    - {root: sky, pos: head, tags: ["sky"]}
+    - {root: cloud, pos: head, tags: ["sky"]}
+    - {root: wing, pos: either, tags: ["sky"]}
+    - {root: feather, pos: head, tags: ["sky"]}
+    - {root: kite, pos: head, tags: ["sky", "animal"]}
+    - {root: eagle, pos: head, tags: ["sky", "animal"]}
+    - {root: swift, pos: head, tags: ["sky", "animal"]}
+    - {root: swallow, pos: head, tags: ["sky", "animal"]}
+    - {root: loft, pos: tail, tags: ["sky"]}
+    - {root: eyrie, pos: tail, tags: ["sky"]}
+    - {root: spire, pos: tail, tags: ["sky"]}
+    - {root: comet, pos: head, tags: ["sky"]}
+    - {root: eve, pos: head, tags: ["sky"]}
+    - {root: azure, pos: head, tags: ["sky"]}
+    - {root: cairn, pos: either, tags: ["stone"]}
+    - {root: stone, pos: either, tags: ["stone"]}
+    - {root: rock, pos: either, tags: ["stone"]}
+    - {root: flint, pos: head, tags: ["stone"]}
+    - {root: slate, pos: head, tags: ["stone"]}
+    - {root: shale, pos: head, tags: ["stone"]}
+    - {root: chalk, pos: head, tags: ["stone"]}
+    - {root: marble, pos: head, tags: ["stone"]}
+    - {root: basalt, pos: head, tags: ["stone"]}
+    - {root: quartz, pos: head, tags: ["stone"]}
+    - {root: crystal, pos: head, tags: ["stone"]}
+    - {root: glass, pos: head, tags: ["stone"]}
+    - {root: shard, pos: either, tags: ["stone"]}
+    - {root: agate, pos: head, tags: ["stone"]}
+    - {root: garnet, pos: head, tags: ["stone"]}
+    - {root: pebble, pos: head, tags: ["stone"]}
+    - {root: cobble, pos: head, tags: ["stone"]}
+    - {root: boulder, pos: head, tags: ["stone"]}
+    - {root: slab, pos: tail, tags: ["stone"]}
+    - {root: grit, pos: head, tags: ["stone"]}
+    - {root: spar, pos: head, tags: ["stone"]}
+    - {root: wolf, pos: head, tags: ["animal"]}
+    - {root: hart, pos: head, tags: ["animal"]}
+    - {root: boar, pos: head, tags: ["animal"]}
+    - {root: hound, pos: head, tags: ["animal"]}
+    - {root: hawk, pos: head, tags: ["animal"]}
+    - {root: crow, pos: head, tags: ["animal"]}
+    - {root: raven, pos: head, tags: ["animal"]}
+    - {root: bone, pos: head, tags: ["animal"]}
+    - {root: stag, pos: head, tags: ["animal"]}
+    - {root: ox, pos: head, tags: ["animal"]}
+    - {root: ram, pos: head, tags: ["animal"]}
+    - {root: goat, pos: head, tags: ["animal"]}
+    - {root: mare, pos: head, tags: ["animal"]}
+    - {root: colt, pos: head, tags: ["animal"]}
+    - {root: brock, pos: head, tags: ["animal"]}
+    - {root: lynx, pos: head, tags: ["animal"]}
+    - {root: owl, pos: head, tags: ["animal"]}
+    - {root: drake, pos: head, tags: ["animal"]}
+    - {root: wyrm, pos: head, tags: ["animal"]}
+    - {root: antler, pos: head, tags: ["animal"]}
+    - {root: fang, pos: head, tags: ["animal"]}
+    - {root: claw, pos: head, tags: ["animal"]}
+    - {root: talon, pos: head, tags: ["animal"]}
+    - {root: hoof, pos: head, tags: ["animal"]}
+    - {root: hide, pos: head, tags: ["animal"]}
+    - {root: herd, pos: head, tags: ["animal"]}
+    - {root: nest, pos: tail, tags: ["animal"]}
+    - {root: grain, pos: head, tags: ["crop"]}
+    - {root: mill, pos: either, tags: ["crop", "craft"]}
+    - {root: barley, pos: head, tags: ["crop"]}
+    - {root: rye, pos: head, tags: ["crop"]}
+    - {root: oat, pos: head, tags: ["crop"]}
+    - {root: wheat, pos: head, tags: ["crop"]}
+    - {root: corn, pos: head, tags: ["crop"]}
+    - {root: hay, pos: head, tags: ["crop"]}
+    - {root: straw, pos: head, tags: ["crop"]}
+    - {root: sheaf, pos: head, tags: ["crop"]}
+    - {root: chaff, pos: head, tags: ["crop"]}
+    - {root: plough, pos: head, tags: ["crop"]}
+    - {root: furrow, pos: either, tags: ["crop"]}
+    - {root: harrow, pos: either, tags: ["crop"]}
+    - {root: sickle, pos: head, tags: ["crop"]}
+    - {root: barn, pos: tail, tags: ["crop"]}
+    - {root: byre, pos: tail, tags: ["crop"]}
+    - {root: croft, pos: tail, tags: ["crop"]}
+    - {root: acre, pos: tail, tags: ["crop"]}
+    - {root: orchard, pos: tail, tags: ["crop"]}
+    - {root: apple, pos: head, tags: ["crop"]}
+    - {root: plum, pos: head, tags: ["crop"]}
+    - {root: vine, pos: head, tags: ["crop"]}
+    - {root: flax, pos: head, tags: ["crop"]}
+    - {root: honey, pos: head, tags: ["crop"]}
+    - {root: hive, pos: tail, tags: ["crop"]}
+    - {root: malt, pos: head, tags: ["crop"]}
+    - {root: seed, pos: head, tags: ["crop"]}
+    - {root: harvest, pos: head, tags: ["crop"]}
+    - {root: iron, pos: head, tags: ["mine"]}
+    - {root: gold, pos: head, tags: ["mine"]}
+    - {root: silver, pos: head, tags: ["mine"]}
+    - {root: copper, pos: head, tags: ["mine"]}
+    - {root: tin, pos: head, tags: ["mine"]}
+    - {root: bronze, pos: head, tags: ["mine"]}
+    - {root: brass, pos: head, tags: ["mine"]}
+    - {root: steel, pos: head, tags: ["mine"]}
+    - {root: ore, pos: head, tags: ["mine"]}
+    - {root: lode, pos: tail, tags: ["mine"]}
+    - {root: vein, pos: tail, tags: ["mine"]}
+    - {root: seam, pos: tail, tags: ["mine"]}
+    - {root: mine, pos: tail, tags: ["mine"]}
+    - {root: shaft, pos: tail, tags: ["mine"]}
+    - {root: pick, pos: head, tags: ["mine"]}
+    - {root: smelt, pos: head, tags: ["mine"]}
+    - {root: ingot, pos: head, tags: ["mine"]}
+    - {root: quarry, pos: tail, tags: ["mine", "stone"]}
+    - {root: rust, pos: head, tags: ["mine"]}
+    - {root: dross, pos: head, tags: ["mine"]}
+    - {root: forge, pos: either, tags: ["craft"]}
+    - {root: kiln, pos: either, tags: ["craft"]}
+    - {root: mint, pos: either, tags: ["craft"]}
+    - {root: anvil, pos: head, tags: ["craft"]}
+    - {root: hammer, pos: head, tags: ["craft"]}
+    - {root: loom, pos: head, tags: ["craft"]}
+    - {root: wool, pos: head, tags: ["craft"]}
+    - {root: fleece, pos: head, tags: ["craft"]}
+    - {root: dye, pos: head, tags: ["craft"]}
+    - {root: clay, pos: head, tags: ["craft"]}
+    - {root: wheel, pos: head, tags: ["craft"]}
+    - {root: cask, pos: head, tags: ["craft"]}
+    - {root: tun, pos: head, tags: ["craft"]}
+    - {root: rope, pos: head, tags: ["craft"]}
+    - {root: brick, pos: head, tags: ["craft"]}
+    - {root: tile, pos: head, tags: ["craft"]}
+    - {root: thatch, pos: head, tags: ["craft"]}
+    - {root: timber, pos: head, tags: ["craft"]}
+    - {root: plank, pos: head, tags: ["craft"]}
+    - {root: saw, pos: head, tags: ["craft"]}
+    - {root: axe, pos: head, tags: ["craft"]}
+    - {root: chisel, pos: head, tags: ["craft"]}
+    - {root: needle, pos: head, tags: ["craft"]}
+    - {root: spindle, pos: head, tags: ["craft"]}
+    - {root: bellows, pos: head, tags: ["craft"]}
+    - {root: smith, pos: either, tags: ["craft"]}
+    - {root: wright, pos: tail, tags: ["craft"]}
+    - {root: tar, pos: head, tags: ["craft"]}
+    - {root: pitch, pos: head, tags: ["craft"]}
+    - {root: bridge, pos: either, tags: ["road"]}
+    - {root: cross, pos: either, tags: ["road"]}
+    - {root: gate, pos: tail, tags: ["road"]}
+    - {root: road, pos: tail, tags: ["road"]}
+    - {root: way, pos: tail, tags: ["road"]}
+    - {root: path, pos: tail, tags: ["road"]}
+    - {root: track, pos: tail, tags: ["road"]}
+    - {root: trail, pos: tail, tags: ["road"]}
+    - {root: lane, pos: tail, tags: ["road"]}
+    - {root: pass, pos: tail, tags: ["road", "heights"]}
+    - {root: ferry, pos: either, tags: ["road"]}
+    - {root: wain, pos: head, tags: ["road"]}
+    - {root: mile, pos: head, tags: ["road"]}
+    - {root: inn, pos: tail, tags: ["road"]}
+    - {root: rest, pos: tail, tags: ["road"]}
+    - {root: halt, pos: tail, tags: ["road"]}
+    - {root: post, pos: tail, tags: ["road"]}
+    - {root: mark, pos: tail, tags: ["road"]}
+    - {root: drove, pos: head, tags: ["road"]}
+    - {root: stair, pos: tail, tags: ["road"]}
+    - {root: bend, pos: tail, tags: ["road"]}
+    - {root: fork, pos: tail, tags: ["road"]}
+    - {root: mule, pos: head, tags: ["road", "animal"]}
+    - {root: stile, pos: tail, tags: ["road"]}
+    - {root: black, pos: head, tags: ["colour"]}
+    - {root: grey, pos: head, tags: ["colour"]}
+    - {root: white, pos: head, tags: ["colour"]}
+    - {root: red, pos: head, tags: ["colour"]}
+    - {root: green, pos: head, tags: ["colour"]}
+    - {root: blue, pos: head, tags: ["colour"]}
+    - {root: brown, pos: head, tags: ["colour"]}
+    - {root: dun, pos: head, tags: ["colour"]}
+    - {root: tawny, pos: head, tags: ["colour"]}
+    - {root: russet, pos: head, tags: ["colour"]}
+    - {root: pale, pos: head, tags: ["colour"]}
+    - {root: fair, pos: head, tags: ["colour"]}
+    - {root: fallow, pos: head, tags: ["colour"]}
+    - {root: scarlet, pos: head, tags: ["colour"]}
+    - {root: north, pos: head, tags: ["direction and age"]}
+    - {root: south, pos: head, tags: ["direction and age"]}
+    - {root: east, pos: head, tags: ["direction and age"]}
+    - {root: west, pos: head, tags: ["direction and age"]}
+    - {root: high, pos: head, tags: ["direction and age"]}
+    - {root: low, pos: head, tags: ["direction and age"]}
+    - {root: old, pos: head, tags: ["direction and age"]}
+    - {root: new, pos: head, tags: ["direction and age"]}
+    - {root: upper, pos: head, tags: ["direction and age"]}
+    - {root: over, pos: head, tags: ["direction and age"]}
+    - {root: far, pos: head, tags: ["direction and age"]}
+    - {root: mid, pos: head, tags: ["direction and age"]}
+    - {root: great, pos: head, tags: ["direction and age"]}
+    - {root: little, pos: head, tags: ["direction and age"]}
+    - {root: last, pos: head, tags: ["direction and age"]}
+    - {root: elder, pos: head, tags: ["direction and age"]}
+    - {root: young, pos: head, tags: ["direction and age"]}
+    - {root: outer, pos: head, tags: ["direction and age"]}
+    - {root: storm, pos: head, tags: ["weather and season"]}
+    - {root: wind, pos: head, tags: ["weather and season"]}
+    - {root: rain, pos: head, tags: ["weather and season"]}
+    - {root: mist, pos: head, tags: ["weather and season"]}
+    - {root: fog, pos: head, tags: ["weather and season"]}
+    - {root: thunder, pos: head, tags: ["weather and season"]}
+    - {root: gale, pos: head, tags: ["weather and season"]}
+    - {root: squall, pos: head, tags: ["weather and season"]}
+    - {root: dew, pos: head, tags: ["weather and season"]}
+    - {root: haze, pos: head, tags: ["weather and season"]}
+    - {root: summer, pos: head, tags: ["weather and season"]}
+    - {root: autumn, pos: head, tags: ["weather and season"]}
+    - {root: bolt, pos: head, tags: ["weather and season"]}
+    - {root: watch, pos: tail, tags: ["war and watch"]}
+    - {root: ward, pos: tail, tags: ["war and watch"]}
+    - {root: march, pos: tail, tags: ["war and watch"]}
+    - {root: shield, pos: head, tags: ["war and watch"]}
+    - {root: spear, pos: head, tags: ["war and watch"]}
+    - {root: sword, pos: head, tags: ["war and watch"]}
+    - {root: blade, pos: head, tags: ["war and watch"]}
+    - {root: helm, pos: head, tags: ["war and watch"]}
+    - {root: arrow, pos: head, tags: ["war and watch"]}
+    - {root: banner, pos: head, tags: ["war and watch"]}
+    - {root: guard, pos: tail, tags: ["war and watch"]}
+    - {root: wall, pos: either, tags: ["war and watch"]}
+    - {root: tower, pos: tail, tags: ["war and watch"]}
+    - {root: fort, pos: tail, tags: ["war and watch"]}
+    - {root: rampart, pos: tail, tags: ["war and watch"]}
+    - {root: dyke, pos: tail, tags: ["war and watch"]}
+    - {root: moat, pos: tail, tags: ["war and watch"]}
+    - {root: muster, pos: head, tags: ["war and watch"]}
+    - {root: beacon, pos: either, tags: ["war and watch"]}
+    - {root: drum, pos: head, tags: ["war and watch"]}
+    - {root: bulwark, pos: tail, tags: ["war and watch"]}
+    - {root: battle, pos: head, tags: ["war and watch"]}
+    - {root: hallow, pos: either, tags: ["holy and oath"]}
+    - {root: oath, pos: head, tags: ["holy and oath"]}
+    - {root: vow, pos: head, tags: ["holy and oath"]}
+    - {root: minster, pos: tail, tags: ["holy and oath"]}
+    - {root: shrine, pos: tail, tags: ["holy and oath"]}
+    - {root: altar, pos: head, tags: ["holy and oath"]}
+    - {root: temple, pos: tail, tags: ["holy and oath"]}
+    - {root: abbey, pos: tail, tags: ["holy and oath"]}
+    - {root: monk, pos: head, tags: ["holy and oath"]}
+    - {root: holy, pos: head, tags: ["holy and oath"]}
+    - {root: pilgrim, pos: head, tags: ["holy and oath"]}
+    - {root: relic, pos: head, tags: ["holy and oath"]}
+    - {root: hymn, pos: head, tags: ["holy and oath"]}
+    - {root: idol, pos: head, tags: ["holy and oath"]}
+    - {root: omen, pos: head, tags: ["holy and oath"]}
+    - {root: rune, pos: head, tags: ["holy and oath"]}
+
+words:
+  region_words: [March, Reach, Vale, Fells, Moors, Wold, Coast, Isles, Deeps, Wastes, Heights, Fens]
+  building_words: [Market, Hall, Gate, Bridge, Cross, Wharf, Stair, Well, Mill, Tower, Shrine, Temple]
+  phenomenon_tails: [fall, song, call, turn, rise, bloom, mark, gift, shift, wane, sight, bind]
+  site_words: [Vault, Deep, Hall, Gate, Stair, Spire, Tomb, Well]
 
 patterns:
-  # dry-1 to dry-4 all named their institutions, peoples and months from these examples' words (Court of Mourners →
-  # the Cairn and the Hush Tribunal, Order of the Still Bell → the Wardens of the Hushbell, Lampmonth, Hushday);
-  # the examples show the shapes only, in words no campaign has been built on
+  # Structured rows a script fills; nothing here shows a finished name (a shown name anchored four births). `parts` in order:
+  #   {lit: text} · {root: head | tail | any, adjective: true|false, tags: [...]} · {settlement_tail: true} ·
+  #   {word: <a list of `words`>} · {form_word: true} (the rolled form's name word) · {name: person | god | place}
+  #   (a pooled name) · {bag_word: true} (a word of the language's bag) · {one_of: [...]} (rolled).
+  # `join: joined` writes the parts as one word (the first capitalised); `apart` leaves them as written.
   place:
-    - {pattern: "{Head}{tail}", examples: [Kettleside, Flintmere, Brackham, Thornford, Goatcrag, Oxstead]}
-    - {pattern: "{Head} {Noun}", examples: [Hide Market, Rope House, Broken Weir]}
-    - {pattern: "The {Adj} {Noun}", examples: [The Lame Goat, The Green Anvil, The Crooked Well]}
-    - {pattern: "{Owner}'s {Noun}", examples: ["Reeve's Manor", "Carters' Hall"]}
-    - {pattern: "{Noun} of {Name}", examples: [Temple of Velune, Tomb of Skarde]}
+    - {id: pattern_place_settlement, for: [village, town, city], join: joined, parts: [{root: head, adjective: true}, {settlement_tail: true}]}
+    - {id: pattern_place_natural, for: [village, natural_place], join: joined, parts: [{root: head, adjective: true}, {root: tail, natural: true}]}
+    - {id: pattern_place_region, for: [region], join: apart, parts: [{lit: "the "}, {root: head, adjective: true}, {lit: " "}, {word: region_words}]}
+    - {id: pattern_place_inn, for: [inn, tavern], join: apart, whole_lexicon: true, parts: [{lit: "The "}, {root: any, tags: [colour]}, {lit: " "}, {root: any, tags: [animal]}]}
+    - {id: pattern_place_building, for: [quarter, market, building], join: apart, parts: [{root: head, adjective: true}, {lit: " "}, {word: building_words}]}
+    - {id: pattern_place_owner, for: [owned_place], join: apart, composed_by: writer, parts: [{name: person}, {lit: "'s "}, {one_of: [{word: building_words}, {root: tail, natural: true}]}]}
+    - {id: pattern_place_temple, for: [temple], join: apart, composed_by: writer, parts: [{word: building_words}, {lit: " of "}, {name: god}]}
   institution:
-    - {pattern: "Court of {Noun}s", examples: [Court of Weirs, Court of Fleeces]}
-    - {pattern: "Order of the {Noun}", examples: [Order of the Plough, Order of the Green Knot]}
-    - {pattern: "{Head} Brotherhood / Sisterhood", examples: [Flint Brotherhood, Kiln Sisterhood]}
-    - {pattern: "The {Noun} Watch", examples: [The Ford Watch, The Wall Watch]}
-    - {pattern: "Guild of {Noun}s", examples: [Guild of Coopers, Guild of Weighers]}
-    - {pattern: "House {Head}", examples: [House Brack, House Ottavia]}
-    - {pattern: "Keepers of the {Noun}", examples: [Keepers of the Road, Keepers of the Ford]}
-    - {pattern: "The {Head} Company", examples: [The Hide Company, The Barley Company]}
-    - {pattern: "The {Head} Assize", examples: [The Wool Assize, The River Assize]}
-    - {pattern: "The {Head} Fellowship", examples: [The Anvil Fellowship, The Ferry Fellowship]}
+    - {id: pattern_institution_root_form, join: apart, parts: [{lit: "the "}, {root: head, adjective: true}, {lit: " "}, {form_word: true}]}
+    - {id: pattern_institution_form_of_root, join: apart, parts: [{form_word: true}, {lit: " of the "}, {root: head, adjective: false}]}
+    - {id: pattern_institution_place_form, join: apart, parts: [{lit: "the "}, {name: place}, {lit: " "}, {form_word: true}]}
+    - {id: pattern_institution_house, only_form: form_house, join: apart, parts: [{lit: "House "}, {bag_word: true}]}
   people:
-    - {pattern: "{Head}bound", examples: [Stonebound, Clanbound]}
-    - {pattern: "{Head}folk", examples: [Marshfolk, Cliffolk]}
-    - {pattern: "{Head}kin", examples: [Stonekin, Wolfkin]}
-    - {pattern: "{Head}born", examples: [Mistborn, Fenborn]}
-    - {pattern: "the {Adj} Ones", examples: [the Hollow Ones, the Unnamed]}
-  god_epithet:
-    - {pattern: "the {Adj} One", examples: [the Patient One, the Green One]}
-    - {pattern: "{Noun}bearer", examples: [Ploughbearer, Shieldbearer]}
-    - {pattern: "Mother / Father of {Noun}s", examples: [Mother of Waves, Father of Kilns]}
-    - {pattern: "{God} of {Noun}s", examples: [God of Harvests, Lady of Crossings]}
-    - {pattern: "the {Noun} Who {Verb}s", examples: [the Hound Who Waits, the Crow Who Counts]}
-  ship:
-    - {pattern: "the {Noun}", examples: [the Vesper, the Gannet, the Plover]}
-    - {pattern: "the {Adj} {Noun}", examples: [the Kindly Sister, the Grey Hart]}
-    - {pattern: "{Name}'s {Noun}", examples: ["Hild's Promise", "Ottavia's Wager"]}
+    - {id: pattern_people_folk, join: joined, parts: [{root: head, adjective: false}, {lit: folk}]}
+    - {id: pattern_people_kin, join: joined, parts: [{root: head, adjective: false}, {lit: kin}]}
+    - {id: pattern_people_born, join: joined, parts: [{root: head, adjective: false}, {lit: born}]}
+  phenomenon:
+    - {id: pattern_phenomenon_joined, join: joined, article: "the ", parts: [{root: head, adjective: false}, {word: phenomenon_tails}]}
+    - {id: pattern_phenomenon_apart, join: apart, parts: [{lit: "the "}, {root: head, adjective: false}, {lit: " "}, {word: phenomenon_tails, capital: true}]}
   month:
-    - {pattern: "{Head}month", examples: [Plowmonth, Thawmonth]}
-    - {pattern: "{Head}tide", examples: [Frosttide, Reedtide]}
-    - {pattern: "{Head}moon", examples: [Wolfmoon, Grainmoon]}
-    - {pattern: "{Head}fall", examples: [Reedfall, Leaffall]}
-    - {pattern: "High / First / Last {Head}", examples: [High Harvest, First Thaw, Last Frost]}
+    - {id: pattern_month_month, rollable: true, join: joined, parts: [{root: head, adjective: false}, {lit: month}]}
+    - {id: pattern_month_moon, rollable: true, join: joined, parts: [{root: head, adjective: false}, {lit: moon}]}
+    - {id: pattern_month_fall, rollable: true, join: joined, parts: [{root: head, adjective: false}, {lit: fall}]}
+    - {id: pattern_month_high_last, rollable: false, for: [special_month, feast], join: apart, parts: [{one_of: [{lit: "High "}, {lit: "Last "}]}, {root: head, adjective: false}]}
   day:
-    - {pattern: "{Head}day", examples: [Flintday, Millday, Wellday]}
+    - {id: pattern_day, join: joined, parts: [{root: head, adjective: false}, {lit: day}]}
+  old_tongue:
+    - {id: pattern_old_tongue_word, for: [site], join: apart, parts: [{bag_word: true}]}
+    - {id: pattern_old_tongue_site, for: [site], join: apart, parts: [{bag_word: true}, {lit: " "}, {word: site_words, plural_ok: true}]}
+  god_epithet:
+    - {id: pattern_epithet_bearer, join: joined, parts: [{root: head, adjective: false}, {lit: bearer}]}
+    - {id: pattern_epithet_parent, join: apart, parts: [{one_of: [{lit: "Mother"}, {lit: "Father"}]}, {lit: " of "}, {root: head, adjective: false, plural: true}]}
+    - {id: pattern_epithet_lord, join: apart, parts: [{one_of: [{lit: "Lord"}, {lit: "Lady"}]}, {lit: " of "}, {root: head, adjective: false, plural: true}]}
+    - {id: pattern_epithet_one, join: apart, parts: [{lit: "the "}, {root: any, tags: [colour, "direction and age"]}, {lit: " One"}]}
+  ship:
+    - {id: pattern_ship_root, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {root: any, tags: [animal, sea, sky]}]}
+    - {id: pattern_ship_colour_animal, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {root: any, tags: [colour]}, {lit: " "}, {root: any, tags: [animal]}]}
+
 blacklist:
   # brand and real-world names a generated name may never equal (whole name, case-insensitive)
   exact: [Mordor, Gondor, Rohan, Rivendell, Hogwarts, Westeros, Winterfell, Narnia, Waterdeep, Neverwinter, Baldur, Faerun, Eberron, Greyhawk, Krynn, Ravenloft, Barovia, Hyrule, Azeroth, Tamriel, Skyrim, Camelot, Avalon, London, Istanbul, Paris, Rome, Athens, Jerusalem, Gandalf, Drizzt, Elminster, Strahd, Sauron, Aragorn, Legolas, Frodo, Bilbo, Merlin, Arthur, Excalibur]
@@ -374,3 +797,80 @@ blacklist:
     Sonsuz, Sessiz, Derin, Uzun, Yakut, Zeytin, Kiraz, Elma, Armut, Limon, Nar, Ceviz, Pamuk, Kumsal, Serin, Ilik,
     Solgun, Soluk, Kalin, Ince, Genis, Veda, Vatan, Hasret, Umran, Sefa, Nazik, Kibar, Asker, Bekci, Ozan, Kaval]
   lexicon_stems_are_never_banned: true
+
+  # build item 11: the generators' own filters. A generated candidate that equals an entry (whole name, case-insensitive)
+  # is dropped inside the generator and the next one drawn; the door does not read these three lists.
+  # real given names, mythic names and names from known books a person bag can spell; skipped for a bag with `real_ok: true`
+  real_given: [aaron, abel, adam, adrian, aeryn, agnes, aidan, ailin, alan, albert, alex, alfred, alice, alina,
+               alkimos, alma, amanda, amber, amos, amy, andor, andre, andrea, andrew, androkles, angus, anna, antenor,
+               anton, antti, araneta, aristeus, aristides, arne, arngerd, arnold, arthur, arvid, arwen, asgard, astrid,
+               aud, audun, barbara, bart, bartley, basil, bella, ben, bernard, bertha, bjorn, bogdan, boris, brad,
+               bram, branda, brandon, branko, bratoslav, brenda, brendan, brian, brigid, bruno, bryn, cadell, caitlin,
+               calvin, cara, cariad, carl, carla, carmen, carol, cathal, cecil, celia, cian, ciaran, clara, claudia,
+               conan, connor, conrad, cormac, cynan, dag, dagmar, dagolf, dalia, damon, dan, dana, daniel, darko,
+               david, dawn, dean, declan, delia, della, dermot, diana, dirk, dmitri, dolan, donald, donnan, donnell,
+               dorian, doris, douglas, dragan, dragomil, dusan, dylan, eamon, edgar, edith, edmund, edna, edwin,
+               egfrid, egil, einar, elena, elin, elina, elise, ella, ellen, elmer, elsa, elvin, emil, emilia, emlyn,
+               emma, eneko, eogan, eoghan, eric, erik, erin, erlend, ernest, esther, ethan, eugene, europe, eva, evan,
+               evelyn, evert, fabian, felix, fergus, fiona, flannan, flora, florin, frank, frans, freya, frida,
+               fulvius, gabriel, gareth, garrett, gavin, gawain, geir, george, gerald, gilbert, glenn, glyn, goiko,
+               goran, gordon, gorka, gostomir, grace, graham, greta, gudbjorn, gudlaug, gudrun, gunhild, gunleif,
+               gunnar, gunstein, gustav, gwen, gwilym, gwyn, hakon, haldor, hallveig, halvard, halvor, hank, hannah,
+               hans, harald, harold, harriet, harvey, hector, hedda, heikki, heikko, heili, helen, helena, helga,
+               hendrik, henrik, henry, herbert, herman, hermokles, hilda, hildrun, holger, hrothmund, hugo, ian, ida,
+               igor, ilmari, ilmatar, ilona, imre, ines, inga, ingleif, ingmar, ingrid, ingvar, iphis, irene, iris,
+               irma, irune, isaac, isabel, isak, ishan, ivan, ivar, jacob, jalmari, jan, jana, janet, jarl, jason,
+               jasper, joel, johan, john, jonas, joost, jorge, jorstein, joseph, judith, jukka, julia, julian, julius,
+               kaarlo, kalina, kalle, kallippos, kara, karen, karin, karl, kasimir, katarina, kate, kathleen, keith,
+               kelvin, kenneth, ketil, kevin, kieran, kim, kira, klaus, koen, kurt, lara, lars, lassi, laura, laurene,
+               lauri, lea, leif, lena, leo, leon, leona, leonard, leonidas, lilian, linda, linus, lionel, lisa, livia,
+               lola, lorcan, lorna, louis, lubimir, lucas, lucia, lucius, ludmila, luis, luka, luther, lydia, lykias,
+               lyudomir, madeline, magnus, malcolm, marc, marcel, marcus, maria, marian, marin, marina, marius, mark,
+               marko, marta, martin, mary, matilda, matti, maurice, max, maya, megan, melina, melvin, menia, merion,
+               mervyn, micah, mikael, mikko, mila, milan, milena, miles, mileta, milik, milo, milosh, mira, miriam,
+               miroslav, mona, moran, morana, morgan, moses, murdoch, myra, nadia, nancy, naomi, natalia, nathan, neil,
+               nell, nestor, niall, nico, nigel, nikias, nikita, nikola, nils, nina, noel, nolan, nora, norman,
+               octavia, odette, olaf, olav, oleg, olga, olin, oliver, olivia, olympas, omar, orla, oscar, oskar,
+               osmund, oswald, otto, owen, paavo, pablo, patrick, paul, paula, pavel, pedro, pekka, pelope, percy,
+               peter, petra, philia, philip, philon, pieter, quentin, quinn, radana, radko, rafael, ragnar, raimo,
+               ralph, ramon, randal, raul, raymond, rebecca, regina, reidar, reija, rene, rhoda, rhys, richard, rita,
+               robert, robin, roderick, roger, roland, rolf, roman, rona, ronald, rory, rosa, rosalind, ross, rowena,
+               roy, ruben, rufius, rufus, rune, rupert, ruth, ryan, sabin, sabina, sally, salma, samuel, sandra, sara,
+               sarah, sarria, saul, sean, selma, senan, seppo, serena, sergei, seth, sigrid, sigurd, silene, silvia,
+               simon, sirin, sonia, sonja, sophia, stanislav, stefan, stella, sten, steven, stig, susan, svanborg,
+               svandis, svanhild, sven, svetlana, sylvia, tamaki, tamara, tania, tapio, tara, tegan, teodor, teresa,
+               thea, thelma, theo, thomas, tikhomir, tilda, timon, timothy, tobias, tomas, tone, tore, torsten,
+               torvald, trevor, tristan, tullia, tuukka, tyra, ulf, ulla, ulrik, una, unai, ursula, vadim, valentin,
+               valeria, valter, vanessa, vasil, vera, verner, veronica, vesna, victor, vidar, viktor, vilma, vincent,
+               viola, violet, virgil, vitko, vivian, vlad, vladimir, vseslav, walter, wanda, warren, wayne, wendy,
+               werner, wilbur, wilfred, willem, william, wilma, winston, xabier, xanthia, xenia, xenophon, yara,
+               yngvar, yuri, yvonne, zdanko, zdenka, zelda, zenon, zlatan, zlatimir, zoran, zorko]
+  # plain words a person bag can spell; applied to every bag, `real_ok` or not
+  plain_words: [anal, arson, bacon, banal, baron, beacon, bison, boring, boron, carnal, column, demon, demos, denmark,
+                dental, donor, dorsal, elsa, error, formal, fulan, garland, garlic, goblin, gremlin, hakime, halime,
+                hallmark, hallway, hamile, harlot, heathen, heaven, hernia, honor, horror, human, humor, kaleli,
+                kamila, kelime, kokulu, kolonya, koran, kremlin, kuleli, landmark, lemon, lone, lonely, lydia, lykia,
+                major, makina, makine, malaria, males, malina, mania, manor, marker, market, marne, martin, mason,
+                masonry, media, melon, mental, mentor, merlin, minor, mirror, moron, morsel, mortal, mortar, nalini,
+                nasa, naval, normal, pagan, pardun, parson, pascal, pellet, penys, person, portal, prydain, pulluk,
+                rascal, raven, rental, rumor, salmon, salon, sandal, satan, scandal, sermon, solemn, tassel, tekila,
+                tenor, terror, thermal, tinsel, titan, tumor, vandal, varlet, vassal, vegan, vermin, vesa, vessel,
+                woman]
+  # famous real places a compound can spell (an obscure real village passes, by the owner's ruling)
+  real_places: [ashford, baldur, banbury, barovia, bedford, blackburn, blackpool, blackwater, blackwood, boston, bournemouth,
+                bradford, bridgewater, brighton, bristol, brookside, cambridge, canterbury, casterly, chelmsford, chester,
+                clearwater, cleveland, coalville, colchester, coldwater, daggerford, dartford, dartmouth, deepwater, derby,
+                dorchester, dover, dragonstone, durham, eastfield, eastwood, edinburgh, england, exeter, falmouth, finland,
+                glastonbury, gloucester, goldfield, goldstone, gondor, greenest, greenfield, greenland, greenwood, guildford,
+                halstead, hamburg, hampstead, hampton, hereford, hertford, highbury, highgarden, highgate, highland, holland,
+                hollywood, holywood, iceland, ireland, ironbridge, ironside, kensington, kent, kingsbridge, kingston, lakeside,
+                lancaster, leicester, lichfield, lincoln, liverpool, london, longbridge, longford, longmont, lowland, manchester,
+                mansfield, maryland, medford, midland, milford, monmouth, mordor, neverwinter, newbury, newcastle, newhaven,
+                newmarket, newport, newton, northampton, northfield, oakland, oxford, phandalin, pittsburgh, plymouth, poland,
+                portland, portsmouth, ravenholm, ravenhurst, redbridge, redcliff, redford, redhill, redwood, rivendell, riverrun,
+                riverside, rochester, rockford, rockport, rockville, rockwell, rohan, salisbury, saltmarsh, salzburg, sandhurst,
+                scotland, seaside, sheffield, sherwood, shrewsbury, silverstone, silverton, silverymoon, smallville, southampton,
+                southfield, springfield, stafford, stillwater, stockholm, stockport, stockton, stonehaven, stonehenge, strasbourg,
+                stratford, sudbury, sunnyside, sunspear, sweetwater, tewkesbury, wakefield, waterdeep, waterloo, watford, westfield,
+                westminster, westwood, weymouth, whitby, whitechapel, whitehall, whitehaven, wimbledon, winchester, windsor,
+                winterfell, wolverhampton, woodstock, worcester, yarmouth]

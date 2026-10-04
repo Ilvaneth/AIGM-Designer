@@ -148,7 +148,7 @@ class Institution(unittest.TestCase):
         forms = {r["id"]: r for r in rows("institution_form")}
         self.assertEqual(len(forms), 14)
         for r in forms.values():
-            self.assertTrue(r["form_word"])
+            self.assertTrue(r["name_words"], "the words the form puts in a name (build item 11a)")
         self.assertEqual({k: sorted(r["hints"]) for k, r in forms.items()}, {k: sorted(v.split()) for k, v in {
             "form_order": "religious martial scholarly", "form_guild": "guild trade", "form_company": "martial",
             "form_house": "state guild trade criminal", "form_council": "state", "form_league": "trade guild criminal",
@@ -156,8 +156,8 @@ class Institution(unittest.TestCase):
             "form_cloister": "religious scholarly", "form_travelling": "guild trade criminal resistance",
             "form_society": "criminal scholarly resistance", "form_chartered": "trade",
             "form_confederacy": "state martial resistance", "form_militia": "martial resistance"}.items()})
-        self.assertEqual((forms["form_chartered"]["label"], forms["form_chartered"]["form_word"]),
-                         ("Privileged company", "Trading Company"), "a written charter clashed with a land without writing")
+        self.assertEqual((forms["form_chartered"]["label"], forms["form_chartered"]["name_words"]),
+                         ("Privileged company", ["Chartered Company"]), "the label stays; the owner chose the name word (decision 25)")
 
     def test_practices_thirty_three(self):
         pr = {r["id"]: r for r in rows("institution_practice")}

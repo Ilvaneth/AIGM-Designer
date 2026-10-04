@@ -101,24 +101,24 @@ tables:
 
   institution_form:
     roll: {"avoid_used": false}
-    note: "may repeat across campaigns; `hints` is a requirement: the form is drawn only from the rows that list the role's archetype (item 10 applies it); `form_word` is the English word the name pools use (item 11)"
+    note: "may repeat across campaigns; `hints` is a requirement: the form is drawn only from the rows that list the role's archetype (item 10 applies it); `name_words` are the words the form puts in a name (build item 11; one is rolled where there are several; `name_word_requires` gates a word: Fleet needs a sea or fresh-water kind in the palette)"
     hooks_common:
       - {phase: P4, must: "the role's faction is the institution: its power sets its assets, its practice its services"}
     rows:
-      - {id: "form_order", label: "Order", form_word: "Order", hints: ["religious", "martial", "scholarly"]}
-      - {id: "form_guild", label: "Guild", form_word: "Guild", hints: ["guild", "trade"]}
-      - {id: "form_company", label: "Company", form_word: "Company", hints: ["martial"]}
-      - {id: "form_house", label: "House", form_word: "House", hints: ["state", "guild", "trade", "criminal"], text: {"name": "house", "name_note": "a family"}}
-      - {id: "form_council", label: "Council", form_word: "Council", hints: ["state"]}
-      - {id: "form_league", label: "League", form_word: "League", hints: ["trade", "guild", "criminal"]}
-      - {id: "form_school", label: "School", form_word: "School", hints: ["scholarly"]}
-      - {id: "form_brotherhood", label: "Brotherhood", form_word: "Brotherhood", hints: ["resistance", "religious", "guild", "martial", "criminal"]}
-      - {id: "form_cloister", label: "Cloister", form_word: "Cloister", hints: ["religious", "scholarly"]}
-      - {id: "form_travelling", label: "Travelling company", form_word: "Travelling company", hints: ["guild", "trade", "criminal", "resistance"], text: {"name": "travelling company", "name_note": "caravan, fleet, theatre"}}
-      - {id: "form_society", label: "Society", form_word: "Society", hints: ["criminal", "scholarly", "resistance"], text: {"name": "secret society", "name_note": "not evil"}}
-      - {id: "form_chartered", label: "Privileged company", form_word: "Trading Company", hints: ["trade"]}
-      - {id: "form_confederacy", label: "Confederacy", form_word: "Confederacy", hints: ["state", "martial", "resistance"], text: {"name": "confederacy of clans"}}
-      - {id: "form_militia", label: "Militia", form_word: "Militia", hints: ["martial", "resistance"]}
+      - {id: "form_order", label: "Order", name_words: ["Order"], hints: ["religious", "martial", "scholarly"]}
+      - {id: "form_guild", label: "Guild", name_words: ["Guild"], hints: ["guild", "trade"]}
+      - {id: "form_company", label: "Company", name_words: ["Company"], hints: ["martial"]}
+      - {id: "form_house", label: "House", name_words: ["House"], hints: ["state", "guild", "trade", "criminal"], text: {"name": "house", "name_note": "a family"}}
+      - {id: "form_council", label: "Council", name_words: ["Council"], hints: ["state"]}
+      - {id: "form_league", label: "League", name_words: ["League"], hints: ["trade", "guild", "criminal"]}
+      - {id: "form_school", label: "School", name_words: ["School"], hints: ["scholarly"]}
+      - {id: "form_brotherhood", label: "Brotherhood", name_words: ["Brotherhood", "Sisterhood", "Fellowship"], hints: ["resistance", "religious", "guild", "martial", "criminal"]}
+      - {id: "form_cloister", label: "Cloister", name_words: ["Cloister"], hints: ["religious", "scholarly"]}
+      - {id: "form_travelling", label: "Travelling company", name_words: ["Caravan", "Fleet", "Troupe"], name_word_requires: {"Fleet": {any_of: ["land_coast", "land_island", "land_stone_sea", "land_river", "land_lake", "land_marsh", "land_sky_river"]}}, hints: ["guild", "trade", "criminal", "resistance"], text: {"name": "travelling company", "name_note": "caravan, fleet, theatre"}}
+      - {id: "form_society", label: "Society", name_words: ["Society"], hints: ["criminal", "scholarly", "resistance"], text: {"name": "secret society", "name_note": "not evil"}}
+      - {id: "form_chartered", label: "Privileged company", name_words: ["Chartered Company"], hints: ["trade"]}
+      - {id: "form_confederacy", label: "Confederacy", name_words: ["Confederacy"], hints: ["state", "martial", "resistance"], text: {"name": "confederacy of clans"}}
+      - {id: "form_militia", label: "Militia", name_words: ["Militia"], hints: ["martial", "resistance"]}
 
   institution_practice:
     roll: {"avoid_used": true}
