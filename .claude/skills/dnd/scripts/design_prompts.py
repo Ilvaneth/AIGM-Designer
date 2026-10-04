@@ -155,7 +155,7 @@ def rolls_for(manifest: dict, phase: str, entity_id: str | None) -> tuple[str, s
             # a count roll: the number to produce is `value`; the die face is only how it was rolled
             how = f" ({r.get('notation')} → {r.get('raw')})" if r.get("raw") is not None else ""
             return f"- `{r['label']}` = **{r['value']}** — produce exactly this many{how}"
-        what = r.get("row_id") or r.get("raw")
+        what = r.get("row_id") or (", ".join(r["items"]) if r.get("items") else r.get("raw"))
         extra = f" (forced: {r['forced_by']})" if r.get("forced_by") else ""
         return f"- `{r['label']}` → **{what}**{extra}"
     mine = [line(r) for r in phase_recs if any(r["label"] == p or r["label"].startswith(p + ".") for p in prefixes)]

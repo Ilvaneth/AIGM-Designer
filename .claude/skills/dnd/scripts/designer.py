@@ -155,6 +155,7 @@ class Roller:
         self.foundation: dict | None = None
         self.identity: dict | None = None
         self.identity_secret: dict | None = None      # the secret and the villain: dm-only alone
+        self.naming: dict | None = None               # the languages and the calendar's roots (design/naming.json)
         self.exempt: set = set()                      # conflict pairs a forced roll was allowed to stand in
         self.pools: dict[str, int] = {}               # table → its smallest pool after the constraints (the floor)
         self.pool_of: dict[str, int] = {}             # label → that draw's pool after the constraints
@@ -167,7 +168,7 @@ class Roller:
         R.manifest = {"dials": dials, "dice_log": []}
         R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
         R.ctx = arb.Context(dials=dict(dials))
-        R.foundation, R.identity, R.identity_secret, R.exempt = None, None, None, set()
+        R.foundation, R.identity, R.identity_secret, R.naming, R.exempt = None, None, None, None, set()
         R.pools, R.pool_of = {}, {}
         return R
 
@@ -327,20 +328,18 @@ def spread_exclude(uses: dict, n_rows: int) -> set:
 
 def preroll_p1(R: Roller, m: dict) -> None:
     """Step 1, the foundation (design_foundation.py); step 2, the identity (design_identity.py): the trope breaks,
-    the people, the institution, the phenomenon and the question(s), then the naming families, the secret and the
-    villain (secret rolls, build item 10b) and the signature-mechanic gate."""
+    the people, the institution, the phenomenon and the question(s), then the secret and the villain (secret rolls,
+    build item 10b), the signature-mechanic gate and, last, the names (design_names.py, build item 11b): the
+    languages, their bags and roots, the calendar's roots."""
     import design_foundation as fd
     import design_identity as di
+    import design_names as dn
     used_pairs = dd.used_values(R.campaign, fd.PAIR_KEY) if R.campaign else set()
     out = fd.roll(R, dials_of(m), used_pairs)
     R.foundation = fd.build(out, dials_of(m)["level_band"])
     sc = scale_of(m)
     ident = di.roll(R, dials_of(m), R.foundation)
     R.identity = di.build(ident, [r["row_id"] for r in R.public if r.get("row_id")])
-    fams: list[str] = []
-    for n in range(1, int(dt.load("naming.yaml")["roll"]["count_by_scale"][dials_of(m)["scale"]]) + 1):
-        rec = R.table(f"naming_family.{n}", "naming.yaml#family", exclude=set(fams))
-        fams.append(rec["row_id"])
     R.identity_secret = di.roll_secret(R, dials_of(m), R.foundation, R.identity)     # every roll secret; dm-only alone
     chance = int(sc["signature_mechanic_chance"])
     if chance <= 0:
@@ -350,6 +349,7 @@ def preroll_p1(R: Roller, m: dict) -> None:
     else:
         hit = R.notation("mechanic_gate", "d100")["raw"] <= chance
         R.forced("mechanic", "dice", "yes" if hit else "no", f"d100 against {chance}")
+    R.naming = dn.roll(R, dials_of(m), R.foundation, R.identity)
 
 
 def preroll_p2(R: Roller, m: dict) -> None:
@@ -632,9 +632,16 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         data["identity"] = R.identity            # public and stamped, like the foundation
         dm.save(campaign, data, f"designer.py preroll --phase {phase} (identity)")
         print(f"designer: identity — {di.line(R.identity)}")
-    if phase not in ("P0", "P1"):
-        # root-cause analysis 1, RC-13: person and god names are rolled, never invented; P1 writes the languages
-        import design_names as dn
+    import design_names as dn
+    if R.naming is not None:
+        # build item 11b: the script writes design/naming.json, the stocks, the secret stock and the candidates
+        naming = dn.write_rolled(campaign, R.naming, phase, attempt)
+        print("designer: names — " + "; ".join(f"{lid}: {L['bag']} (group {L['group']}), {len(L['roots'])} roots"
+                                                for lid, L in naming["languages"].items()))
+        print("designer: candidates — " + "; ".join(f"{slot}: {', '.join(c['name'] for c in s['names'])}"
+                                                     for slot, s in naming["candidates"].items()))
+    elif phase not in ("P0", "P1"):
+        # root-cause analysis 1, RC-13: person and god names are rolled, never invented
         if dn.ensure_pool(campaign, phase, attempt) is not None:
             print("designer: " + "; ".join(f"{lid}: {sum(1 for e in L['person'] if not e.get('used_by'))} person / "
                                             f"{sum(1 for e in L['god'] if not e.get('used_by'))} god names unused"
@@ -646,7 +653,8 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         dm.save(campaign, data, f"designer.py preroll --phase {phase}")
     print(f"designer: {phase} prerolled — {n_pub} public rolls, {n_sec} secret (labels only in design.json)")
     for rec in R.public:
-        what = rec.get("row_id") or (f"{rec.get('raw')} → count {rec['value']}" if "value" in rec else rec.get("raw"))
+        what = rec.get("row_id") or (f"{rec.get('raw')} → count {rec['value']}" if "value" in rec else
+                                     ", ".join(rec["items"]) if rec.get("items") else rec.get("raw"))
         print(f"  {rec['label']:<32} {rec['table']:<32} {rec['notation'] or '':<7} → {what}")
     return 0
 
@@ -1276,7 +1284,8 @@ def record_used(campaign: str, phase: str) -> int:
         if row and ref and dt.records_usage(ref):
             put(ref, dd.hashed(row) if secret else row)
         for key, value in (r.get("used_keys") or {}).items():
-            put(key, dd.hashed(value) if secret else value)
+            for v in value if isinstance(value, list) else [value]:        # a draw of several values (the names' roots)
+                put(key, dd.hashed(v) if secret else v)
     if added or stamped:
         dd.save_used(used)
     return added

@@ -56,6 +56,35 @@ Written by P1 from `naming.yaml`'s sound families (rolled, then mutated); read b
 
 **The world speaks English, the narration is Turkish** (errata 24.2 #17): every language produces English-language fantasy names — `phonetic` mode for persons and gods, `compound` mode from the English `roots` lexicon for places and institutions (Lanternside, Saltmere, Reedham) — and `tr_suffix_friendly` means the name takes a Turkish suffix cleanly after an apostrophe (Lanternside'a, Saltmere'de). `banned[]` holds exact names already used in this root plus a profanity/brand filter, never word stems (errata #18: crown, hollow, ember may recur). `samples[]` are the names this campaign actually produced from the language, appended at phase approval. A **secret entity's name is never appended**: `naming.json` sits outside `dm-only/`, and the sample list is one of the secondary leak channels risk 24.1 #11 lists.
 
+### Since build item 11b: written by the script (`rolled: true`)
+
+The example above is a legacy birth's (the fixture's): its P1 writer wrote the file. Since build item 11b (`docs/p1-build-11.md`) P1's preroll writes it and no agent edits the languages, the calendar or the candidates; P3 and P4 still fill `assignments`.
+
+```json
+{
+  "_meta": {"schema_version": 1, "campaign": "salt-lantern", "written_by": "designer.py preroll --phase P1 (names)", "written_at": "2026-10-04T18:10:00Z"},
+  "stamped": true,
+  "rolled": true,
+  "languages": {
+    "people":     {"owner": "people", "label": "people", "bag": "family_old_isle", "group": "D",
+                   "roots": ["…18 roots…"], "called": ["…the roots drawn from the called tags…"],
+                   "called_tags": ["deep"], "called_short": 0, "settlement_tails": ["…7 of the 22…"]},
+    "common":     {"owner": "common", "label": "the common tongue", "…": "…"},
+    "other_side": {"owner": "other_side", "role": "b", "…": "…"},
+    "old":        {"owner": "old", "label": "the old tongue", "bag": "family_guttural", "group": "A", "roots": [], "settlement_tails": []}
+  },
+  "calendar": {"month_pattern": "pattern_month_fall", "month_roots": ["…14…"], "month_called": ["…"], "day_roots": ["…9…"], "day_called": ["…"]},
+  "candidates": {
+    "people": {"language": "people", "attempt": 1, "names": [{"name": "…", "pattern": "pattern_people_folk", "root": "…"}], "discarded": []},
+    "institution": {"…": "…"}, "phenomenon": {"…": "…"}
+  },
+  "assignments": {},
+  "banned": ["…the names .name_registry.json holds for other campaigns…"]
+}
+```
+
+A language's key is its owner (`people`, `common`, `other_side`, `institution`, `old`); a row's `lang` names that key. A bag's parts are never copied here: `bag` names a row of `naming.yaml#family`. The stocks built from this record live in `design/dm-only/name-pool.json` (per language `person`, `god`, `places`, `regions`, `inns`, `buildings`, `ships`, `epithets`; the old tongue's `sites`; `calendar.months / special / days`), the secret stock in `design/dm-only/name-pool-secret.json` (`person`, `god`, `place`, the old tongue's `site`).
+
 ## `common-knowledge.json` — what a native already knows
 
 Written by P8 at the campaign root beside `channels.json`; read by `channels.py check` before it flags a fact as leaked, and by `render_player.py` for the primer. Every fact is public-tier by definition; a fact with an `origin` list is known to natives of those polities or settlements only (item 11.4).

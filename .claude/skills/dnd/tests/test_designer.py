@@ -143,8 +143,9 @@ class NewBirth(unittest.TestCase):
         self.assertEqual([q["id"] for q in identity["questions"]], [pub["tension.1"]["row_id"]])
         self.assertIn("designer: identity", proc.stdout)
         fams = [r["row_id"] for l, r in pub.items() if l.startswith("naming_family.")]
-        self.assertEqual(len(fams), 2)
-        self.assertEqual(len(set(fams)), 2)
+        self.assertEqual(len(fams), 3, "short: two living languages and the old tongue (build item 11b)")
+        self.assertEqual(len(set(fams)), 3)
+        self.assertGreater(list(pub).index("naming_family.1"), list(pub).index("mechanic"), "the naming rolls stand last")
         self.assertEqual(pub["mechanic"]["row_id"], "no", "short never rolls the signature mechanic")
         for secret_label in ("secret_archetype", "secret_twist", "secret_trail"):
             self.assertNotIn(secret_label, pub, "secret rolls never enter design.json")

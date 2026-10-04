@@ -11,7 +11,7 @@ schema_version: 1
 table: naming
 consumed_by: [P1, P2, P3, P4, P5, P6, P8]
 plan: "item 25 step 2 #8, item 4.6, 8.7, 17 #8, errata 24.2 #17 #18 #20 #25 #27, risk 24.1 #18"
-roll: {notation: d17, count_by_scale: {short: 2, standard: 3, epic: 3}, avoid_used: true, labels: [P1.naming_family.1, P1.naming_family.2, P1.naming_family.3]}
+roll: {notation: d17, count_by_scale: {short: 2, standard: 3, epic: 3}, avoid_used: true, labels: [P1.naming_family.1, P1.naming_family.2, P1.naming_family.3, P1.naming_family.old]}
 hooks_common:
   - {phase: P5, must: "person names come from the NPC's culture's family; no first-name collision inside a campaign"}
   - {phase: validator, must: "every registry name passes the blacklist and carries no Turkish letters"}
@@ -35,7 +35,31 @@ rules:
     min_letters: 5
     max_consonant_run: 3
     repeats: "no two-letter chunk repeated at once, no three-letter chunk repeated anywhere"
-  adjectives: "a root whose first tag is `colour` or `direction and age` is an adjective; a pattern slot says whether it takes one (`adjective: true`)"
+  adjectives: "a root whose first tag is `colour` or `direction and age` is an adjective, and so is a root marked `adjective: true` (steep, dry, dark and the like); a pattern slot says whether it takes one (`adjective: true`)"
+  parts_differ: "no part of a name repeats another: a building's root is not its word (no Mill Mill)"
+  # build item 11b: what the script rolls for a campaign's names, at the end of P1's rolls (decisions 33-44).
+  draw:
+    living_languages: {short: 2, standard: 3, epic: 3}       # the old tongue stands beside them in every campaign
+    roots_per_language: {short: 10, standard: 18, epic: 24}  # the old tongue has none: its names are bag words
+    called_share: 0.5              # half of a language's roots (rounded up) come from the tags it calls, half freely
+    head_floor: {short: 5, standard: 9, epic: 12}            # roots usable as a head in every draw
+    noun_heads: 4                  # of them, not adjectives
+    natural_tails: 2               # roots usable as a natural tail in every draw
+    settlement_tails: 7            # per living language, of the 22
+    shared_tails_max: 2            # two languages of one campaign share at most this many
+    calendar:
+      month_roots: 14
+      day_roots: 9
+      special_months: 4            # `High` / `Last` names
+      tags: [crop, "weather and season", cold, animal, forest, sky, "fresh water"]
+      not_days: [spring, summer, autumn, winter]             # a season names no day (Summerday)
+      # real words a calendar root and its pattern's tail would spell
+      real_words: [sunday, monday, tuesday, wednesday, thursday, friday, saturday, midday, holiday, hollyday, rainfall,
+                   snowfall, nightfall, windfall, dewfall, landfall, waterfall, honeymoon]
+    head_uses_max: 3               # one head root in at most this many names of a stock
+    compound_max_letters: 12
+    stock_factor: 3                # a campaign's stocks hold at least this many times what the scale can use
+    candidates: 4                  # per signature slot
 
 tables:
 
@@ -229,7 +253,7 @@ lexicon:
   settlement_tails: [ham, stead, hold, wick, ton, by, thorpe, bury, worth, stow, garth, side, keep, end, hearth, hall, cote, stoke, burgh, stock, toft, fold]
   roots:
     - {root: barrow, pos: either, tags: []}
-    - {root: still, pos: head, tags: []}
+    - {root: still, pos: head, tags: [], adjective: true}
     - {root: salt, pos: head, tags: []}
     - {root: tide, pos: head, tags: []}
     - {root: wake, pos: tail, tags: []}
@@ -242,7 +266,7 @@ lexicon:
     - {root: hush, pos: head, tags: []}
     - {root: bell, pos: head, tags: []}
     - {root: choir, pos: tail, tags: []}
-    - {root: song, pos: either, tags: []}
+    - {root: song, pos: head, tags: []}
     - {root: mourn, pos: head, tags: []}
     - {root: grave, pos: head, tags: []}
     - {root: coin, pos: head, tags: []}
@@ -262,14 +286,14 @@ lexicon:
     - {root: scree, pos: head, tags: ["heights"]}
     - {root: bluff, pos: tail, tags: ["heights"]}
     - {root: crest, pos: either, tags: ["heights"]}
-    - {root: horn, pos: either, tags: ["heights", "animal"]}
+    - {root: horn, pos: either, tags: ["heights", "animal"], creature: false}
     - {root: hill, pos: tail, tags: ["heights"]}
     - {root: mount, pos: head, tags: ["heights"]}
     - {root: rise, pos: tail, tags: ["heights"]}
     - {root: gap, pos: tail, tags: ["heights", "road"]}
     - {root: ledge, pos: tail, tags: ["heights"]}
     - {root: combe, pos: tail, tags: ["heights"]}
-    - {root: steep, pos: head, tags: ["heights"]}
+    - {root: steep, pos: head, tags: ["heights"], adjective: true}
     - {root: moor, pos: either, tags: ["flatland"]}
     - {root: dale, pos: tail, tags: ["flatland"]}
     - {root: vale, pos: tail, tags: ["flatland"]}
@@ -283,8 +307,8 @@ lexicon:
     - {root: heather, pos: head, tags: ["flatland"]}
     - {root: thistle, pos: head, tags: ["flatland"]}
     - {root: gorse, pos: head, tags: ["flatland"]}
-    - {root: broad, pos: head, tags: ["flatland"]}
-    - {root: long, pos: head, tags: ["flatland"]}
+    - {root: broad, pos: head, tags: ["flatland"], adjective: true}
+    - {root: long, pos: head, tags: ["flatland"], adjective: true}
     - {root: lark, pos: head, tags: ["flatland", "animal"]}
     - {root: hare, pos: head, tags: ["flatland", "animal"]}
     - {root: oak, pos: head, tags: ["forest"]}
@@ -311,9 +335,9 @@ lexicon:
     - {root: bracken, pos: head, tags: ["forest"]}
     - {root: bramble, pos: head, tags: ["forest"]}
     - {root: ivy, pos: head, tags: ["forest"]}
-    - {root: bough, pos: tail, tags: ["forest"]}
-    - {root: leaf, pos: either, tags: ["forest"]}
-    - {root: root, pos: either, tags: ["forest"]}
+    - {root: bough, pos: head, tags: ["forest"]}
+    - {root: leaf, pos: head, tags: ["forest"]}
+    - {root: root, pos: head, tags: ["forest"]}
     - {root: mere, pos: tail, tags: ["fresh water"]}
     - {root: fen, pos: either, tags: ["fresh water"]}
     - {root: marsh, pos: head, tags: ["fresh water"]}
@@ -379,9 +403,9 @@ lexicon:
     - {root: drift, pos: head, tags: ["sea"]}
     - {root: dune, pos: either, tags: ["arid"]}
     - {root: dust, pos: head, tags: ["arid"]}
-    - {root: dry, pos: head, tags: ["arid"]}
-    - {root: sere, pos: head, tags: ["arid"]}
-    - {root: bare, pos: head, tags: ["arid"]}
+    - {root: dry, pos: head, tags: ["arid"], adjective: true}
+    - {root: sere, pos: head, tags: ["arid"], adjective: true}
+    - {root: bare, pos: head, tags: ["arid"], adjective: true}
     - {root: waste, pos: tail, tags: ["arid"]}
     - {root: wash, pos: tail, tags: ["arid"]}
     - {root: gulch, pos: tail, tags: ["arid"]}
@@ -400,7 +424,7 @@ lexicon:
     - {root: smoke, pos: head, tags: ["fire"]}
     - {root: fire, pos: head, tags: ["fire"]}
     - {root: flame, pos: head, tags: ["fire"]}
-    - {root: brand, pos: either, tags: ["fire"]}
+    - {root: brand, pos: head, tags: ["fire"]}
     - {root: char, pos: head, tags: ["fire"]}
     - {root: soot, pos: head, tags: ["fire"]}
     - {root: scorch, pos: head, tags: ["fire"]}
@@ -412,7 +436,7 @@ lexicon:
     - {root: spark, pos: head, tags: ["fire"]}
     - {root: tinder, pos: head, tags: ["fire"]}
     - {root: frost, pos: head, tags: ["cold"]}
-    - {root: cold, pos: head, tags: ["cold"]}
+    - {root: cold, pos: head, tags: ["cold"], adjective: true}
     - {root: thaw, pos: head, tags: ["cold"]}
     - {root: ice, pos: head, tags: ["cold"]}
     - {root: snow, pos: head, tags: ["cold"]}
@@ -422,8 +446,8 @@ lexicon:
     - {root: winter, pos: head, tags: ["cold"]}
     - {root: floe, pos: tail, tags: ["cold"]}
     - {root: hoar, pos: head, tags: ["cold"]}
-    - {root: bleak, pos: head, tags: ["cold"]}
-    - {root: stark, pos: head, tags: ["cold"]}
+    - {root: bleak, pos: head, tags: ["cold"], adjective: true}
+    - {root: stark, pos: head, tags: ["cold"], adjective: true}
     - {root: spruce, pos: head, tags: ["cold", "forest"]}
     - {root: elk, pos: head, tags: ["cold", "animal"]}
     - {root: bear, pos: head, tags: ["cold", "animal"]}
@@ -448,12 +472,12 @@ lexicon:
     - {root: burrow, pos: tail, tags: ["deep"]}
     - {root: warren, pos: tail, tags: ["deep"]}
     - {root: pillar, pos: tail, tags: ["deep"]}
-    - {root: under, pos: head, tags: ["deep"]}
-    - {root: nether, pos: head, tags: ["deep"]}
-    - {root: dark, pos: head, tags: ["deep"]}
+    - {root: under, pos: head, tags: ["deep"], adjective: true}
+    - {root: nether, pos: head, tags: ["deep"], adjective: true}
+    - {root: dark, pos: head, tags: ["deep"], adjective: true}
     - {root: gloom, pos: head, tags: ["deep"]}
     - {root: murk, pos: head, tags: ["deep"]}
-    - {root: dim, pos: head, tags: ["deep"]}
+    - {root: dim, pos: head, tags: ["deep"], adjective: true}
     - {root: echo, pos: head, tags: ["deep"]}
     - {root: bat, pos: head, tags: ["deep", "animal"]}
     - {root: mole, pos: head, tags: ["deep", "animal"]}
@@ -466,7 +490,7 @@ lexicon:
     - {root: dusk, pos: head, tags: ["sky"]}
     - {root: sky, pos: head, tags: ["sky"]}
     - {root: cloud, pos: head, tags: ["sky"]}
-    - {root: wing, pos: either, tags: ["sky"]}
+    - {root: wing, pos: head, tags: ["sky"]}
     - {root: feather, pos: head, tags: ["sky"]}
     - {root: kite, pos: head, tags: ["sky", "animal"]}
     - {root: eagle, pos: head, tags: ["sky", "animal"]}
@@ -477,7 +501,7 @@ lexicon:
     - {root: spire, pos: tail, tags: ["sky"]}
     - {root: comet, pos: head, tags: ["sky"]}
     - {root: eve, pos: head, tags: ["sky"]}
-    - {root: azure, pos: head, tags: ["sky"]}
+    - {root: azure, pos: head, tags: ["sky"], adjective: true}
     - {root: cairn, pos: either, tags: ["stone"]}
     - {root: stone, pos: either, tags: ["stone"]}
     - {root: rock, pos: either, tags: ["stone"]}
@@ -506,7 +530,7 @@ lexicon:
     - {root: hawk, pos: head, tags: ["animal"]}
     - {root: crow, pos: head, tags: ["animal"]}
     - {root: raven, pos: head, tags: ["animal"]}
-    - {root: bone, pos: head, tags: ["animal"]}
+    - {root: bone, pos: head, tags: ["animal"], creature: false}
     - {root: stag, pos: head, tags: ["animal"]}
     - {root: ox, pos: head, tags: ["animal"]}
     - {root: ram, pos: head, tags: ["animal"]}
@@ -518,14 +542,14 @@ lexicon:
     - {root: owl, pos: head, tags: ["animal"]}
     - {root: drake, pos: head, tags: ["animal"]}
     - {root: wyrm, pos: head, tags: ["animal"]}
-    - {root: antler, pos: head, tags: ["animal"]}
-    - {root: fang, pos: head, tags: ["animal"]}
-    - {root: claw, pos: head, tags: ["animal"]}
-    - {root: talon, pos: head, tags: ["animal"]}
-    - {root: hoof, pos: head, tags: ["animal"]}
-    - {root: hide, pos: head, tags: ["animal"]}
-    - {root: herd, pos: head, tags: ["animal"]}
-    - {root: nest, pos: tail, tags: ["animal"]}
+    - {root: antler, pos: head, tags: ["animal"], creature: false}
+    - {root: fang, pos: head, tags: ["animal"], creature: false}
+    - {root: claw, pos: head, tags: ["animal"], creature: false}
+    - {root: talon, pos: head, tags: ["animal"], creature: false}
+    - {root: hoof, pos: head, tags: ["animal"], creature: false}
+    - {root: hide, pos: head, tags: ["animal"], creature: false}
+    - {root: herd, pos: head, tags: ["animal"], creature: false}
+    - {root: nest, pos: tail, tags: ["animal"], creature: false}
     - {root: grain, pos: head, tags: ["crop"]}
     - {root: mill, pos: either, tags: ["crop", "craft"]}
     - {root: barley, pos: head, tags: ["crop"]}
@@ -600,8 +624,8 @@ lexicon:
     - {root: needle, pos: head, tags: ["craft"]}
     - {root: spindle, pos: head, tags: ["craft"]}
     - {root: bellows, pos: head, tags: ["craft"]}
-    - {root: smith, pos: either, tags: ["craft"]}
-    - {root: wright, pos: tail, tags: ["craft"]}
+    - {root: smith, pos: head, tags: ["craft"]}
+    - {root: wright, pos: head, tags: ["craft"]}
     - {root: tar, pos: head, tags: ["craft"]}
     - {root: pitch, pos: head, tags: ["craft"]}
     - {root: bridge, pos: either, tags: ["road"]}
@@ -704,7 +728,7 @@ lexicon:
     - {root: temple, pos: tail, tags: ["holy and oath"]}
     - {root: abbey, pos: tail, tags: ["holy and oath"]}
     - {root: monk, pos: head, tags: ["holy and oath"]}
-    - {root: holy, pos: head, tags: ["holy and oath"]}
+    - {root: holy, pos: head, tags: ["holy and oath"], adjective: true}
     - {root: pilgrim, pos: head, tags: ["holy and oath"]}
     - {root: relic, pos: head, tags: ["holy and oath"]}
     - {root: hymn, pos: head, tags: ["holy and oath"]}
@@ -713,7 +737,20 @@ lexicon:
     - {root: rune, pos: head, tags: ["holy and oath"]}
 
 words:
-  region_words: [March, Reach, Vale, Fells, Moors, Wold, Coast, Isles, Deeps, Wastes, Heights, Fens]
+  # a region word follows the palette: a word with `requires` is drawn only where the campaign holds one of the kinds
+  region_words:
+    - {word: March}
+    - {word: Reach}
+    - {word: Vale}
+    - {word: Fells, requires: {any_of: [land_mountain, land_highland]}}
+    - {word: Moors, requires: {any_of: [land_plain, land_steppe, land_highland]}}
+    - {word: Wold, requires: {any_of: [land_plain, land_steppe, land_highland]}}
+    - {word: Coast, requires: {any_of: [land_coast, land_island, land_stone_sea]}}
+    - {word: Isles, requires: {any_of: [land_coast, land_island, land_stone_sea]}}
+    - {word: Deeps, requires: {any_of: [land_underground, land_coast, land_island, land_stone_sea]}}
+    - {word: Wastes, requires: {any_of: [land_desert, land_glass_desert, land_cold, land_volcanic]}}
+    - {word: Heights, requires: {any_of: [land_mountain, land_highland]}}
+    - {word: Fens, requires: {any_of: [land_marsh, land_river, land_lake]}}
   building_words: [Market, Hall, Gate, Bridge, Cross, Wharf, Stair, Well, Mill, Tower, Shrine, Temple]
   phenomenon_tails: [fall, song, call, turn, rise, bloom, mark, gift, shift, wane, sight, bind]
   site_words: [Vault, Deep, Hall, Gate, Stair, Spire, Tomb, Well]
@@ -756,11 +793,11 @@ patterns:
     - {id: pattern_old_tongue_site, for: [site], join: apart, parts: [{bag_word: true}, {lit: " "}, {word: site_words, plural_ok: true}]}
   god_epithet:
     - {id: pattern_epithet_bearer, join: joined, parts: [{root: head, adjective: false}, {lit: bearer}]}
-    - {id: pattern_epithet_parent, join: apart, parts: [{one_of: [{lit: "Mother"}, {lit: "Father"}]}, {lit: " of "}, {root: head, adjective: false, plural: true}]}
-    - {id: pattern_epithet_lord, join: apart, parts: [{one_of: [{lit: "Lord"}, {lit: "Lady"}]}, {lit: " of "}, {root: head, adjective: false, plural: true}]}
+    - {id: pattern_epithet_parent, join: apart, parts: [{one_of: [{lit: "Mother"}, {lit: "Father"}]}, {lit: " of the "}, {root: head, adjective: false}]}
+    - {id: pattern_epithet_lord, join: apart, parts: [{one_of: [{lit: "Lord"}, {lit: "Lady"}]}, {lit: " of the "}, {root: head, adjective: false}]}
     - {id: pattern_epithet_one, join: apart, parts: [{lit: "the "}, {root: any, tags: [colour, "direction and age"]}, {lit: " One"}]}
   ship:
-    - {id: pattern_ship_root, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {root: any, tags: [animal, sea, sky]}]}
+    - {id: pattern_ship_root, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {one_of: [{root: any, tags: [animal], creature: true}, {root: any, only: [wave, pearl, star, dawn, comet]}]}]}
     - {id: pattern_ship_colour_animal, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {root: any, tags: [colour]}, {lit: " "}, {root: any, tags: [animal]}]}
 
 blacklist:
@@ -847,15 +884,14 @@ blacklist:
                yngvar, yuri, yvonne, zdanko, zdenka, zelda, zenon, zlatan, zlatimir, zoran, zorko]
   # plain words a person bag can spell; applied to every bag, `real_ok` or not
   plain_words: [anal, arson, bacon, banal, baron, beacon, bison, boring, boron, carnal, column, demon, demos, denmark,
-                dental, donor, dorsal, elsa, error, formal, fulan, garland, garlic, goblin, gremlin, hakime, halime,
+                dental, donor, dorsal, error, formal, fulan, garland, garlic, goblin, gremlin, hakime, halime,
                 hallmark, hallway, hamile, harlot, heathen, heaven, hernia, honor, horror, human, humor, kaleli,
-                kamila, kelime, kokulu, kolonya, koran, kremlin, kuleli, landmark, lemon, lone, lonely, lydia, lykia,
-                major, makina, makine, malaria, males, malina, mania, manor, marker, market, marne, martin, mason,
-                masonry, media, melon, mental, mentor, merlin, minor, mirror, moron, morsel, mortal, mortar, nalini,
-                nasa, naval, normal, pagan, pardun, parson, pascal, pellet, penys, person, portal, prydain, pulluk,
-                rascal, raven, rental, rumor, salmon, salon, sandal, satan, scandal, sermon, solemn, tassel, tekila,
-                tenor, terror, thermal, tinsel, titan, tumor, vandal, varlet, vassal, vegan, vermin, vesa, vessel,
-                woman]
+                kamila, kelime, kokulu, kolonya, koran, kremlin, kuleli, landmark, lemon, lone, lonely, lykia, major,
+                makina, makine, malaria, males, malina, mania, manor, marker, market, marne, mason, masonry, media,
+                melon, mental, mentor, merlin, minor, mirror, moron, morsel, mortal, mortar, nalini, nasa, naval,
+                normal, pagan, pardun, parson, pascal, pellet, penys, person, portal, prydain, pulluk, rascal, raven,
+                rental, rumor, salmon, salon, sandal, satan, scandal, sermon, solemn, tassel, tekila, tenor, terror,
+                thermal, tinsel, titan, tumor, vandal, varlet, vassal, vegan, vermin, vesa, vessel, woman]
   # famous real places a compound can spell (an obscure real village passes, by the owner's ruling)
   real_places: [ashford, baldur, banbury, barovia, bedford, blackburn, blackpool, blackwater, blackwood, boston, bournemouth,
                 bradford, bridgewater, brighton, bristol, brookside, cambridge, canterbury, casterly, chelmsford, chester,

@@ -88,13 +88,14 @@ class Lexicon(unittest.TestCase):
         names = [r["root"] for r in ROOTS] + list(tails)
         self.assertEqual(len(set(names)), 505, "no root twice")
         for r in ROOTS:
-            self.assertEqual(set(r), {"root", "pos", "tags"}, r["root"])
+            self.assertEqual(set(r) - {"creature", "adjective"}, {"root", "pos", "tags"}, r["root"])
             self.assertIsInstance(r["root"], str)
             self.assertRegex(r["root"], r"^[a-z]+$")
             self.assertIn(r["pos"], ("head", "tail", "either"))
             self.assertTrue(len(r["tags"]) <= 2 and not set(r["tags"]) - set(TAGS), r["root"])
             self.assertNotIn("settlement", r["tags"], "the settlement tails are their own list")
-        self.assertEqual(Counter(r["pos"] for r in ROOTS if r["tags"]), {"head": 302, "tail": 118, "either": 42}, "302 heads, 140 tails with the 22, 42 either")
+        self.assertEqual(Counter(r["pos"] for r in ROOTS if r["tags"]), {"head": 309, "tail": 116, "either": 37},
+                         "302 heads, 140 tails with the 22, 42 either; the audit of build 11b made seven tagged roots heads only")
         untagged = {r["root"] for r in ROOTS if not r["tags"]}
         self.assertTrue({"salt", "tide", "lantern", "candle", "bell", "hush", "debt", "crown"} <= untagged, "the attractor's roots stay, called by nothing")
         self.assertTrue({"ash", "ember", "cinder"} <= {r["root"] for r in ROOTS if r["tags"][:1] == ["fire"]})
@@ -122,8 +123,12 @@ class Lexicon(unittest.TestCase):
 
     def test_adjectives_are_derived(self):
         adjectives = [r["root"] for r in ROOTS if r["tags"][:1] and r["tags"][0] in ADJECTIVE_TAGS]
-        self.assertEqual(len(adjectives), 32, "14 colour and 18 direction and age roots; none is hand-marked")
-        self.assertNotIn("adjective:", "".join(str(r) for r in ROOTS))
+        self.assertEqual(len(adjectives), 32, "14 colour and 18 direction and age roots, derived from the tag")
+        marked = {r["root"] for r in ROOTS if r.get("adjective")}
+        self.assertEqual(marked, set("steep broad long dry sere bare cold bleak stark under nether dark dim holy still azure".split()),
+                         "the sixteen the audit of build 11b marked; no root of an adjective tag is hand-marked")
+        self.assertTrue(all(dn.is_adjective(r) for r in ROOTS if r["root"] in marked | set(adjectives)))
+        self.assertEqual(sum(1 for r in ROOTS if dn.is_adjective(r)), 48)
 
 
 class Patterns(unittest.TestCase):
@@ -188,7 +193,8 @@ class Filters(unittest.TestCase):
     def test_the_three_lists(self):
         bl = DOC["blacklist"]
         self.assertEqual(len(bl["real_given"]), 599, "524 names and the 75 the audit of build 11a added")
-        self.assertEqual(len(bl["plain_words"]), 118, "110 plain words and the 8 the audit added")
+        self.assertEqual(len(bl["plain_words"]), 115, "107 plain words and the 8 the audit added")
+        self.assertFalse(set(bl["plain_words"]) & set(bl["real_given"]), "a name is no plain word: the rustic bag may spell Elsa, Lydia, Martin")
         self.assertGreater(len(bl["real_places"]), 100)
         for key in ("real_given", "plain_words", "real_places"):
             self.assertEqual(len(set(bl[key])), len(bl[key]), key)

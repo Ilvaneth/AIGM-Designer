@@ -495,6 +495,9 @@ def pool_errors(eid: str, row: dict, pool: dict | None, canonical: dict, phase: 
             return [f"{eid}: a secret entity may not take a pool name ({given!r} is printed in conductor-readable prompts); "
                     "name it in dm-only from the language's banks"]
         return []
+    if given.lower() in dn.secret_given_names(pool["_meta"]["campaign"]):
+        return [f"{eid}: a public entity may not take a name of the secret stock; take the next unused name from the "
+                "list in your prompt"]
     old = canonical["entities"].get(eid)
     if old and dn.given_of(old.get("name")) == given:
         return []                                   # a stub being filled keeps the name it was reserved under
@@ -682,6 +685,8 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
                     if row.get("type") in ("npc", "god") and row.get("secrecy") != "secret":
                         dn.mark_used(pool, row.get("lang"), "god" if row["type"] == "god" else "person",
                                      dn.given_of(row.get("name")), eid)
+                    elif row.get("type") in ("npc", "god"):
+                        dn.mark_secret_used(campaign, dn.given_of(row.get("name")), eid)
             dn.save_pool(campaign, pool, f"registry.py merge --phase {phase}")
         write_all(campaign, canonical, snapshot, f"registry.py merge --phase {phase}")
         save_overlay(campaign, overlay, "registry.py merge")

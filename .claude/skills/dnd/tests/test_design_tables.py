@@ -858,7 +858,7 @@ class Naming(unittest.TestCase):
             registered = {e["name"].lower() for e in entries.values() if e.get("name")}
         names = []
         for words in doc["words"].values():          # the tables hold no sample and no example since build item 11a
-            names += list(words)
+            names += [w if isinstance(w, str) else w["word"] for w in words]     # a region word is a row with its `requires`
         names += [w for f in dt.rows("signatures.yaml#institution_form") for w in f["name_words"]]
         names += [ex["name"] for ex in play_suffixing()["examples"]]
         for n in names:
