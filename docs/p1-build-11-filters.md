@@ -52,11 +52,11 @@ zdenka zelda zenon zlatan zoran
 Plain English words and other things a bag has spelled or can spell (seen in the trials or one join away):
 
 ```text
-heathen lonely lone nasa elsa vesa heaven demon demos lemon melon salon satan titan vegan pagan human woman
+heathen lonely lone nasa vesa heaven demon demos lemon melon salon satan titan vegan pagan human woman
 hallmark hallway landmark denmark marker market mental rental dental sandal vandal scandal mortal mortar portal
 normal formal thermal carnal banal anal moron boring boron baron bacon beacon bison raven arson parson person
-mason masonry harlot varlet merlin martin kremlin goblin gremlin vermin sermon salmon solemn column garlic
-garland dorsal morsel tinsel tassel vessel vassal rascal pascal lykia prydain lydia media mania malaria hernia
+mason masonry harlot varlet merlin kremlin goblin gremlin vermin sermon salmon solemn column garlic
+garland dorsal morsel tinsel tassel vessel vassal rascal pascal lykia prydain media mania malaria hernia
 mentor tumor rumor humor tenor minor manor major donor honor error terror horror mirror
 kokulu kelime makine makina tekila kuleli pulluk kaleli hamile halime hakime nalini kolonya malina kamila
 ```
@@ -124,3 +124,4 @@ koran naval males marne fulan penys pellet pardun
 
 **The split.** `real_given` holds two different things: real names, which the rustic bag may spell (owner: a real English name suits a villager), and plain words, which no bag should spell (the rustic sample holds "Pellet"). The plain-words block of this file, with the words above, becomes its own list `blacklist.plain_words`, applied to every bag, `real_ok` or not; `real_given` keeps the names and stays off for a `real_ok` bag.
 
+**Corrected 2026-10-04:** `elsa`, `lydia` and `martin` stood in both blocks; they are names and stay in `real_given` only (the rustic bag may spell them).
