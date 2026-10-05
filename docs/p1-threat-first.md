@@ -43,16 +43,16 @@ Today's order rolls the story's pieces independently and asks the writer to stit
 
 The rolls, in order:
 
-1. **Stage:** the spine; the palette, its count set by the spine (finding 8).
-2. **Texture:** the lifeline (texture only; it fills no slot below).
-3. **Past:** the ruin source.
-4. **The contest:** as today, its prize a story or stage piece (the heart, the remnant, the thin place, a seat, something new); 23 prizes to be redrawn.
-5. **The threat** (secret): the villain's shape, origin and visibility as today, and **a new roll, the goal**: a concrete object bound to the rolled story pieces (the contest's prize, the remnant's power, the heart, the thin place, a role's seat, the break completed). The goal joins the threat to the contest: the goal is the prize, or the move strikes a contest role.
-6. **The move** (the break, public): **a new public roll, the visible hand** (the villain itself when its visibility is known, or an agent: a horde, a beast, a cult, a hired company, a woken remnant, a fiend, a duped contest role), **the verb** from a curated list of things a table can fight or undo (burned, seized, woke, opened, cursed, poisoned, stole, overthrew …), **the target** on the path to the goal, the time, and the role that came out stronger. The abstract verbs (turned backwards, was twinned, spread without bound, was forgotten …) leave the move and may become scars.
-7. **Scars:** the move's aftermath, texture.
-8. **The escalation:** the villain's plan in steps across the level band's tiers, each step a visible event at the table; P4's front fills it.
-9. **The secret** (approved 2026-10-05, `docs/p1-build-18-rows.md` section 5): the threat's hidden half: who, what it wants and why, where, how it is stopped; three stages with a conclusion each and three clues per conclusion; an optional twist; the keeping; the trails.
-10. **The identity:** the question (what the goal forces the sides to choose; the villain's justification is its pole carried to the extreme, its aim stays the goal), the three signatures (texture; a signature's hidden truth exists only as a medium of the main secret, never a secret of its own: finding 4), the trope breaks (a world-state row ties only to a story piece and joins it: finding 6), the names.
+1. **Stage:** the spine; the palette, its count set by the spine (`docs/p1-build-18-rows.md` section 7).
+2. **Past:** the ruin source.
+3. **The contest:** its prize a story or stage piece, its gates and weights from the stage and the dials alone (section 3).
+4. **The threat** (secret): the family, then the creature that fits the band's top (section 4.1); the shape, the origin, the visibility; the goal (4.2), the weakness (4.3), **the lair** (G1 below). The goal joins the threat to the contest: the goal is the prize, or the move strikes a contest role.
+5. **The move** (public): the visible hand, the verb and the target on the way to the goal (sections 1-2, with their fit lists), the time, the move's state (section 5), the role that came out stronger.
+6. **Scars:** the move's aftermath, texture.
+7. **The escalation:** the villain's plan in steps across the level band's tiers, each step a visible event at the table, placed in time by the rule G2; the first step lands at **the start**, a small settlement (finding D3); P4's front fills the steps.
+8. **The secret** (section 5): the threat's hidden half (who, what it wants and why, where, how it is stopped); three stages with a conclusion each and three clues per conclusion; an optional twist; the keeping; the trails.
+9. **The identity:** the question (what the goal forces the sides to choose; the villain's justification is its pole carried to the extreme, its aim stays the goal), the three signatures (a signature's hidden truth exists only as a medium of the main secret: finding 4), the trope breaks (section 6), the names.
+10. **Texture last:** the lifeline, fitted to the story and the palette (texture hangs on the story).
 
 **The spine sentence.** The script composes one public sentence from the story pieces alone and the card prints it above the foundation: "*<the hand> <verb> <the target>; now <side a> and <side b> fight over <the prize>.*" If a slot would hold a texture piece or an empty value, the set is refused at the roll. The writer starts from it; the owner reads the story's skeleton before a word of prose.
 
@@ -96,6 +96,23 @@ The system read against the craft every DM learns: the DMG's campaign and villai
 | D5 | prepare situations, not plots | P7 builds acts and beats (bound to the front's portents) | at P7's turn: the arc becomes the plan's portents and the party's choices; no fixed beat the party must hit |
 
 **Approved by the owner, 2026-10-05.** D1-D4 join part 18c (the rolls at P1; D4's weights at P6's turn); D5 waits for P7. The owner's standing word with it: *never forget that what we build is a D&D campaign*; every row and rule of this redesign passes that test.
+
+## The plan reviewed after the row sessions (2026-10-05)
+
+Read end to end after every table was decided. The direction holds; ten gaps are closed in the specification of the parts:
+
+| # | Gap | How it is closed |
+|---|---|---|
+| G1 | **The lair has no roll.** "Where" is one of the four hidden facts, and the villain's lair is D&D's final dungeon, but nothing draws it | a new secret roll bound to the chain: in the remnant, at the thin place, hidden under or inside the heart, at the key place, at a far end, a place it built (a tower, a citadel, a sunken temple), on the move (a flying citadel, a ship); P6 makes it the final site |
+| G2 | **The timeline of the move, the plan's steps and the goal is undefined** (above all with the move "coming") | the steps always lead toward the goal; a move *a generation ago* has ripened and step 1 comes as the campaign opens; *just now*, session 1 opens on its aftermath; *unfolding*, the party starts inside it and step 1 is its next phase; *coming*, the steps are its preparation and the move is the last step before the goal, so the party can still prevent it |
+| G3 | the roll order still listed the lifeline second | corrected above: texture last |
+| G4 | **many fit lists now meet** (family by band, goal to piece, hand to verb, verb to target, weakness to kind, world states to story pieces, gates by stage) | the order of rolls is written once, each roll filters by the ones before it, the arbiter refuses a dead end, and the many-seed test proves no empty pool at every scale |
+| G5 | **the P1 rubrics still judge the old secret** (`rubric_p1_secret_trail`: "the break's true cause with a person who chose it") | part 18d rewrites every P1 rubric to the chain (the four facts, the stages' conclusions, three clues each), beside the new legibility rubric; the critics' whole review stays for after the build |
+| G6 | the new rows' promises to later floors are not written | every new row carries its hooks: the goal and the move to P4's front and doom; the weakness to P6 (a hidden object's site), P5 (a rival, a loved one) or P2 (a true name, a god); the lair to P6's final site; the start to P3; the creature families to P6's occupants and the travel encounters; the clues to P5 and P6 |
+| G7 | **ten scripts read the old secret fields** (chooser, archetype, tie), as do the regression pack over the archived births and play's renderers | the new fields are added beside the old; a legacy birth loads and renders as before (item 23's compatibility rule); the regression pack stays green; P2-P9 read the new fields at their own turn |
+| G8 | no rule on repetition for the new tables | each new table states its `avoid_used`: the family waits, the goal, the weakness and the hand avoid the latest births' rows |
+| G9 | "a D&D campaign" is checked only by a critic and by eye | a machine check on the card: a villain kind and creature, a hand, a goal, a weakness, a lair, a start, the creature families, three stages with three clues each, trope breaks that bend; a missing piece closes the gate |
+| G10 | P4's doom "the phenomenon overflows" makes texture the doom | at P4's turn the doom is the goal achieved; that row goes |
 
 ## Held for after the build
 
