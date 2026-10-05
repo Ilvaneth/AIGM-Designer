@@ -38,7 +38,7 @@ PLACEHOLDERS = {
     "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions", "staging_phase",
     "wishes", "template", "prose_path", "mirror_path", "fragment_path", "notes_path", "rubrics", "common",
     "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order", "name_pool",
-    "critic_loop", "critique_path", "prior_campaigns",
+    "critic_loop", "critique_path", "prior_campaigns", "critic_reads", "phase_reads", "verdict_options", "verdict_overall",
 }
 PROSE_DIRS = {"npc": "design/npcs", "site": "design/sites", "faction": "design/factions", "region": "design/regions",
               "settlement": "design/settlements", "chapter": "design/chapters", "thread": "design/threads",
@@ -166,7 +166,7 @@ def rubric_lines(phase: str, scope: str | None, order: int) -> str:
     rows = [r for r in dt.rows("rubrics.yaml#phase_rubric") if r["phase"] == phase]
     if scope:
         rows = [r for r in rows if r["scope"] == scope] or rows
-    rows += [r for r in dt.rows("rubrics.yaml#special") if r["id"] in ("rubric_cliche", "rubric_english_names", "rubric_leak")]
+    rows += [r for r in dt.rows("rubrics.yaml#special") if r["id"] in ("rubric_english_names", "rubric_leak")]
     if order == 2:
         rows = list(reversed(rows))
     out = []
@@ -245,6 +245,38 @@ def promises_text(campaign: str, name: str, role: str, phase: str, detail: bool)
     return dpr.prompt_block(campaign, phase, audience, name in SECRET_READERS)
 
 
+# ── the critics' own lines (build item 14c): what they read and which verdicts they may give ─────────────────
+
+PHASE_READS = ("Cross-entity rubrics cannot be answered per entity: you read the phase's skeleton (`design/_staging/{phase}/skeleton.json` "
+               "and the phase's fragments), the premise, and each entity's one-line identity / telegraph / voice lines from the registry "
+               "export (`registry.py export --public`), not the full files, unless a rubric below says entity or dm-only.")
+P1_ROLLS = ("what was rolled, so that you judge what the writer made of it and never the rolls: `design/design.json#foundation` and "
+            "`#identity`, and the signature candidates in `design/naming.json`; when a rubric's scope is dm-only, the secret identity "
+            "record too (`design/dm-only/dice-log.json`, under `identity`), which never leaves dm-only")
+
+
+def scripted_p1(manifest: dict, phase: str) -> bool:
+    """P1 of a birth whose rolls the script made and sealed: its critics judge craft only and never ask for a reroll."""
+    return phase == "P1" and bool(manifest.get("foundation")) and bool(manifest.get("p1_seal"))
+
+
+def critic_lines(manifest: dict, phase: str) -> dict:
+    if scripted_p1(manifest, phase):
+        return {
+            "critic_reads": f" Read also {P1_ROLLS}.",
+            "phase_reads": ("P1 has no skeleton. You read the premise (`design/premise.md`), its mirror when a rubric's scope is dm-only, the "
+                            "three signature rows and the break rows in the registry export (`registry.py export --public`), and "
+                            f"{P1_ROLLS}."),
+            "verdict_options": ("For each rubric row give a verdict: `pass`, `fix` (a targeted change would repair it) or `note`. There is "
+                                "no `rerun` here: the rolls are sealed and only the owner rerolls (a name, or the phase with a reseed); a "
+                                "premise that fails is rewritten on the same rolls, and a return that says `rerun` is refused."),
+            "verdict_overall": "The overall verdict is `fix` if any row says fix, else `pass`."}
+    return {"critic_reads": "", "phase_reads": PHASE_READS.format(phase=phase),
+            "verdict_options": ("For each rubric row give a verdict: `pass`, `fix` (a targeted change would repair it), `rerun` (the entity "
+                                "is wrong at the root), or `note`."),
+            "verdict_overall": "The overall verdict is `rerun` if any row says rerun, `fix` if any row says fix, else `pass`."}
+
+
 def name_pool_text(campaign: str, entity_id: str | None) -> str:
     import design_names as dn
     return dn.prompt_text(campaign, entity_id)
@@ -302,6 +334,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "notes_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.notes.md",
         "rubrics": rubric_lines(phase, scope, critic_order) if role in ("critic", "phase_critic") else "",
         "schema": schema_text(str(fm.get("schema") or "writer")),
+        **critic_lines(manifest, phase),
         "agent_label": f"{phase}.{entity_id or role}.a{attempt}", "roster": ", ".join(ph.get("roster") or []) or "(none yet)",
         "party_size": str(d["party_size"]), "level_band": f"{d['level_band'][0]}-{d['level_band'][1]}",
         "content_mix": ", ".join(d["content_mix"]), "critic_order": str(critic_order),
@@ -319,6 +352,9 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
     # phase critic alone; "common" is filled first, so the name pool's placeholder inside it is filled after
     block = promises_text(campaign, name, role, phase, staging_phase == "detail")
     ctx = dict({"common": common_text() + ("\n\n" + block if block else "")}, **ctx)
+    if scripted_p1(manifest, phase) and role in ("critic", "phase_critic"):
+        ctx["schema"] = ctx["schema"].replace('"enum": ["pass", "fix", "rerun"]', '"enum": ["pass", "fix"]').replace(
+            '"enum": ["pass", "fix", "rerun", "note"]', '"enum": ["pass", "fix", "note"]')
     text = body
     for key, value in ctx.items():
         text = text.replace("{{" + key + "}}", value)

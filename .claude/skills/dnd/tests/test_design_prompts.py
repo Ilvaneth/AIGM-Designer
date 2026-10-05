@@ -98,7 +98,7 @@ class Rendering(unittest.TestCase):
         one = dp.render(self.c.name, "critic", "site_sunken_pier", critic_order=1)
         two = dp.render(self.c.name, "critic", "site_sunken_pier", critic_order=2)
         # the entity prompt's phase is `all`; the phase-specific rubric comes through the campaign's manifest phase of the entity
-        self.assertIn("rubric_cliche", one)
+        self.assertNotIn("rubric_cliche", one, "the cliché rubric went (build item 14c, errata 24.2 #31)")
         self.assertIn("rubric_english_names", one)
         self.assertNotEqual(one, two)
         self.assertIn("You are critic 2", two)

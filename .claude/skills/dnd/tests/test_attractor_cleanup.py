@@ -72,7 +72,7 @@ class History(unittest.TestCase):
         self.assertIn("age_of_thing", ages)
         self.assertNotIn("age_lanterns", ages)
         self.assertEqual(ages["age_of_thing"]["label"], "The Age of {Thing}")
-        self.assertEqual(ages["age_of_thing"]["span_hint"], "an age named for what was built in it (lanterns, roads, walls, mills)", "the row's text stays")
+        self.assertEqual(ages["age_of_thing"]["span_hint"], "an age named for what was built in it (roads, walls, mills)", "the owner's wording of 2026-10-05")
         self.assertTrue({"age_silence", "age_dimming", "age_reckoning"} <= set(ages), "the owner keeps them")
         self.assertIn("evtype_silencing", {r["id"] for r in dt.rows("history.yaml#event_type")})
         labels = {r["label"] for sub in ("age_template", "event_type", "divergence", "memory") for r in dt.rows(f"history.yaml#{sub}")}

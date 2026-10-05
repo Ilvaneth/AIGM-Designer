@@ -71,7 +71,7 @@ tables:
           - {phase: P5, must: "the demographic table shows the arrivals with a district"}
       - id: age_of_thing
         label: The Age of {Thing}
-        span_hint: "an age named for what was built in it (lanterns, roads, walls, mills)"
+        span_hint: "an age named for what was built in it (roads, walls, mills)"
         hooks:
           - {phase: P3, must: "the things built are landmarks or anchors that still stand"}
       - id: age_kings

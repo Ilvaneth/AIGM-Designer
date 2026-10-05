@@ -898,7 +898,8 @@ class Rubrics(unittest.TestCase):
         two = {r["id"] for r in rows if r["critics"] == 2}
         self.assertTrue({"rubric_p1_secret_trail", "rubric_p4_bbeg_answer", "rubric_p5_lieutenant"} <= two, "24.6 #6: two critics")
         specials = {r["id"] for r in dt.rows("rubrics.yaml#special")}
-        self.assertTrue({"rubric_wishes", "rubric_leak", "rubric_cliche", "rubric_distinctness"} <= specials)
+        self.assertTrue({"rubric_wishes", "rubric_leak", "rubric_english_names", "rubric_distinctness"} <= specials)
+        self.assertNotIn("rubric_cliche", specials, "the cliché rubric went (build item 14c, errata 24.2 #31)")
         self.assertEqual({v["value"] for v in dt.rows("rubrics.yaml#verdict")}, {"pass", "fix", "rerun"})
 
     # --- batch F: arc and threads ---------------------------------------------------

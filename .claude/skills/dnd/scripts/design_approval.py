@@ -712,6 +712,12 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
     if verdict not in VERDICTS or not isinstance(entity, str) or not SLUG.match(entity):
         print("design_approval: a critic return needs entity_id and a verdict of pass / fix / rerun", file=sys.stderr)
         return 1
+    # build item 14c: P1 of a birth whose rolls the script sealed has no `rerun`: only the owner rerolls
+    if phase == "P1" and scripted_p1(dm.load(campaign)) and (verdict == "rerun" or any(
+            isinstance(f, dict) and f.get("verdict") == "rerun" for f in ret.get("findings") or [])):
+        print("design_approval: a P1 critic return says `rerun`, refused: the rolls are sealed and only the owner rerolls; "
+              "the verdict is pass or fix (the premise is rewritten on the same rolls)", file=sys.stderr)
+        return 1
     findings = []
     for f in ret.get("findings") or []:
         if not isinstance(f, dict) or f.get("verdict") not in FINDING_VERDICTS:

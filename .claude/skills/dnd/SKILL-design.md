@@ -103,7 +103,7 @@ Candidate lists come from `data/design/srd-index-2014.json`, filtered script-sid
 
 ## The critique pass
 
-`data/design/rubrics.yaml` is the bar every campaign meets: one row per question the plan records under items 4-12, run by the same model in a separate call without the generation context, returning `pass` / `fix` / `rerun` with findings by rubric id. Two fix loops per entity; a third failure reaches the player. The special rubrics (wishes, leak, distinctness, cliché, naming, load lightness) run across phases. `design_approval.py critique` records every return as ids and codes only.
+`data/design/rubrics.yaml` is the bar every campaign meets: one row per question the plan records under items 4-12, run by the same model in a separate call without the generation context, returning `pass` / `fix` / `rerun` with findings by rubric id (P1 of a birth whose rolls the script sealed has no `rerun`: its critics judge what the writer made of the rolls, and only the owner rerolls). Two fix loops per entity; a third failure reaches the player. The special rubrics (wishes, leak, distinctness, naming, load lightness) run across phases. `design_approval.py critique` records every return as ids and codes only.
 
 ## Names and language
 
