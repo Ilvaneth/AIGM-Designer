@@ -73,3 +73,37 @@ A hand is an organisation or a creature, never a whole people; a hand drawn from
 (The guild of thieves and the assassins are one row; 27 rows.)
 
 **Sufficiency:** every SRD creature type but oozes and celestials is a hand; the classic published campaigns' threats are reachable (dragons, giants, a vampire lord, demons, devils, elemental cults, mind flayers, hags, a criminal underworld, slavers).
+
+## 3. The contests' prizes and gates (`foundation.yaml#contest`; approved 2026-10-05)
+
+**A further leak found:** 8 contests could be drawn only with a given lifeline and 11 were weighted by one: texture chose the story. A contest's requirements and weights now come from the stage (the palette, the spine, the era) and the dials alone; the lifeline is rolled **last**, fitted to the story (texture hangs on the story).
+
+**The prize kinds** (sufficiency: four left without the lifeline was basic): the heart (a throne, a capital), **the key place** (a pass, a harbour, a bridge, a trade road; new as a prize), **the disputed land** (new: an end or the land between), the remnant, the thin place, something new (an artifact, a secret, a formula), **the seat** (new: a house's hall or inheritance).
+
+| Contest | New prize | Gate |
+|---|---|---|
+| `contest_one_harbour` | key place (the harbour) | coast |
+| `contest_one_pasture` | disputed land | highland, plain or steppe |
+| `contest_two_banks` | key place (the weir, the ford) | river |
+| `contest_settlers_newcomers` | disputed land | (role b loses "who bring the thing the land needs") |
+| `contest_old_new_craft` | **deleted** | |
+| `contest_capital_marches` | disputed land (the marches) | |
+| `contest_lords_peasants` | heart (the lord's seat) | |
+| `contest_mine_owners_miners` | key place (the mine) | mountain, highland or underground |
+| `contest_open_close_road` | key place (the road, the pass) | the spine |
+| `contest_share_keep_knowledge` | something new (the secret, the book) | magic medium or high (no craft lifeline) |
+| `contest_split_family` | **deleted** (two heirs covers it) | |
+| `contest_humans_giants` | disputed land | |
+| `contest_humans_dragon` | disputed land | |
+| `contest_humans_fey` | disputed land (the forest) | |
+| `contest_surface_deep` | key place (the tunnels) | |
+| `contest_land_sea_folk` | disputed land (the shore) | |
+| `contest_merchant_house_divides` | heart | |
+| `contest_war_fed_company` | disputed land | |
+| `contest_shapeshifter` | seat | |
+| `contest_fiend_pact` | seat | |
+| `contest_elemental_lord` | disputed land | |
+| `contest_coven` | disputed land (the villages) | |
+| `contest_pirates` | key place (the sea lanes) | |
+
+The eleven lifeline weights go. **Sufficiency:** 49 contests in 8 families; the classic D&D conflicts are covered (a war of succession, a border war, a revolt, a land dispute with a monstrous people, a cult, pirates, a fiend's pact).
