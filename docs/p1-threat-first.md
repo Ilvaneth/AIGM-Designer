@@ -1,6 +1,6 @@
 # P1 rebuilt around the threat — proposal
 
-*Written by the development (design and review) tab on 2026-10-05, after the first P1-only test birth (`_test-p1-1`, ended with `bitir` by the owner). A proposal for the owner's decision; nothing goes to the coding tab before it is approved and its rows are reviewed. Where it is approved it changes plan item 25 and `docs/p1-tags.md`; the errata entry follows the approval.*
+*Written by the development (design and review) tab on 2026-10-05, after the first P1-only test birth (`_test-p1-1`, ended with `bitir` by the owner). **The direction was approved by the owner the same day** (errata 24.2 #32); nothing goes to the coding tab before its rows are reviewed. It changes plan item 25 and `docs/p1-tags.md` where they differ.*
 
 ## Why
 
@@ -57,6 +57,15 @@ The rolls, in order:
 **The spine sentence.** The script composes one public sentence from the story pieces alone and the card prints it above the foundation: "*<the hand> <verb> <the target>; now <side a> and <side b> fight over <the prize>.*" If a slot would hold a texture piece or an empty value, the set is refused at the roll. The writer starts from it; the owner reads the story's skeleton before a word of prose.
 
 **Legibility as a rubric** (finding 3): a new P1 rubric, "Does the player pitch show a threat with a face and something the party can do in the first session?" The rubrics that reward distinctness stay; this one balances them.
+
+## Good and evil (proposed 2026-10-05, waiting for the owner's word)
+
+The owner asked whether "no people is evil by birth" leaves the writer to choose who is evil. Its first half is sound and stays unchanging: no people (a lineage or a culture) is evil as a whole by birth; individuals, groups, armies, cults and rulers may be as evil as any villain; fiends, the undead and aberrations are creatures and may be evil by nature. Its purpose is play: every group the party meets made a choice, so it can be parleyed with, allied or betrayed, and a site's attitude to intruders is its occupants' choice (`forbidden.yaml`'s `why`, its P6 hook). Its second half, "alignments are set when good and evil are placed", names no phase and no roll, so in practice the first writer to reach a people decides: the same class of fault as the eight findings. The chain gives it a place:
+
+- **the evil side is rolled, not written:** the villain, its visible hand and the agents of its plan are the antagonists (P1, then P4's front);
+- **how grey the other sides are** is the darkness dial's (as today, P4);
+- **the hand is an organisation or a creature, never a whole people;** a hand drawn from a people is a part of it (a war band, a sect, a mercenary clan), and another part of that people stands elsewhere (an ally, a victim, a neutral);
+- **individual alignments** are the writers' at P5, inside the existing rule (three or more NPCs of one species never share one alignment).
 
 ## What stays, what changes, what is new
 
