@@ -268,7 +268,16 @@ FAMILY = "naming.yaml#family"
 ADJECTIVE_TAGS = ("colour", "direction and age")
 NO_COMMON_TONGUE = "break_no_common_tongue"       # language 2 is the contest's other side's
 OWN_LANGUAGE = "isign_own_language"               # language 3 is the institution's
-LANGUAGE_LABELS = {"common": "the common tongue", "old": "the old tongue"}     # the others: the owner word until named
+# a language has no proper name (decision 31): its label says whose it is
+LANGUAGE_LABELS = {"people": "the people's tongue", "common": "the common tongue", "other_side": "the other side's tongue",
+                   "institution": "the institution's tongue", "old": "the old tongue"}
+
+
+def language_label(lid: str, lang: dict, people_name: str | None = None) -> str:
+    """A language's label; the people's is "the <name> tongue" once the people is named."""
+    if lid == "people" and people_name:
+        return f"the {people_name} tongue"
+    return str((lang or {}).get("label") or LANGUAGE_LABELS.get(lid, lid))
 SLOTS = ("people", "institution", "phenomenon")
 # a living language's compound stocks: the stock, its patterns, the count of scale.yaml its size follows
 STOCKS = (("places", ("pattern_place_settlement", "pattern_place_natural"), "settlements"),

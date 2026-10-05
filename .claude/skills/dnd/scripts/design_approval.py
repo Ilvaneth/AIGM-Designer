@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_manifest as dm  # noqa: E402
 import design_tables as dt  # noqa: E402
-from design_io import CONTAINER_PREFIXES, campaign_dir, design_dir, dm_only_dir, now_iso, read_json  # noqa: E402
+from design_io import CONTAINER_PREFIXES, campaign_dir, design_dir, dm_only_dir, now_iso, read_json, text_field  # noqa: E402
 
 # Rows of these types are the arc: DM-open, player-avoid. The card counts them and never prints their names or
 # one-liners (birth 2, R.6: the P7 card read as a plot synopsis to the owner, who is also the player).
@@ -142,6 +142,15 @@ def secret_terms(campaign: str) -> tuple[set, list]:
                     names.add(n)
     sentences = []
     dm_dir = dm_only_dir(campaign)
+    # build item 14b: the secret stock's names, and the secretly rolled rows' ids and own sentences (a row's label is
+    # ordinary words a public line may carry: the reasoning of build 12a)
+    for L in ((read_json(dm_dir / "name-pool-secret.json") or {}).get("languages") or {}).values():
+        names |= {e["name"] for v in L.values() for e in v if len(e.get("name", "")) >= 3}
+    for r in (read_json(dm_dir / "dice-log.json") or {}).get("rolls") or []:
+        row = dt.row(r["table"], r["row_id"]) if r.get("row_id") and ".yaml" in str(r.get("table")) else None
+        if row:
+            names.add(row["id"])
+            sentences += [row[k] for k in ("statement", "cause", "rule") if isinstance(row.get(k), str) and len(row[k]) >= 24]
     for path in dm_dir.rglob("*.md"):
         if "_snapshots" in path.relative_to(dm_dir).parts:
             continue        # dry-3: an approval snapshot copies design/ whole; its public half is not secret text
@@ -397,6 +406,8 @@ def phase_written_ids(campaign: str, phase: str) -> set:
 
 def build_card(campaign: str, phase: str) -> str:
     m = dm.load(campaign)
+    if phase == "P1" and scripted_p1(m):
+        return p1_card(campaign)
     ph = m["phases"][phase]
     proj = projection(campaign)
     canon = canonical(campaign)
@@ -551,6 +562,119 @@ def build_card(campaign: str, phase: str) -> str:
         lines.append("- To approve, type exactly `onay`; a correction is one sentence (three rounds at most). The next phase starts with `devam`.")
     lines.append(f"- Produced: {now_iso()}")
     return "\n".join(lines) + "\n"
+
+
+# ── P1's card (build item 14b; the layout the owner approved on 2026-10-04) ──────────────────────────────────
+
+P1_MOVES = (("approve", 'designer.py -c {c} phase P1 approve --onay'),
+            ("rerun", 'designer.py -c {c} phase P1 rerun --reason "<why>" [--reseed]'),
+            ("reroll a name (people | institution | phenomenon)", 'design_names.py -c {c} reroll --slot <slot> --onay'),
+            ("waive a promise", 'designer.py -c {c} promise waive <id> "<one sentence>" --onay'))
+
+
+def scripted_p1(manifest: dict) -> bool:
+    """A birth whose P1 the script rolled and sealed: it gets P1's own card. A legacy birth's card is built as before."""
+    return all(isinstance(manifest.get(k), (dict, list)) for k in ("foundation", "identity", "promises", "p1_seal"))
+
+
+def p1_card(campaign: str) -> str:
+    """English, built by script, no dice on it: no roll label, no row id, no candidate list. What the writer has not
+    written yet stands as an empty line."""
+    import design_promises as dpr
+    m = dm.load(campaign)
+    ph = m["phases"]["P1"]
+    f, ident = m["foundation"], m["identity"]
+    proj = projection(campaign)
+    attempt = int(ph.get("attempt") or 1)
+    mine = {eid: e for eid, e in proj.items() if e.get("created_phase") == "P1" and e.get("type") not in SPOILER_TYPES}
+    label = lambda ref, rid: (dt.row(ref, rid) or {}).get("label") or "—"
+    row = lambda lab, text: f"  {lab:<19} {text}"
+    empty = "(not written yet)"
+    L = [f"# P1 — THE FOUNDATION AND THE IDENTITY            campaign: {campaign}   attempt {attempt}",
+         f"<!-- attempt: {attempt} -->", f"<!-- ids: {','.join(sorted(mine))} -->",
+         "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(mine.items())) + " -->", ""]
+
+    by = {l["label"]: l["text"] for l in f.get("rendering") or []}
+    L += ["## THE FOUNDATION", row("The world's shape", f"{by.get('The world\'s shape', '—')}; lands: {by.get('The lands', '—')}"),
+          row("The past", by.get("The past", "—")), row("The value", by.get("The value", "—")), row("The conflict", by.get("The conflict", "—"))]
+    if by.get("The second conflict"):
+        L.append(row("", by["The second conflict"]))
+    brk = by.get("The break", "—").split("; ")
+    L.append(row("The break", brk[0]))
+    L += [row("", part) for part in brk[1:]]
+    band = f["escalation"]["level_band"]
+    L += [row("The escalation", f"{f['escalation']['steps']} steps (levels {band[0]}-{band[1]})"), ""]
+
+    sig = {e.get("slot"): e for e in proj.values() if e.get("type") == "signature"}
+    premise = next((e for e in proj.values() if e.get("type") == "premise"), {})
+    line = lambda slot: readable(text_field(sig[slot], "rule") or sig[slot].get("summary") or "", proj) if slot in sig else empty
+    name = lambda slot: sig[slot].get("name") if slot in sig else "(not named yet)"
+    questions = " · ".join(label("tensions.yaml", q["id"]) for q in ident["questions"])
+    L += ["## THE IDENTITY", row("The question", questions + (f" — {readable(text_field(premise, 'question'), proj)}" if text_field(premise, "question") else "")),
+          row("The people", f"{name('people')} — {label('signatures.yaml#people_lineage', ident['people']['lineage'])}; {line('people')}"),
+          row("The institution", f"{name('institution')} — {label('signatures.yaml#institution_form', ident['institution']['form'])}; {line('institution')}"),
+          row("The phenomenon", f"{name('phenomenon')} — {line('phenomenon')}"),
+          row("Trope breaks", " · ".join(f"{label('trope-breaks.yaml', b['id'])} (tied to {label('trope-breaks.yaml#tie', b['tie']).lower()})" for b in ident["trope_breaks"]))]
+    naming = read_json(design_dir(campaign) / "naming.json") or {}
+    import design_names as dnames
+    people_name = sig["people"].get("name") if "people" in sig else None
+    L += [row("Languages", " · ".join(dnames.language_label(lid, x, people_name) for lid, x in (naming.get("languages") or {}).items())), ""]
+
+    L += ["## THE PLAYER PITCH", f"  {readable(text_field(premise, 'pitch'), proj) if text_field(premise, 'pitch') else empty}", ""]
+    wishes = wish_ticks(ph, m["dials"].get("wishes") or {})
+    if wishes:
+        L += ["## WISHES"] + [f"  {w}" for w in wishes] + [""]
+
+    log = read_json(dm_only_dir(campaign) / "dice-log.json") or {}
+    arch = dt.row("secrets.yaml#archetype", ((log.get("identity") or {}).get("secret") or {}).get("archetype") or "") or {}
+    L += ["## THE SECRET (spoiler-safe)", f"  class: {arch.get('hides_in', 'unknown')}     the villain: rolled, hidden", ""]
+
+    import design_names as dn
+    pool = dn.load_pool(campaign) or {}
+    kinds = {}
+    for stocks in (pool.get("languages") or {}).values():
+        for key, entries in stocks.items():
+            a = kinds.setdefault(key, [0, 0])
+            a[0] += sum(1 for e in entries if not e.get("used_by"))
+            a[1] += len(entries)
+    for key, entries in (pool.get("calendar") or {}).items():
+        kinds[key] = [sum(1 for e in entries if not e.get("used_by")), len(entries)]
+    L += ["## NAMES", "  " + (" · ".join(f"{dn.STOCK_WORDS.get(k, k)} {u} / {d}" for k, (u, d) in kinds.items() if d) or "—") + "   (unused / drawn)", ""]
+
+    c = dpr.counts(m["promises"], dpr.load_secret(campaign), "P1")
+    d = c["due"]
+    L += ["## PROMISES", f"  due at P1: {d['total']} — kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}" + (f", open {d['open']}" if d["open"] else "")]
+    L += [f"    not kept: {p['name']} → {p['text']}   (`{p['id']}`)" for p in m["promises"] if p["status"] == "not_kept"]
+    L += ["  open: " + (" · ".join(f"{k} {v}" for k, v in c["open_by_due"].items()) or "—"),
+          f"  secret: {c['secret']['open']} open, {c['secret']['kept']} kept, {c['secret']['not_kept']} not kept", ""]
+
+    report = read_json(design_dir(campaign) / "_staging" / "P1" / "merge.report.json")
+    refused = len((report or {}).get("refused") or {})
+    door_line = "not run yet" if report is None else "passed" if not refused else f"{refused} unit(s) refused"
+    validator_line = "not run yet" if not isinstance((ph.get("validator") or {}).get("errors"), int) else f"{ph['validator']['errors']} errors"
+    chains, phase_verdict, _, wishes_verdict, _ = critique_chains(dict(ph, id="P1"))
+    crit = ph.get("critique") or {}
+    val = ph.get("validator") or {}
+    per_module, findings = validator_summary(campaign, "P1")
+    closed = gate(campaign, "P1", findings=findings)
+    tokens_out = int((ph.get("tokens") or {}).get("out") or 0)
+    L += ["## CHECKS", f"  door: {door_line} · critics: {crit.get('entity_loops_total') or 0} fix loop(s), "
+          f"phase {phase_verdict}, wishes {wishes_verdict} · validator: {validator_line}",
+          "  " + gate_card_line(closed, proj).lstrip("- "),
+          f"  cost: {f'{tokens_out:,}'.replace(',', '.') + ' tokens' if tokens_out else '—'}, {elapsed_minutes(ph)} min" + real_cost_text(ph), ""]
+
+    prev = previous_card(design_dir(campaign) / "_approval" / "P1.card.md")
+    if prev and prev["attempt"] != attempt:
+        L += [f"## CHANGES FROM THE PREVIOUS CARD (attempt {prev['attempt']} → {attempt})",
+              f"  added: {', '.join(sorted(set(mine) - prev['ids'])) or '—'}", f"  removed: {', '.join(sorted(prev['ids'] - set(mine))) or '—'}",
+              "  renamed: " + (", ".join(sorted(e for e in set(mine) & prev["ids"] if prev["names"].get(e, "") != (mine[e].get("name") or ""))) or "—"), ""]
+
+    L += ["## YOUR MOVES", "  " + " · ".join(what for what, _ in P1_MOVES)]
+    L += [f"    {what}: `{cmd.format(c=campaign)}`" for what, cmd in P1_MOVES]
+    if m["_meta"].get("auto_approve"):
+        L.append("  (a test birth: the card is approved automatically)")
+    L.append(f"  produced: {now_iso()}")
+    return "\n".join(L) + "\n"
 
 
 def write_card(campaign: str, phase: str, out: str | None) -> int:

@@ -158,7 +158,7 @@ def primer_text(campaign: str) -> tuple[str, dict]:
     title = premise.get("name") or campaign.replace("-", " ").title()
     lines = [f"# {title} — bir yerlinin bildikleri", "",
              "*Bu dosya oyuncuya tamamen açıktır: dünyayı bu dünyada büyümüş birinin bildiği kadar anlatır. Her bölüm bir ülke ya da halk içindir; bir yerli komşusunu daha az bilir.*", "",
-             "## Kısa tanıtım", "", premise.get("pitch_tr") or "(premise fazı henüz pitch yazmadı)", ""]
+             "## Kısa tanıtım", "", text_field(premise, "pitch") or "(premise fazı henüz pitch yazmadı)", ""]
     problems: list[str] = []
     tier = band_tier(manifest)
     polities = by_type(pub, "polity")

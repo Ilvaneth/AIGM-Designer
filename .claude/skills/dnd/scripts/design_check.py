@@ -296,7 +296,7 @@ def check_stamps(b: Bible, only: str | None) -> list[Finding]:
         if not isinstance(ent.get("stamped"), dict):
             out.append(Finding("stamps", "error", eid, "no_stamped", "stamped object missing"))
             continue
-        for k in ("secret_tr", "truth_tr"):
+        for k in ("secret_tr", "truth_tr", "secret"):
             if k in ent["stamped"]:
                 out.append(Finding("stamps", "error", eid, "secret_in_public_stamps",
                                    f"{k} is a public stamp; it belongs under dm_only.stamped_fields"))
@@ -372,7 +372,7 @@ def check_secrecy(b: Bible, only: str | None) -> list[Finding]:
     secret_lines = []
     for eid, ent in ents.items():
         dm = ent.get("dm_only") or {}
-        for k in ("secret_tr", "truth_tr", "happened_tr", "true_rule_tr", "true_rule"):
+        for k in ("secret_tr", "truth_tr", "happened_tr", "true_rule_tr", "true_rule", "secret", "villain_answer", "dm_pitch"):
             v = dm.get(k)
             if isinstance(v, str) and len(v) > 12 and v != "yok":
                 secret_lines.append((eid, k, v))

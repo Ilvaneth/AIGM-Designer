@@ -360,10 +360,9 @@ class OnDisk(unittest.TestCase):
         self.assertFalse(dm.legacy_birth(m))
         card = da.build_card(self.name, "P1")
         due = [p for p in public if p["due"] == "P1"]
-        self.assertIn(f"- **Promises due at this phase:** {len(due)} (kept 0, not kept 0, waived 0, open {len(due)})", card)
-        self.assertIn("- **Open promises by due phase:** P0 2 · P1 ", card)
-        self.assertIn("open work until each phase's turn, not errors", card)
-        self.assertIn(f"- **Secret promises:** {len(secret)} open, 0 kept, 0 not kept", card)
+        self.assertIn(f"  due at P1: {len(due)} — kept 0, not kept 0, waived 0, open {len(due)}", card)
+        self.assertIn("  open: P0 2 · P1 ", card)
+        self.assertIn(f"  secret: {len(secret)} open, 0 kept, 0 not kept", card)
         design = (self.dir / "design/design.json").read_text(encoding="utf-8")
         for n, p in enumerate(secret):
             for where, text in (("design.json", design), ("the card", card), ("the preroll's printout", self.preroll.stdout)):
@@ -701,7 +700,7 @@ class Inspection(unittest.TestCase):
             self.assertEqual((p["status"], p["verdict"]["by"], p["verdict"]["phase"]), ("kept", "script", "P1"), p["check"])
         self.assertTrue(all(p["status"] == "open" for p in public if p["due"] not in ("P0", "P1")), "a promise due later is open work")
         card = da.build_card(self.name, "P1")
-        self.assertRegex(card, r"Promises due at this phase:\*\* \d+ \(kept [1-9]\d*, not kept 0, waived 0, open [1-9]\d*\)")
+        self.assertRegex(card, r"due at P1: \d+ — kept [1-9]\d*, not kept 0, waived 0, open [1-9]\d*")
         self.assertNotIn("promise", self.codes(), "every script promise due by P1 is kept")
 
         # a due script promise not kept closes the gate; kept again, it does not
@@ -716,7 +715,7 @@ class Inspection(unittest.TestCase):
         self.assertIn("⛔ **Gate closed:**", da.build_card(self.name, "P1"))
         self.assertIn("a due promise a script checks is not kept (1)", da.build_card(self.name, "P1"))
         self.assertEqual(dp.run_rules(self.name, "P1")["not_kept"], 1)
-        self.assertIn(f"`{target['id']}` · ", da.build_card(self.name, "P1"), "a public promise not kept is listed, whoever judged it")
+        self.assertIn(f"    not kept: {target['name']} → {target['text']}", da.build_card(self.name, "P1"), "a public promise not kept is listed, whoever judged it")
         m = dm.load(self.name)
         m["identity"]["people"]["home"] = home
         dm.save(self.name, m, "test")
@@ -751,9 +750,9 @@ class Inspection(unittest.TestCase):
         self.assertNotIn("promise_unjudged", codes)
         self.assertNotIn("promise", codes, "a critic's not_kept does not close the gate (the owner's ruling 1)")
         card = da.build_card(self.name, "P1")
-        self.assertIn("- ⚠ **Promises judged not kept:** 1 — the owner decides", card)
-        self.assertIn(f"  - `{first['id']}` · {first['name']} (due P1): {first['text']}", card)
-        self.assertRegex(card, r"Secret promises:\*\* \d+ open, \d+ kept, 1 not kept")
+        self.assertRegex(card, r"due at P1: \d+ — kept \d+, not kept 1, waived 0")
+        self.assertIn(f"    not kept: {first['name']} → {first['text']}   (`{first['id']}`)", card)
+        self.assertRegex(card, r"  secret: \d+ open, \d+ kept, 1 not kept")
         design = (self.dir / "design/design.json").read_text(encoding="utf-8")
         report = designer_run("designer.py", "-c", self.name, "phase", "P1", "report").stdout
         self.assertIn(f"judged not kept 1 [{first['id']}]", report)
@@ -789,8 +788,8 @@ class Inspection(unittest.TestCase):
         self.assertEqual((log["scope"], log["promise"], log["reason"], log["phase"]), ("promise", mine["id"], "The pitch says it well enough for me.", "P1"))
         card = da.build_card(self.name, "P1")
         self.assertNotIn(mine["id"], card, "a waived promise leaves the card's list")
-        self.assertNotIn("Promises judged not kept", card)
-        self.assertRegex(card, r"Promises due at this phase:\*\* \d+ \(kept \d+, not kept 0, waived 1, open \d+\)")
+        self.assertNotIn("    not kept:", card)
+        self.assertRegex(card, r"due at P1: \d+ — kept \d+, not kept 0, waived 1")
         self.assertEqual(designer_run("designer.py", "-c", self.name, "promise", "waive", mine["id"], "Again.", check=False).returncode, 1)
         # a secret promise is waived by its id; nothing public gains its sentence or its source row
         designer_run("designer.py", "-c", self.name, "promise", "waive", hidden["id"], "Accepted as it stands.")
@@ -798,7 +797,7 @@ class Inspection(unittest.TestCase):
         self.assertIn(hidden["id"], design, "the revision log names it by id")
         self.assertNotIn(json.dumps(hidden["text"], ensure_ascii=False)[1:-1], design)
         self.assertEqual(next(p for p in dp.load_secret(self.name) if p["id"] == hidden["id"])["status"], "waived")
-        self.assertRegex(da.build_card(self.name, "P1"), r"Secret promises:\*\* \d+ open, \d+ kept, 0 not kept")
+        self.assertRegex(da.build_card(self.name, "P1"), r"  secret: \d+ open, \d+ kept, 0 not kept")
         # outside a test birth it asks for the owner's word, and no prompt or workflow calls it
         import argparse
         ns = argparse.Namespace(step="waive", id=mine["id"], sentence="x", onay=False, phase=None, status=None, dm_only=False)

@@ -170,6 +170,9 @@ def rubric_lines(phase: str, scope: str | None, order: int) -> str:
     if order == 2:
         rows = list(reversed(rows))
     out = []
+    craft = (dt.load("rubrics.yaml").get("tables") or {}).get("phase_rubric", {}).get("p1_craft_only")
+    if phase == "P1" and craft:
+        out.append(f"**Craft only.** {craft}")           # build item 14b: the critics never judge the rolls
     for r in rows:
         out.append(f"- **{r['id']}** ({r['scope']}, effort {r['effort']}): {r['question']}\n  - fails when: {r['fails_when']}")
     return "\n".join(out)

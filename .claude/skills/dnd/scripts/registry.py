@@ -183,7 +183,7 @@ def row_errors(eid: str, row: dict) -> list[str]:
             for k in dm.get("stamped_fields", []):
                 if k not in dm:
                     errs.append(f"{eid}: dm_only.stamped_fields names {k!r}, which dm_only lacks")
-    for secret_key in ("secret_tr", "truth_tr"):
+    for secret_key in ("secret_tr", "truth_tr", "secret"):
         if secret_key in (row.get("stamped") or {}):
             errs.append(f"{eid}: {secret_key} sits in the public stamps; move it under dm_only")
     return errs

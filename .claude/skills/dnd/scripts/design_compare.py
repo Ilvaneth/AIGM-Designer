@@ -88,7 +88,7 @@ def demographics(pub: dict) -> dict:
 
 def premise_lines(pub: dict) -> dict:
     p = next((e for e in pub.values() if e.get("type") == "premise"), {})
-    return {"name": p.get("name"), "question_tr": text_field(p, "question"), "pitch_tr": p.get("pitch_tr"), "summary": p.get("summary"),
+    return {"name": p.get("name"), "question_tr": text_field(p, "question"), "pitch_tr": text_field(p, "pitch"), "summary": p.get("summary"),
             "signatures": [e.get("name") for e in pub.values() if e.get("type") == "signature"],
             "breaks": [e.get("name") for e in pub.values() if e.get("type") == "break"],
             "gods": [e.get("name") for e in pub.values() if e.get("type") == "god"]}

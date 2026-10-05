@@ -56,7 +56,7 @@ class Prompt(unittest.TestCase):
         for needle in ("design/design.json#foundation", "design/design.json#identity", "`overrides`", "recorded merges",
                        "`design/naming.json`", "`candidates`", "**Names (rolled, never invented).**", "**Promises due at this phase.**",
                        "the archetype row's `cause` field", "the chooser as the person who chose it", "design/dm-only/dice-log.json",
-                       "`dm_only.pinned: {god, event}`", "`slot`", "`home` and `rolled`", "`appears`", "`row` and `tie`", "`secret_class_tr`"):
+                       "`dm_only.pinned: {god, event}`", "`slot`", "`home` and `rolled`", "`appears`", "`row` and `tie`", "`secret_class`"):
             self.assertIn(needle, t, needle)
         m = json.loads((self.dir / "design/design.json").read_text(encoding="utf-8"))
         for p in m["promises"]:
@@ -96,7 +96,7 @@ class Prompt(unittest.TestCase):
         for p in dp.load_secret(self.name):
             self.assertNotIn(p["text"], self.text)
         for word in ("secret_", "chooser_", "twist_", "trail_", "shape_", "origin_", "bond_"):
-            self.assertFalse(re.search(rf"\b{word}[a-z]+_[a-z_]+\b", NEW.replace("secret_archetype", "").replace("secret_twist", "").replace("secret_class_tr", "").replace("secret_tr", "")),
+            self.assertFalse(re.search(rf"\b{word}[a-z]+_[a-z_]+\b", NEW.replace("secret_archetype", "").replace("secret_twist", "").replace("secret_class", "").replace("secret_tr", "")),
                              f"the prompt file names a secret row ({word})")
 
     def test_the_template_follows_the_sections(self):

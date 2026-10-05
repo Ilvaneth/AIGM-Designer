@@ -50,7 +50,7 @@ SCRIPT_SOURCES = ("hook", "override", "foundation", "concretise", "clue_stage")
 # registry fields that hold no prose: ids, closed values, paths
 NO_PROSE_KEYS = {"id", "type", "file", "secrecy", "origin", "created_phase", "lang", "row", "tie", "home", "slot", "name", "aliases",
                  "status", "owner_phase", "reserved_by", "refs", "stamped", "rolled", "tensions", "signatures", "trope_breaks",
-                 "kind", "phase", "dm_only", "secret_class_tr", "naming_languages"}
+                 "kind", "phase", "dm_only", "secret_class", "secret_class_tr", "naming_languages"}
 WORD = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z'’]*(?![0-9_])")
 OPENERS = ".!?:;|—–#>"
 
@@ -370,8 +370,8 @@ class Door:
                 errs.append(f"{eid}: the rolled trope break {b['id']} needs exactly one break entity ({have.count(b['id'])} found)")
         # 11: the spoiler-safe abstract is the archetype's class and nothing else
         arch = dt.row("secrets.yaml#archetype", (self.secret_identity.get("secret") or {}).get("archetype") or "")
-        if arch and row.get("secret_class_tr") != arch.get("hides_in"):
-            errs.append(f"{eid}: `secret_class_tr` is the secret archetype's class as its row gives it (`hides_in`) and nothing else")
+        if arch and row.get("secret_class") != arch.get("hides_in"):
+            errs.append(f"{eid}: `secret_class` is the secret archetype's class as its row gives it (`hides_in`) and nothing else")
         return errs
 
     # 9 (prose), 11, 12

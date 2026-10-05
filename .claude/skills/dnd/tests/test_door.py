@@ -149,9 +149,9 @@ class NewBirth(unittest.TestCase):
         arch = dt.row("secrets.yaml#archetype", json.loads((self.dir / "design/dm-only/dice-log.json").read_text(encoding="utf-8"))["identity"]["secret"]["archetype"])
         pid = f"premise_{self.slug}"
         out[pid] = row(pid, "premise", "The premise", created_phase="P1", file="design/premise.md", summary="the question in one line.",
-                       tensions=[q["id"] for q in ident["questions"]], secret_class_tr=arch["hides_in"],
+                       tensions=[q["id"] for q in ident["questions"]], secret_class=arch["hides_in"],
                        signatures=[e for e in out if e.startswith("signature_")], trope_breaks=[e for e in out if e.startswith("break_")],
-                       question_tr="what is owed to those who stayed?", dm_only={"clues": []})
+                       question="what is owed to those who stayed?", dm_only={"clues": []})
         return out
 
     def stage(self, units: dict, public: str | None = None, mirror: str | None = None) -> subprocess.CompletedProcess:
@@ -218,10 +218,10 @@ class NewBirth(unittest.TestCase):
         pid = f"premise_{self.slug}"
         bad = copy.deepcopy(units)
         bad[pid]["tensions"] = ["tension_other"]
-        bad[pid]["secret_class_tr"] = "a long sentence that gives the secret away"
+        bad[pid]["secret_class"] = "a long sentence that gives the secret away"
         err = self.refusal(bad)
         self.assertIn("`tensions` must be the rolled question id(s)", err)
-        self.assertIn("`secret_class_tr` is the secret archetype's class", err)
+        self.assertIn("`secret_class` is the secret archetype's class", err)
         self.stage(units)
         self.assertEqual(set(self.merged()), set(units), "the corrected set passes")
 

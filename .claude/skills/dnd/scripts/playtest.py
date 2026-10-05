@@ -188,7 +188,7 @@ def judge(campaign: str, kind: str, against: str | None, record: str | None) -> 
         lines = []
         for side in ("a", "b"):
             p = r["premises"][side]
-            lines.append(f"[{side}] {p.get('name')}\n- question: {text_field(p, 'question')}\n- pitch: {p.get('pitch_tr') or p.get('summary')}\n"
+            lines.append(f"[{side}] {p.get('name')}\n- question: {text_field(p, 'question')}\n- pitch: {text_field(p, 'pitch') or p.get('summary')}\n"
                          f"- signatures: {', '.join(filter(None, p.get('signatures') or []))}\n- breaks: {', '.join(filter(None, p.get('breaks') or []))}\n"
                          f"- gods: {', '.join(filter(None, p.get('gods') or []))}")
         ctx.update({"against": against, "premises": "\n\n".join(lines), "script_verdicts": json.dumps(r["verdicts"], ensure_ascii=False)})
