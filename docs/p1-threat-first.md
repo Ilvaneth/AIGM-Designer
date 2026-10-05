@@ -83,6 +83,20 @@ The owner asked whether "no people is evil by birth" leaves the writer to choose
 
 Checked and left to the writer as craft: the choice of a signature's name among its four candidates (the owner rerolls), the explanation of a trope break through its tie, the pitches and the "only here" sentences, the contest roles' labels (P4 builds them from its own rolls), the twist's thread (chosen with the player at P9).
 
+## The D&D campaign-building check (owner, 2026-10-05: "search again with how a D&D campaign is built")
+
+The system read against the craft every DM learns: the DMG's campaign and villain chapters (a villain has an objective, methods and a weakness; start small; the tiers of play), the three-clue rule of mystery design, fronts with portents, a starting place the threat touches first, the villain's creatures as the campaign's monsters. Already met: the tiers (the escalation's tiers), the three pillars (the content mix), factions the party can join (P4), the faces of each tier (P4's lieutenants), the player pitch and the world's truths (P8, the trope breaks and signatures), the situation behind the plot (the threat chain). Four findings for P1, one for a later floor:
+
+| # | The craft says | The system today | The fix |
+|---|---|---|---|
+| D1 | a villain has a weakness the party can find, and the campaign ends by using it | the villain has shape, origin, tie and pole; no weakness (NPCs get one from their axes at P5, the BBEG none); the trail leads to *who*, never to *how to stop them* | a new secret roll, the weakness, bound to the chain (a hidden object, a person, a vow, a place, a time, a flaw of the plan, a rival who knows); the third clue stage reveals it |
+| D2 | every conclusion the party must reach has at least three clues, because players miss clues | one clue per stage (`secrets.yaml`: "three clues placed … Acts 1, 2 and 3"); one missed clue stalls the campaign | each stage's conclusion has three clues in different places and forms: one where the chain puts it (W2), two placed by P5 and P6; the ledger promises them by stage; the word "act" leaves the hooks |
+| D3 | start small: a local place and a local threat at levels 1-4; the realm comes later | the start is the heart (the capital) unless the move destroyed it; nothing makes the threat's first step touch the start | the start is a small settlement where the plan's first step lands; the heart is a tier-2 destination; the first session opens on that step, which is the heroes' reason to act |
+| D4 | the villain's creatures are the campaign's monsters (giants for a giant lord, the undead for a lich) | occupants come from monster ecology by tier and biome alone; nothing ties the encounters to the threat | the threat sets the campaign's creature families (the hand's public, the villain's own secret); they weigh P6's occupants and the travel encounters, the biome fills the rest |
+| D5 | prepare situations, not plots | P7 builds acts and beats (bound to the front's portents) | at P7's turn: the arc becomes the plan's portents and the party's choices; no fixed beat the party must hit |
+
+D1-D4 join part 18c (the rolls at P1; D4's weights at P6's turn); D5 waits for P7.
+
 ## Held for after the build
 
 - **The critics** (owner, 2026-10-05: they do not criticise rightly): reviewed as a whole once the system is built. The test birth's evidence for that review: the phase critic's `fix` reached no writer (`phase_fixes: []`); a critic passed "every floor noted" on a fragment the door then refused; seven findings came back with `reason_code: null`; free reason codes reach the owner's report and one read as secret content; the critics passed a strange story on every rubric (finding 3).
