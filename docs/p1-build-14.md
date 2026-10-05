@@ -145,3 +145,9 @@ YOUR MOVES
 ## The summary (each part)
 
 Changed files; new and changed tests; the suite's count and exit code; the rendered P1 prompt's length in words before and after; anything of the old prompt you kept and why; anything unexpected.
+
+## Added after the audit of 14a (2026-10-05), for Part 14b
+
+- **The premise row's last `_tr` names go:** `pitch_tr` → `pitch`, `secret_tr` → `secret`, `villain_answer_tr` → `villain_answer`, `dm_pitch_tr` → `dm_pitch`, `secret_class_tr` → `secret_class`; `world_default_tr` too where it is still written. Through `design_io.text_field`, so that a legacy row's old names still load; the writer's prompt, the template's front matter, the door (`secret_class`), the leak scan, the renderers and `docs/schemas/entities.md` follow. Other entity types keep their names until their floors.
+- **The card's secret line** no longer counts clues per act (the new `clues[]` has no `act`): the approved card shows the archetype's class and "the villain: rolled, hidden", nothing more.
+
