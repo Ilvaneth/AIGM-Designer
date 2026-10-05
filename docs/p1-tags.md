@@ -818,3 +818,20 @@ Measured by the coding tab over 2,400 seeds: 107 to 135 promises per birth by sc
 
 **Item 25's P1 build is complete with this audit.** Next: the test birth that runs P1 alone, `docs/p1-test-birth-1.md`, in a new Opus tab on the owner's word (scale standard, the owner's choice of 2026-10-05).
 
+## 8. The test birth that runs P1 alone (`_test-p1-1`, 2026-10-05)
+
+**At its first review stop** (attempt 1, gate open, door passed on the third run, 8 of 8 promises due at P1 kept, validator 0, 21 minutes): the development tab answered `düzelt` with a sentence that names no secret: rewrite only the two public passages the phase critic flagged under `rubric_leak` (`signature_wright_song`, `break_ruins_forbidden`), keep every rolled fact. The phase critic gave `fix` on both passes and no phase fix reached the writer (`phase_fixes: []`).
+
+**The owner's rulings at that stop:**
+- *A visible bodily trait does not contradict its lineage's body.* `trait_horns_with_age` is barred with `lineage_human`, `lineage_dwarf`, `lineage_elf`, `lineage_half_elf`, `lineage_halfling`, `lineage_gnome`, `lineage_half_orc`, `lineage_merfolk`, `lineage_centaur`; it stays open to the tiefling, dragonborn, giant-kin, fey, goblinoid, lizardfolk and mixed peoples. (The birth rolled horned halflings.)
+- `trait_old_at_forty` stays open to every lineage: on a long-lived people (elves above all) it reads as what the break did to them, a hook worth meeting.
+- In test births the owner may see the secret layer for now, to check the attempts; the secret and villain table rows stay counts only.
+
+**Held for after the birth** (the code does not change under a waiting birth; each is specified once the birth's report is in):
+1. The first run's writer read the dm-only dice log with Bash and the auto-mode classifier refused it ("PII Data Handling"); the second run succeeded. The prompts tell the agents to read dm-only with the Read tool. The refused run's cost (about 95,000 tokens) reached no ledger, since a failed run is not merged.
+2. The phase critic's `fix` did not reach the writer at P1: find why `phase_fixes` stayed empty and close it (the finding that matters most).
+3. The writer's first `appears` was refused for its shape: check that the prompt shows the `{phase, text}` shape once.
+4. The card's "The value" line lacks "who lives on it".
+5. The protocol said the development tab reads dm-only at a review stop; the guard covers every tab (`session_id` empty) and the classifier refused disarming it. The protocol changes: the birth tab disarms at the review stop and arms again before it continues.
+6. The horns rule above.
+
