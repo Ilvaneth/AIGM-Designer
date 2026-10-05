@@ -100,3 +100,12 @@ Where a rolled row carries a lexical `never` pattern, the door applies it to the
 ## The summary (each part)
 
 Changed files; new and changed tests; the suite's count and exit code; for 13a the list of rows that gained English text (the secret tables' list by path only) and the Turkish left for the later floors; for 13b the capitalised-common list and what tripped it; anything unexpected.
+
+## Corrections from the audit of 13b (2026-10-05; before its commit)
+
+1. **The writer may repeat what its rolled rows say.** Two approved rows name planes in their own statements ("from the Hells", "a gate to the Abyss"); the prose scan would refuse the writer for repeating them. `Hells`, `Nine Hells` and `Abyss` join `capitalised_common`. And a test, so that a later row cannot set the same trap: every capitalised word inside a sentence of a public P0 or P1 row's own text is on the closed list (`PC`, which stands only in the rows' table notes, is the one exemption, named in the test).
+
+Accepted as the coding tab reported them: the registry fields `slot`, `home`, `rolled`, `appears` on a signature and `tie` on a break; the home ids (the lifeline's row or the new-people scar; `<contest>.<role>`; the ruin source's row or `break`); a secret row's id and sentences are scanned, its label is not (the reasoning of build 12a); form, region and building words are matched inside a pooled name and are not on the list; the stocks each entity kind may draw from; the lexical "never" pattern warns and does not refuse, and the Turkish patterns are gone; in a heading only the first word is free (the premise template's headings pass).
+
+**Limits to remember (no change now).** A word that opens a sentence, a heading, a list item or a table cell is not read, so an invented name written there passes; the critics' rubric "invents no proper noun" (build 14) is the second net. Titles before a name (Lord, Lady, Captain, Reeve) are not on the list and are refused in the middle of a sentence; P1's premise needs none, and P5 decides at its turn (a closed list of titles allowed directly before a pooled person's name). Faction, item and plane names are not checked yet: they have no pool until their floors.
+
