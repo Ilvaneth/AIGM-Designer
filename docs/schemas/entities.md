@@ -70,7 +70,7 @@ Play-mutable state is **not** here: `status`, `seen_in_play`, an NPC's current `
 | `thread` | `pc`, `question_tr`, `antagonist` (npc), `layers` (3 × `{act, secrecy, placed_in}`), `sites[]`, `crossings[]`, `mission` (goals.json id); `dm_only.truth_tr` |
 | `socket` | `kind`, `node`, `npc`, `question_tr` (the primer's spoiler-free form), `bound_to` (pc id or null) |
 | `pc` | `player`, `sheet` (file), `origin_settlement` (settlement id), `class`, `level`, `thread` |
-| `premise` | **`question_tr`**, `tensions[]`, `world_default_tr`, **`signatures[]`**, **`trope_breaks[]`**, `pitch_tr`; `dm_only`: `secret_archetype`, `secret_twist`, `secret_tr`, `villain_answer_tr`, `clues[]` (`{n, act, layer, placed_in, how_tr}`), `dm_pitch_tr` |
+| `premise` | **`question_tr`**, `tensions[]`, `world_default_tr`, **`signatures[]`**, **`trope_breaks[]`**, `pitch_tr`; `dm_only`: `secret_archetype`, `secret_twist`, `secret_tr`, `villain_answer_tr`, `clues[]` (`{n, act, layer, placed_in, how_tr}`), `pinned` (`{god, event}`: the names of the god and the event the secret is pinned to, which P2 must register and date; the promise ledger reads it), `dm_pitch_tr` |
 | `signature` | **`kind`** (magic / creature / institution), `rule_tr` (as a native knows it), `refs[]` counted by the `signatures` module (≥3); `dm_only.true_rule_tr` |
 | `break` | **`row`** (`trope-breaks.yaml` id), `refs[]` counted (≥5) |
 | `arc` | `acts`, **`beats[]`**, `chapters[]`, `doom_day`, **`endings`** (`{win_tr, loss_tr, pyrrhic_tr}`); `arc new` creates `arc_2` and archives `arc_1` |

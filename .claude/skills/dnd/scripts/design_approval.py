@@ -245,9 +245,6 @@ def map_lines(campaign: str) -> list[str]:
     return lines
 
 
-# errors a later phase resolves by design: not the approving phase's own until then (the gate over the archived births:
-# every premise without pre-placed clues would have stopped P1)
-EXPECTED_UNTIL = {"no_map": "P3", "clue_unplaced": "P6"}
 GATE_LABELS = {"render": "the player files could not be rendered", "incomplete": "roster incomplete", "band": "outside the band", "critic_missing": "a critic did not run",
                "validator": "validator error", "seed": "seed error", "orphan_stub": "orphan stub"}
 
@@ -282,9 +279,9 @@ def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
                         "detail": ", ".join(missing + ([f"{len(silent)} roster item(s) never critiqued"] if silent else []))})
     if findings is None:
         _, findings = validator_summary(campaign, phase)
-    here = dm.PHASES.index(phase)
+    # an error a later phase resolves by design never reaches here: the per-phase validator names each module's and each
+    # such code's first phase (design_check.MODULE_FROM, CODE_FROM; errata 24.2 #23)
     owned = sorted({str(f.get("entity")) for f in findings if f.get("severity") == "error"
-                    and not (f.get("code") in EXPECTED_UNTIL and here < dm.PHASES.index(EXPECTED_UNTIL[f["code"]]))
                     and (f.get("entity") in roster or (canon.get(f.get("entity")) or {}).get("created_phase") == phase)})
     if owned:
         out.append({"code": "validator", "ids": owned, "detail": f"validator errors on {len(owned)} entit(ies) of this phase"})
@@ -448,6 +445,8 @@ def build_card(campaign: str, phase: str) -> str:
         lines.append("- **Wishes:** " + " · ".join(wl))
     if phase == "P1":
         lines += secret_abstract(campaign, ph)
+    import design_promises as dpr
+    lines += dpr.card_lines(campaign, phase)        # build item 12a: the ledger's counts; a legacy birth has none
     if ph.get("directions"):
         lines.append("- **Directions (from earlier rounds):** " + " · ".join(ph["directions"]))
     lines.append("")

@@ -11,7 +11,8 @@ CLI:
   design_check.py -c CAMP --modules refs,stamps   some modules
   design_check.py -c CAMP --fast                  refs + stamps + secrecy; reports, never fails (save-time)
   design_check.py -c CAMP --only site_sunken_pier   one entity (after `detail`)
-  design_check.py -c CAMP --phase P3              accept `status: pending` rows owned by later phases
+  design_check.py -c CAMP --phase P3              the per-phase run: a module or a finding code speaks from its own
+                                                  first phase on; `status: pending` rows owned by later phases are accepted
   design_check.py -c CAMP --fixture               relax scale bands (also read from _meta.fixture)
   design_check.py -c CAMP --json                  findings as JSON
   design_check.py -c CAMP --redact                accepted for the conductor; output is redacted in every mode
@@ -40,6 +41,17 @@ from design_io import (ENTITY_TYPES, OVERLAY_FIELDS, OVERLAY_WRITERS, SCRATCH_DI
 from paths import _root as data_root  # noqa: E402
 
 CORE_MODULES = ("refs", "stamps", "secrecy", "overlay", "map", "sites")
+PHASES = tuple(f"P{i}" for i in range(10))
+# errata 24.2 #23 (build item 12a): every module names the first phase it speaks at, and so does every finding code a
+# later phase resolves by design (the map is P3's, the clues' places are P6's). A per-phase run before that phase
+# leaves the module out and drops the code; the gate and the card read what is left. `EXPECTED_UNTIL` is gone.
+MODULE_FROM = {"refs": "P1", "stamps": "P1", "secrecy": "P1", "overlay": "P1", "map": "P3", "sites": "P6"}
+CODE_FROM = {"no_map": "P3", "clue_unplaced": "P6"}
+
+
+def speaks(phase: str | None, first: str | None) -> bool:
+    """Does a module or a code that starts at `first` speak in a run for `phase`? (always in a full run)"""
+    return phase not in PHASES or first not in PHASES or PHASES.index(phase) >= PHASES.index(first)
 FAST_MODULES = ("refs", "stamps", "secrecy")
 
 TELEGRAPH_DISTANCES = ("far", "near", "threshold")
@@ -84,6 +96,7 @@ class Bible:
     map: dict | None
     phase: str | None = None
     fixture: bool = False
+    ledger: bool = False                          # the birth keeps a promise ledger (design.json#promises)
     prose: dict = field(default_factory=dict)     # Path -> text, every design/**/*.md except _staging
     fm: dict = field(default_factory=dict)        # Path -> front matter
 
@@ -99,7 +112,14 @@ class Bible:
         return {n.get("id") for n in ((self.map or {}).get("nodes") or []) if str(n.get("id", "")).startswith(("landmark_", "waypoint_"))}
 
     def is_pending(self, ent: dict) -> bool:
-        return ent.get("status") == "pending" or (ent.get("file") is None and self.phase is not None)
+        """A reserved row a later phase fills. In a birth with a promise ledger the per-phase run accepts a
+        `status: pending` row only when its owner phase is later than the phase checked (errata 24.2 #23): a stub
+        this phase or an earlier one owns is due, and is read like any other row. A legacy birth is left as built."""
+        if ent.get("status") == "pending":
+            owner = ent.get("owner_phase")
+            return not (self.ledger and self.phase in PHASES and owner in PHASES
+                        and PHASES.index(owner) <= PHASES.index(self.phase))
+        return ent.get("file") is None and self.phase is not None
 
     def status_of(self, eid: str) -> str | None:
         entry = (self.overlay or {}).get("entries", {}).get(eid, {})
@@ -118,6 +138,7 @@ def load_bible(campaign: str, phase: str | None, fixture: bool) -> Bible:
         map=read_json(design_dir(campaign) / "map.json"),
         phase=phase,
         fixture=fixture or bool(canonical.get("_meta", {}).get("fixture")),
+        ledger=isinstance((read_json(design_dir(campaign) / "design.json") or {}).get("promises"), list),
     )
     for p in sorted(design_dir(campaign).rglob("*.md")):
         if any(s in p.parts for s in SCRATCH_DIRS):
@@ -632,7 +653,8 @@ def run(campaign: str, modules: tuple, only: str | None = None, phase: str | Non
     b = load_bible(campaign, phase, fixture)
     findings: list[Finding] = []
     for m in modules:
-        findings.extend(MODULES[m](b, only))
+        if speaks(phase, MODULE_FROM.get(m)):
+            findings.extend(f for f in MODULES[m](b, only) if speaks(phase, CODE_FROM.get(f.code)))
     return findings
 
 

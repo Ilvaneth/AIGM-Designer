@@ -640,6 +640,10 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
                                                 for lid, L in naming["languages"].items()))
         print("designer: candidates — " + "; ".join(f"{slot}: {', '.join(c['name'] for c in s['names'])}"
                                                      for slot, s in naming["candidates"].items()))
+        # build item 12a: the promise ledger, built from the rolls after the naming rolls (errata 24.2 #23)
+        import design_promises as dpr
+        n_open, n_hidden = dpr.build_for(campaign)
+        print(f"designer: promises — {n_open} public, {n_hidden} secret (counts only)")
     elif phase not in ("P0", "P1"):
         # root-cause analysis 1, RC-13: person and god names are rolled, never invented
         if dn.ensure_pool(campaign, phase, attempt) is not None:
@@ -1027,6 +1031,10 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
     # root-cause analysis 1, RC-08: design_seed reads merged/ only, and skeleton.json moved there after the seed ran,
     # so a skeleton's graph was seeded one merge late or never; absorb first, then seed, and keep the result
     absorbed = absorb_skeleton(campaign, phase)
+    import design_promises as dpr
+    promised = dpr.sync(campaign, phase)          # the stubs and placements this merge reserved join the ledger
+    if promised:
+        print(f"designer: promises — {promised} added by this merge (stubs and placements)")
     seed = run_script("design_seed.py", campaign, "--phase", phase)
     print(seed.stdout.strip())
     if seed.returncode != 0:
@@ -1485,6 +1493,8 @@ def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool, direction:
     for eid in ph.get("roster") or []:
         data["entities"].pop(eid, None)
     ph["roster"] = []
+    import design_promises as dpr
+    dpr.reopen(campaign, phase, manifest=data)    # what this phase judged is open again; P1's preroll rebuilds the ledger
     dm.save(campaign, data, f"designer.py phase {phase} rerun")
     if phase != dm.PHASES[-1]:
         dm.stale(campaign, argparse.Namespace(from_phase=phase, reason=f"{phase} rerun: {reason}"))
