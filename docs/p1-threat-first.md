@@ -95,7 +95,7 @@ The system read against the craft every DM learns: the DMG's campaign and villai
 | D4 | the villain's creatures are the campaign's monsters (giants for a giant lord, the undead for a lich) | occupants come from monster ecology by tier and biome alone; nothing ties the encounters to the threat | the threat sets the campaign's creature families (the hand's public, the villain's own secret); they weigh P6's occupants and the travel encounters, the biome fills the rest |
 | D5 | prepare situations, not plots | P7 builds acts and beats (bound to the front's portents) | at P7's turn: the arc becomes the plan's portents and the party's choices; no fixed beat the party must hit |
 
-D1-D4 join part 18c (the rolls at P1; D4's weights at P6's turn); D5 waits for P7.
+**Approved by the owner, 2026-10-05.** D1-D4 join part 18c (the rolls at P1; D4's weights at P6's turn); D5 waits for P7. The owner's standing word with it: *never forget that what we build is a D&D campaign*; every row and rule of this redesign passes that test.
 
 ## Held for after the build
 
@@ -114,7 +114,7 @@ D1-D4 join part 18c (the rolls at P1; D4's weights at P6's turn); D5 waits for P
 ## Who decides what
 
 - **With the owner, row by row** (public): the 21 verbs (keep, rewrite, move to scars), the visible hand list (new), the 23 contest prizes, which trope breaks are world states, the palette counts by spine, the legibility rubric's wording.
-- **By the development tab, counts only to the owner** (secret, as items 9 and 16c): the goal rows, the six ties re-read, the chooser rule, the archetypes' `cause` wording; row-level notes in a `*-SPOILER.md` file.
+- **Also with the owner** (owner, 2026-10-05: until he is sure of the system nothing is hidden from him): the secret rows too: the villain's goal and weakness, the six ties re-read, the chooser rule, the archetypes' `cause` wording and the clue shapes.
 
 ## Build order (after approval and the row reviews)
 
