@@ -99,7 +99,7 @@ The system read against the craft every DM learns: the DMG's campaign and villai
 
 ## The plan reviewed after the row sessions (2026-10-05)
 
-Read end to end after every table was decided. The direction holds; ten gaps are closed in the specification of the parts:
+Read end to end after every table was decided. The direction holds; ten gaps are closed in the specification of the parts (**the owner approved every fix and the timeline rule G2, 2026-10-05**; G1's rows in `docs/p1-build-18-rows.md` section 8):
 
 | # | Gap | How it is closed |
 |---|---|---|
