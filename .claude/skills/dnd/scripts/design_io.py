@@ -68,6 +68,12 @@ def is_container(frag: dict) -> bool:
     return False
 
 
+def text_field(row: dict, name: str):
+    """A registry text field by its English name (build item 14a: `question`, `rule`, `true_rule`); a legacy row
+    carries it under the old name (`question_tr`, `rule_tr`, `true_rule_tr`) and still loads."""
+    return (row or {}).get(name) or (row or {}).get(f"{name}_tr")
+
+
 def is_stub(row) -> bool:
     """A reserved registry row a later phase fills: its stamps are not frozen yet."""
     return isinstance(row, dict) and row.get("status") == "pending"

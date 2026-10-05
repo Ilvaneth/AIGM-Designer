@@ -249,8 +249,10 @@ def name_pool_text(campaign: str, entity_id: str | None) -> str:
 
 def render(campaign: str, name: str, entity_id: str | None = None, attempt: int | None = None,
            critic_order: int = 1, question: str | None = None, phase_override: str | None = None, loop: int = 1) -> str:
-    fm, body = load(name)
     manifest = dm.load(campaign)
+    if name == "P1.premise" and not manifest.get("foundation"):
+        name = "P1.premise.legacy"       # a birth whose P1 predates the foundation keeps the prompt it was written by
+    fm, body = load(name)
     phase = str(fm.get("phase") or "")
     projection_early = (read_json(design_dir(campaign) / "entities.json") or {}).get("entities", {})
     etype_early = (projection_early.get(entity_id or "", {}).get("type") or (entity_id or "").split("_", 1)[0])

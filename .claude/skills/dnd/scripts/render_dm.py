@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_manifest as dm  # noqa: E402
 import design_tables as dt  # noqa: E402
-from design_io import campaign_dir, design_dir, load_overlay, now_iso, read_json  # noqa: E402
+from design_io import campaign_dir, design_dir, load_overlay, now_iso, read_json, text_field  # noqa: E402
 
 BIRTH_DEFAULTS = {"alive": "alive", "status": "skeleton", "seen_in_play": False}
 INDEX_ORDER = ("polity", "region", "settlement", "district", "place", "faction", "npc", "site", "item", "creature",
@@ -112,8 +112,8 @@ def world_text(campaign: str) -> str:
          f"- **Tone:** {d.get('tone', '—')} · **Magic level:** {d.get('magic', '—')} · **Setting type:** {d.get('era', '—')} · **Danger level:** {d.get('danger', '—')} · **Scale:** {d.get('scale', '—')}"]
     if premise.get("summary"):
         L.append(f"- **Premise:** {premise['summary']}")
-    if premise.get("question_tr"):
-        L.append(f"- **The question:** {premise['question_tr']}")
+    if text_field(premise, "question"):
+        L.append(f"- **The question:** {text_field(premise, 'question')}")
     L += ["", "## World at a glance"]
     for pid, p in by_type(pub, "polity"):
         ruler = marked(pub, overlay, pid, "ruler", p.get("ruler_at_birth"))
@@ -135,7 +135,7 @@ def world_text(campaign: str) -> str:
         L.append("- **Gods:** " + ", ".join(f"{g['name']} ({', '.join(g.get('domains') or [])})" for _, g in gods) + " — `design/cosmology.md`")
     sigs = by_type(pub, "signature")
     if sigs:
-        L.append("- **Signatures:** " + " · ".join(f"{s['name']}" + (f" ({short(s.get('rule_tr'), 60)})" if s.get("rule_tr") else "") for _, s in sigs))
+        L.append("- **Signatures:** " + " · ".join(f"{s['name']}" + (f" ({short(text_field(s, 'rule'), 60)})" if text_field(s, "rule") else "") for _, s in sigs))
     breaks = by_type(pub, "break")
     if breaks:
         L.append("- **Trope breaks:** " + " · ".join(b["name"] for _, b in breaks))

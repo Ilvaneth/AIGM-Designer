@@ -51,7 +51,7 @@ designer.py -c CAMP phase PN approve --onay       records the approval, commits 
 
 | Phase | Writes | Shape |
 |---|---|---|
-| P1 premise | `design/premise.md` + `dm-only/premise-secret.md`, `naming.json`, the `premise_` / `signature_` / `break_` rows | single writer, two critics on the secret |
+| P1 premise | by script at the preroll: `design.json#foundation`, `#identity`, `#promises`, `design/naming.json` and the name pools; by the writer, on those rolls: `design/premise.md` + `dm-only/premise-secret.md`, the `premise_` / `signature_` / `break_` rows | script, then a single writer through the door; two critics on the secret |
 | P2 cosmos | `design/cosmology.md` (+ mirror): gods, planes, magic, history, calendar; `calendar.py init` seeded | single writer |
 | P3 lands | polities, regions with travel tables, settlements with anchors, villages in fives, `map.json` | skeleton → fan-out |
 | P4 powers | factions (four-phase dossiers), the stance matrix, the antagonist hierarchy on a hard calendar, `factions.json` and `goals.json` seeded, the consequence calculus | skeleton → fan-out |

@@ -3,47 +3,55 @@ entity: premise_<campaign slug>
 type: premise
 secrecy: public
 phase: P1
-stamped: [question_tr, signatures, trope_breaks]
-covers: [signature_<magic>, signature_<culture>, signature_<institution>, break_<row>]
+stamped: [question, signatures, trope_breaks]
+covers: [signature_<people>, signature_<institution>, signature_<phenomenon>, break_<row>]
 mirror: design/dm-only/premise-secret.md
 ---
 
 # Premise — <campaign name>
 
-*Plan item 4. The premise runs first; everything downstream derives from it. The public file is what the player approves; the big secret and the DM pitch live only in the mirror.*
+*Plan item 25. The script rolled the foundation, the identity, the names and the promises; this file makes them specific. The public file is what the player approves; the secret and the DM pitch live only in the mirror.*
 
 ## Public
 
 ### The question
-- **Theme as a question:** *"<the one question the campaign tries to answer>"*
-- **Tension rows rolled:** `<tension id>` (+ `<second id>` if two) — <one line on how they combine>
-- **The world's default answer:** <what most people in this world would say>
-- **What the finale turns on:** <the party's answer, stated as a choice they will face — no outcome>
+- **The question:** *"<the rolled pole pair as this world's two sides hold it, at this world's stakes>"* (with two contests, one question for each)
+- **Who holds which side:** <the contest's two sides, each with its pole, in one line>
+- **What is at stake:** <what a native could name: never an answer>
 
-### Three signatures — things true only here
-- **Magic phenomenon:** **<name>** — <the unique rule in two sentences; who can use it, what it costs>. Appears in: [[<id>]], [[<id>]], [[<id>]] *(≥3 entities, validator counts)*
-- **Culture or creature:** **<name>** — <who they are; SRD reskin if any>. Appears in: [[<id>]], [[<id>]], [[<id>]]
-- **Institution:** **<name>** — <what it does, who fears it, what it regulates>. Appears in: [[<id>]], [[<id>]], [[<id>]]
+### The three signatures
+- **The people — <the name picked from its candidates>:** <one paragraph in a native's voice: who they are, both rolled traits, how they meet strangers, how it touches daily life>
+- **The institution — <name>:** <one paragraph: its form, its practice, its sign, where its power comes from>
+- **The phenomenon — <name>:** <one paragraph: the rule, how it shows, its limit, who uses it>
 
-### Trope break(s)
-- `<break id>` — **<the break in one line>**. How it shows: <where the player will feel it in the first three sessions>. Touches: [[<id>]], [[<id>]], [[<id>]], [[<id>]], [[<id>]] *(≥5, validator counts)*
+### The trope break(s)
+- **<the break as a native would state it>** — <explained through its recorded tie>. <a recorded merge, in one line>. <an override, as the fact it makes true here>
+
+### What it was
+*(only where the break's action row says `concretise`)* <what fell from the sky, or what was born: named from a stock and described>
 
 ### No people evil by birth — checked
 *<one line: which peoples the premise names, and that none of them is evil, cruel or monstrous by nature>*
 
-### Naming languages
-- `<language key>` — <culture>, sound family `<family>`; samples: <three names>
-- `<language key>` — …
-*(full definition in `design/naming.json`)*
+### The languages
+- <the label the script gave> — <who speaks it>
+*(the record is `design/naming.json`)*
 
-### Player pitch
-*Three sentences, spoiler-free: the question, the signatures, the trope break — what the player will experience as different. This is the text on the approval card.*
+### The player pitch
+*Three sentences, no secret.*
 
 <sentence one> <sentence two> <sentence three>
 
+### Only here
+*Three sentences that could only be true in this world.*
+
+1. <…>
+2. <…>
+3. <…>
+
 ## Discoverable
 
-- <one or two things a curious native could learn about the world's question in Act 1 — the surface of the secret, never the secret>
+- <one or two things a curious native could learn about the question early: the surface of the secret, never the secret>
 
 ---
 
@@ -62,26 +70,26 @@ mirror_of: <this public file's path>
 
 ## Secret
 
-### The big secret
-- **Archetype:** `<secrets.yaml row id>` + twist `<twist id>`
-- **The truth:** <one paragraph: what is actually true about the world's nature>
-- **Who knows:** [[<npc id>]] (fully), [[<faction id>]] (in part)
-- **Why it is hidden:** <who benefits from the lie>
+### The secret
+- **The break's true cause:** <one paragraph, from the archetype row's `cause`: what is actually true>
+- **Who chose it:** <the chooser, as a person who made a choice a decent person could defend>
+- **The twist:** <the rolled twist, in this world's terms>
+- **Pinned to:** the god <name> and the event <name> (both promised to the cosmos)
 
-### Three-clue trail
-| # | Act | Layer | Clue | Placed in | Surfaces how |
-|---|---|---|---|---|---|
-| 1 | 1 | surface | <what the party can notice> | [[<npc or site id>]] | <check / conversation / document> |
-| 2 | 2 | investigation | <what connects clue 1 to a cause> | [[<site id>]] | <how> |
-| 3 | 3 | deep | <what proves the truth> | [[<site id>]] | <how> |
-*(in `short`, all three sit in Act 1 in chapter order; the validator checks act order and placement)*
+### The three clues, by stage
+| # | Levels | Kind | The kind of place that holds it | How it surfaces |
+|---|---|---|---|---|
+| 1 | <the first stage's range> | <what the party can notice> | <a kind of place; the place itself is chosen where the sites are made> | <check / conversation / document> |
+| 2 | <the middle stage's range> | <what connects clue 1 to a cause> | <a kind of place> | <how> |
+| 3 | <the top step's range> | <what proves the truth> | <a kind of place> | <how> |
 
-### The villain's answer
-- **BBEG:** [[<npc id>]] embodies the answer *"<their answer to the question>"*; visibility pattern `<antagonists.yaml row>`.
-- **Why they are right, from where they stand:** <two sentences that make the villain a position, not a monster>
+### The villain
+- **Shape and origin:** <as rolled>; **tie to the break:** <as rolled>
+- **Its answer:** *"<the rolled pole carried to its extreme>"*
+- **Why it is right, from where it stands:** <two sentences that make the villain a position, not a monster>
 
 ### DM pitch
-<Three to five sentences: the campaign with the secret included — what the DM is steering toward and why it will land.>
+<Three to five sentences: the campaign with the secret included.>
 
 ### Signature mechanic
-*(rolled; `short` never has one)* — <none / name, track, thresholds, gains, costs, tracker id>
+*(only when its gate rolled yes)* — <name, track, thresholds, gains, costs>

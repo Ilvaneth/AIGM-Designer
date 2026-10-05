@@ -635,7 +635,7 @@ class Delivery(unittest.TestCase):
 
     def test_who_gets_the_block(self):
         import design_prompts as dpm
-        want = {"P1.premise": "writer", "P2.cosmos": "writer", "P3.skeleton": "writer", "P4.skeleton": "writer", "P5.skeleton": "writer",
+        want = {"P1.premise": "writer", "P1.premise.legacy": "writer", "P2.cosmos": "writer", "P3.skeleton": "writer", "P4.skeleton": "writer", "P5.skeleton": "writer",
                 "P6.skeleton": "writer", "P7.skeleton": "writer", "P8.primer": "writer", "P9.thread": "writer", "P9.session1": "writer",
                 "phase_critic": "critic"}
         got = {}

@@ -372,7 +372,7 @@ def check_secrecy(b: Bible, only: str | None) -> list[Finding]:
     secret_lines = []
     for eid, ent in ents.items():
         dm = ent.get("dm_only") or {}
-        for k in ("secret_tr", "truth_tr", "happened_tr", "true_rule_tr"):
+        for k in ("secret_tr", "truth_tr", "happened_tr", "true_rule_tr", "true_rule"):
             v = dm.get(k)
             if isinstance(v, str) and len(v) > 12 and v != "yok":
                 secret_lines.append((eid, k, v))

@@ -23,7 +23,7 @@ from collections import Counter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_manifest as dm  # noqa: E402
-from design_io import design_dir, read_json  # noqa: E402
+from design_io import design_dir, read_json, text_field  # noqa: E402
 
 # tables (a whole file, or `file#subtable`) whose rows must not repeat between two campaigns; the foundation's
 # palette may repeat, its actions and scars only wait (plan item 25)
@@ -88,7 +88,7 @@ def demographics(pub: dict) -> dict:
 
 def premise_lines(pub: dict) -> dict:
     p = next((e for e in pub.values() if e.get("type") == "premise"), {})
-    return {"name": p.get("name"), "question_tr": p.get("question_tr"), "pitch_tr": p.get("pitch_tr"), "summary": p.get("summary"),
+    return {"name": p.get("name"), "question_tr": text_field(p, "question"), "pitch_tr": p.get("pitch_tr"), "summary": p.get("summary"),
             "signatures": [e.get("name") for e in pub.values() if e.get("type") == "signature"],
             "breaks": [e.get("name") for e in pub.values() if e.get("type") == "break"],
             "gods": [e.get("name") for e in pub.values() if e.get("type") == "god"]}
@@ -136,7 +136,7 @@ def main(argv=None) -> int:
         print("  premises for the judge (prompts/play/judge_uniqueness.md):")
         for side in ("a", "b"):
             p = r["premises"][side]
-            print(f"    [{side}] {p.get('name')}: {p.get('question_tr') or p.get('summary')}")
+            print(f"    [{side}] {p.get('name')}: {text_field(p, 'question') or p.get('summary')}")
             print(f"        signatures {', '.join(filter(None, p.get('signatures') or [])) or '—'} · breaks {', '.join(filter(None, p.get('breaks') or [])) or '—'}")
     return 0 if r["distinct"] else 1
 

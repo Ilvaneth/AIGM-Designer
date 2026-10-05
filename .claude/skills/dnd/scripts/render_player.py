@@ -30,7 +30,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import design_approval as da  # noqa: E402
 import design_manifest as dm  # noqa: E402
-from design_io import campaign_dir, design_dir, dm_only_dir, now_iso, read_json, stamp_meta, write_json_atomic  # noqa: E402
+from design_io import campaign_dir, design_dir, dm_only_dir, now_iso, read_json, text_field, stamp_meta, write_json_atomic  # noqa: E402
 
 LINK = re.compile(r"\[\[([a-z]+_[a-z0-9_]+)\]\]")
 SECTION_HEADINGS = ["Topraklar ve kim yönetiyor", "Tanrılar, tapıldıkları gibi", "Takvim ve bayramlar", "Para ve fiyatlar",
@@ -221,13 +221,13 @@ def primer_text(campaign: str) -> tuple[str, dict]:
             lines.append(f"- **{lid}**: {lang.get('label_tr', '')}")
         for cid, c in by_type(pub, "signature"):
             if c.get("kind") == "creature":
-                lines.append(f"- **{c['name']}**: {c.get('rule_tr', '')}")
+                lines.append(f"- **{c['name']}**: {text_field(c, 'rule') or ''}")
         lines.append("")
         # magic
         lines.append("### Büyü ve bekçileri")
         for cid, c in by_type(pub, "signature"):
             if c.get("kind") in ("magic", "institution"):
-                lines.append(f"- **{c['name']}**: {c.get('rule_tr', '')}")
+                lines.append(f"- **{c['name']}**: {text_field(c, 'rule') or ''}")
         lines.append("")
         # famous places
         lines.append("### Ünlü yerler")
