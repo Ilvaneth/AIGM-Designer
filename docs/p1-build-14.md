@@ -151,3 +151,13 @@ Changed files; new and changed tests; the suite's count and exit code; the rende
 - **The premise row's last `_tr` names go:** `pitch_tr` → `pitch`, `secret_tr` → `secret`, `villain_answer_tr` → `villain_answer`, `dm_pitch_tr` → `dm_pitch`, `secret_class_tr` → `secret_class`; `world_default_tr` too where it is still written. Through `design_io.text_field`, so that a legacy row's old names still load; the writer's prompt, the template's front matter, the door (`secret_class`), the leak scan, the renderers and `docs/schemas/entities.md` follow. Other entity types keep their names until their floors.
 - **The card's secret line** no longer counts clues per act (the new `clues[]` has no `act`): the approved card shows the archetype's class and "the villain: rolled, hidden", nothing more.
 
+## Corrections from the audit of 14b (2026-10-05; before its commit)
+
+Found by reading the three script-built cards.
+
+1. **The card's language line reads as words, not keys.** It printed "people · the common tongue · other_side · the old tongue". Each language shows its label: "the <people's name> tongue" once the people is named and "the people's tongue" before; "the common tongue"; "the other side's tongue"; "the institution's tongue"; "the old tongue". The same labels go into `naming.json` (item 11's label rule), so the writer and the card say the same.
+2. **The checks line says what has not run.** A card built before any merge printed "door: passed" and "validator: None errors". Before a merge the door reads "not run yet"; a validator that has not run reads "not run yet", never `None`.
+3. **The rubric "differs from the earlier campaigns" does not punish a rolled theme** (errata 24.2 #31: a general theme is not left out because an earlier campaign used it). Its `fails_when` becomes: "what the writer added (the images, what the signatures are made of, the concrete question) repeats an earlier campaign's; a rolled row or a general theme that recurs is no fault".
+
+Accepted as the coding tab reported them: the sixth rubric's question as two sentences; the gate line under CHECKS; "open N" in the due line when it is not zero; the promise id at the end of a not-kept line (the waiver needs it); the leak scan reads a secret row's id and sentences, not its label; the new card is P1's alone; the craft-only note lives in `rubrics.yaml`.
+
