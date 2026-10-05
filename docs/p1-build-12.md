@@ -106,3 +106,10 @@ Changed files; new and changed tests; the suite's count and exit code; the count
 - **The P1 promises the rolls already apply** (about ten per birth, for example "the people's home is the lifeline"): where the identity record states the fact, give the promise a script rule that reads the record, instead of leaving it to the critic. List in the summary which became script rules and which stayed with the critic.
 - The public ledger stays a function of the public rolls alone (12a): no verdict, waiver or card line may let a secret promise's text or its source row be told from what is public.
 
+## Corrections from the audit of 12b (2026-10-05; before its commit)
+
+1. **The mystery mix's clue hook is due where the clue is placed.** `dials.yaml#content_mix`, the mystery row: `{phase: P1, must: "the big secret's Act 1 clue is placed in an urban or social site"}` becomes `{phase: P6, must: "the big secret's first clue is placed in an urban or social site"}`. A clue's place is set at P6; due at P1 the critic could only say "not kept", in six births of ten.
+2. **`promise list --dm-only` is refused while the read guard is armed for a birth, a detail run or a playtest.** It prints the secret ledger; the flag is the development tab's, after the birth is disarmed. The conductor's own listing stays public.
+
+For the later floors (no change now): the P3 skeleton agent, the P8 writer and P9's first-session writer read no dm-only material, so a secret promise due at those phases reaches no writer and is only judged; each floor decides at its turn whether its writer is given the command or the promise is re-homed.
+
