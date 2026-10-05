@@ -30,6 +30,19 @@ const CRITIC = {
         },
       },
     },
+    promises: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['id', 'verdict'],
+        additionalProperties: false,
+        properties: {
+          id: { type: 'string' },
+          verdict: { type: 'string', enum: ['kept', 'not_kept'] },
+          note: { type: 'string' },
+        },
+      },
+    },
     notes_file: { type: 'string' },
   },
 }

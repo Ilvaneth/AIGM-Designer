@@ -1229,6 +1229,10 @@ def phase_check(campaign: str, phase: str, full: bool = False) -> int:
         ph["status"] = "validated"
     dm.save(campaign, data, f"designer.py phase {phase} check")
     print(f"designer: {phase} validator — {errors} errors, {warnings} warnings" + ("" if full or not findings else " (grouped; --full for every line)"))
+    import design_promises as dpr
+    ruled = dpr.run_rules(campaign, phase)        # build item 12b: every script promise due by now is decided
+    if ruled:
+        print(f"designer: {phase} promises a script checks — {ruled['kept']} kept, {ruled['not_kept']} not kept")
     for line in summarise_findings(result.get("findings") or [], full):
         print(line)
     return 0 if errors == 0 else 1
@@ -1336,6 +1340,10 @@ def phase_report(campaign: str, phase: str) -> int:
         lines.append("- names: " + " · ".join(f"{lid} {sum(1 for e in L['person'] + L['god'] if e.get('used_by'))} used / "
                                                f"{sum(1 for e in L['person'] + L['god'] if not e.get('used_by'))} unused"
                                                for lid, L in pool["languages"].items()))
+    import design_promises as dpr
+    promised = dpr.report_line(campaign, phase)
+    if promised:
+        lines.append(promised)
     lines.append(f"- cost: " + (f"{cost.get('agents', 0)} agents, {fmt(cost.get('requests'))} requests, output {fmt(cost.get('output'))}, "
                                 f"cache read {fmt(cost.get('cache_read'))}" if cost else "no run recorded (merge --run-dir)")
                  + f" · Workflow context {fmt((ph.get('tokens') or {}).get('out'))} · wall {round(int(ph.get('wall_s') or 0) / 60)} min")
@@ -1508,6 +1516,43 @@ def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool, direction:
     return 0
 
 
+# ── the owner's hand on the promise ledger (build item 12b) ────────────────────
+
+def promise_cmd(campaign: str, a) -> int:
+    """`promise waive <id> "<one sentence>"`: the owner accepts a not-kept promise as it stands (outside `_test-*` it
+    asks for `--onay`; no prompt or workflow calls it). `promise list`: the public ledger; with `--dm-only` the secret
+    one after it, for the development tab."""
+    import design_promises as dpr
+    if a.step == "list":
+        for line in dpr.listing(campaign, a.phase, a.status, False):
+            print(line)
+        if a.dm_only:
+            # the secret ledger is the development tab's, once the birth is disarmed: while the read guard is armed
+            # (a birth, a detail run, a playtest) the conductor's shell would print it
+            armed = read_json(marker_path()) or {}
+            if armed.get("mode") in ("birth", "detail", "playtest"):
+                print(f"designer: promise list --dm-only is refused while the read guard is armed ({armed.get('mode')}); "
+                      "disarm first", file=sys.stderr)
+                return 1
+            print("— secret (dm-only) —")
+            for line in dpr.listing(campaign, a.phase, a.status, True):
+                print(line)
+        return 0
+    if not (a.id and a.sentence):
+        print("designer: promise waive needs the id and the owner's one sentence", file=sys.stderr)
+        return 2
+    if not (campaign.startswith("_test-") or a.onay):
+        print("designer: a waiver is the owner's own decision (pass --onay after they gave it)", file=sys.stderr)
+        return 1
+    try:
+        p = dpr.waive(campaign, a.id, a.sentence)
+    except SystemExit as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    print(f"designer: promise {p['id']} waived (due {p['due']}); recorded in the ledger and the revision log")
+    return 0
+
+
 # ── status / abandon / commit ───────────────────────────────────────────────
 
 def status(campaign: str, as_json: bool) -> int:
@@ -1614,6 +1659,14 @@ def main(argv=None) -> int:
     ph.add_argument("--reseed", action="store_true")
     ph.add_argument("--session-id")
 
+    pm = sub.add_parser("promise", help="the promise ledger: the owner's waiver, the list")
+    pm.add_argument("step", choices=("waive", "list"))
+    pm.add_argument("id", nargs="?", help="waive: the promise id")
+    pm.add_argument("sentence", nargs="?", help="waive: the owner's one sentence")
+    pm.add_argument("--onay", action="store_true", help="waive: outside a test birth, the owner's explicit word")
+    pm.add_argument("--phase")
+    pm.add_argument("--status")
+    pm.add_argument("--dm-only", action="store_true", help="list: the secret ledger too (the development tab; never the conductor)")
     st = sub.add_parser("status")
     st.add_argument("--json", action="store_true")
     ab = sub.add_parser("abandon")
@@ -1664,6 +1717,8 @@ def main(argv=None) -> int:
                 print("designer: rerun needs --reason", file=sys.stderr)
                 return 2
             return phase_rerun(c, a.phase, a.reason, a.reseed, a.direction)
+    if a.verb == "promise":
+        return promise_cmd(c, a)
     if a.verb == "status":
         return status(c, a.json)
     if a.verb == "abandon":

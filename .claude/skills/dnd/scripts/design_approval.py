@@ -246,7 +246,9 @@ def map_lines(campaign: str) -> list[str]:
 
 
 GATE_LABELS = {"render": "the player files could not be rendered", "incomplete": "roster incomplete", "band": "outside the band", "critic_missing": "a critic did not run",
-               "validator": "validator error", "seed": "seed error", "orphan_stub": "orphan stub"}
+               "validator": "validator error", "seed": "seed error", "orphan_stub": "orphan stub",
+               "promise": "a due promise a script checks is not kept", "promise_unjudged": "a due promise has no verdict"}
+PROMISE_VERDICTS = ("kept", "not_kept")
 
 
 def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
@@ -294,6 +296,15 @@ def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
     orphans = [e for e in dm.orphan_stubs(campaign, phase, dm.BLOCKING_STUB_TYPES) if e not in roster]
     if orphans:
         out.append({"code": "orphan_stub", "ids": orphans, "detail": f"{len(orphans)} owned stub(s) never written"})
+    # build item 12b: a due promise a script checks and that is not kept closes the gate, and so does a due promise
+    # the critic gave no verdict; a critic's `not_kept` does not (the card lists it, the owner decides). A secret
+    # promise is an id and a count here, never a sentence. A legacy birth has no ledger: nothing is added.
+    import design_promises as dpr
+    for code, (public, secret), what in (("promise", dpr.script_failures(campaign, phase), "a script checks not kept"),
+                                         ("promise_unjudged", dpr.unjudged(campaign, phase), "without the critic's verdict")):
+        if public or secret:
+            out.append({"code": code, "ids": public + secret, "secret": len(secret),
+                        "detail": f"{len(public) + len(secret)} due promise(s) {what} ({len(secret)} of them secret)"})
     return out
 
 
@@ -321,6 +332,9 @@ def gate_card_line(items: list[dict], proj: dict) -> str:
         return "- **Gate:** open ✓"
     parts = []
     for i in items:
+        if i["code"].startswith("promise"):         # a promise is no registry row: the count, and how many are secret
+            parts.append(f"{GATE_LABELS[i['code']]} ({len(i['ids'])}" + (f", {i['secret']} secret" if i.get("secret") else "") + ")")
+            continue
         shown = [e for e in i["ids"] if e in proj and proj[e].get("type") not in SPOILER_TYPES
                  and proj[e].get("secrecy", "public") == "public"]
         hidden = len(i["ids"]) - len(shown)
@@ -583,6 +597,15 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
             print(f"design_approval: a finding carries free text, refused ({rid[:20]}…)", file=sys.stderr)
             return 1
         findings.append({"rubric_id": rid, "entity_id": fid, "verdict": f["verdict"], "reason_code": code or None})
+    # build item 12b: one entry per promise the critic judged: an id, a verdict and a slug; never prose (the reasoning
+    # stays in the critic's own file, a secret promise's under dm-only)
+    promises = []
+    for e in ret.get("promises") or []:
+        pid, note = str((e or {}).get("id", "")), str((e or {}).get("note", "") or "")
+        if not isinstance(e, dict) or e.get("verdict") not in PROMISE_VERDICTS or not SLUG.match(pid) or (note and not SLUG.match(note)):
+            print(f"design_approval: a promise verdict carries free text or no verdict, refused ({pid[:20]}…)", file=sys.stderr)
+            return 1
+        promises.append({"id": pid, "verdict": e["verdict"]})
     data = dm.load(campaign)
     ph = data["phases"].get(phase)
     if ph is None:
@@ -615,6 +638,11 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
             row["status"] = "critiqued"
     dm.save(campaign, data, f"design_approval.py critique --phase {phase}")
     print(f"design_approval: {phase} critic {critic} on {entity}: {verdict} ({len(findings)} findings recorded, ids and codes only)")
+    if promises:
+        import design_promises as dpr
+        stored, ignored = dpr.judge(campaign, phase, promises)
+        print(f"design_approval: {phase} promise verdicts: {stored} stored"
+              + (f", {ignored} ignored (not this phase's critic-judged promises)" if ignored else ""))
     return 0
 
 

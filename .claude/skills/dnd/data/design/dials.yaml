@@ -33,24 +33,24 @@ tables:
         weight: 2
         summary: "8-12 sessions, one act, one polity; the smallest campaign that is still a world"
         hooks:
-          - {phase: P0, must: "arc skeleton and every count come from scale.yaml row scale_short"}
-          - {phase: P1, must: "one trope break, one tension; the signature mechanic is never rolled"}
+          - {phase: P0, must: "arc skeleton and every count come from scale.yaml row scale_short", check: arc_skeleton}
+          - {phase: P1, must: "one trope break, one tension; the signature mechanic is never rolled", check: rolls_by_scale}
       - id: scale_standard
         value: standard
         label: Standard
         weight: 3
         summary: "20-30 sessions, three acts, two or three polities"
         hooks:
-          - {phase: P0, must: "arc skeleton and every count come from scale.yaml row scale_standard"}
-          - {phase: P1, must: "two trope breaks; the signature mechanic is rolled at 50%"}
+          - {phase: P0, must: "arc skeleton and every count come from scale.yaml row scale_standard", check: arc_skeleton}
+          - {phase: P1, must: "two trope breaks; the signature mechanic is rolled at 50%", check: rolls_by_scale}
       - id: scale_epic
         value: epic
         label: Epic
         weight: 1
         summary: "40-60 sessions, three acts, nine to twelve chapters; the spine stays six beats, the world widens"
         hooks:
-          - {phase: P0, must: "arc skeleton and every count come from scale.yaml row scale_epic"}
-          - {phase: P1, must: "two trope breaks; the signature mechanic is always rolled"}
+          - {phase: P0, must: "arc skeleton and every count come from scale.yaml row scale_epic", check: arc_skeleton}
+          - {phase: P1, must: "two trope breaks; the signature mechanic is always rolled", check: rolls_by_scale}
 
   # the darkness dial (owner, 2026-10-02): the old heroic, dark fantasy and grimdark. A degree of darkness, not a
   # genre: the content mix and the foundation carry the genre. It carries four things and nothing else.
@@ -321,5 +321,5 @@ tables:
           node_kinds: [investigation, missing_person, forgery, witness]
           seed_kinds: [investigation, missing_person, forgery, a_second_body]
         hooks:
-          - {phase: P1, must: "the big secret's Act 1 clue is placed in an urban or social site"}
+          - {phase: P6, must: "the big secret's first clue is placed in an urban or social site"}
           - {phase: P5, must: "at least three NPCs hold contradictory Known Facts about the same event"}

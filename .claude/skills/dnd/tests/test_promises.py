@@ -57,7 +57,7 @@ def births(n: int, tag: str = "PROMISE") -> list[dict]:
             R = designer.Roller.in_memory(f"{tag}-{i}", dials)
             designer.preroll_p1(R, {"dials": dials})
             public, secret = dp.build(dials, R.public, R.secret, R.foundation, R.identity, R.identity_secret)
-            out.append({"master": R.master, "dials": dials, "foundation": R.foundation, "identity": R.identity,
+            out.append({"master": R.master, "dials": dials, "foundation": R.foundation, "identity": R.identity, "naming": R.naming,
                         "rolls": R.public, "rolls_secret": R.secret, "identity_secret": R.identity_secret,
                         "public": public, "secret": secret})
         _BIRTHS[(n, tag)] = out
@@ -527,9 +527,398 @@ class Validator(unittest.TestCase):
         self.assertIn("counts", designer_run("design_promises.py", "-c", self.c.name, "counts").stdout + "counts")
 
 
+# ── Part 12b: delivery and inspection ────────────────────────────────────────────────────────────────────────
+
+BOUND = {   # the hooks a roll already applies, bound to a script rule in the tables (`check: <rule>` on the hook)
+    "arc skeleton and every count come from scale.yaml row scale_short": "arc_skeleton",
+    "arc skeleton and every count come from scale.yaml row scale_standard": "arc_skeleton",
+    "arc skeleton and every count come from scale.yaml row scale_epic": "arc_skeleton",
+    "arc skeleton: 1 act, 3 chapters, level band start..start+4": "arc_skeleton",
+    "arc skeleton: 3 acts, 7 chapters by default, level band start..start+11": "arc_skeleton",
+    "arc skeleton: 3 acts, 10 chapters by default, level band start..start+19": "arc_skeleton",
+    "one trope break, one tension; the signature mechanic is never rolled": "rolls_by_scale",
+    "two trope breaks; the signature mechanic is rolled at 50%": "rolls_by_scale",
+    "two trope breaks; the signature mechanic is always rolled": "rolls_by_scale",
+    "unless the scar changed a magic rule, the phenomenon signature's home is this strangeness": "phenomenon_home",
+    "the phenomenon signature is this rule": "phenomenon_home",
+    "the people signature's home is the lifeline (unless the new-people scar rolled)": "people_home",
+    "the people signature may be this people": "people_home",
+    "the question's two poles sit on sides a and b; the break's winner is one of the roles": "question_on_contest",
+    "a fantastic kind joins the palette": "scar_land_kind",
+    "one trope break is drawn from the prohibition rows": "prohibition_drawn",
+}
+PUBLIC_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.yaml", "signatures.yaml", "tensions.yaml", "naming.yaml")
+
+
+def table_hooks(name: str):
+    """(where, hook) for every hook of a table: its rows' own and its common ones."""
+    doc = dt.load(name)
+    for h in doc.get("hooks_common") or []:
+        yield f"{name} (common)", h
+    for sub, node in (doc.get("tables") or {}).items():
+        for h in (node.get("hooks_common") or []) if isinstance(node, dict) else []:
+            yield f"{name}#{sub} (common)", h
+    for sub, rows in dt.all_row_lists(doc).items():
+        for r in rows:
+            for h in r.get("hooks") or []:
+                yield r["id"], h
+
+
+def state_of(b: dict) -> "dp.State":
+    """A State over an in-memory birth: what the script rules read, with no campaign on disk."""
+    S = dp.State.__new__(dp.State)
+    S.campaign = None
+    S.manifest = {"dials": dict(b["dials"], start_level=b["dials"]["level_band"][0]), "foundation": b["foundation"], "identity": b["identity"],
+                  "dice_log": b["rolls"], "phases": {}, "arc_skeleton": dm.arc_skeleton(b["dials"]["scale"], b["dials"]["level_band"][0])}
+    S.canon = {}
+    S.naming = b["naming"]
+    return S
+
+
+class Rules(unittest.TestCase):
+    """The audit's note 3: a P1 promise the rolls already apply is decided by a script that reads the record."""
+
+    def test_the_bound_hooks_and_only_they_name_a_rule(self):
+        bound = {}
+        for name in PUBLIC_TABLES:
+            for where, h in table_hooks(name):
+                self.assertLessEqual(set(h), {"phase", "must", "check"}, where)
+                if "check" in h:
+                    self.assertIn(h["check"], dp.RULES, where)
+                    bound[h["must"]] = h["check"]
+        self.assertEqual(bound, BOUND)
+        for name in ("secrets.yaml", "antagonists.yaml"):
+            self.assertEqual(sum(1 for _, h in table_hooks(name) if "check" in h), 0, "a secret roll's hooks stay with the dm-only critic")
+        with self.assertRaises(SystemExit):
+            dp.check_of({"phase": "P1", "must": "x", "check": "no_such_rule"}, {"id": "row_x"})
+
+    def test_every_promise_a_roll_applies_is_kept_on_every_seed(self):
+        by_rule = Counter()
+        left = Counter()
+        for b in births(SEEDS):
+            S = state_of(b)
+            for p in b["public"]:
+                if p["due"] not in ("P0", "P1"):
+                    continue
+                rule = dp.rule_of(p)
+                if rule is None:
+                    left[p["text"]] += 1
+                    continue
+                by_rule[p["check"]] += 1
+                self.assertTrue(rule(S, p), f"{p['check']} says not kept on a roll the script made itself ({b['master']})")
+        self.assertEqual(set(by_rule), {"script:arc_skeleton", "script:rolls_by_scale", "script:people_home", "script:phenomenon_home",
+                                        "script:question_on_contest", "script:scar_land_kind", "script:prohibition_drawn",
+                                        "script:override_applied"})
+        type(self).by_rule, type(self).left = by_rule, left
+        self.assertFalse(set(left) & set(BOUND), "a bound hook is still the critic's")
+
+    def test_a_rule_says_not_kept_when_the_record_says_otherwise(self):
+        b = next(x for x in births(SEEDS) if x["dials"]["scale"] == "standard")
+        S = state_of(b)
+        p = {"from": "x", "also": []}
+        self.assertTrue(dp.rule_people_home(S, p) and dp.rule_phenomenon_home(S, p) and dp.rule_question_on_contest(S, p) and dp.rule_rolls_by_scale(S, p))
+        import copy
+        broken = copy.deepcopy(S.manifest)
+        broken["identity"]["people"]["home"] = "somewhere else"
+        broken["identity"]["phenomenon"]["home"] = "somewhere else"
+        broken["identity"]["questions"] = []
+        broken["identity"]["trope_breaks"] = broken["identity"]["trope_breaks"][:1]
+        broken["arc_skeleton"] = broken["arc_skeleton"][:-1]
+        S.manifest = broken
+        self.assertFalse(dp.rule_people_home(S, p) or dp.rule_phenomenon_home(S, p) or dp.rule_question_on_contest(S, p)
+                         or dp.rule_rolls_by_scale(S, p) or dp.rule_arc_skeleton(S, p))
+        self.assertFalse(dp.rule_scar_land_kind(state_of(next(x for x in births(SEEDS) if "scar_new_land_kind" not in x["foundation"]["break"]["scars"])), p))
+
+
+class Delivery(unittest.TestCase):
+    """Section 6: the block reaches the due phase's writer and its phase critic, and only them."""
+
+    def test_who_gets_the_block(self):
+        import design_prompts as dpm
+        want = {"P1.premise": "writer", "P2.cosmos": "writer", "P3.skeleton": "writer", "P4.skeleton": "writer", "P5.skeleton": "writer",
+                "P6.skeleton": "writer", "P7.skeleton": "writer", "P8.primer": "writer", "P9.thread": "writer", "P9.session1": "writer",
+                "phase_critic": "critic"}
+        got = {}
+        for name in dpm.list_prompts():
+            fm, body = dpm.load(name)
+            phase = str(fm.get("phase") or "")
+            audience = dpm.promise_audience(name, str(fm.get("role") or ""), phase if phase in dm.PHASES else "P4", phase == "detail")
+            if audience:
+                got[name] = audience
+        self.assertEqual(got, want, "the single writers, the skeleton agents, the phase critic")
+        self.assertIsNone(dpm.promise_audience("detail.site", "writer", "P6", True), "a detail prompt is play, not a birth phase")
+        for name in dpm.SECRET_READERS:
+            self.assertIn(name, want)
+            self.assertIn("dm-only", dpm.load(name)[1], f"{name} is given the secret list and reads no dm-only material")
+        self.assertFalse({"P3.skeleton", "P8.primer", "P9.session1"} & set(dpm.SECRET_READERS), "a prompt that reads no dm-only material gets no secret list")
+        for wf in (SCRIPTS.parents[2] / "workflows").glob("*.js"):
+            text = wf.read_text(encoding="utf-8")
+            self.assertNotIn("promise waive", text)
+            self.assertNotIn("--secret", text, "the conductor never lists the secret ledger")
+
+
+class Inspection(unittest.TestCase):
+    """Sections 7-9 on a new birth: the script rules at `phase check`, the critic's verdicts, the gate, the card, the waiver."""
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.used_backup = USED.read_bytes() if USED.is_file() else None
+        self.name = f"_test-promise-{os.getpid()}-{uuid.uuid4().hex[:6]}"
+        designer_run("designer.py", "new", self.name, "--party-size", "2", "--seed", "PROMISE-0002", "--lang", "tr", "--scale", "standard")
+        designer_run("designer.py", "-c", self.name, "preroll", "--phase", "P1")
+        self.dir = CAMPAIGNS / self.name
+
+    def tearDown(self):
+        shutil.rmtree(CAMPAIGNS / self.name, ignore_errors=True)
+        if self.used_backup is not None:
+            USED.write_bytes(self.used_backup)
+        elif USED.is_file():
+            USED.unlink()
+        self.guard.__exit__(None, None, None)
+
+    def ledgers(self):
+        return dm.load(self.name)["promises"], dp.load_secret(self.name)
+
+    def codes(self, phase="P1"):
+        return {i["code"]: i for i in da.gate(self.name, phase)}
+
+    def judge_all(self, verdict="kept", phase="P1"):
+        public, secret = self.ledgers()
+        mine = [{"id": p["id"], "verdict": verdict} for p in public + secret if p["check"] == "critic" and p["due"] == phase]
+        return dp.judge(self.name, phase, mine)
+
+    def registry(self, rows: dict) -> None:
+        path = self.dir / "design/dm-only/entities.json"
+        path.write_text(json.dumps({"_meta": {"schema_version": 1, "campaign": self.name}, "entities": rows}, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def test_the_rules_run_at_phase_check_and_the_gate_reads_them(self):
+        check = designer_run("designer.py", "-c", self.name, "phase", "P1", "check", check=False)
+        self.assertRegex(check.stdout, r"designer: P1 promises a script checks — \d+ kept, 0 not kept")
+        public, secret = self.ledgers()
+        ruled = [p for p in public if p["check"] != "critic" and p["due"] in ("P0", "P1")]
+        self.assertGreaterEqual(len(ruled), 6, "the arc skeleton, the rolls by scale, the two homes, the question")
+        for p in ruled:
+            self.assertEqual((p["status"], p["verdict"]["by"], p["verdict"]["phase"]), ("kept", "script", "P1"), p["check"])
+        self.assertTrue(all(p["status"] == "open" for p in public if p["due"] not in ("P0", "P1")), "a promise due later is open work")
+        card = da.build_card(self.name, "P1")
+        self.assertRegex(card, r"Promises due at this phase:\*\* \d+ \(kept [1-9]\d*, not kept 0, waived 0, open [1-9]\d*\)")
+        self.assertNotIn("promise", self.codes(), "every script promise due by P1 is kept")
+
+        # a due script promise not kept closes the gate; kept again, it does not
+        m = dm.load(self.name)
+        home = m["identity"]["people"]["home"]
+        m["identity"]["people"]["home"] = "somewhere else"
+        dm.save(self.name, m, "test")
+        broken = self.codes()["promise"]
+        target = next(p for p in public if p["check"] == "script:people_home")
+        self.assertEqual(broken["ids"], [target["id"]])
+        self.assertIn("1 due promise(s) a script checks not kept (0 of them secret)", da.gate_text([broken]))
+        self.assertIn("⛔ **Gate closed:**", da.build_card(self.name, "P1"))
+        self.assertIn("a due promise a script checks is not kept (1)", da.build_card(self.name, "P1"))
+        self.assertEqual(dp.run_rules(self.name, "P1")["not_kept"], 1)
+        self.assertIn(f"`{target['id']}` · ", da.build_card(self.name, "P1"), "a public promise not kept is listed, whoever judged it")
+        m = dm.load(self.name)
+        m["identity"]["people"]["home"] = home
+        dm.save(self.name, m, "test")
+        self.assertNotIn("promise", self.codes())
+        self.assertEqual(dp.run_rules(self.name, "P1")["not_kept"], 0)
+
+    def test_an_unjudged_promise_closes_the_gate_and_a_not_kept_one_does_not(self):
+        public, secret = self.ledgers()
+        due_public = [p for p in public if p["check"] == "critic" and p["due"] == "P1"]
+        due_secret = [p for p in secret if p["check"] == "critic" and p["due"] == "P1"]
+        self.assertTrue(due_public and due_secret)
+        un = self.codes()["promise_unjudged"]
+        self.assertEqual(set(un["ids"]), {p["id"] for p in due_public + due_secret})
+        self.assertEqual(un["secret"], len(due_secret))
+        # the critic's return: ids, verdicts, a slug; the conductor's merge stores them
+        staging = self.dir / "design/_staging/P1"
+        staging.mkdir(parents=True, exist_ok=True)
+        entries = [{"id": p["id"], "verdict": "kept", "note": "stated_in_pitch"} for p in due_public + due_secret]
+        entries[0]["verdict"] = "not_kept"
+        entries[-1]["verdict"] = "not_kept"               # the last is a secret promise
+        entries.append({"id": public[-1]["id"], "verdict": "kept"})     # not due at P1: ignored
+        ret = {"entity_id": "P1", "verdict": "pass", "findings": [], "promises": entries}
+        (staging / "phase.critic1.json").write_text(json.dumps(ret), encoding="utf-8")
+        proc = designer_run("design_approval.py", "-c", self.name, "critique", "--phase", "P1", "--file", str(staging / "phase.critic1.json"))
+        self.assertIn(f"promise verdicts: {len(entries) - 1} stored, 1 ignored", proc.stdout)
+        public, secret = self.ledgers()
+        first = next(p for p in public if p["id"] == entries[0]["id"])
+        self.assertEqual((first["status"], first["verdict"]), ("not_kept", {"phase": "P1", "attempt": 1, "by": "critic"}))
+        self.assertEqual(Counter(p["status"] for p in secret if p["due"] == "P1" and p["check"] == "critic"),
+                         Counter({"not_kept": 1}) + Counter({"kept": len(due_secret) - 1}), "a secret promise's verdict is stored in the secret ledger")
+        codes = self.codes()
+        self.assertNotIn("promise_unjudged", codes)
+        self.assertNotIn("promise", codes, "a critic's not_kept does not close the gate (the owner's ruling 1)")
+        card = da.build_card(self.name, "P1")
+        self.assertIn("- ⚠ **Promises judged not kept:** 1 — the owner decides", card)
+        self.assertIn(f"  - `{first['id']}` · {first['name']} (due P1): {first['text']}", card)
+        self.assertRegex(card, r"Secret promises:\*\* \d+ open, \d+ kept, 1 not kept")
+        design = (self.dir / "design/design.json").read_text(encoding="utf-8")
+        report = designer_run("designer.py", "-c", self.name, "phase", "P1", "report").stdout
+        self.assertIn(f"judged not kept 1 [{first['id']}]", report)
+        self.assertRegex(report, r"secret \d+ open, \d+ kept, 1 not kept")
+        for n, p in enumerate(secret):
+            for where, text in (("the card", card), ("design.json", design), ("the report", report)):
+                self.assertNotIn(json.dumps(p["text"], ensure_ascii=False)[1:-1], text, f"secret promise {n}: its sentence is in {where}")
+                self.assertNotIn(p["from"], text if where != "design.json" else "", f"secret promise {n}: its source row is in {where}")
+        # a return that carries prose is refused whole
+        ret["promises"][0]["note"] = "the pitch never states the break, it only hints at it"
+        (staging / "phase.critic1.loop2.json").write_text(json.dumps(ret), encoding="utf-8")
+        refused = designer_run("design_approval.py", "-c", self.name, "critique", "--phase", "P1", "--file", str(staging / "phase.critic1.loop2.json"), check=False)
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("free text", refused.stderr)
+
+    def test_the_owners_waiver(self):
+        self.judge_all("kept")
+        public, secret = self.ledgers()
+        mine = next(p for p in public if p["check"] == "critic" and p["due"] == "P1")
+        hidden = next(p for p in secret if p["check"] == "critic" and p["due"] == "P1")
+        dp.judge(self.name, "P1", [{"id": mine["id"], "verdict": "not_kept"}, {"id": hidden["id"], "verdict": "not_kept"}])
+        self.assertIn(mine["id"], da.build_card(self.name, "P1"))
+        other = next(p for p in public if p["status"] == "kept" and p["id"] != mine["id"])
+        refused = designer_run("designer.py", "-c", self.name, "promise", "waive", other["id"], "It is fine.", check=False)
+        self.assertEqual(refused.returncode, 1, "only a promise judged not kept is waived")
+        self.assertEqual(designer_run("designer.py", "-c", self.name, "promise", "waive", mine["id"], check=False).returncode, 2, "the sentence is owed")
+        done = designer_run("designer.py", "-c", self.name, "promise", "waive", mine["id"], "The pitch says it well enough for me.")
+        self.assertIn(f"promise {mine['id']} waived", done.stdout)
+        m = dm.load(self.name)
+        waived = next(p for p in m["promises"] if p["id"] == mine["id"])
+        self.assertEqual((waived["status"], waived["waiver"]["sentence"]), ("waived", "The pitch says it well enough for me."))
+        log = m["revision_log"][-1]
+        self.assertEqual((log["scope"], log["promise"], log["reason"], log["phase"]), ("promise", mine["id"], "The pitch says it well enough for me.", "P1"))
+        card = da.build_card(self.name, "P1")
+        self.assertNotIn(mine["id"], card, "a waived promise leaves the card's list")
+        self.assertNotIn("Promises judged not kept", card)
+        self.assertRegex(card, r"Promises due at this phase:\*\* \d+ \(kept \d+, not kept 0, waived 1, open \d+\)")
+        self.assertEqual(designer_run("designer.py", "-c", self.name, "promise", "waive", mine["id"], "Again.", check=False).returncode, 1)
+        # a secret promise is waived by its id; nothing public gains its sentence or its source row
+        designer_run("designer.py", "-c", self.name, "promise", "waive", hidden["id"], "Accepted as it stands.")
+        design = (self.dir / "design/design.json").read_text(encoding="utf-8")
+        self.assertIn(hidden["id"], design, "the revision log names it by id")
+        self.assertNotIn(json.dumps(hidden["text"], ensure_ascii=False)[1:-1], design)
+        self.assertEqual(next(p for p in dp.load_secret(self.name) if p["id"] == hidden["id"])["status"], "waived")
+        self.assertRegex(da.build_card(self.name, "P1"), r"Secret promises:\*\* \d+ open, \d+ kept, 0 not kept")
+        # outside a test birth it asks for the owner's word, and no prompt or workflow calls it
+        import argparse
+        ns = argparse.Namespace(step="waive", id=mine["id"], sentence="x", onay=False, phase=None, status=None, dm_only=False)
+        self.assertEqual(designer.promise_cmd("a-real-campaign", ns), 1)
+        for path in (SCRIPTS.parent / "prompts").rglob("*.md"):
+            self.assertNotIn("promise waive", path.read_text(encoding="utf-8"), path.name)
+        # a rerun reopens what the phase judged; a waiver the phase's promise carried goes with it
+        self.assertGreater(dp.reopen(self.name, "P1"), 3)
+        public, secret = self.ledgers()
+        self.assertFalse([p for p in public + secret if p["due"] == "P1" and p["check"] == "critic" and p["status"] != "open"])
+
+    def test_the_list_and_the_blocks(self):
+        import design_prompts as dpm
+        public, secret = self.ledgers()
+        listed = designer_run("designer.py", "-c", self.name, "promise", "list", "--phase", "P1").stdout
+        due = [p for p in public if p["due"] == "P1"]
+        self.assertEqual(len(listed.strip().splitlines()), len(due))
+        self.assertTrue(all(p["id"] in listed and p["text"] in listed for p in due))
+        # `--dm-only` is refused while the read guard is armed (the new birth armed it); the public list is not
+        secret_ids = [p["id"] for p in secret]
+        for mode in ("birth", "detail", "playtest"):
+            designer.arm(self.name, mode, None)
+            refused = designer_run("designer.py", "-c", self.name, "promise", "list", "--phase", "P1", "--dm-only", check=False)
+            self.assertEqual(refused.returncode, 1, mode)
+            self.assertIn("refused while the read guard is armed", refused.stderr)
+            self.assertFalse([i for i in secret_ids if i in refused.stdout], f"{mode}: the secret ledger was printed")
+            self.assertEqual(designer_run("designer.py", "-c", self.name, "promise", "list", "--phase", "P1").stdout, listed)
+        designer.disarm()
+        both = designer_run("designer.py", "-c", self.name, "promise", "list", "--phase", "P1", "--dm-only").stdout
+        secret_due = [p for p in secret if p["due"] == "P1"]
+        self.assertIn("— secret (dm-only) —", both)
+        self.assertTrue(all(p["id"] in both for p in secret_due))
+        agents = designer_run("design_promises.py", "-c", self.name, "list", "--phase", "P1", "--secret").stdout
+        self.assertEqual(len(agents.strip().splitlines()), len(secret_due), "the command a dm-only reader runs")
+        for n, p in enumerate(secret):
+            self.assertNotIn(p["id"], listed, f"secret promise {n} is in the public list")
+
+        writer = dpm.render(self.name, "P1.premise")
+        critic = dpm.render(self.name, "phase_critic", phase_override="P1")
+        self.assertIn("**Promises due at this phase.**", writer)
+        self.assertIn("**Promises due at this phase — your verdicts.**", critic)
+        for p in due:
+            self.assertIn(f"- `{p['id']}` — {p['name']}: {p['text']}", writer, "the writer gets every public promise due now")
+            self.assertEqual(f"`{p['id']}`" in critic, p["check"] == "critic", "the critic gets the ones it judges")
+        self.assertIn("*(checked by script)*", writer)
+        for text in (writer, critic):
+            self.assertIn(dp.list_command(self.name, "P1"), text, "a dm-only reader is given the command, not the sentences")
+            self.assertLess(text.index("Promises due at this phase"), text.index("## Your task"), "the block follows the shared preamble")
+            for n, p in enumerate(secret):
+                self.assertNotIn(p["id"], text, f"secret promise {n}: its id is in a rendered prompt")
+                self.assertNotIn(p["text"], text, f"secret promise {n}: its sentence is in a rendered prompt")
+        self.assertIn('"promises"', critic, "the return schema carries the entry")
+        # only them: the entity critic, the wishes critic and a fan-out phase's entity writer get no block
+        slug = self.name.replace("-", "_")
+        for name, eid in (("critic", f"premise_{slug}"), ("wishes_critic", None), ("skeleton_critic", "skeleton")):
+            self.assertNotIn("Promises due at this phase", dpm.render(self.name, name, eid, phase_override="P1"), name)
+        p3 = dpm.render(self.name, "P3.skeleton")
+        self.assertIn("**Promises due at this phase.**", p3)
+        self.assertTrue(all(f"`{p['id']}`" in p3 for p in public if p["due"] == "P3"))
+        self.assertFalse([p for p in public if p["due"] != "P3" and f"`{p['id']}`" in p3], "another phase's promise is not this phase's")
+        self.assertNotIn("--secret", p3, "the P3 skeleton reads no dm-only material: no secret list")
+        self.assertIn(dp.list_command(self.name, "P4"), dpm.render(self.name, "P4.skeleton"))
+        self.assertNotIn("Promises due at this phase", dpm.render(self.name, "P3.region", "region_reedmarch"), "an entity writer of a fan-out phase")
+
+    def test_a_stub_the_orphan_gate_only_warns_about_is_judged_and_does_not_close_the_gate(self):
+        rows = {"npc_owed": row("npc_owed", "npc", "Halvard Reedwright", created_phase="P1", status="pending", owner_phase="P1"),
+                "god_owed": row("god_owed", "god", "Vashtel", created_phase="P1", status="pending", owner_phase="P1")}
+        self.registry(rows)
+        dp.sync(self.name, "P1")
+        public, _ = self.ledgers()
+        npc = next(p for p in public if p["from"] == "npc_owed")
+        god = next(p for p in public if p["from"] == "god_owed")
+        self.assertEqual((npc.get("minor"), god.get("minor")), (None, True))
+        self.assertEqual(self.codes()["promise"]["ids"], [npc["id"]], "the blocking type closes the gate; the minor one does not")
+        self.assertEqual(dp.run_rules(self.name, "P1")["not_kept"], 2, "both are judged")
+        card = da.build_card(self.name, "P1")
+        self.assertIn(god["id"], card)
+        self.assertIn(npc["id"], card)
+        rows["npc_owed"] = row("npc_owed", "npc", "Halvard Reedwright", created_phase="P1", owner_phase="P1")
+        self.registry(rows)
+        self.assertNotIn("promise", self.codes())
+
+    def test_the_clues_are_ordered_by_their_stages(self):
+        """The audit's note 2: the validator reads a clue's place by the levels its act is played at, against the
+        stage's range in the secret ledger; a legacy birth keeps the act reading."""
+        m = dm.load(self.name)
+        acts: dict = {}
+        for ch in m["arc_skeleton"]:
+            lo, hi = ch["level_band"]
+            acts[ch["act"]] = [min(acts.get(ch["act"], [lo, hi])[0], lo), max(acts.get(ch["act"], [lo, hi])[1], hi)]
+        stages = {p["clue"]: p["levels"] for p in dp.load_secret(self.name) if p["source"] == "clue_stage"}
+        self.assertEqual((len(acts), sorted(stages)), (3, [1, 2, 3]))
+        meets = lambda act, n: not (acts[act][1] < stages[n][0] or acts[act][0] > stages[n][1])
+        good = {n: next(a for a in sorted(acts) if meets(a, n)) for n in (1, 2, 3)}
+        self.assertFalse(meets(3, 1), "the last act is played after the first stage")
+        slug = self.name.replace("-", "_")
+
+        def findings(placing: dict):
+            rows = {f"site_{a}": row(f"site_{a}", "site", f"Site {a}", created_phase="P6", act=a, stamped={"act": a}) for a in acts}
+            rows[f"premise_{slug}"] = row(f"premise_{slug}", "premise", "The Premise", created_phase="P1",
+                                         dm_only={"clues": [{"n": n, "act": 1, "placed_in": f"site_{placing[n]}"} for n in (1, 2, 3)]})
+            self.registry(rows)
+            return [f.message for f in design_check.run(self.name, ("secrecy",), phase="P6") if f.code == "clue_order"]
+        self.assertEqual(findings(good), [], "each clue where its stage is played: every clue says act 1 and none is counted wrong")
+        wrong = findings({1: 3, 2: good[2], 3: good[3]})
+        self.assertEqual(len(wrong), 1)
+        self.assertIn(f"clue 1 sits where levels {acts[3][0]}-{acts[3][1]} are played; its stage is levels {stages[1][0]}-{stages[1][1]}", wrong[0])
+        self.assertEqual(len(findings({1: good[1], 2: good[2], 3: 1})), 0 if meets(1, 3) else 1, "the third belongs on the top step")
+
+
 if __name__ == "__main__":
     if "--report" in sys.argv:
         Secrecy("test_no_secret_row_reaches_a_public_record").test_no_secret_row_reaches_a_public_record()
+        Rules("test_every_promise_a_roll_applies_is_kept_on_every_seed").test_every_promise_a_roll_applies_is_kept_on_every_seed()
+        print("P0 and P1 promises decided by script, over the seeds (rule: promises): " + ", ".join(f"{k.split(':')[1]} {v}" for k, v in sorted(Rules.by_rule.items())))
+        print("P1 public promises left with the critic (sentence: births):")
+        for text, n in sorted(Rules.left.items(), key=lambda x: -x[1]):
+            print(f"  {n:>5}  {text}")
+        hidden_p1 = [sum(1 for p in b["secret"] if p["due"] == "P1") for b in births(SEEDS)]
+        print(f"secret promises due at P1, all the dm-only critic's (smallest / median / largest): {min(hidden_p1)} / {int(statistics.median(hidden_p1))} / {max(hidden_p1)}")
         print(f"seeds: {SEEDS}; sentences a public row and a secret roll both give (one promise in each ledger): {Secrecy.moved}")
         for scale in ("short", "standard", "epic"):
             mine = [b for b in births(SEEDS) if b["dials"]["scale"] == scale]

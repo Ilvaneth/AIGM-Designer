@@ -23,8 +23,15 @@ A promise:
   due         a phase (P0-P9), `validator` (the full validator run) or `play` (recorded, never gates a birth)
   text        the hook's `must` sentence or the generated sentence, in English as the tables hold it
   name        the source row's label, for the card (the tables carry no Turkish since build item 13a)
-  check       `script:<rule>` where a script can decide today (RULES), else `critic`
+  check       `script:<rule>` where a script can decide today (RULES; a hook names its rule in the table: `check:
+              <rule>`), else `critic`
   status      open | kept | not_kept | waived; `verdict` {phase, attempt, by} once judged; `waiver` the owner's sentence
+
+Inspection (Part 12b). `phase check` runs the script rules on every promise due at or before the phase. The phase
+critic returns a verdict per critic-judged promise due at its phase; `phase merge` stores id and verdict. The gate:
+a due script promise not kept closes it (`promise`), so does a due critic promise without a verdict
+(`promise_unjudged`); a critic's `not_kept` does not: the card lists it and the owner decides, by `promise waive` or
+a rerun. A secret promise shows nowhere public but as a count and an id.
 
 The sources today are the rows rolled in P0 and P1 (SOURCE_PHASES). A later floor plugs in at two places, each one
 line: its phase joins SOURCE_PHASES once its tables' hooks are reviewed (docs/p1-tags.md, rule 9), and a promise a
@@ -34,6 +41,8 @@ the default (claims.yaml#defaults); the ones a roll already applies are kept by 
 A legacy birth (no `promises` in design.json) has no ledger and is left as it was built.
 
   design_promises.py -c CAMP counts [--phase PN]     the ledger's counts (public by due phase and status; secret: three counts)
+  design_promises.py -c CAMP list [--phase PN] [--status S] [--secret]
+                                                     the public ledger; --secret the secret one (dm-only readers alone)
 """
 
 from __future__ import annotations
@@ -208,9 +217,7 @@ def build(dials: dict, public: list[dict], secret: list[dict], foundation: dict,
     # 1. hooks: every hook of every rolled row, and the common hooks of its table and sub-table
     for ref, row, phase, hidden in rows:
         for h in hooks_of(ref, row):
-            due = due_of(h["phase"])
-            add("hook", row["id"], phase, due, str(h["must"]), row.get("label") or row["id"],
-                "script:arc_skeleton" if due == "P0" else "critic", hidden)
+            add("hook", row["id"], phase, h["phase"], str(h["must"]), row.get("label") or row["id"], check_of(h, row), hidden)
 
     # 2. overrides: due at the phase that owns the default; two rolled rows with a `combines` line are one promise
     override_promises(rows, add)
@@ -353,8 +360,10 @@ def sync(campaign: str, phase: str | None = None) -> int:
         hidden = row.get("secrecy") == "secret"
         if is_stub(row) and row.get("owner_phase") in dm.PHASES:
             made = row.get("created_phase") if row.get("created_phase") in dm.PHASES else (phase or "P1")
+            # a stub of a type the orphan-stub gate only warns about is listed and judged, and does not close the gate
+            minor = {} if row.get("type") in dm.BLOCKING_STUB_TYPES else {"minor": True}
             L.add("stub", eid, made, row["owner_phase"], f"{eid} is written: its row filled and its file on disk",
-                  f"a reserved {row.get('type')}" if hidden else str(row.get("name") or eid), "script:stub_written", secret=hidden)
+                  f"a reserved {row.get('type')}" if hidden else str(row.get("name") or eid), "script:stub_written", secret=hidden, **minor)
         if row.get("type") == "premise":
             dm_only = row.get("dm_only") or {}
             pinned = dm_only.get("pinned") or {}
@@ -452,9 +461,69 @@ def rule_arc_skeleton(S: State, p: dict) -> bool:
     return shape(m.get("arc_skeleton")) == shape(want)
 
 
-# one small table: a floor that binds a promise to a script adds its rule here
+def sources(p: dict) -> list[dict]:
+    """Every source of a promise: its first and the ones that joined it."""
+    return [{k: p[k] for k in ("source", "from", "from_phase")}] + list(p.get("also") or [])
+
+
+# P1 promises the rolls already apply: the identity record states the fact, so a script reads it (the audit of 12a)
+
+def rule_rolls_by_scale(S: State, p: dict) -> bool:
+    """The scale dial's P1 hook: the trope breaks and the questions the scale counts, and the signature mechanic
+    rolled as the scale's chance says."""
+    m = S.manifest
+    sc = dt.scale_row(m["dials"]["scale"])
+    ident = m.get("identity") or {}
+    mechanic = (S.latest("P1", "mechanic") or {}).get("row_id")
+    chance = int(sc["signature_mechanic_chance"])
+    return (len(ident.get("trope_breaks") or []) == int(sc["trope_breaks"]) and len(ident.get("questions") or []) == int(sc["tensions"])
+            and mechanic == ("no" if chance <= 0 else "yes" if chance >= 100 else mechanic) and mechanic in ("yes", "no"))
+
+
+def rule_people_home(S: State, p: dict) -> bool:
+    """The people signature's home is the lifeline; with the new-people scar rolled it is that scar."""
+    m = S.manifest
+    want = "scar_new_people" if "scar_new_people" in m["foundation"]["break"]["scars"] else "lifeline"
+    return ((m.get("identity") or {}).get("people") or {}).get("home") == want
+
+
+def rule_phenomenon_home(S: State, p: dict) -> bool:
+    """The phenomenon signature's home is the ruin source's strangeness; with the scar that changed a rule of magic
+    it is the break."""
+    m = S.manifest
+    want = "break" if "scar_magic_rule_changed" in m["foundation"]["break"]["scars"] else "ruin_source"
+    return ((m.get("identity") or {}).get("phenomenon") or {}).get("home") == want
+
+
+def rule_question_on_contest(S: State, p: dict) -> bool:
+    """Every contest carries a question of its own, and the break's winner is one of the main contest's roles."""
+    m = S.manifest
+    f, ident = m["foundation"], m.get("identity") or {}
+    asked = {q.get("contest") for q in ident.get("questions") or []}
+    return all(c["id"] in asked for c in f["contests"]) and f["break"]["winner"] in f["contests"][0]["roles"]
+
+
+def rule_scar_land_kind(S: State, p: dict) -> bool:
+    """The new-land scar: a fantastic kind was drawn for it and stands in the palette."""
+    rec = S.latest("P1", "foundation.palette.scar")
+    f = S.manifest["foundation"]
+    row = dt.row("foundation.yaml#palette", rec["row_id"]) if rec and rec.get("row_id") else None
+    return bool(row) and bool(row.get("fantastic")) and rec["row_id"] in list(f["palette"]) + list(f["palette_extra"])
+
+
+def rule_prohibition_drawn(S: State, p: dict) -> bool:
+    """The new-prohibition scar: the first trope break is a prohibition row, tied to the break."""
+    breaks = (S.manifest.get("identity") or {}).get("trope_breaks") or []
+    row = dt.row("trope-breaks.yaml", breaks[0]["id"]) if breaks else None
+    return bool(row) and bool(row.get("prohibition")) and breaks[0].get("tie") == "tie_break"
+
+
+# one small table: a floor that binds a promise to a script adds its rule here (and names it on the hook: `check: <rule>`)
 RULES = {"stub_written": rule_stub_written, "clue_placed": rule_clue_placed, "god_registered": rule_god_registered,
-         "event_dated": rule_event_dated, "override_applied": rule_override_applied, "arc_skeleton": rule_arc_skeleton}
+         "event_dated": rule_event_dated, "override_applied": rule_override_applied, "arc_skeleton": rule_arc_skeleton,
+         "rolls_by_scale": rule_rolls_by_scale, "people_home": rule_people_home, "phenomenon_home": rule_phenomenon_home,
+         "question_on_contest": rule_question_on_contest, "scar_land_kind": rule_scar_land_kind,
+         "prohibition_drawn": rule_prohibition_drawn}
 
 
 def rule_of(p: dict):
@@ -462,11 +531,129 @@ def rule_of(p: dict):
     return RULES.get(check.split(":", 1)[1]) if check.startswith("script:") else None
 
 
-# ── the counts (the card, the summary) ───────────────────────────────────────────────────────────────────────
+def check_of(hook: dict, row: dict) -> str:
+    """A hook's check: the script rule it names (`check: <rule>` on the hook, in the table), else the critic."""
+    rule = hook.get("check")
+    if not rule:
+        return "critic"
+    if rule not in RULES:
+        raise SystemExit(f"design_promises: a hook of {row['id']} names the rule {rule!r}, which is not in RULES — a table fault")
+    return f"script:{rule}"
+
+
+# ── inspection: the script rules, the critic's verdicts, the gate, the owner's waiver (Part 12b) ─────────────
+
+def due_by(p: dict, phase: str) -> bool:
+    """Is the promise due at `phase` or before it? (`validator` and `play` never gate a phase)"""
+    return p["due"] in dm.PHASES and phase in dm.PHASES and dm.PHASES.index(p["due"]) <= dm.PHASES.index(phase)
+
+
+def gates(p: dict) -> bool:
+    """Does a script promise close the gate when it is not kept? A stub of a type the orphan-stub gate only warns
+    about (design_manifest.BLOCKING_STUB_TYPES) is listed and judged, and does not stop an approval."""
+    return not p.get("minor")
+
+
+def _attempt(manifest: dict, phase: str) -> int:
+    return int((manifest["phases"].get(phase) or {}).get("attempt") or 1)
+
+
+def run_rules(campaign: str, phase: str) -> dict:
+    """`phase check`: every script promise due at or before the phase is decided now (a waived one stays waived).
+    Returns the counts {kept, not_kept}; the verdicts are stored in the ledger the promise stands in."""
+    m = dm.load(campaign)
+    if not has_ledger(m):
+        return {}
+    S = State(campaign)
+    secret = load_secret(campaign)
+    out = Counter()
+    changed = False
+    for p in m[KEY] + secret:
+        rule = rule_of(p)
+        if not rule or p["status"] == "waived" or not due_by(p, phase):
+            continue
+        status = "kept" if rule(S, p) else "not_kept"
+        out[status] += 1
+        if p["status"] != status or not p.get("verdict"):
+            p.update({"status": status, "verdict": {"phase": phase, "attempt": _attempt(m, phase), "by": "script"}})
+            changed = True
+    if changed:
+        save(campaign, m[KEY], secret, f"designer.py phase {phase} check (promises)")
+    return {"kept": out["kept"], "not_kept": out["not_kept"]}
+
+
+def script_failures(campaign: str, phase: str) -> tuple[list[str], list[str]]:
+    """The gate's `promise`: the ids of the script promises due at or before the phase that are not kept as the
+    stores stand now (read live, never from a stored verdict): (public ids, secret ids)."""
+    m = dm.load(campaign)
+    if not has_ledger(m):
+        return [], []
+    S = State(campaign)
+    bad = lambda promises: [p["id"] for p in promises if rule_of(p) and gates(p) and p["status"] != "waived"
+                            and due_by(p, phase) and not rule_of(p)(S, p)]
+    return bad(m[KEY]), bad(load_secret(campaign))
+
+
+def unjudged(campaign: str, phase: str) -> tuple[list[str], list[str]]:
+    """The gate's `promise_unjudged`: the critic-judged promises due at this phase that carry no verdict."""
+    m = dm.load(campaign)
+    if not has_ledger(m):
+        return [], []
+    left = lambda promises: [p["id"] for p in promises if p["check"] == "critic" and p["due"] == phase and p["status"] == "open"]
+    return left(m[KEY]), left(load_secret(campaign))
+
+
+def judge(campaign: str, phase: str, entries: list[dict], by: str = "critic") -> tuple[int, int]:
+    """Store a critic's verdicts: `{id, verdict: kept | not_kept}` for the critic-judged promises due at this phase.
+    A secret promise's verdict goes to the secret ledger. Returns (stored, ignored): an id that is unknown, not the
+    critic's to judge, not due at this phase or waived is ignored."""
+    m = dm.load(campaign)
+    if not has_ledger(m):
+        return 0, len(entries)
+    secret = load_secret(campaign)
+    index = {p["id"]: p for p in m[KEY] + secret}
+    stored = 0
+    for e in entries:
+        p = index.get(e.get("id"))
+        if p is None or p["check"] != "critic" or p["due"] != phase or p["status"] == "waived" or e.get("verdict") not in ("kept", "not_kept"):
+            continue
+        p.update({"status": e["verdict"], "verdict": {"phase": phase, "attempt": _attempt(m, phase), "by": by}})
+        stored += 1
+    if stored:
+        save(campaign, m[KEY], secret, f"design_approval.py critique --phase {phase} (promise verdicts)")
+    return stored, len(entries) - stored
+
+
+def waive(campaign: str, promise_id: str, sentence: str) -> dict:
+    """The owner accepts a not-kept promise as it stands: recorded with the sentence in the ledger and the revision
+    log. The log names the promise by its id alone: a secret promise's text and source never reach a public record."""
+    from design_io import now_iso
+    m = dm.load(campaign)
+    if not has_ledger(m):
+        raise SystemExit("design_promises: this birth has no ledger (a legacy birth)")
+    secret = load_secret(campaign)
+    p = next((x for x in m[KEY] + secret if x["id"] == promise_id), None)
+    if p is None:
+        raise SystemExit(f"design_promises: no promise {promise_id}")
+    if p["status"] != "not_kept":
+        raise SystemExit(f"design_promises: {promise_id} is {p['status']}; only a promise judged not kept is waived")
+    if not str(sentence or "").strip():
+        raise SystemExit("design_promises: a waiver needs the owner's one sentence")
+    p.update({"status": "waived", "waiver": {"sentence": sentence.strip(), "at": now_iso()}})
+    entry = {"at": now_iso(), "scope": "promise", "phase": p["due"] if p["due"] in dm.PHASES else None,
+             "reason": sentence.strip(), "affected": 0, "commit": None, "promise": promise_id}
+    m.setdefault("revision_log", []).append(entry)
+    entry["id"] = f"rev_{len(m['revision_log']):04d}"
+    save(campaign, m[KEY], secret, "designer.py promise waive", manifest=m)
+    dm.save(campaign, m, "designer.py promise waive")
+    return p
+
+
+# ── the counts and the lists (the card, the report, the prompts) ─────────────────────────────────────────────
 
 def counts(public: list[dict], secret: list[dict], phase: str | None = None) -> dict:
     """The ledger in numbers: the public promises due at `phase` by status, the open ones by due phase, the secret
-    ones as three counts (the owner's ruling 2: never a secret promise's text)."""
+    ones as three counts (the owner's ruling 2: never a secret promise's text; a waived one leaves the three)."""
     by_status = Counter(p["status"] for p in public if p["due"] == phase)
     open_by = Counter(p["due"] for p in public if p["status"] == "open")
     sec = Counter(p["status"] for p in secret)
@@ -475,17 +662,91 @@ def counts(public: list[dict], secret: list[dict], phase: str | None = None) -> 
             "secret": {"open": sec.get("open", 0), "kept": sec.get("kept", 0), "not_kept": sec.get("not_kept", 0)}}
 
 
+def line_of(p: dict) -> str:
+    """A promise in one line: the source row's name, the due phase, the sentence."""
+    how = "" if p["check"] == "critic" else " (checked by script)"
+    return f"{p['name']} (due {p['due']}){how}: {p['text']}"
+
+
 def card_lines(campaign: str, phase: str) -> list[str]:
-    """The card's one block. Before its due phase a promise is open work, never an error."""
+    """The card's block. Before its due phase a promise is open work, never an error. A public promise judged not
+    kept is listed by its row's name, due phase and sentence; a secret one only adds to the secret count."""
     m = dm.load(campaign)
     if not has_ledger(m):
         return []
     c = counts(m[KEY], load_secret(campaign), phase)
     d = c["due"]
-    return [f"- **Promises due at this phase:** {d['total']} (kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}, open {d['open']})",
-            "- **Open promises by due phase:** " + (" · ".join(f"{k} {v}" for k, v in c["open_by_due"].items()) or "—")
-            + " — open work until each phase's turn, not errors",
-            f"- **Secret promises:** {c['secret']['open']} open, {c['secret']['kept']} kept, {c['secret']['not_kept']} not kept"]
+    lines = [f"- **Promises due at this phase:** {d['total']} (kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}, open {d['open']})",
+             "- **Open promises by due phase:** " + (" · ".join(f"{k} {v}" for k, v in c["open_by_due"].items()) or "—")
+             + " — open work until each phase's turn, not errors",
+             f"- **Secret promises:** {c['secret']['open']} open, {c['secret']['kept']} kept, {c['secret']['not_kept']} not kept"]
+    broken = [p for p in m[KEY] if p["status"] == "not_kept"]
+    if broken:
+        lines.append(f"- ⚠ **Promises judged not kept:** {len(broken)} — the owner decides: accept one as it stands "
+                     "(`designer.py promise waive <id> \"<one sentence>\"`), or rerun the phase")
+        lines += [f"  - `{p['id']}` · {line_of(p)}" for p in sorted(broken, key=lambda p: (DUE_ORDER.index(p["due"]), p["id"]))]
+    return lines
+
+
+def report_line(campaign: str, phase: str) -> str | None:
+    """`phase PN report`: counts and ids only (the conductor pastes it as printed)."""
+    m = dm.load(campaign)
+    if not has_ledger(m):
+        return None
+    c = counts(m[KEY], load_secret(campaign), phase)
+    d, s = c["due"], c["secret"]
+    broken = [p["id"] for p in m[KEY] if p["status"] == "not_kept"]
+    return (f"- promises: due here {d['total']} (kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}, open {d['open']})"
+            f" · judged not kept {len(broken)}{' [' + ', '.join(broken[:12]) + ']' if broken else ''}"
+            f" · secret {s['open']} open, {s['kept']} kept, {s['not_kept']} not kept")
+
+
+def list_command(campaign: str, phase: str) -> str:
+    return f"py {Path(__file__).resolve().as_posix()} -c {campaign} list --phase {phase} --secret"
+
+
+def prompt_block(campaign: str, phase: str, audience: str, secret_reader: bool) -> str:
+    """The prompts' block "Promises due at this phase" (section 6): the public promises due now, by id, source row's
+    name and sentence. The writer (`audience: writer`) gets every one; the phase critic (`critic`) the ones it judges,
+    with the entry its return owes. No secret promise is printed: an agent that already reads dm-only material is
+    given the command that lists them."""
+    m = dm.load(campaign)
+    if not has_ledger(m) or phase not in dm.PHASES:
+        return ""
+    due = [p for p in m[KEY] if p["due"] == phase and p["status"] != "waived"]
+    if audience == "critic":
+        due = [p for p in due if p["check"] == "critic"]
+        head = ("**Promises due at this phase — your verdicts.** The rows this campaign rolled promised what follows, and "
+                "each is due now. For every promise return one entry in `promises[]`: `{id, verdict: kept | not_kept, note}` "
+                "(`note` is a short slug, never quoted text; your reasoning goes to the critique file). Judge what the "
+                "phase's files and rows hold, not what they intend. A promise without your verdict closes the approval gate.")
+    else:
+        head = ("**Promises due at this phase.** The rows this campaign rolled promised what follows, and each is due now: "
+                "what you write keeps every one of them. The phase critic returns a verdict per promise; one a script "
+                "checks closes the approval gate when it is not kept.")
+    lines = [head] + [f"- `{p['id']}` — {p['name']}: {p['text']}" + ("" if p["check"] == "critic" else " *(checked by script)*")
+                      for p in sorted(due, key=lambda p: p["id"])]
+    if not due:
+        lines.append("- (no public promise is due at this phase)")
+    if secret_reader:
+        tail = (" Return a verdict for each of their ids too; what you reason about them goes to "
+                f"`design/dm-only/_staging/{phase}/`, never to a public file." if audience == "critic" else
+                " Keep them as you keep the others.")
+        lines.append(f"The secret promises due at this phase are not printed here. Run `{list_command(campaign, phase)}` and "
+                     "read them from its output; their sentences never leave dm-only and never enter your return." + tail)
+    return "\n".join(lines)
+
+
+def listing(campaign: str, phase: str | None, status: str | None, secret: bool) -> list[str]:
+    """`promise list`: one ledger's promises, a line each: id, status, check, then the name, the due phase and the sentence."""
+    m = dm.load(campaign)
+    if not has_ledger(m):
+        return []
+    rows = load_secret(campaign) if secret else m[KEY]
+    rows = [p for p in rows if (not phase or p["due"] == phase) and (not status or p["status"] == status)]
+    return [f"{p['id']}  {p['status']:<8}  {'critic' if p['check'] == 'critic' else 'script':<6}  {line_of(p)}"
+            + (f"  [waived: {p['waiver']['sentence']}]" if p.get("waiver") else "")
+            for p in sorted(rows, key=lambda p: (DUE_ORDER.index(p["due"]), p["id"]))]
 
 
 def main(argv=None) -> int:
@@ -494,10 +755,18 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="verb", required=True)
     c = sub.add_parser("counts")
     c.add_argument("--phase")
+    ls = sub.add_parser("list", help="the public ledger; with --secret the secret one (dm-only: an agent that reads dm-only, the development tab)")
+    ls.add_argument("--phase")
+    ls.add_argument("--status", choices=STATUSES)
+    ls.add_argument("--secret", action="store_true")
     a = ap.parse_args(argv)
     m = dm.load(a.campaign)
     if not has_ledger(m):
         print("design_promises: this birth has no ledger (a legacy birth is left as it was built)")
+        return 0
+    if a.verb == "list":
+        for line in listing(a.campaign, a.phase, a.status, a.secret):
+            print(line)
         return 0
     out = counts(m[KEY], load_secret(a.campaign), a.phase)
     if a.phase:

@@ -380,7 +380,7 @@ tables:
     hooks_common:
       - {phase: P2, must: "one age of the history is this fall, told from its `what` line"}
       - {phase: P6, must: "the remnant's sites come from the row's `sites` types; at least one site stands in the remnant"}
-      - {phase: P1, must: "unless the scar changed a magic rule, the phenomenon signature's home is this strangeness"}
+      - {phase: P1, must: "unless the scar changed a magic rule, the phenomenon signature's home is this strangeness", check: phenomenon_home}
     rows:
       # 1. fallen kingdoms
       - id: ruin_road_kingdom
@@ -828,7 +828,7 @@ tables:
       - {phase: P3, must: "the lifeline's yields are the economy's main goods; its place is a map node on the spine"}
       - {phase: P5, must: "the lifeline's trades are NPC trades; at least one NPC lives by it"}
       - {phase: P4, must: "the contest's prize, when it is the lifeline, is this row"}
-      - {phase: P1, must: "the people signature's home is the lifeline (unless the new-people scar rolled)"}
+      - {phase: P1, must: "the people signature's home is the lifeline (unless the new-people scar rolled)", check: people_home}
     rows:
       - id: life_snowmelt
         label: "Snowmelt from the mountains"
@@ -1207,7 +1207,7 @@ tables:
     hooks_common:
       - {phase: P4, must: "each role is a faction of its hinted archetype; every other faction takes a stance on the contest"}
       - {phase: P4, must: "the escalation's steps are the factions' provocation rungs, first spark to the hardest form"}
-      - {phase: P1, must: "the question's two poles sit on sides a and b; the break's winner is one of the roles"}
+      - {phase: P1, must: "the question's two poles sit on sides a and b; the break's winner is one of the roles", check: question_on_contest}
       - {phase: P7, must: "the contest's escalation climbs with the arc"}
     rows:
       - id: contest_two_heirs
@@ -2043,7 +2043,7 @@ tables:
         needs_fantastic_room: true
         text: {"name": "a new kind of place on the map", "name_note": "from the fantastic palette"}
         hooks:
-          - {phase: P1, must: "a fantastic kind joins the palette"}
+          - {phase: P1, must: "a fantastic kind joins the palette", check: scar_land_kind}
           - {phase: P3, must: "the kind is a map node"}
       - id: scar_roads_changed
         label: "The roads changed"
@@ -2072,7 +2072,7 @@ tables:
         note: "the phenomenon signature is this rule: its home becomes the break and its rule comes from family 8 (review #6)"
         text: {"name": "a rule of magic changed"}
         hooks:
-          - {phase: P1, must: "the phenomenon signature is this rule"}
+          - {phase: P1, must: "the phenomenon signature is this rule", check: phenomenon_home}
           - {phase: P2, must: "the magic system carries it"}
       - id: scar_god_changed
         label: "A god changed"
@@ -2120,7 +2120,7 @@ tables:
         note: "the people signature may be this people (its home becomes the scar)"
         text: {"name": "a new people appeared", "name_note": "those the break transformed"}
         hooks:
-          - {phase: P1, must: "the people signature may be this people"}
+          - {phase: P1, must: "the people signature may be this people", check: people_home}
           - {phase: P5, must: "NPCs of that people"}
       - id: scar_state_fell
         label: "A state fell and left a void"
@@ -2157,7 +2157,7 @@ tables:
         note: "one trope break is drawn from the prohibition rows (step 2)"
         text: {"name": "a new ban or taboo"}
         hooks:
-          - {phase: P1, must: "one trope break is drawn from the prohibition rows"}
+          - {phase: P1, must: "one trope break is drawn from the prohibition rows", check: prohibition_drawn}
           - {phase: P3, must: "the law carries the taboo"}
       - id: scar_new_belief
         label: "A new belief"

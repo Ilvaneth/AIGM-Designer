@@ -19,6 +19,20 @@
         }
       }
     },
+    "promises": {
+      "type": "array",
+      "description": "the phase critic only: one entry per promise of its prompt's block (and of the secret list it ran the command for)",
+      "items": {
+        "type": "object",
+        "required": ["id", "verdict"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "description": "the promise id, prm_…"},
+          "verdict": {"type": "string", "enum": ["kept", "not_kept"]},
+          "note": {"type": "string", "description": "a short slug, never quoted text; the reasoning goes to the critique file"}
+        }
+      }
+    },
     "notes_file": {"type": "string", "description": "design/_staging/<phase>/<id>.critique.md with the full reasoning; dm-only when the scope was dm-only"}
   }
 }

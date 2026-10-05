@@ -218,6 +218,30 @@ def prior_campaigns_text(campaign: str) -> str:
             "from other ground than these: not the same motif in other words, not the same word families.\n" + "\n".join(lines))
 
 
+# the prompts that already read dm-only material: they are given the command that lists the secret promises
+SECRET_READERS = ("P1.premise", "P2.cosmos", "P4.skeleton", "P5.skeleton", "P6.skeleton", "P7.skeleton", "P9.thread", "phase_critic")
+
+
+def promise_audience(name: str, role: str, phase: str, detail: bool) -> str | None:
+    """Who gets the block "Promises due at this phase" (docs/p1-build-12.md, section 6): the phase's writer (the
+    single writer, or the skeleton agent of a fan-out phase) and its phase critic, and only them."""
+    if detail or phase not in dm.PHASES:
+        return None
+    if role == "phase_critic":
+        return "critic"
+    if role == "skeleton" or (role == "writer" and prompt_for(phase, None) is None):
+        return "writer"
+    return None
+
+
+def promises_text(campaign: str, name: str, role: str, phase: str, detail: bool) -> str:
+    audience = promise_audience(name, role, phase, detail)
+    if not audience:
+        return ""
+    import design_promises as dpr
+    return dpr.prompt_block(campaign, phase, audience, name in SECRET_READERS)
+
+
 def name_pool_text(campaign: str, entity_id: str | None) -> str:
     import design_names as dn
     return dn.prompt_text(campaign, entity_id)
@@ -272,7 +296,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "fragment_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.json",
         "notes_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.notes.md",
         "rubrics": rubric_lines(phase, scope, critic_order) if role in ("critic", "phase_critic") else "",
-        "common": common_text(), "schema": schema_text(str(fm.get("schema") or "writer")),
+        "schema": schema_text(str(fm.get("schema") or "writer")),
         "agent_label": f"{phase}.{entity_id or role}.a{attempt}", "roster": ", ".join(ph.get("roster") or []) or "(none yet)",
         "party_size": str(d["party_size"]), "level_band": f"{d['level_band'][0]}-{d['level_band'][1]}",
         "content_mix": ", ".join(d["content_mix"]), "critic_order": str(critic_order),
@@ -286,6 +310,10 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
                           else f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.critique.md"),
         "name_pool": name_pool_text(campaign, entity_id),      # after "common": _common.md carries the placeholder
     }
+    # build item 12b: the promises due at this phase follow the shared preamble, for the phase's writer and its
+    # phase critic alone; "common" is filled first, so the name pool's placeholder inside it is filled after
+    block = promises_text(campaign, name, role, phase, staging_phase == "detail")
+    ctx = dict({"common": common_text() + ("\n\n" + block if block else "")}, **ctx)
     text = body
     for key, value in ctx.items():
         text = text.replace("{{" + key + "}}", value)

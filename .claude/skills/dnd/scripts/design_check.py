@@ -97,6 +97,8 @@ class Bible:
     phase: str | None = None
     fixture: bool = False
     ledger: bool = False                          # the birth keeps a promise ledger (design.json#promises)
+    stages: dict = field(default_factory=dict)    # clue n -> [lo, hi]: its stage's levels (the secret ledger)
+    act_levels: dict = field(default_factory=dict)  # act -> [lo, hi]: the levels its chapters are played at
     prose: dict = field(default_factory=dict)     # Path -> text, every design/**/*.md except _staging
     fm: dict = field(default_factory=dict)        # Path -> front matter
 
@@ -138,8 +140,17 @@ def load_bible(campaign: str, phase: str | None, fixture: bool) -> Bible:
         map=read_json(design_dir(campaign) / "map.json"),
         phase=phase,
         fixture=fixture or bool(canonical.get("_meta", {}).get("fixture")),
-        ledger=isinstance((read_json(design_dir(campaign) / "design.json") or {}).get("promises"), list),
     )
+    manifest = read_json(design_dir(campaign) / "design.json") or {}
+    b.ledger = isinstance(manifest.get("promises"), list)
+    if b.ledger:
+        for p in (read_json(dm_only_dir(campaign) / "promises.json") or {}).get("promises") or []:
+            if p.get("source") == "clue_stage" and p.get("levels"):
+                b.stages[p.get("clue")] = list(p["levels"])
+        for ch in manifest.get("arc_skeleton") or []:
+            lo, hi = ch["level_band"]
+            have = b.act_levels.get(ch["act"])
+            b.act_levels[ch["act"]] = [lo, hi] if have is None else [min(have[0], lo), max(have[1], hi)]
     for p in sorted(design_dir(campaign).rglob("*.md")):
         if any(s in p.parts for s in SCRATCH_DIRS):
             continue        # cards, rendered prompts, staging and revised copies are not bible prose (tuning birth 1)
@@ -377,7 +388,10 @@ def check_secrecy(b: Bible, only: str | None) -> list[Finding]:
             if v in text:
                 E(eid, "secret_line_leak", f"dm_only.{k} appears verbatim in {where}")
 
-    # the big secret's three clues are placed, in act order
+    # the big secret's three clues are placed, in order. A birth with a promise ledger orders them by their stages
+    # (the secret ledger's level ranges: the first third of the band, the middle third, the top step): a clue's place
+    # is read where the party plays it, by the levels of the act the place is stamped to; a one-act campaign keeps
+    # its three clues. A legacy birth keeps the act reading.
     for eid, ent in ents.items():
         if ent.get("type") != "premise":
             continue
@@ -391,7 +405,14 @@ def check_secrecy(b: Bible, only: str | None) -> list[Finding]:
                 E(eid, "clue_unplaced", f"clue {c.get('n')} placed_in {where} does not exist")
             elif ents[where].get("type") not in ("site", "npc", "item"):
                 E(eid, "clue_place_kind", f"clue {c.get('n')} sits on a {ents[where].get('type')}, not a site/npc/item")
-            if isinstance(c.get("act"), int):
+            if b.stages:
+                stage = b.stages.get(c.get("n"))
+                place = ents.get(where) or {}
+                played = b.act_levels.get(place.get("stamped", {}).get("act", place.get("act")))
+                if stage and played and (played[1] < stage[0] or played[0] > stage[1]):
+                    E(eid, "clue_order", f"clue {c.get('n')} sits where levels {played[0]}-{played[1]} are played; "
+                                         f"its stage is levels {stage[0]}-{stage[1]}")
+            elif isinstance(c.get("act"), int):
                 if c["act"] < last_act:
                     E(eid, "clue_order", f"clue {c.get('n')} is in act {c['act']}, after act {last_act}")
                 last_act = c["act"]

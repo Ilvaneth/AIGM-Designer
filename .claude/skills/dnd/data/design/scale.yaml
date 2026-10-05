@@ -59,7 +59,7 @@ rows:
     volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 1}
     hooks:
       - {phase: P4, must: "the great gods' churches are factions inside the count; the quota's religious faction is the first great god's church"}
-      - {phase: P0, must: "arc skeleton: 1 act, 3 chapters, level band start..start+4"}
+      - {phase: P0, must: "arc skeleton: 1 act, 3 chapters, level band start..start+4", check: arc_skeleton}
       - {phase: P4, must: "the quota fills the count; a religious faction is optional"}
       - {phase: P6, must: "8 sites at most: 4 minor, 3 standard, 1 major; the first 2 on the intended path are detailed at birth"}
   - id: counts_standard
@@ -91,7 +91,7 @@ rows:
     volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 2}
     hooks:
       - {phase: P4, must: "the great gods' churches are factions inside the count; the quota's religious faction is the first great god's church"}
-      - {phase: P0, must: "arc skeleton: 3 acts, 7 chapters by default, level band start..start+11"}
+      - {phase: P0, must: "arc skeleton: 3 acts, 7 chapters by default, level band start..start+11", check: arc_skeleton}
       - {phase: P4, must: "the quota's four archetypes plus rolls from the pool up to the count"}
       - {phase: P7, must: "six beats, two per act; the doom day ≈ 25 sessions × 5 days with ≥30% slack"}
   - id: counts_epic
@@ -123,6 +123,6 @@ rows:
     volatility: {control_flips_per_week: 1, large_stance_shifts_per_week: 3}
     hooks:
       - {phase: P4, must: "the great gods' churches are factions inside the count; the quota's religious faction is the first great god's church"}
-      - {phase: P0, must: "arc skeleton: 3 acts, 10 chapters by default, level band start..start+19"}
+      - {phase: P0, must: "arc skeleton: 3 acts, 10 chapters by default, level band start..start+19", check: arc_skeleton}
       - {phase: P2, must: "history covers 500 years"}
       - {phase: P7, must: "still six beats: the spine does not lengthen, the chapters widen"}
