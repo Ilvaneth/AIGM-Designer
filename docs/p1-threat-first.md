@@ -58,7 +58,7 @@ The rolls, in order:
 
 **Legibility as a rubric** (finding 3): a new P1 rubric, "Does the player pitch show a threat with a face and something the party can do in the first session?" The rubrics that reward distinctness stay; this one balances them.
 
-## Good and evil (proposed 2026-10-05, waiting for the owner's word)
+## Good and evil (approved by the owner, 2026-10-05)
 
 The owner asked whether "no people is evil by birth" leaves the writer to choose who is evil. Its first half is sound and stays unchanging: no people (a lineage or a culture) is evil as a whole by birth; individuals, groups, armies, cults and rulers may be as evil as any villain; fiends, the undead and aberrations are creatures and may be evil by nature. Its purpose is play: every group the party meets made a choice, so it can be parleyed with, allied or betrayed, and a site's attitude to intruders is its occupants' choice (`forbidden.yaml`'s `why`, its P6 hook). Its second half, "alignments are set when good and evil are placed", names no phase and no roll, so in practice the first writer to reach a people decides: the same class of fault as the eight findings. The chain gives it a place:
 
@@ -66,6 +66,27 @@ The owner asked whether "no people is evil by birth" leaves the writer to choose
 - **how grey the other sides are** is the darkness dial's (as today, P4);
 - **the hand is an organisation or a creature, never a whole people;** a hand drawn from a people is a part of it (a war band, a sect, a mercenary clan), and another part of that people stands elsewhere (an ally, a victim, a neutral);
 - **individual alignments** are the writers' at P5, inside the existing rule (three or more NPCs of one species never share one alignment).
+
+## The writer writes, it does not decide (owner, 2026-10-05: "is there still an opening for the writer's interpretation?")
+
+**The rule:** every decision a later floor depends on is a roll, a rule or the owner's; the writer makes it concrete in words and creates no new obligation. A search of `P1.premise.md`, its template and the rows it reads found seven openings beyond findings 4 and 5 and the placing of good and evil:
+
+| # | Opening | What the writer decides today | The fix |
+|---|---|---|---|
+| W1 | the god the secret is pinned to | every secret is pinned to a god, and the god's part in it is invented (this birth: "the mind answered in the god's voice") | the pin is rolled: a god only where the archetype or the goal calls for one, with its relation from a short table (deceived, impersonated, complicit, silent, opposed …); otherwise the pin is a piece of the chain (the remnant, the thin place) |
+| W2 | where the clues lie | the kind of place for each clue, which binds P6 | the clues follow the chain: the first where the hand works, the second at the move's target or with the role it made stronger, the third at the goal |
+| W3 | what is at stake | the question's stakes | the stakes are the contest's prize and the villain's goal, named; the writer says them in this world's words |
+| W4 | the `appears` notes | free sentences that become binding promises on later floors | a note restates its table's hook for this campaign and adds no fact; the promise binds the hook, the sentence is advice to the later writer |
+| W5 | the concretised object | what fell from the sky or what was born: a story object invented | if such a verb stays, its object is rolled from a short table or is a piece of the chain |
+| W6 | the signature mechanic | a rule with a track, thresholds, gains and costs, designed freely | a template table of mechanic shapes; the writer fills numbers inside its bands (or the mechanic moves to the floor that makes rules) |
+| W7 | the villain's works and how it shows on each step | what it builds, when it is seen | the goal and the plan's steps (rolled) decide; the writer describes |
+
+Checked and left to the writer as craft: the choice of a signature's name among its four candidates (the owner rerolls), the explanation of a trope break through its tie, the pitches and the "only here" sentences, the contest roles' labels (P4 builds them from its own rolls), the twist's thread (chosen with the player at P9).
+
+## Held for after the build
+
+- **The critics** (owner, 2026-10-05: they do not criticise rightly): reviewed as a whole once the system is built. The test birth's evidence for that review: the phase critic's `fix` reached no writer (`phase_fixes: []`); a critic passed "every floor noted" on a fragment the door then refused; seven findings came back with `reason_code: null`; free reason codes reach the owner's report and one read as secret content; the critics passed a strange story on every rubric (finding 3).
+- **Pipeline faults from the birth's report** (`docs/reports/p1-test-birth-1.md`, section 6), fixed in part 18e or before the next birth: the classifier's refusal of a Bash read of dm-only (agents read it with the Read tool); an unmerged Workflow's cost reaches no ledger; the phenomenon's play floor has no `appears` form the door accepts; a stale `last_error` rides into the next prompt; the card shows no change after a correction round and keeps `attempt 1`; the old tongue reported with 0 roots at the preroll; the protocol's wording on a failed Workflow and on which unit the door refused.
 
 ## What stays, what changes, what is new
 
