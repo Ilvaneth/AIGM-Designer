@@ -17,7 +17,7 @@ nothing the owner can read tells what was rolled in secret.
 
 A promise:
   id          `prm_<hash of due and text>` (a secret one hashes its ledger too): the same birth and seed give the same ids
-  source      hook | override | foundation | stub | placement | concretise | clue_stage
+  source      hook | override | foundation | stub | placement | concretise | clue_stage | note (a signature's `appears`)
   from        the row id, the entity id or the foundation piece; `from_phase` the phase that made it
   also        further sources of the same promise (two promises with one due phase and one text are one promise)
   due         a phase (P0-P9), `validator` (the full validator run) or `play` (recorded, never gates a birth)
@@ -66,7 +66,7 @@ SOURCE_PHASES = ("P0", "P1")             # the phases whose rolled rows are sour
 DUE_OTHER = ("validator", "play")
 DUE_ALIASES = {"names": "P1", "slice2": "play"}     # claims.yaml#defaults: the naming rolls are P1's; slice 2 is play
 DUE_ORDER = dm.PHASES + DUE_OTHER
-SOURCES = ("hook", "override", "foundation", "stub", "placement", "concretise", "clue_stage")
+SOURCES = ("hook", "override", "foundation", "stub", "placement", "concretise", "clue_stage", "note")
 STATUSES = ("open", "kept", "not_kept", "waived")
 NO_TABLE = ("dice", "tokens")            # dice-log records that name no table row
 PART_WORDS = {"key_place": "the key place", "heart": "the heart", "end_a": "the first end", "end_b": "the second end",
@@ -364,6 +364,11 @@ def sync(campaign: str, phase: str | None = None) -> int:
             minor = {} if row.get("type") in dm.BLOCKING_STUB_TYPES else {"minor": True}
             L.add("stub", eid, made, row["owner_phase"], f"{eid} is written: its row filled and its file on disk",
                   f"a reserved {row.get('type')}" if hidden else str(row.get("name") or eid), "script:stub_written", secret=hidden, **minor)
+        if row.get("type") == "signature" and not hidden:
+            # build item 13b: where the writer says a signature will appear is a promise to that floor
+            for n in row.get("appears") or []:
+                if isinstance(n, dict) and n.get("phase") in dm.PHASES and str(n.get("text") or "").strip():
+                    L.add("note", eid, "P1", n["phase"], str(n["text"]).strip(), str(row.get("name") or eid))
         if row.get("type") == "premise":
             dm_only = row.get("dm_only") or {}
             pinned = dm_only.get("pinned") or {}

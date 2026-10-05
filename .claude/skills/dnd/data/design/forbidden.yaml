@@ -19,7 +19,7 @@ rows:
     label: Inherently evil races
     why: "a people whose alignment is fixed by birth cannot be negotiated with, so a site cannot have an attitude"
     structural: {field: alignment_fixed, table: npcs.yaml#demographic, forbidden_values: [true]}
-    lexical: {en: ["(orcs|goblins|drow|kobolds) are (always|inherently|by nature) evil"], tr: ["doğuştan kötü", "(orklar|goblinler) her zaman kötü"]}
+    lexical: {en: ["(orcs|goblins|drow|kobolds) are (always|inherently|by nature) evil"]}
     allowed_via: [secret_monsters_were_made]
     hooks:
       - {phase: P5, must: "no demographic row fixes an alignment; for any species with ≥3 NPCs the alignments differ"}

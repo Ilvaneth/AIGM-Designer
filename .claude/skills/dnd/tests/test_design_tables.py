@@ -773,9 +773,9 @@ class ForbiddenDetection(unittest.TestCase):
                 s = r["structural"]
                 self.assertTrue(s["field"] and s["table"] and s["forbidden_values"])
                 self.assertIn("#", s["table"])
-                for lang in ("en", "tr"):
-                    for pat in r["lexical"][lang]:
-                        re.compile(pat, re.IGNORECASE)
+                self.assertEqual(set(r["lexical"]), {"en"}, "the Turkish patterns went with build item 13b: a birth is written in English")
+                for pat in r["lexical"]["en"]:
+                    re.compile(pat, re.IGNORECASE)
                 self.assertIsInstance(r.get("allowed_via"), list)
 
     def test_lexical_patterns_catch_the_cliche_and_not_the_fixture(self):

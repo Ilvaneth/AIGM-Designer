@@ -37,6 +37,18 @@ rules:
     repeats: "no two-letter chunk repeated at once, no three-letter chunk repeated anywhere"
   adjectives: "a root whose first tag is `colour` or `direction and age` is an adjective, and so is a root marked `adjective: true` (steep, dry, dark and the like); a pattern slot says whether it takes one (`adjective: true`)"
   parts_differ: "no part of a name repeats another: a building's root is not its word (no Mill Mill)"
+  # build item 13b, the door's prose scan: a capitalised word that opens no sentence, heading, list item or table cell
+  # belongs to a pooled or registered name (a form, region, building or site word stands inside its name and is matched
+  # with it), or stands on this closed list: "I", the SRD's capitalised terms the prompts allow, and what a rolled row's
+  # own text says in capitals (a test holds every public P0 and P1 row to the list). Nothing else.
+  capitalised_common: ["I", "DC", "AC", "HP", "CR", "XP", "SRD", "DM", "BBEG", "Act",
+                       "Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma",
+                       "Acrobatics", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation",
+                       "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Stealth", "Survival",
+                       "Animal Handling", "Sleight of Hand", "Deep Speech",
+                       "Common", "Dwarvish", "Elvish", "Giant", "Gnomish", "Goblin", "Halfling", "Orc", "Abyssal", "Celestial",
+                       "Draconic", "Infernal", "Primordial", "Sylvan", "Undercommon",
+                       "Hells", "Nine Hells", "Abyss"]       # planes two approved rows name in their own statements
   # build item 11b: what the script rolls for a campaign's names, at the end of P1's rolls (decisions 33-44).
   draw:
     living_languages: {short: 2, standard: 3, epic: 3}       # the old tongue stands beside them in every campaign

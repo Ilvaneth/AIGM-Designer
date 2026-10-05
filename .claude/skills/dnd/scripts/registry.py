@@ -594,6 +594,9 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
     used = {t: sum(1 for row in canonical["entities"].values() if row.get("type") == t) for t in budget}
     import design_manifest as dman
     english = dman.writes_english(dman.load(campaign))
+    # build item 13b: P1's door, for a birth whose P1 the script rolled (a legacy birth is checked as before)
+    import design_door
+    door = design_door.Door(campaign, canonical, incoming) if design_door.applies(dman.load(campaign), phase) else None
     for u in units:
         errs, warns = list(u["errors"]), []
         if u["frag"]:
@@ -624,6 +627,10 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
             warns += w3
             if drift:
                 u["revised"][eid] = drift
+        if door is not None:
+            e4, w4 = door.unit_errors(u["id"], u["frag"], u["rows"])
+            errs += e4
+            warns += w4
         new_rows: dict[str, int] = {}
         for eid, row in u["rows"]:
             if row.get("type") in budget and eid not in canonical["entities"]:
@@ -645,6 +652,8 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
         else:
             accepted.append(u)
 
+    if door is not None:
+        door.close()            # what the conductor may not read: the dm-only door log
     merged_dir = staging / "merged"
     merged_dir.mkdir(exist_ok=True)
     summary: list[str] = []

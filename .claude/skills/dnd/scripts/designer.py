@@ -644,6 +644,8 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         import design_promises as dpr
         n_open, n_hidden = dpr.build_for(campaign)
         print(f"designer: promises — {n_open} public, {n_hidden} secret (counts only)")
+        import design_door
+        design_door.seal(campaign)              # build item 13b: what the preroll wrote is the writer's ground
     elif phase not in ("P0", "P1"):
         # root-cause analysis 1, RC-13: person and god names are rolled, never invented
         if dn.ensure_pool(campaign, phase, attempt) is not None:

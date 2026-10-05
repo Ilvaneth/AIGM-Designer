@@ -918,6 +918,9 @@ def reroll(campaign: str, slot: str) -> list[dict]:
     cur.update({"attempt": attempt, "names": names})
     stamp_meta(data, campaign, f"design_names.py reroll --slot {slot}")
     write_json_atomic(naming_path(campaign), data)
+    import design_door
+    if dm.load(campaign).get(design_door.SEAL):
+        design_door.seal(campaign)              # the owner's reroll is the one sanctioned change of the candidates
     return names
 
 
