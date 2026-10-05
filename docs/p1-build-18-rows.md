@@ -107,3 +107,54 @@ A hand is an organisation or a creature, never a whole people; a hand drawn from
 | `contest_pirates` | key place (the sea lanes) | |
 
 The eleven lifeline weights go. **Sufficiency:** 49 contests in 8 families; the classic D&D conflicts are covered (a war of succession, a border war, a revolt, a land dispute with a monstrous people, a cult, pirates, a fiend's pact).
+
+## 4. The threat (`antagonists.yaml`; approved 2026-10-05, nothing hidden from the owner)
+
+**New findings at this review:** the villain had no kind (what it *is*: a lich, a dragon, a human archmage), which the writer decided; two shapes and one visibility made the villain faceless (a working or a body); two origins let texture make the villain (the phenomenon, the institution); and no rule tied the villain's strength to the level band's top.
+
+### 4.1 The villain's kind: two layers (new)
+
+1. **The family** (rolled; a family drawn in the latest births waits, and no family comes twice in a row):
+
+| Family | Short / standard / epic (examples) |
+|---|---|
+| mage | mage / archmage / an ascending archmage (with a power source) |
+| ruler or warlord | knight-based; standard and epic with a power source |
+| shadow (spymaster, guild master) | spy / assassin / with a power source |
+| dark priest, corrupted druid | priest / with a power source (what it serves) |
+| undead | wight, ghost, banshee / vampire, mummy lord / lich |
+| chromatic dragon (black, blue, green, red, white) | young / adult / ancient |
+| metallic dragon gone wrong | young / adult / ancient |
+| devil (contracts, order) | erinyes / horned, ice devil / pit fiend |
+| demon (chaos) | vrock, hezrou / glabrezu, nalfeshnee / marilith, balor |
+| deceiver fiend | night hag / rakshasa / reskinned |
+| from beyond | aboleth / an elder aboleth (reskin) |
+| giant | stone, frost / fire, cloud, storm / a storm king (legendary) |
+| hag coven, fey | green or sea hag / a coven / a fey lord (reskin) |
+| monstrous mind (medusa, lamia, naga, sphinx) | medusa, lamia / naga, gynosphinx / androsphinx |
+| genie, elemental lord | — / efreeti, djinni / a reskinned elemental lord |
+| lycanthrope | werewolf, weretiger / with a power source / — |
+| fallen celestial | — / deva / planetar, solar |
+| sea titan | — / — / kraken, dragon turtle |
+
+2. **The creature:** an SRD creature of that family whose CR fits the level band's top (the final fight is at the top; measured candidates that speak and stand at CR 2 or more: 67 for short at CR 3-9, 37 for standard at CR 9-16, 25 for epic at CR 15-30, 17 of them dragons), or a reskin by the reskin rule where the family has none at that band. **A humanoid family above short carries a power source** (an artifact, a pact, a curse, what it serves): the DMG's human villains draw their strength from one, and the power source is a candidate for the weakness. The dragon families are two of the eighteen, so an epic campaign leans to dragons at most two in fourteen.
+
+**Sufficiency:** 13 to 16 families stand open at each length; with shape (19), origin (12), goal (20), weakness (19), hand (27) and visibility (5) the villain repeats rarely. Measured at the build over 1,000 seeds: consecutive repeats, each family's share, distinct (family, creature, shape, goal) sets.
+
+### 4.2 The goal (new, secret; 20 rows)
+
+Power: take the throne (heart); become the power behind the throne (heart); conquer the land (disputed land); turn a side into its weapon (role). Wealth: control the key place and all that passes (key place); plunder the ruin's treasure (remnant). Magic: take the remnant's artifact (remnant); open the gate at the thin place (thin place); build a great device or construct (something new); carry out a patron's will (thin place, something new). Immortality: live forever through the remnant (remnant); ascend to godhood (thin place, remnant). Mayhem: destroy a bloodline or a side (role); overthrow the order and let it burn (heart); lay a curse or a plague on the land (heart, disputed land); fulfil an apocalyptic prophecy (something new). Passion: bring back a dead loved one (something new, thin place); keep a dying loved one alive (something new). Revenge: avenge an old wrong on a side (role); take back what was stolen and punish the thief (remnant, role).
+
+**Sufficiency:** the DMG's eight villain objectives, each bound to a story piece.
+
+### 4.3 The weakness (new, secret; 19 rows, each with the kinds it fits)
+
+A hidden object holds its life; a weapon or a metal it cannot bear; its true name (fiends, fey, genies and elementals only: in D&D a demon's or devil's true name lets one summon, bind and command it, and the fey's names are power); a person it loves; a vow or a bargain it must keep; a place it cannot leave or must return to; a time it is vulnerable (a night, an eclipse, a season); an old rival who knows how; a flaw in its plan (the device's or the rite's missing piece); a prophecy or riddle that names its end; an ancient enemy's forgiveness; its source can be cut (its hand, its cult, its thin place); it cannot refuse a challenge; its secret, made public, turns its own followers; a law of its nature (sunlight, running water, no entry unbidden); a sacred relic or hallowed ground weakens it; drawn from its lair it is weaker; the rite that bound it once can bind it again; its army serves by compulsion and leaves when the compulsion breaks. The third clue stage reveals it.
+
+**Sufficiency:** the DMG's eight weaknesses and eleven common to D&D; the fit lists keep "a tyrant's true name" from being drawn.
+
+### 4.4 Changes to the existing rows
+
+- **Shapes** (21 → 19): `shape_process` (the tender of a working) and `shape_institution` deleted; an institution is a hand now and a working is a verb.
+- **Origins** (13 → 12): `origin_taken_by_phenomenon` and `origin_made_by_institution` deleted (texture made the villain); **added:** forbidden knowledge (it learned what should not be learned: the classic origin of a lich).
+- **Visibility** (5 → 5): `vis_process_or_institution` deleted (faceless); **added:** known, but no one knows where (the hunt for a hidden lair).
