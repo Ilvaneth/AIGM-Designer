@@ -98,3 +98,11 @@ The phase critic's return gains one entry per critic-judged promise due at the p
 ## The summary (each part)
 
 Changed files; new and changed tests; the suite's count and exit code; the counts of section "Tests of 12a"; what was adapted in the prompts, the critic's return schema and the card; where a later floor adds its sources and its script rules; anything unexpected.
+
+## Added after the audit of 12a (2026-10-05), for Part 12b
+
+- **Run the script rules** at `phase check` and let the gate read them (section 8): 12a defines and tests them but nothing calls them in the flow, and the card shows every promise open.
+- **The validator's `clue_order` check follows the stages:** it reads acts today. Order a clue by its stage's level range from the secret ledger (the first clue's place is played before the second's, the third on the top step), so that a one-act campaign with three clues is not counted wrong. A legacy birth keeps the act reading.
+- **The P1 promises the rolls already apply** (about ten per birth, for example "the people's home is the lifeline"): where the identity record states the fact, give the promise a script rule that reads the record, instead of leaving it to the critic. List in the summary which became script rules and which stayed with the critic.
+- The public ledger stays a function of the public rolls alone (12a): no verdict, waiver or card line may let a secret promise's text or its source row be told from what is public.
+
