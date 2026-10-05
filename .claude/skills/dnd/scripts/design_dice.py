@@ -105,7 +105,7 @@ def _visible(campaign: str, other: str) -> bool:
 
 def _resolve(entries, table: str) -> set:
     """Row ids from used.json entries, a secret row's hash matched against the table's rows."""
-    plain = {x for x in entries if not str(x).startswith("h:")}
+    plain = {dt.ROW_ALIASES.get(x, x) for x in entries if not str(x).startswith("h:")}     # a renamed row is still spent
     hashes = {x for x in entries if str(x).startswith("h:")}
     if hashes:
         plain |= {r["id"] for r in load_table(table) if hashed(r["id"]) in hashes}

@@ -69,7 +69,7 @@ tables:
         span_hint: "an age in which a people moved, arrived or left"
         hooks:
           - {phase: P5, must: "the demographic table shows the arrivals with a district"}
-      - id: age_lanterns
+      - id: age_of_thing
         label: The Age of {Thing}
         span_hint: "an age named for what was built in it (lanterns, roads, walls, mills)"
         hooks:

@@ -4,7 +4,7 @@
 # sides a and b carry the two poles (the writer assigns them; the door checks both carry one), and the villain
 # carries one pole to its terrible extreme (a secret roll). One question per contest: short and standard 1, epic 2
 # (scale.yaml `tensions`). The question grows with the escalation. No example question: examples anchor births;
-# the rows hold the poles and their families only. 28 pairs kept, silence/witness and debt/grace dropped, 5 added.
+# the rows hold the poles and their families only.
 schema_version: 1
 table: tensions
 consumed_by: [P1, P4, P5, P7, P8, P9]

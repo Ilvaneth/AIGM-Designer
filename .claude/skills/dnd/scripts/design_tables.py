@@ -110,7 +110,13 @@ def all_row_lists(doc: dict) -> dict[str, list[dict]]:
     return out
 
 
+# a row id that was renamed: a legacy birth that holds the old id still loads (build item 15: the age named for what
+# was built in it lost the one built thing its id named)
+ROW_ALIASES = {"age_lanterns": "age_of_thing"}
+
+
 def row(ref: str, row_id: str) -> dict | None:
+    row_id = ROW_ALIASES.get(row_id, row_id)
     return next((r for r in rows(ref) if r["id"] == row_id), None)
 
 
