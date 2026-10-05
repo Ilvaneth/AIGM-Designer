@@ -648,9 +648,11 @@ def p1_card(campaign: str) -> str:
     L += ["  open: " + (" · ".join(f"{k} {v}" for k, v in c["open_by_due"].items()) or "—"),
           f"  secret: {c['secret']['open']} open, {c['secret']['kept']} kept, {c['secret']['not_kept']} not kept", ""]
 
-    report = read_json(design_dir(campaign) / "_staging" / "P1" / "merge.report.json")
-    refused = len((report or {}).get("refused") or {})
-    door_line = "not run yet" if report is None else "passed" if not refused else f"{refused} unit(s) refused"
+    door = ph.get("door")          # build item 17: recorded by each merge the door ran; the report file is the fallback
+    if door is None and "door" not in ph:
+        report = read_json(design_dir(campaign) / "_staging" / "P1" / "merge.report.json")
+        door = None if report is None else {"refused": len(report.get("refused") or {})}
+    door_line = "not run yet" if not door else "passed" if not door["refused"] else f"{door['refused']} unit(s) refused"
     validator_line = "not run yet" if not isinstance((ph.get("validator") or {}).get("errors"), int) else f"{ph['validator']['errors']} errors"
     chains, phase_verdict, _, wishes_verdict, _ = critique_chains(dict(ph, id="P1"))
     crit = ph.get("critique") or {}

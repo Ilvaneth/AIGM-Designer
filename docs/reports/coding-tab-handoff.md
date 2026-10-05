@@ -113,3 +113,41 @@ Rules kept as a table's own (not taste): `fracture_none`, `cultdoc_unspecified`,
 Test files by item: `test_identity_tables.py` (8), `test_secret_villain_tables.py` (9), `test_identity_roll.py` (10a, also the general themes' many-seeds test; `--floor` prints the floor report), `test_identity_secret_roll.py` (10b, 16c; `--floor`), `test_written_in_english.py` (13a), `test_forbidden_lifted.py` (16a), `test_general_themes.py` (16b, 16d), `test_name_tables.py` (11a; `--report <dir>`). `tests/_floor.py` holds the shared dial sets and the P1 many-seeds helper.
 
 Audit files written for the development tab: `docs/reports/item13a-english-rows.md`, `item16b-technical-fields.md`, `item16c-rows-SPOILER.md`, `item9-burn-sample.md`.
+
+## 8. Where the second coding tab stopped (2026-10-05)
+
+Committed by this tab, none pushed by it: 11a `17ab33a`, 11b `f47caa2`, 11c `b51bd66`, 12a `634b8b2`, 12b `d82d0f6`, 13b `5dc49dd`, 14a `af3fca2`, 14b `0155af6`, 15 `ad8809b`, **14c `b534149`** (742 tests, exit code 0 on its tree).
+
+**Build item 17 (the dry walk of P1) is written and was never run.** `.claude/skills/dnd/tests/test_p1_dry_walk.py` is untracked, on the owner's word: write it, do not run it. Nothing it asserts has been seen to pass; no fault of the product has been looked for with it yet. While the file sits in `tests/`, a full-suite run picks it up.
+
+Run it alone (about 13 campaigns are born; it uses the read guard's marker, so never beside another test run):
+
+```bash
+cd .claude/skills/dnd/tests && PYTHONIOENCODING=utf-8 py -m unittest test_p1_dry_walk 2>&1 | tail -60
+cd .claude/skills/dnd/tests && PYTHONIOENCODING=utf-8 py test_p1_dry_walk.py --times     # the three walks and how long each takes
+```
+
+Where the stand-ins live in that file:
+- `Walker.born()`: steps 1-3 (`new`, `preroll --phase P1`, `phase P1 begin --json`).
+- `Walker.write(change=None, public_extra="", mirror_extra="")`: the stand-in writer (step 4). It builds the three signature rows, the break rows and the premise row from the records, writes `design/premise.md` and its mirror, and stages one fragment per row. `change(rows, picked)` is the hook the wrong turns use.
+- `Walker.critics(verdict="pass", promises="kept", skip=None)`: the stand-in critics (step 7): two entity returns on the premise, the phase critic's with one entry per critic-judged promise due at P1, the wishes critic's.
+- `Walk.walk(scale)`: the ten steps; `WrongTurns`: the eight wrong turns, each from the state after `write()`.
+
+Where the walk may stumble (suspected while writing, none verified):
+1. **Step 3, the candidates.** The walk asserts that every candidate name is in the rendered writer prompt. The prompt points at `design/naming.json#candidates` and does not print the names; the Names paragraph (`design_names.prompt_text`) lists the stocks only. Expect this to fail: either the paragraph gains a line per slot, or the assertion is the wrong reading of "carries the candidates". A design question for the review tab if it is not a slip.
+2. **Step 5, rows that are no prose type.** The signature and break rows carry `file: design/premise.md` and the premise's front matter lists them under `covers`. Untested against `registry.py`'s row checks, `stamp_check` (the premise stamps `question`) and the validator's `file_unclaimed`.
+3. **Step 6, `phase P1 check` exits 1 on any validator error**, and the walk runs it with `check=True`. A `no_snapshot` or `clue_count` finding on the stand-in rows would stop it there.
+4. **Step 7, the gate's own needs.** `critic_missing` reads a chain per roster item and the phase and wishes verdicts; the stand-in files are named as the workflow names them (`<premise id>.critic1.json`, `.critic2.json`, `phase.critic1.json`, `wishes.critic1.json`) but the roster's status after two merges was not checked.
+5. **Step 8, the card's leak scan.** It reads every dm-only `.md` sentence of 40 characters or more and, since 14b, the secret rows' ids and sentences; the stand-in mirror's one long sentence must not be repeated on the card.
+6. **Step 9, what `record_used` writes.** The walk expects `foundation.yaml#lifeline`, `secrets.yaml#archetype` (hashed), the lexicon key, `naming.yaml#family` and the villain's pair key; which tables record usage was read from the code, not run.
+7. **Step 10, the second campaign.** It skips forced rows and rows with `usage_fallback`; a table whose unused rows ran out under a requirement may still trip it.
+8. **The wrong turn "rerun at P1"** expects `critic_missing` on the gate after the refusal (a refused return is no verdict) and the refused file left in staging; `record_critics` was read, not run, for that.
+9. The stand-in mirror names the pinned god from the public gods' stock inside a dm-only file; the door's dm-only scan knows public names, so it should pass.
+
+## 9. Build 17 run (2026-10-05, the third coding tab)
+
+`test_p1_dry_walk.py` ran: 11 tests green (walks: short 14.2 s, standard 14.4 s, epic 16.7 s; the file 105 s); full suite 753 tests, exit code 0. Of the nine suspicions in section 8, only the first was met, and it was the test's reading.
+
+- **Product fault fixed:** the card printed `door: not run yet` after the merge that records the critics' returns. That merge has no fragment, deletes the last `merge.report.json` (birth 2, 3.1, pinned by `test_tuning_birth_2`) and writes none; the card read the file. Now `phase_merge` records `phases.PN.door = {at, units, refused}` whenever the door ran, `phase rerun` sets it to `None`, and the card reads it (the report file stays the fallback for births without the field).
+- **Test fixes:** the candidates are pointed at (`naming.json#candidates`, as the audited 14a test reads it), not printed in the prompt; the assertions that could print a secret row, a secret-stock name or the prompt now give a short message only.
+- **Noted, not fixed:** `phase rerun` keeps the previous attempt's `validator` result, so the new attempt's card can show the old "0 errors" until `check` runs.

@@ -1045,6 +1045,10 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
     data = dm.load(campaign)
     ph = data["phases"][phase]
     ph["seed"] = dict(seed_result(seed), at=now_iso())
+    if report:
+        # build item 17: the door's last verdict is a fact of the phase; the card read it from merge.report.json, which
+        # the next merge deletes (birth 2, 3.1), so a merge of the critics' returns alone printed "door: not run yet"
+        ph["door"] = {"at": report.get("at") or now_iso(), "units": len(report.get("units") or []), "refused": len(refused)}
     sha = code_sha()
     if sha and sha not in (ph.get("code") or []):
         ph.setdefault("code", []).append(sha)     # the code each merge ran under: a mixed-code phase shows two (RC-10)
@@ -1492,6 +1496,7 @@ def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool, direction:
     ph["attempt"] = int(ph.get("attempt") or 1) + 1
     ph["status"] = "pending"
     ph["skeleton"] = {"status": "pending", "agent": None}
+    ph["door"] = None                   # the next attempt's door has not run
     # dry-3: the conductor's rerun reason ("STOP P7 attempt 1: …; fixed in 9cb4002") reached every writer as a creative
     # direction and the player's card; a reason is a record, a direction is the owner's correction sentence
     ph.setdefault("reruns", []).append({"attempt": ph["attempt"], "reason": reason, "at": now_iso()})
