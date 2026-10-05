@@ -285,11 +285,14 @@ class Lifeline(unittest.TestCase):
 
 class Contest(unittest.TestCase):
 
-    def test_fifty_one_in_eight_families(self):
-        """Forty of the foundation's first build, five to a family, and the eleven of the general themes (16b)."""
-        self.assertEqual(len(CONTEST), 51)
+    def test_forty_nine_in_eight_families(self):
+        """Forty of the foundation's first build, five to a family, and the eleven of the general themes (16b); build
+        item 18a retired two (the old craft and the split family: the lifeline chose them)."""
+        self.assertEqual(len(CONTEST), 49)
         self.assertEqual(Counter(r["family"] for r in CONTEST),
-                         {"two_hands": 6, "old_new": 5, "strong_weak": 9, "open_close": 6, "race": 6, "kin": 5, "nonhuman": 8, "hidden_hand": 6})
+                         {"two_hands": 6, "old_new": 4, "strong_weak": 9, "open_close": 6, "race": 6, "kin": 4, "nonhuman": 8, "hidden_hand": 6})
+        self.assertEqual({r["id"] for r in dt.retired("foundation.yaml#contest")}, {"contest_old_new_craft", "contest_split_family"})
+        self.assertEqual(dt.row("foundation.yaml#contest", "contest_split_family")["prize"], "lifeline", "a retired row stays readable")
 
     def test_every_contest_carries_its_roles_prize_and_escalation(self):
         for r in CONTEST:
@@ -298,7 +301,7 @@ class Contest(unittest.TestCase):
                 for role in r["roles"].values():
                     self.assertTrue(role["text"])
                     self.assertTrue(role["hint"] is None or role["hint"] in ARCHETYPES, role)
-                self.assertIn(r["prize"], ("lifeline", "heart", "remnant", "new", "thin_place"))
+                self.assertIn(r["prize"], ("heart", "key_place", "disputed_land", "seat", "remnant", "new", "thin_place"))
                 self.assertGreaterEqual(len(r["escalation"]), 2)
                 for k, v in (r.get("seats") or {}).items():
                     self.assertIn(k, ("a", "b", "third", "fourth", "prize"))
@@ -335,26 +338,75 @@ class Contest(unittest.TestCase):
                 self.assertEqual(r.get("requires"), {"any_of": ["land_thin_place"]}, r["id"])
         self.assertEqual({r["id"] for r in CONTEST if r["prize"] == "thin_place"}, {"contest_open_close_gate"})
 
-    def test_the_treaty_lifelines_weigh_their_contests_double(self):
-        """Owner, 2026-09-28: a weight bond, no forcing."""
+    def test_no_contest_requires_or_is_weighted_by_a_lifeline(self):
+        """Build item 18a (docs/p1-build-18-rows.md section 3): eight contests could be drawn only with a given
+        lifeline and eleven were weighted by one; texture chose the story. Now the stage and the dials alone."""
+        life = {r["id"] for r in LIFE} | {r["id"] for r in dt.retired("foundation.yaml#lifeline")}
+        for r in CONTEST:
+            with self.subTest(contest=r["id"]):
+                named = arb._condition_ids(r.get("requires")) | arb._condition_ids([w["when"] for w in r.get("weight_by") or []])
+                self.assertFalse(named & life)
+                self.assertNotEqual(r["prize"], "lifeline")
+                self.assertNotIn("the thing the land needs", " ".join(texts(r)))
+        for r in LIFE:
+            self.assertFalse(set(r.get("requires") and arb._condition_ids(r["requires"]) or ()) & {c["id"] for c in CONTEST})
+
+    def test_the_new_prizes_and_their_stage_gates(self):
+        """The 23 rows of docs/p1-build-18-rows.md section 3: 21 new prizes, two retired; the lifeline requirements
+        became the stage's gates."""
         by = {r["id"]: r for r in CONTEST}
-        for cid, life in (("contest_humans_giants", "life_giant_peace"), ("contest_humans_dragon", "life_dragon_protection"),
-                          ("contest_humans_fey", "life_fey_bargain")):
-            base = arb.weight_of(by[cid], arb.Context())
-            self.assertEqual(arb.weight_of(by[cid], arb.Context(rolled={life: False})), base * 2)
+        want = {"contest_one_harbour": "key_place", "contest_one_pasture": "disputed_land", "contest_two_banks": "key_place",
+                "contest_settlers_newcomers": "disputed_land", "contest_capital_marches": "disputed_land",
+                "contest_lords_peasants": "heart", "contest_mine_owners_miners": "key_place", "contest_open_close_road": "key_place",
+                "contest_share_keep_knowledge": "new", "contest_humans_giants": "disputed_land", "contest_humans_dragon": "disputed_land",
+                "contest_humans_fey": "disputed_land", "contest_surface_deep": "key_place", "contest_land_sea_folk": "disputed_land",
+                "contest_merchant_house_divides": "heart", "contest_war_fed_company": "disputed_land", "contest_shapeshifter": "seat",
+                "contest_fiend_pact": "seat", "contest_elemental_lord": "disputed_land", "contest_coven": "disputed_land",
+                "contest_pirates": "key_place"}
+        self.assertEqual({cid: by[cid]["prize"] for cid in want}, want)
+        self.assertEqual(by["contest_one_harbour"]["requires"], {"any_of": ["land_coast"]})
+        self.assertEqual(by["contest_one_pasture"]["requires"], {"any_of": ["land_highland", "land_plain", "land_steppe"]})
+        self.assertEqual(by["contest_two_banks"]["requires"], {"any_of": ["land_river"]})
+        self.assertEqual(by["contest_mine_owners_miners"]["requires"], {"any_of": ["land_mountain", "land_highland", "land_underground"]})
+        self.assertEqual(by["contest_share_keep_knowledge"]["requires"], {"dial": {"magic": ["medium", "high"]}})
+        self.assertIsNone(by["contest_open_close_road"].get("requires"), "the gate is the spine: every spine has its key place")
+        self.assertEqual(by["contest_mine_owners_miners"]["weight_by"], [{"when": {"dial": {"content_mix": ["war"]}}, "x": 2}])
+        for cid in ("contest_humans_giants", "contest_humans_dragon", "contest_humans_fey", "contest_open_close_road"):
+            self.assertIsNone(by[cid].get("weight_by"), cid)
+        self.assertEqual(by["contest_settlers_newcomers"]["roles"]["b"]["text"], "the newcomers")
+
+    def test_a_side_s_own_land_and_the_key_place_kinds(self):
+        """The owner's corrections at the 18a audit: a disputed land that is one side's own lies where that side sits
+        (`prize_at`); a key-place prize names the key places it can be (`key_kinds`, the spines' closed list)."""
+        by = {r["id"]: r for r in CONTEST}
+        self.assertEqual({k: r["prize_at"] for k, r in by.items() if r.get("prize_at")},
+                         {"contest_capital_marches": "b", "contest_humans_fey": "b", "contest_coven": "a", "contest_elemental_lord": "a"})
+        self.assertTrue(all(r["prize"] == "disputed_land" for r in CONTEST if r.get("prize_at")))
+        kinds = {k: r["key_kinds"] for k, r in by.items() if r.get("key_kinds")}
+        self.assertEqual(set(kinds), {r["id"] for r in CONTEST if r["prize"] == "key_place"}, "every key-place prize, and only those")
+        self.assertEqual(kinds, {"contest_one_harbour": ["crossing", "landmark"], "contest_two_banks": ["crossing", "bridge"],
+                                 "contest_mine_owners_miners": ["descent", "network"], "contest_surface_deep": ["descent", "network"],
+                                 "contest_pirates": ["crossing"], "contest_open_close_road": DOC["key_kinds"]})
+        spines = {s["key_kind"] for s in dt.rows("foundation.yaml#spine")}
+        for cid, ks in kinds.items():
+            self.assertFalse(set(ks) - set(DOC["key_kinds"]), cid)
+            self.assertTrue(set(ks) & spines, f"{cid}: some spine's key place fits")
 
 
 ACTIONS = dt.rows("foundation.yaml#action")
 SCARS = dt.rows("foundation.yaml#scar")
-PIECES = ("lifeline", "remnant", "key_place", "heart", "role", "thin_place")
+PIECES = ("remnant", "key_place", "heart", "role", "thin_place")
 
 
 class Break(unittest.TestCase):
 
-    def test_six_targets_the_thin_place_only_with_the_palette(self):
+    def test_five_targets_the_thin_place_only_with_the_palette(self):
+        """Build item 18a: the lifeline is texture and no target; its row is retired, readable for legacy births."""
         targets = {r["piece"]: r for r in dt.rows("foundation.yaml#break_target")}
         self.assertEqual(set(targets), set(PIECES))
         self.assertEqual(targets["thin_place"]["requires"], {"any_of": ["land_thin_place"]})
+        self.assertEqual([r["id"] for r in dt.retired("foundation.yaml#break_target")], ["target_lifeline"])
+        self.assertEqual(dt.row("foundation.yaml#break_target", "target_lifeline")["piece"], "lifeline")
 
     def test_twenty_one_actions_each_with_three_forms(self):
         """Item 25 step 1 #7: every action carries its past, present and imminent form; a missing one is caught."""
@@ -368,9 +420,9 @@ class Break(unittest.TestCase):
                 self.assertTrue(set(r["targets"]) <= set(PIECES))
 
     def test_the_compatibility_tables(self):
-        """Review #8: per lifeline family, remnant kind and key-place kind; each listed exactly when the action can
-        strike that piece, and every value from its closed list."""
-        closed = {"lifeline": {r["family"] for r in LIFE}, "remnant": set(DOC["remnant_kinds"]), "key_place": set(DOC["key_kinds"])}
+        """Review #8: per remnant kind and key-place kind (build item 18a: no lifeline family, the lifeline is no
+        target); each listed exactly when the action can strike that piece, and every value from its closed list."""
+        closed = {"remnant": set(DOC["remnant_kinds"]), "key_place": set(DOC["key_kinds"])}
         for r in ACTIONS:
             with self.subTest(action=r["id"]):
                 fits = r["fits"]
@@ -391,7 +443,6 @@ class Break(unittest.TestCase):
 
     def test_the_owner_rules_on_the_actions(self):
         by = {r["id"]: r for r in ACTIONS}
-        self.assertIn("treaty", by["act_corrupted"]["fits"]["lifeline"])
         self.assertTrue(by["act_rose"]["winner_is_target_role"])
         self.assertEqual(by["act_closed"]["bars_scars_on_target"], {"thin_place": ["scar_plane_thinned"]})
         self.assertEqual({r["id"] for r in ACTIONS if r.get("concretise")}, {"act_fell_from_sky", "act_gave_birth"})
@@ -496,18 +547,9 @@ class TagReview(unittest.TestCase):
                          {"life_binding_marriage": {"nobility": "exists", "rule": "hereditary"}})
         self.assertEqual({r["id"]: r["claims"] for r in RUIN if r.get("claims")}, {"ruin_age_of_mages": {"magic": "faded"}})
 
-    def test_the_prize_and_the_lifeline(self):
+    def test_the_shrine_prize(self):
+        """The tag review's prize rows; the lifeline's part of it left with build item 18a (Contest's own tests)."""
         by = {r["id"]: r for r in CONTEST}
-        craft = [r["id"] for r in LIFE if r["family"] == "craft"]
-        passage = [r["id"] for r in LIFE if r["family"] == "passage"]
-        for cid in ("contest_old_new_craft", "contest_share_keep_knowledge", "contest_split_family"):
-            self.assertEqual(by[cid]["requires"], {"any_of": craft})
-        self.assertEqual(by["contest_open_close_road"]["requires"], {"any_of": passage + ["life_pilgrim_road"]})
-        self.assertEqual(by["contest_one_harbour"]["requires"]["all"][0], {"any_of": ["land_coast"]}, "the palette requirement stays")
-        for cid in ("contest_one_harbour", "contest_one_pasture", "contest_two_banks", "contest_mine_owners_miners"):
-            palette, lifes = by[cid]["requires"]["all"]
-            self.assertTrue(all(x.startswith("land_") for x in palette["any_of"]))
-            self.assertIn({"when": {"any_of": lifes["any_of"]}, "x": 3}, by[cid]["weight_by"], "as likely as before inside its heading")
         self.assertIsNone(by["contest_one_shrine"].get("requires"))
         gods = [r["id"] for r in RUIN if r["family"] == "gods"]
         self.assertIn({"when": {"any_of": gods}, "x": 2}, by["contest_one_shrine"]["weight_by"])

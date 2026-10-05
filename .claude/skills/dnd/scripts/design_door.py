@@ -55,6 +55,38 @@ WORD = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z'’]*(?![0-9_])")
 OPENERS = ".!?:;|—–#>"
 
 
+# build item 18a, the one-way rule at the door: a writer's structured field that fills a story slot names a story or
+# a stage piece, never texture. (entity type, dotted field path) → the slot it fills; build item 18e names the fields
+# (the clues' places, the god pin's piece). A list is judged item by item; an absent or empty field is not judged.
+STORY_FIELDS: dict = {}
+
+
+def _field_values(node, path: str) -> list:
+    head, _, rest = path.partition(".")
+    if isinstance(node, list):
+        return [v for item in node for v in _field_values(item, path)]
+    if not isinstance(node, dict) or head not in node:
+        return []
+    value = node[head]
+    if rest:
+        return _field_values(value, rest)
+    return [v for v in (value if isinstance(value, list) else [value]) if v not in (None, "")]
+
+
+def story_field_errors(eid: str, row: dict, fields: dict | None = None) -> list[str]:
+    """A field that fills a story slot with a texture piece, one line each."""
+    import design_arbiter as arb
+    errs = []
+    for (etype, path), slot in (STORY_FIELDS if fields is None else fields).items():
+        if row.get("type") != etype:
+            continue
+        for piece in _field_values(row, path):
+            if not arb.slot_accepts(slot, piece):
+                errs.append(f"{eid}: `{path}` names {piece!r}, a {arb.piece_layer(piece) or 'layerless'} piece, where "
+                            f"{arb.STORY_SLOTS[slot]} takes a story or a stage piece")
+    return errs
+
+
 def applies(manifest: dict, phase: str) -> bool:
     """A birth whose P1 the script rolled: a foundation, an identity, a ledger and a seal. A legacy birth has none."""
     return phase == "P1" and all(isinstance(manifest.get(k), (dict, list)) for k in ("foundation", "identity", "promises", SEAL))
@@ -441,6 +473,7 @@ class Door:
                 errs += self.break_errors(eid, row)
             elif row.get("type") == "premise":
                 errs += self.premise_errors(eid, row)
+            errs += story_field_errors(eid, row)
             errs += name_errors(eid, row, self.names, self.identity)
         e2, warns = self.prose_errors(uid, frag, rows) if frag else ([], [])
         return errs + e2, warns

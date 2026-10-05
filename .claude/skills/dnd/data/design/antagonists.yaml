@@ -18,6 +18,7 @@ schema_version: 1
 table: antagonists
 consumed_by: [P1, P4, P5, P6, P7, validator, play]
 plan: "item 25 step 2 #7, errata 24.2 #22, item 7.5, 10.5, 17 #17, errata 24.2 #3, risk 24.1 #10 #16, 24.6 #3"
+layer: story                    # build item 18a: the threat is the story
 roll: {labels: [P1.bbeg_visibility, P1.bbeg_shape, P1.bbeg_origin, P1.bbeg_tie, P1.bbeg_pole, P4.bbeg_faction_archetype, P4.front_template, P4.doom_shape, P4.lieutenant_role.<n>], secret: true, avoid_used: true, note: "all antagonist rolls are secret; the card shows only the archetype class and the clue count per act (24.6 #6)"}
 rules:
   doom_day: "mid(target_sessions) × doom.days_per_session_default × (1 + doom.slack_min), rounded to a calendar date; the front's portents spread over it; lieutenants' clocks end at 30-60% of it"

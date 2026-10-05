@@ -181,10 +181,10 @@ class Roller:
 
     def table(self, label: str, ref: str, secret: bool = False, avoid: bool = True, exclude: set | None = None,
               where=None, why: str = "where", also_used: set | None = None, used_keys: dict | None = None,
-              weigh=None) -> dict:
+              weigh=None, slot: str | None = None) -> dict:
         """One draw. `exclude` and `where` (with its reason `why`) are constraints; `also_used` marks values spent
         like rows used elsewhere (a pair that never repeats); `used_keys` go to used.json at approve; `weigh(row,
-        ctx)` replaces the rows' own weights for this draw."""
+        ctx)` replaces the rows' own weights for this draw; `slot` names the story slot it fills (build item 18a)."""
         rows = dt.rows(ref)
         if not rows:
             raise SystemExit(f"designer: no rows in {ref}")
@@ -197,7 +197,7 @@ class Roller:
         where, why = dd.distinct_filter(ref, drawn, where, why)
         try:
             res = arb.arbitrate(ref, rows, self.ctx, exclude=exclude, where=where, why=why, usage=use, secret=secret,
-                                weigh=weigh)
+                                weigh=weigh, slot=slot)
         except arb.EmptyPool as exc:
             raise SystemExit(f"designer: {self.phase} {label}: {exc}" if not secret else
                              f"designer: {self.phase} {label} (secret): the pool is empty after the constraints — a table fault")

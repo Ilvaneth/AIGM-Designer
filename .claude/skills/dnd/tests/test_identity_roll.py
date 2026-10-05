@@ -204,8 +204,10 @@ class ManySeeds(unittest.TestCase):
             role = R.identity["people"]["role"]
             if role and CONTEST[R.foundation["contests"][0]["id"]]["roles"][role].get("lineage_weight"):
                 deep[R.identity["people"]["lineage"]] += 1
+        # the role weight alone gives the three lineages 36 % (16 % without it); the old bound of 40 % leaned on the
+        # lifelines the deep contests required (a craft lifeline weighs the gnome), a tie build item 18a cut
         if sum(deep.values()) >= 20:
-            self.assertGreater(sum(deep[k] for k in ("lineage_dwarf", "lineage_gnome", "lineage_goblinoid")), sum(deep.values()) * 0.4)
+            self.assertGreater(sum(deep[k] for k in ("lineage_dwarf", "lineage_gnome", "lineage_goblinoid")), sum(deep.values()) * 0.28)
 
     # ── the institution ──
 

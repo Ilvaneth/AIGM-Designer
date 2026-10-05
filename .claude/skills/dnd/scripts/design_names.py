@@ -702,6 +702,21 @@ def fill_pool(pool: dict, naming: dict, master: str, dials: dict, foundation: di
     stamp = lambda fresh: [dict(e, used_by=None, drawn=phase) for e in fresh]
     changed = False
 
+    # the calendar first (build item 18a's suite found it): its names follow from the roots alone, so the stocks drawn
+    # after it avoid them; a building "Last Well" once met the special month "Last Well" in one birth
+    if not pool.get("calendar"):
+        cal = naming["calendar"]
+        month, day = _suffix(patterns[cal["month_pattern"]]), _suffix(patterns["pattern_day"])
+        rng = dd.derive(master, phase, "names", "calendar.special", attempt)
+        special = rng.sample(cal["month_roots"], min(int(rules["calendar"]["special_months"]), len(cal["month_roots"])))
+        words = [o[0].strip() for o in _options(patterns["pattern_month_high_last"]["parts"][0], {}, {})]
+        pool["calendar"] = {
+            "months": stamp({"name": (r + month).capitalize(), "head": r} for r in cal["month_roots"]),
+            "special": stamp({"name": f"{words[i % len(words)]} {r.capitalize()}", "head": r} for i, r in enumerate(special)),
+            "days": stamp({"name": (r + day).capitalize(), "head": r} for r in cal["day_roots"])}
+        changed = True
+        seen |= {e["name"].lower() for v in pool["calendar"].values() for e in v}
+
     if bag_names:
         taken = list(taken_persons) + _bag_entries(pool) + (_bag_entries(secret) if secret else [])
         for lid in living:
@@ -748,17 +763,6 @@ def fill_pool(pool: dict, naming: dict, master: str, dials: dict, foundation: di
             entries += stamp(fresh)
             changed = changed or bool(fresh)
 
-    if not pool.get("calendar"):
-        cal = naming["calendar"]
-        month, day = _suffix(patterns[cal["month_pattern"]]), _suffix(patterns["pattern_day"])
-        rng = dd.derive(master, phase, "names", "calendar.special", attempt)
-        special = rng.sample(cal["month_roots"], min(int(rules["calendar"]["special_months"]), len(cal["month_roots"])))
-        words = [o[0].strip() for o in _options(patterns["pattern_month_high_last"]["parts"][0], {}, {})]
-        pool["calendar"] = {
-            "months": stamp({"name": (r + month).capitalize(), "head": r} for r in cal["month_roots"]),
-            "special": stamp({"name": f"{words[i % len(words)]} {r.capitalize()}", "head": r} for i, r in enumerate(special)),
-            "days": stamp({"name": (r + day).capitalize(), "head": r} for r in cal["day_roots"])}
-        changed = True
     return changed
 
 

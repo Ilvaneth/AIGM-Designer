@@ -8,6 +8,7 @@ schema_version: 1
 table: trope-breaks
 consumed_by: [P1, P2, P3, P4, P5, P6, P8]
 plan: "item 4.4, 17 #5, item 25 step 2 #5, risk 24.1 #10"
+layer: texture                    # build item 18a: rules of life; a world-state row may say story (18b)
 roll: {count_by_scale: {short: 1, standard: 2, epic: 2}, avoid_used: true, families_distinct: true}
 hooks_common:
   - {phase: P1, must: "the break is stated in one sentence in the player pitch and explained through its tied foundation piece; it is public knowledge unless the row says otherwise"}
@@ -42,7 +43,7 @@ rows:
     statement: "There is no nobility; the guild charters are the constitution and the masters sit as the council."
     claims: {"nobility": "none", "rule": "guild_council"}
     overrides: [{"default": "forced_state_faction", "to": "its archetype is guild"}, {"default": "seat_of_rule_anchor", "to": "a guild hall"}, {"default": "politics_node_kinds", "to": "succession becomes the choosing of masters"}]
-    weight_by: [{"when": {"any_of": ["contest_one_harbour", "contest_old_new_craft", "contest_mine_owners_miners", "contest_share_keep_knowledge", "contest_monster_bounty", "contest_new_resource", "contest_split_family", "contest_surface_deep"]}, "x": 2}]
+    weight_by: [{"when": {"any_of": ["contest_one_harbour", "contest_mine_owners_miners", "contest_share_keep_knowledge", "contest_monster_bounty", "contest_new_resource", "contest_surface_deep"]}, "x": 2}]
     text: {"name": "there are no lords; the guilds rule", "at_table": "power means craft and money"}
     hooks:
       - {phase: P4, must: "the state faction has archetype guild; the access chain runs through masters"}

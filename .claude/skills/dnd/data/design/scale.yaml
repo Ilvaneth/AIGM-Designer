@@ -9,6 +9,7 @@ schema_version: 1
 table: scale
 consumed_by: [P0, P1, P2, P3, P4, P5, P6, P7, P9, validator]
 plan: "item 2, 8.1-8.2, 9.5-9.6, 10.1, 10.6-10.8, errata 24.2 #3 #6 #8, 24.6 #3 #4"
+layer: frame                    # build item 18a: the scale's shape weighs every floor and fills no slot
 
 shared:
   room_bands: {minor: [5, 10], standard: [11, 19], major: [20, 25], capstone: [30, 30]}

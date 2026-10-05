@@ -28,16 +28,16 @@ RUINS = {"ruin_kingdom_of_the_dead": "fallen_kingdoms", "ruin_devils_bargain": "
          "ruin_deep_minds": "old_peoples", "ruin_bound_elements": "magic", "ruin_sundered_relic": "magic", "ruin_dark_lords_fall": "wars",
          "ruin_sleeper": "old_peoples", "ruin_empire": "fallen_kingdoms", "ruin_great_curse": "catastrophe", "ruin_beast_blood": "old_peoples",
          "ruin_sleeping_realm": "planes", "ruin_fallen_order": "wars"}
-# contest: (family, prize, the four hints)
+# contest: (family, prize, the four hints); the prizes as build item 18a set them (never the lifeline)
 CONTESTS = {"contest_living_dead": ("nonhuman", "heart", ("state", None, "religious", "trade")),
-            "contest_fiend_pact": ("hidden_hand", "lifeline", ("state", "state", None, "martial")),
-            "contest_elemental_lord": ("nonhuman", "lifeline", ("state", None, "religious", "scholarly")),
+            "contest_fiend_pact": ("hidden_hand", "seat", ("state", "state", None, "martial")),
+            "contest_elemental_lord": ("nonhuman", "disputed_land", ("state", None, "religious", "scholarly")),
             "contest_relic_pieces": ("race", "new", ("state", "state", "religious", None)),
             "contest_prophecy": ("open_close", "new", ("religious", "state", "scholarly", None)),
             "contest_dark_lord": ("strong_weak", "heart", ("state", "state", "trade", "resistance")),
             "contest_two_empires": ("two_hands", "heart", (None, None, "state", "resistance")),
-            "contest_coven": ("nonhuman", "lifeline", ("state", "resistance", None, None)),
-            "contest_pirates": ("strong_weak", "lifeline", ("criminal", "trade", "martial", "criminal")),
+            "contest_coven": ("nonhuman", "disputed_land", ("state", "resistance", None, None)),
+            "contest_pirates": ("strong_weak", "key_place", ("criminal", "trade", "martial", "criminal")),
             "contest_slavers": ("strong_weak", "new", ("criminal", "resistance", "trade", None)),
             "contest_thieves_guild": ("strong_weak", "heart", ("criminal", "state", "criminal", "martial"))}
 BREAKS = {"break_dead_rise": "danger", "break_chosen_are_many": "gods", "break_dreams_are_a_place": "danger",
@@ -52,7 +52,8 @@ class Rows(unittest.TestCase):
 
     def test_thirty_one_rows(self):
         self.assertEqual(len(RUINS) + len(CONTESTS) + len(BREAKS) + 2, 31)
-        self.assertEqual((len(RUIN), len(CONTEST), len(BREAK), len(LIFE), len(PRACTICE)), (53, 51, 36, 61, 34))
+        # build item 18a retired two contests (the old craft, the split family): 51 → 49
+        self.assertEqual((len(RUIN), len(CONTEST), len(BREAK), len(LIFE), len(PRACTICE)), (53, 49, 36, 61, 34))
 
     def test_the_ruin_sources(self):
         old_kinds = {r["remnant_kind"] for k, r in RUIN.items() if k not in RUINS}
@@ -168,10 +169,10 @@ class Pairs(unittest.TestCase):
         self.assertIn("life_enchanters", craft)
         gnome = dt.row("signatures.yaml#people_lineage", "lineage_gnome")
         self.assertTrue(any(set(w["when"].get("any_of") or []) == craft for w in gnome["weight_by"]))
-        for cid in ("contest_old_new_craft", "contest_share_keep_knowledge", "contest_split_family"):
-            req = CONTEST[cid]["requires"]
-            named = [set(c.get("any_of") or []) for c in (req.get("all") or [req])]
-            self.assertTrue(any(craft <= n for n in named), cid)
+        # build item 18a: no contest stands on a lifeline any more; the two craft contests are retired, the third is
+        # gated by the magic dial
+        self.assertEqual({r["id"] for r in dt.retired(F + "contest")}, {"contest_old_new_craft", "contest_split_family"})
+        self.assertEqual(CONTEST["contest_share_keep_knowledge"]["requires"], {"dial": {"magic": ["medium", "high"]}})
 
 
 if __name__ == "__main__":

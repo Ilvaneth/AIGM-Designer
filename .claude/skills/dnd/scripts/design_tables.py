@@ -115,9 +115,89 @@ def all_row_lists(doc: dict) -> dict[str, list[dict]]:
 ROW_ALIASES = {"age_lanterns": "age_of_thing"}
 
 
+def _node(ref: str):
+    """The mapping a reference names: the sub-table's for `file#sub`, the file's for a bare file; None if absent."""
+    file_part, _, key = ref.partition("#")
+    try:
+        doc = load(file_part)
+    except FileNotFoundError:
+        return None
+    if not key:
+        return doc
+    node = (doc.get("tables") or {}).get(key)
+    return node if node is not None else doc.get(key)
+
+
+def retired(ref: str) -> list[dict]:
+    """A sub-table's `retired:` rows (build item 18): deleted from the roll, kept so a legacy birth that holds one
+    still loads and renders. `rows()` never returns them; nothing draws them."""
+    node = _node(ref)
+    return [r for r in ((node or {}).get("retired") or []) if isinstance(r, dict) and r.get("id")] if isinstance(node, dict) else []
+
+
+def rows_and_retired(ref: str) -> list[dict]:
+    """The rows and the retired rows: the lookup of a rolled id, never a pool."""
+    return rows(ref) + retired(ref)
+
+
 def row(ref: str, row_id: str) -> dict | None:
+    """One row by id; a retired row is found too (a legacy birth's)."""
     row_id = ROW_ALIASES.get(row_id, row_id)
-    return next((r for r in rows(ref) if r["id"] == row_id), None)
+    return next((r for r in rows_and_retired(ref) if r["id"] == row_id), None)
+
+
+# ── the layers (build item 18a): what a table may fill ──
+
+# frame: weighs tables, fills no slot · stage: where the story happens · story: a piece with a face, a want, an answer
+# · texture: hangs on the story, never fills a story slot
+LAYERS = ("frame", "stage", "story", "texture")
+
+
+def layer(ref: str, row_id: str | None = None) -> str | None:
+    """A row's layer: the row's own `layer` first, else its sub-table's, else its file's; a table's without a row."""
+    if row_id is not None:
+        r = row(ref, row_id)
+        if r and r.get("layer"):
+            return r["layer"]
+    node = _node(ref) if "#" in ref else None
+    if isinstance(node, dict) and node.get("layer"):
+        return node["layer"]
+    try:
+        return load(ref.split("#", 1)[0]).get("layer")
+    except FileNotFoundError:
+        return None
+
+
+def layered_refs() -> list[str]:
+    """Every P0 and P1 table that must carry a layer: each file of REVIEWED_TABLES with its sub-tables, each
+    `file#sub` entry as it stands."""
+    out = []
+    for name in REVIEWED_TABLES:
+        if "#" in name:
+            out.append(name)
+            continue
+        lists = all_row_lists(load(name))
+        out += [f"{name}#{k}" if k else name for k in lists]
+    return out
+
+
+@lru_cache(maxsize=4)
+def _row_refs_for(sig: tuple) -> dict:
+    out = {}
+    for name in list_tables():
+        doc = load(name)
+        for key, node in [("", doc)] + list((doc.get("tables") or {}).items()):
+            if not isinstance(node, dict):
+                continue
+            ref = f"{name}#{key}" if key else name
+            for r in list(_rows_of(node)) + [x for x in (node.get("retired") or []) if isinstance(x, dict) and x.get("id")]:
+                out.setdefault(r["id"], ref)
+    return out
+
+
+def ref_of_row(row_id: str) -> str | None:
+    """The table a row id belongs to (retired rows included)."""
+    return _row_refs_for(_signature()).get(ROW_ALIASES.get(row_id, row_id))
 
 
 # ── the arbiter's indexes (plan item 25: the script is the only arbiter of conflicts) ──

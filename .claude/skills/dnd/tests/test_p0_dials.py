@@ -81,9 +81,10 @@ class Tone(unittest.TestCase):
                         if mix in (dial.get("content_mix") or []):
                             seen[mix].append(r["id"])
         self.assertEqual(sorted(seen["tone"]), [("ruin_age_of_dragons", ["bright"]), ("ruin_giants_land", ["bright"])])
-        # the two contests and the sixteenth politics weight came with the general themes (build item 16d)
+        # the two contests and the sixteenth politics weight came with the general themes (build item 16d); build item
+        # 18a retired two contests that carried one (the old craft, the split family): 14
         self.assertEqual(sorted(seen["horror"]), ["contest_coven", "contest_living_dead", "ruin_failed_experiment", "ruin_plague"])
-        self.assertEqual(len(seen["politics"]), 16)
+        self.assertEqual(len(seen["politics"]), 14)
         self.assertIn("contest_thieves_guild", seen["politics"])
         ruin = rows("foundation.yaml#ruin_source")
         for rid in ("ruin_celestial_war", "ruin_broken_time", "ruin_star_kingdom"):

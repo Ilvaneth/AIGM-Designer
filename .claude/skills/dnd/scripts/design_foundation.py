@@ -11,14 +11,18 @@ docs/p1-foundation-rows.md §1-6 and §18; the owner's rulings on items 3-5 of t
    never counts); an `implies` kind comes along;
 3. the ruin source: its `adds_palette` kind comes on top of the count (+1), skips the kind's own magic requirement and
    is the only exempt one;
-4. the lifeline, seated on the spine;
-5. the contest (epic: a second one from another family, three roles, on another part of the spine);
-6. the break: target (a role target names the role), action (it must strike that target and fit its family or kind;
+4. the contest (epic: a second one from another family, three roles, on another part of the spine); its prize fills a
+   story slot (build item 18a: never the lifeline);
+5. the break: target (a role target names the role; the target fills a story slot), action (it must strike that
+   target and fit its kind;
    a target + action pair another birth used waits as usage; an action that destroys a role never strikes the last
    seated role that can house the institution), scars (the new-land scar needs room in the cap and adds
    a fantastic kind; a closed thin place bars the thinner-border scar), time, winner (the scale's roles of the main
    contest, never the role the break destroyed; the struck role when a role rose);
+6. the lifeline, last (build item 18a: texture hangs on the story, never the other way), seated on the spine;
 7. the escalation: the tiers of play the level band touches.
+
+A set whose story slot holds a texture piece is refused (`design_arbiter.slot_errors`): a table fault.
 
 `build(records)` turns the records into the foundation (public, stamped in design.json), with the merge rules (one
 crater; the planar rift is the two worlds' crossing point), the start (a destroyed heart moves it) and the English
@@ -35,6 +39,7 @@ import design_tables as dt  # noqa: E402
 
 F = "foundation.yaml"
 PAIR_KEY = "foundation.yaml#break_pair"     # used.json: target piece + action, never repeated
+# target_lifeline is retired (build item 18a); a legacy birth that rolled it still reads
 PIECE_OF_TARGET = {"target_lifeline": "lifeline", "target_remnant": "remnant", "target_key_place": "key_place",
                    "target_heart": "heart", "target_role": "role", "target_thin_place": "thin_place"}
 
@@ -44,7 +49,15 @@ def ref(sub: str) -> str:
 
 
 def rows_by_id(sub: str) -> dict:
-    return {r["id"]: r for r in dt.rows(ref(sub))}
+    """Every row of a sub-table by id, the retired ones too: a lookup of rolled ids, never a pool."""
+    return {r["id"]: r for r in dt.rows_and_retired(ref(sub))}
+
+
+def slots(foundation: dict) -> list[tuple[str, str]]:
+    """The story slots a built foundation fills, as (slot, piece): the move's target and every contest's prize."""
+    out = [("move_target", PIECE_OF_TARGET[foundation["break"]["target"]])]
+    out += [("contest_prize", c["prize"]["kind"]) for c in foundation["layout"]["contests"]]
+    return out
 
 
 def header(sub: str) -> dict:
@@ -129,12 +142,7 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
                  f"brought by {ruin_id}: on top of the count, exempt from the cap and the kind's magic requirement")
         out["palette_extra"].append(ruin["adds_palette"])
 
-    # 4. the lifeline (seated by the layout, build item 6b)
-    life_id = R.table("foundation.lifeline", ref("lifeline"))["row_id"]
-    life = rows_by_id("lifeline")[life_id]
-    out["lifeline"] = life_id
-
-    # 5. the contest
+    # 4. the contest (the lifeline no longer comes before it: build item 18a)
     roles_by_scale = header("contest")["roles_by_scale"]
 
     def role_claims(row: dict, roles: list[str]) -> dict:
@@ -150,36 +158,39 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
         R.add_tokens(f"foundation.contest.{n}.claims", toks, f"the seated roles of {cid}: {', '.join(roles)}")
 
     roles1 = list(roles_by_scale[scale])
-    c1 = R.table("foundation.contest.1", ref("contest"),
-                 where=lambda r: not R.ctx.clashes(role_claims(r, roles1)), why="a seated role's claim")["row_id"]
+    def key_fits(r: dict) -> bool:
+        """A key-place prize stands on a spine whose key place is one of the row's kinds (owner, the 18a audit)."""
+        return not r.get("key_kinds") or spine["key_kind"] in r["key_kinds"]
+
+    c1 = R.table("foundation.contest.1", ref("contest"), slot="contest_prize",
+                 where=lambda r: key_fits(r) and not R.ctx.clashes(role_claims(r, roles1)),
+                 why="the spine's key place, and a seated role's claim")["row_id"]
     out["contests"] = [{"id": c1, "roles": roles1}]
     seat_claims(1, c1, roles1)
     if int(header("contest")["contests_by_scale"][scale]) > 1:
         fam1 = rows_by_id("contest")[c1]["family"]
         roles2 = ["a", "b", "third"]
-        c2 = R.table("foundation.contest.2", ref("contest"), exclude={c1},
-                     where=lambda r: r["family"] != fam1 and not R.ctx.clashes(role_claims(r, roles2)),
-                     why="another family, and a seated role's claim")["row_id"]
+        c2 = R.table("foundation.contest.2", ref("contest"), exclude={c1}, slot="contest_prize",
+                     where=lambda r: r["family"] != fam1 and key_fits(r) and not R.ctx.clashes(role_claims(r, roles2)),
+                     why="another family, the spine's key place, and a seated role's claim")["row_id"]
         out["contests"].append({"id": c2, "roles": roles2})
         seat_claims(2, c2, roles2)
     main = rows_by_id("contest")[c1]
     main_roles = out["contests"][0]["roles"]
 
-    # 6. the break
+    # 5. the break
     remnant_kind = ruin["remnant_kind"]
     key_kind = spine["key_kind"]
-    life_family = life["family"]
-    actions = rows_by_id("action")
+    actions = {r["id"]: r for r in dt.rows(ref("action"))}
 
     def fits(act: dict, piece: str) -> bool:
         if piece not in act["targets"]:
             return False
         table = act.get("fits") or {}
-        return {"lifeline": life_family in table.get("lifeline", []),
-                "remnant": remnant_kind in table.get("remnant", []),
+        return {"remnant": remnant_kind in table.get("remnant", []),
                 "key_place": key_kind in table.get("key_place", [])}.get(piece, True)
 
-    target_id = R.table("foundation.break.target", ref("break_target"), avoid=False,
+    target_id = R.table("foundation.break.target", ref("break_target"), avoid=False, slot="move_target",
                         where=lambda r: any(fits(a, r["piece"]) for a in actions.values()), why="an action can strike it")["row_id"]
     piece = PIECE_OF_TARGET[target_id]
     out["target"] = target_id
@@ -233,6 +244,11 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
     else:
         out["start"] = "heart"
 
+    # 6. the lifeline, last (build item 18a): its palette fit stays; the story is rolled and reads nothing of it
+    life_id = R.table("foundation.lifeline", ref("lifeline"))["row_id"]
+    life = rows_by_id("lifeline")[life_id]
+    out["lifeline"] = life_id
+
     # the layout: the palette on the spine's parts, the lifeline and the contests' roles seated on them
     out["layout"] = lay_out(R, spine, palette + out["palette_extra"], life, out["contests"], out)
     # the layout's tokens (build item 7c): a heart below ground is a land lived in below; the remnant on the heart
@@ -247,6 +263,12 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
     out["escalation"] = tiers_touched(dials["level_band"])
     for n, tier in enumerate(out["escalation"], 1):
         R.forced(f"foundation.escalation.{n}", ref("escalation_tier"), tier, "the tiers the level band touches")
+
+    # the one-way rule (build item 18a): no story slot holds a texture piece; such a set is a table fault
+    import design_arbiter as arb
+    errs = arb.slot_errors([("move_target", piece)] + [("contest_prize", c["prize"]["kind"]) for c in out["layout"]["contests"]])
+    if errs:
+        raise SystemExit("design_foundation: " + "; ".join(errs) + " — a table fault")
     return out
 
 
@@ -339,7 +361,12 @@ def lay_out(R, spine: dict, kinds: list[str], life: dict, contests: list[dict], 
         if at == "thin_place":
             at = next((p for p, k in parts.items() if k == "land_thin_place"), "along:land_thin_place")
         elif at is None:
-            at = {"lifeline": life_seat, "heart": "heart"}.get(prize)
+            # build item 18a: the key place is the spine's; the disputed land lies between the sides, along the spine,
+            # unless `prize_at` names the side whose own land it is (owner, the 18a audit); a seat is the house of role
+            # a, whose inheritance it is; a legacy lifeline prize sat on the lifeline
+            disputed = seat.get(row["prize_at"], "along") if row.get("prize_at") else "along"
+            at = {"lifeline": life_seat, "heart": "heart", "key_place": "key_place", "disputed_land": disputed,
+                  "seat": seat.get("a")}.get(prize)
         seated.append({"contest": c["id"], "seats": seat, "prize": {"kind": prize, "at": at}})
 
     # where the break struck, from its target; then the prizes a place follows from

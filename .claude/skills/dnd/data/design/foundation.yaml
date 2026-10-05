@@ -1,7 +1,7 @@
 # foundation.yaml — P1's first step, the foundation (plan item 25; the owner-approved rows in
 # docs/p1-foundation-rows.md, sections 1-6 and 18). A script builds it from these sub-tables with no
 # model: the spine first (it forces the landform kinds it needs), then the palette, the ruin source,
-# the lifeline, the contest, the break and the escalation. Every seed is a column: its sub-table's
+# the contest, the break, the escalation and, last, the lifeline (build item 18a: texture hangs on the story). Every seed is a column: its sub-table's
 # hooks_common are the promises the later floors inherit (errata 24.2 #23, the promise ledger).
 #
 # English ids and labels; the approved Turkish phrases are the rows' `tr` fields, self-standing noun
@@ -29,6 +29,7 @@ tables:
 
   # ── 1. the palette: the landform kinds (22) ────────────────────────────────────────────────
   palette:
+    layer: texture
     roll:
       avoid_used: false                 # palettes are never excluded across campaigns
       count_by_scale: {short: [4, 5], standard: [6, 8], epic: [9, 12]}
@@ -93,6 +94,7 @@ tables:
 
   # ── 2. the spine: the world's skeleton (6 families, 30) ─────────────────────────────────────
   spine:
+    layer: stage
     roll:
       avoid_used: true
       family_wait: 3
@@ -369,6 +371,7 @@ tables:
 
   # ── 3. the ruin source: what left the dangerous places (8 families, 40) ────────────────────
   ruin_source:
+    layer: story
     roll:
       avoid_used: true
       family_wait: 3
@@ -820,14 +823,14 @@ tables:
         text: {"name": "the fallen order of knights", "what": "a sworn order held the frontier until it was betrayed and broken", "remnant": "the order's empty commanderies", "sites": "commanderies, chapter vaults, the field where it was broken", "strangeness": "its oaths were never released, and they still bind whoever takes up its arms"}
 
   lifeline:
+    layer: texture
     roll:
       avoid_used: true
       family_wait: 3
-      note: "only rows whose `where` kinds the palette holds are drawn (requires); the script places the lifeline on the spine; `who` go to P5's trades, `yields` to P3's goods, `weak_point` is the break's D target"
+      note: "only rows whose `where` kinds the palette holds are drawn (requires); the script places the lifeline on the spine; `who` go to P5's trades, `yields` to P3's goods, `weak_point` is texture for the writers (build item 18a: the lifeline is no target; it is rolled last, after the contest, the break and the scars)"
     hooks_common:
       - {phase: P3, must: "the lifeline's yields are the economy's main goods; its place is a map node on the spine"}
       - {phase: P5, must: "the lifeline's trades are NPC trades; at least one NPC lives by it"}
-      - {phase: P4, must: "the contest's prize, when it is the lifeline, is this row"}
       - {phase: P1, must: "the people signature's home is the lifeline (unless the new-people scar rolled)", check: people_home}
     rows:
       - id: life_snowmelt
@@ -1194,6 +1197,7 @@ tables:
         text: {"name": "the enchanters' workshops", "who": "enchanters and their apprentices", "yields": "enchanted goods, made to order and sold abroad", "weak_point": "the masters' formulae; the rare materials that must come from elsewhere", "sense": "the smell of hot metal and the hum of a working that has not yet settled"}
 
   contest:
+    layer: story
     roll:
       avoid_used: true
       family_wait: 3
@@ -1203,7 +1207,11 @@ tables:
         epic draws a second contest of three roles (a, b, third) from another family, seated on another part
         of the spine. `seats` override the default (a and b at the spine's two ends); `hint` is the P4 faction
         archetype a role suggests (the institution signature is drawn only from a hinted role, review #5);
-        `prize` is lifeline, heart, remnant, new, or the thin place (only with the thin place in the palette); the villain is no side by default.
+        `prize` is heart, key_place, disputed_land (an end or the land between), seat (a role's house or inheritance),
+        remnant, new, or the thin place (only with the thin place in the palette); never the lifeline, which is
+        texture (build item 18a). Gates and weights come from the stage and the dials alone. A disputed land lies
+        between the sides unless `prize_at` names the side whose own land it is; a key-place prize is drawn only
+        on a spine whose key place is one of the row's `key_kinds`. The villain is no side by default.
     hooks_common:
       - {phase: P4, must: "each role is a faction of its hinted archetype; every other faction takes a stance on the contest"}
       - {phase: P4, must: "the escalation's steps are the factions' provocation rungs, first spark to the hardest form"}
@@ -1226,28 +1234,27 @@ tables:
       - id: contest_one_harbour
         label: "Two cities, one harbour"
         family: two_hands
-        prize: lifeline
+        prize: key_place
+        key_kinds: [crossing, landmark]   # the spine's key place must be a harbour, a strait or a cape (owner, 18a audit)
         seats: {"a": "beside_key_place", "b": "beside_key_place"}
         roles:
           a: {text: "the old harbour city", hint: guild}
           b: {text: "the newly founded rival city", hint: trade}
           third: {text: "the smugglers who use the harbour", hint: criminal}
           fourth: {text: "the sailors' guild", hint: null}
-        requires: {all: [{any_of: ["land_coast"]}, {any_of: [life_natural_harbour, life_strait_crossing, life_shipbuilding, life_fish_run, life_oyster_beds, life_sea_folk_hunt, life_dye_sources, life_amber_shores]}]}   # the palette, and a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_natural_harbour, life_strait_crossing, life_shipbuilding, life_fish_run, life_oyster_beds, life_sea_folk_hunt, life_dye_sources, life_amber_shores]}, x: 3}]
+        requires: {any_of: ["land_coast"]}                      # the gate: the stage (build item 18a)
         escalation: ["seizing of ships", "coastal war"]
         text: {"name": "two cities that want the same harbour", "name_note": "on either side of the key place"}
       - id: contest_one_pasture
         label: "Two peoples, one pasture"
         family: two_hands
-        prize: lifeline
+        prize: disputed_land
         roles:
           a: {text: "the herd-owning highland clans", hint: martial}
           b: {text: "the lowland villages widening their fields", hint: state}
           third: {text: "the merchants selling horses and weapons to both sides", hint: trade}
           fourth: {text: "the keepers of the holy place in the middle of the pasture", hint: religious}
-        requires: {all: [{any_of: ["land_highland", "land_plain", "land_steppe"]}, {any_of: [life_yak_herds, life_horse_herds, life_deer_migration, life_wheat_plain, life_carpet_weaving, life_leather_armour, life_vineyards, life_flax_fields]}]}   # the palette, and a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_yak_herds, life_horse_herds, life_deer_migration, life_wheat_plain, life_carpet_weaving, life_leather_armour, life_vineyards, life_flax_fields]}, x: 3}]
+        requires: {any_of: ["land_highland", "land_plain", "land_steppe"]}   # the gate: the stage (build item 18a)
         escalation: ["herd raids", "blood feud"]
         text: {"name": "two peoples, one pasture"}
       - id: contest_one_shrine
@@ -1266,24 +1273,24 @@ tables:
       - id: contest_two_banks
         label: "One river, two banks"
         family: two_hands
-        prize: lifeline
+        prize: key_place
+        key_kinds: [crossing, bridge]   # the spine's key place must be a ford, a weir or a bridge (owner, 18a audit)
         roles:
           a: {text: "those upstream", hint: state}
           b: {text: "those downstream", hint: state}
           third: {text: "the weir masters who steer the water", hint: guild}
           fourth: {text: "a people living in the river", hint: null, people_role: true}
-        requires: {all: [{any_of: ["land_river"]}, {any_of: [life_snowmelt, life_river_flood, life_shared_water_right, life_river_ford, life_flax_fields, life_tile_ceramics, life_fish_run]}]}   # the palette, and a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_snowmelt, life_river_flood, life_shared_water_right, life_river_ford, life_flax_fields, life_tile_ceramics, life_fish_run]}, x: 3}]
+        requires: {any_of: ["land_river"]}                      # the gate: the stage (build item 18a)
         escalation: ["cutting off the water", "tearing down the weir"]
         text: {"name": "one river, two banks"}
       - id: contest_settlers_newcomers
         label: "Settled folk and newcomers"
         family: old_new
-        prize: lifeline
+        prize: disputed_land
         seats: {"b": "end"}
         roles:
           a: {text: "the old owners of the land", hint: state}
-          b: {text: "the newcomers who bring the thing the land needs", hint: trade}
+          b: {text: "the newcomers", hint: trade}
           third: {text: "the merchants who profit from both", hint: trade}
           fourth: {text: "someone organising the frightened people", hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1302,19 +1309,6 @@ tables:
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["new laws", "coup attempt"]
         text: {"name": "the old order and the reformers"}
-      - id: contest_old_new_craft
-        label: "Old craft, new craft"
-        family: old_new
-        prize: lifeline
-        roles:
-          a: {text: "the guilds producing by the old method", hint: guild}
-          b: {text: "those who bring a new alloy or machine", hint: scholarly}
-          third: {text: "the workers left without work", hint: resistance}
-          fourth: {text: "a state that wants the new method as a weapon", hint: null}
-        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
-        escalation: ["boycott", "machine breaking", "blood"]
-        text: {"name": "old craft, new craft"}
       - id: contest_old_gods_new_faith
         label: "Old gods, a new faith"
         family: old_new
@@ -1356,7 +1350,8 @@ tables:
         claims: {nobility: exists}
         label: "The capital and the marches"
         family: strong_weak
-        prize: lifeline
+        prize: disputed_land
+        prize_at: b                     # the disputed land is side b's own (owner, 18a audit)
         seats: {"a": "heart"}
         roles:
           a: {text: "the capital", hint: state}
@@ -1370,7 +1365,7 @@ tables:
         claims: {nobility: exists}
         label: "Lords and peasants"
         family: strong_weak
-        prize: lifeline
+        prize: heart
         roles:
           a: {text: "the landowning lords", hint: state}
           b: {text: "the peasants' union", hint: resistance}
@@ -1382,14 +1377,15 @@ tables:
       - id: contest_mine_owners_miners
         label: "Mine owners and miners"
         family: strong_weak
-        prize: lifeline
+        prize: key_place
+        key_kinds: [descent, network]   # the spine's key place must be a mine, a shaft or a deep mouth (owner, 18a audit)
         roles:
           a: {text: "the family that holds the mine", hint: guild}
           b: {text: "the miners", hint: resistance}
           third: {text: "the outside merchants who buy the ore", hint: trade}
           fourth: {text: "a deep people angered by the mine's expansion", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
-        requires: {all: [{any_of: ["land_mountain", "land_highland", "land_underground"]}, {any_of: [life_copper_mine, life_iron_coal, life_quarry, life_gemstones, life_peat_bog, life_famous_steel]}]}   # the palette, and a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_copper_mine, life_iron_coal, life_quarry, life_gemstones, life_peat_bog, life_famous_steel]}, x: 3}, {when: {dial: {content_mix: ["war"]}}, x: 2}]
+        requires: {any_of: ["land_mountain", "land_highland", "land_underground"]}   # the gate: the stage (build item 18a)
+        weight_by: [{when: {dial: {content_mix: [war]}}, x: 2}]
         escalation: ["strike", "raid on the mine"]
         text: {"name": "mine owners and miners"}
       - id: contest_casters_casterless
@@ -1421,14 +1417,13 @@ tables:
       - id: contest_open_close_road
         label: "Those who open the road and those who close it"
         family: open_close
-        prize: lifeline
+        prize: key_place
+        key_kinds: [crossing, bridge, water, gate, descent, crossroad, network, landmark]   # every key place is a road (owner, 18a audit)
         roles:
           a: {text: "those who want to open the road to trade", hint: trade}
           b: {text: "those who want to keep the stranger out", hint: state}
           third: {text: "those who smuggle on the closed road", hint: criminal}
           fourth: {text: "the country at the other end of the road", hint: null}
-        requires: {any_of: [life_winter_pass, life_river_ford, life_natural_harbour, life_caravan_inn, life_rift_bridge, life_strait_crossing, life_deep_mouth, life_marsh_boardwalk, life_ice_road, life_pilgrim_road]}   # a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_winter_pass, life_river_ford, life_natural_harbour, life_caravan_inn, life_rift_bridge, life_strait_crossing, life_deep_mouth, life_marsh_boardwalk, life_ice_road, life_pilgrim_road]}, x: 3}]
         escalation: ["caravan bans", "caravan burning"]
         text: {"name": "those who open the road and those who close it"}
       - id: contest_forbidden_lands
@@ -1445,14 +1440,13 @@ tables:
       - id: contest_share_keep_knowledge
         label: "Those who spread knowledge and those who keep it"
         family: open_close
-        prize: lifeline
+        prize: new
         roles:
           a: {text: "those who want to open a craft or a magic to everyone", hint: scholarly}
           b: {text: "the guild that keeps it secret", hint: guild}
           third: {text: "the spies who steal the knowledge and sell it", hint: criminal}
           fourth: {text: "a state that wants to turn the knowledge into a weapon", hint: null}
-        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}]
+        requires: {dial: {magic: [medium, high]}}       # the gate: the magic dial (build item 18a)
         escalation: ["copying", "assassination"]
         text: {"name": "those who spread knowledge and those who keep it"}
       - id: contest_open_close_gate
@@ -1581,65 +1575,51 @@ tables:
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["border dispute", "war between siblings"]
         text: {"name": "sibling rulers"}
-      - id: contest_split_family
-        label: "A family splits"
-        family: kin
-        prize: lifeline
-        roles:
-          a: {text: "the branch of the head of the family", hint: guild}
-          b: {text: "the branch that breaks away", hint: trade}
-          third: {text: "the only master who knows the secret of the family craft", hint: null}
-          fourth: {text: "a rival guild", hint: null}
-        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
-        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
-        escalation: ["stealing customers", "sabotage", "murder"]
-        text: {"name": "a family that splits"}
       - id: contest_humans_giants
         claims: {rule: throne}
         label: "Humans and giants"
         family: nonhuman
-        prize: lifeline
+        prize: disputed_land
         roles:
           a: {text: "the kingdom spreading into the plain", hint: state}
           b: {text: "the giant clans defending their old rights in the mountains", hint: null, people_role: true, lineage_forced: lineage_giant_kin}
           third: {text: "those who trade with both sides", hint: trade}
           fourth: {text: "the border villages that have learned to live with the giants", hint: null}
         requires: {any_of: ["land_mountain"]}
-        weight_by: [{when: {any_of: [life_giant_peace]}, x: 2}]   # owner, 2026-09-28: the lifeline's treaty feeds this contest
         escalation: ["boundary stones", "giant raids", "war"]
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
         text: {"name": "humans and giants"}
       - id: contest_humans_dragon
         label: "Humans and a dragon"
         family: nonhuman
-        prize: lifeline
+        prize: disputed_land
         roles:
           a: {text: "the league of towns", hint: state}
           b: {text: "the dragon that counts the region its home, and its servants", hint: null}
           third: {text: "a faith that bows to the dragon and is protected", hint: religious}
           fourth: {text: "the dragon hunters", hint: martial}
-        weight_by: [{when: {any_of: [life_dragon_protection]}, x: 2}]   # owner, 2026-09-28: the lifeline's treaty feeds this contest
         escalation: ["herd losses", "dragon hunt"]
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
         text: {"name": "humans and the dragon"}
       - id: contest_humans_fey
         label: "Humans and the fey"
         family: nonhuman
-        prize: lifeline
+        prize: disputed_land
+        prize_at: b                     # the disputed land is side b's own (owner, 18a audit)
         roles:
           a: {text: "the villages clearing the forest", hint: state}
           b: {text: "the fey owners of the forest", hint: null, people_role: true, lineage_forced: lineage_fey}
           third: {text: "the druids who mediate between the two worlds", hint: religious}
           fourth: {text: "a noble who bargains with the fey in secret", hint: null, claims: {nobility: exists}}
         requires: {any_of: ["land_forest"]}
-        weight_by: [{when: {any_of: [life_fey_bargain]}, x: 2}]   # owner, 2026-09-28: the lifeline's treaty feeds this contest
         escalation: ["tree felling", "children who go missing", "forest war"]
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
         text: {"name": "humans and the fey"}
       - id: contest_surface_deep
         label: "Surface and deep"
         family: nonhuman
-        prize: lifeline
+        prize: key_place
+        key_kinds: [descent, network]   # the spine's key place must be a mine, a shaft or a deep mouth (owner, 18a audit)
         roles:
           a: {text: "the miners on the surface", hint: guild}
           b: {text: "the people living in the deeps", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
@@ -1653,7 +1633,7 @@ tables:
       - id: contest_land_sea_folk
         label: "Land folk and sea folk"
         family: nonhuman
-        prize: lifeline
+        prize: disputed_land
         roles:
           a: {text: "the coastal cities", hint: state}
           b: {text: "the sea folk", text_note: "merfolk in SRD 5.1; fish peoples", hint: null, people_role: true, lineage_forced: lineage_merfolk}
@@ -1667,7 +1647,7 @@ tables:
       - id: contest_merchant_house_divides
         label: "The merchant house that sets two sides at each other"
         family: hidden_hand
-        prize: lifeline
+        prize: heart
         roles:
           a: {text: "one rival", hint: state}
           b: {text: "the other rival", hint: state}
@@ -1696,7 +1676,7 @@ tables:
         claims: {war: by_armies}
         label: "The company that feeds on the war"
         family: hidden_hand
-        prize: lifeline
+        prize: disputed_land
         roles:
           a: {text: "a country", hint: state}
           b: {text: "its neighbour", hint: state}
@@ -1724,7 +1704,7 @@ tables:
       - id: contest_shapeshifter
         label: "The shapeshifter"
         family: hidden_hand
-        prize: lifeline
+        prize: seat
         roles:
           a: {text: "a village or family", hint: state}
           b: {text: "the other", hint: state}
@@ -1753,7 +1733,7 @@ tables:
       - id: contest_fiend_pact
         label: "The fiend behind the pact"
         family: hidden_hand
-        prize: lifeline
+        prize: seat
         third_is_rumour: true
         roles:
           a: {text: "the house that signed", hint: state}
@@ -1767,7 +1747,8 @@ tables:
       - id: contest_elemental_lord
         label: "Mortals and the elemental lord"
         family: nonhuman
-        prize: lifeline
+        prize: disputed_land
+        prize_at: a                     # the disputed land is side a's own (owner, 18a audit)
         roles:
           a: {text: "the settlers", hint: state}
           b: {text: "the elemental lord whose domain they farm", hint: null}
@@ -1828,7 +1809,8 @@ tables:
       - id: contest_coven
         label: "The coven's bargain"
         family: nonhuman
-        prize: lifeline
+        prize: disputed_land
+        prize_at: a                     # the disputed land is side a's own (owner, 18a audit)
         roles:
           a: {text: "the villages bound by it", hint: state}
           b: {text: "those who would break it", hint: resistance}
@@ -1840,7 +1822,8 @@ tables:
       - id: contest_pirates
         label: "The pirate lords and the harbour towns"
         family: strong_weak
-        prize: lifeline
+        prize: key_place
+        key_kinds: [crossing]   # the spine's key place must be the sea lanes (owner, 18a audit)
         roles:
           a: {text: "the council of pirate captains", hint: criminal}
           b: {text: "the league of harbour towns", hint: trade}
@@ -1875,20 +1858,50 @@ tables:
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["a killing in daylight", "war in the alleys", "the guild names the next ruler"]
         text: {"name": "the thieves' guild that owns the city", "name_note": "the guild at the heart"}
+    retired:                            # build item 18a: deleted rows, readable by id for legacy births, never rolled
+      - id: contest_old_new_craft
+        label: "Old craft, new craft"
+        family: old_new
+        prize: lifeline
+        roles:
+          a: {text: "the guilds producing by the old method", hint: guild}
+          b: {text: "those who bring a new alloy or machine", hint: scholarly}
+          third: {text: "the workers left without work", hint: resistance}
+          fourth: {text: "a state that wants the new method as a weapon", hint: null}
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
+        escalation: ["boycott", "machine breaking", "blood"]
+        text: {"name": "old craft, new craft"}
+      - id: contest_split_family
+        label: "A family splits"
+        family: kin
+        prize: lifeline
+        roles:
+          a: {text: "the branch of the head of the family", hint: guild}
+          b: {text: "the branch that breaks away", hint: trade}
+          third: {text: "the only master who knows the secret of the family craft", hint: null}
+          fourth: {text: "a rival guild", hint: null}
+        requires: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}   # a lifeline the prize can be
+        weight_by: [{when: {any_of: [life_famous_steel, life_glassblowing, life_carpet_weaving, life_shipbuilding, life_tile_ceramics, life_leather_armour, life_potions_medicine, life_bowyery, life_enchanters]}, x: 3}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
+        escalation: ["stealing customers", "sabotage", "murder"]
+        text: {"name": "a family that splits"}
 
   break_target:
+    layer: story
     roll: {avoid_used: false, note: "the target is a load-bearing piece; the thin place only when the palette holds it; the action must fit the target (the action's `targets` and its fit lists)"}
     hooks_common:
       - {phase: P7, must: "the opening meets the break through its target"}
     rows:
-      - {id: target_lifeline, label: The lifeline, piece: lifeline, text: {"name": "the lifeline"}, hooks: [{phase: P3, must: "the lifeline's weak point is where the break struck"}]}
       - {id: target_remnant, label: The ruin's remnant, piece: remnant, text: {"name": "the remnant of the ruin"}, hooks: [{phase: P6, must: "the remnant's site shows the break"}]}
       - {id: target_key_place, label: The spine's key place, piece: key_place, text: {"name": "the key place of the spine"}, hooks: [{phase: P3, must: "the key place's node shows the break"}]}
       - {id: target_heart, label: The heart, piece: heart, text: {"name": "the heart"}, hooks: [{phase: P3, must: "the heart shows the break; a destroyed heart moves the start to its ruins or the nearest end"}]}
       - {id: target_role, label: A contest role, piece: role, text: {"name": "a role of the contest"}, hooks: [{phase: P4, must: "the struck role's faction carries the break"}]}
       - {id: target_thin_place, label: The thin place, piece: thin_place, requires: {any_of: [land_thin_place]}, text: {"name": "the thin place"}, hooks: [{phase: P2, must: "the thin place's plane carries the break"}]}
+    retired:                          # build item 18a: the lifeline is texture, no target; kept for legacy births
+      - {id: target_lifeline, label: The lifeline, piece: lifeline, text: {"name": "the lifeline"}, hooks: [{phase: P3, must: "the lifeline's weak point is where the break struck"}]}
 
   action:
+    layer: story
     roll:
       avoid_used: false
       row_wait: 3                       # grammar: a verb the last three births used waits; a target + action pair never repeats
@@ -1897,8 +1910,8 @@ tables:
         self-standing predicate the foundation sentence places after the target's phrase with no suffix.
         `leaves_ruins`: a heart this action destroys leaves ruins, where the campaign starts; otherwise it starts
         at the end nearest the heart (end_a).
-        `fits` are the compatibility tables (review #8): lifeline families, remnant kinds and key-place kinds the
-        action can strike; the heart, a role and the thin place need only the action's `targets`. `destroys`
+        `fits` are the compatibility tables (review #8): remnant kinds and key-place kinds the action can
+        strike (build item 18a: the lifeline is no target); the heart, a role and the thin place need only the action's `targets`. `destroys`
         names the pieces the action destroys (a destroyed role cannot be the winner; a destroyed heart moves
         the start). The illustrations stay in docs/p1-foundation-rows.md only; examples anchor births.
     hooks_common:
@@ -1907,31 +1920,31 @@ tables:
     rows:
       - id: act_vanished
         label: "Vanished"
-        targets: [lifeline, remnant, key_place, heart, role]
-        fits: {"lifeline": ["water", "passage", "creatures", "mine", "crop", "craft", "treaty"], "remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
+        targets: [remnant, key_place, heart, role]
+        fits: {"remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
         destroys: [heart, role]
         forms: {"past": "vanished", "present": "is vanishing", "imminent": "is about to vanish"}
       - id: act_seized
         label: "Was seized"
-        targets: [lifeline, remnant, key_place, heart, thin_place]
-        fits: {"lifeline": ["water", "passage", "creatures", "mine", "crop", "craft"], "remnant": ["network", "structure", "city", "body", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
+        targets: [remnant, key_place, heart, thin_place]
+        fits: {"remnant": ["network", "structure", "city", "body", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
         forms: {"past": "was seized", "present": "is being seized", "imminent": "is about to be seized"}
       - id: act_reversed
         label: "Turned backwards"
-        targets: [lifeline, key_place]
-        fits: {"lifeline": ["water", "passage", "creatures", "treaty"], "key_place": ["water", "descent", "network"]}
+        targets: [key_place]
+        fits: {"key_place": ["water", "descent", "network"]}
         forms: {"past": "turned backwards", "present": "is turning backwards", "imminent": "is about to turn backwards"}
       - id: act_split
         label: "Split in two"
-        targets: [lifeline, key_place, heart, role]
-        fits: {"lifeline": ["water", "passage", "creatures", "treaty"], "key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
+        targets: [key_place, heart, role]
+        fits: {"key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
         destroys: [role]
         forms: {"past": "split in two", "present": "is splitting in two", "imminent": "is about to split in two"}
       - id: act_corrupted
         leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
         label: "Was corrupted"
-        targets: [lifeline, remnant, key_place, heart]
-        fits: {"lifeline": ["water", "creatures", "mine", "crop", "craft", "treaty"], "remnant": ["network", "structure", "city", "body", "wasteland", "source", "rift"], "key_place": ["crossing", "water", "gate", "network", "landmark"]}
+        targets: [remnant, key_place, heart]
+        fits: {"remnant": ["network", "structure", "city", "body", "wasteland", "source", "rift"], "key_place": ["crossing", "water", "gate", "network", "landmark"]}
         forms: {"past": "was corrupted", "present": "is being corrupted", "imminent": "is about to be corrupted"}
       - id: act_awakened
         label: "Came alive"
@@ -1943,14 +1956,14 @@ tables:
         leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
         concretise: true                # owner, 2026-09-28: step 2's writer names what fell / what was born (a promise)
         label: "Crushed by what fell from the sky"
-        targets: [lifeline, key_place, heart]
-        fits: {"lifeline": ["water", "passage", "mine", "crop"], "key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
+        targets: [key_place, heart]
+        fits: {"key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
         destroys: [heart]
         forms: {"past": "was crushed by something that fell from the sky", "present": "is being crushed by something falling from the sky", "imminent": "is about to be crushed by something that will fall from the sky"}
       - id: act_stopped
         label: "Stopped"
-        targets: [lifeline, key_place, heart]
-        fits: {"lifeline": ["water", "passage", "creatures", "crop"], "key_place": ["crossing", "water", "crossroad", "network"]}
+        targets: [key_place, heart]
+        fits: {"key_place": ["crossing", "water", "crossroad", "network"]}
         forms: {"past": "stopped", "present": "is stopping", "imminent": "is about to stop"}
       - id: act_opened
         label: "Opened"
@@ -1960,8 +1973,8 @@ tables:
       - id: act_closed
         label: "Closed"
         bars_scars_on_target: {thin_place: [scar_plane_thinned]}   # owner, 2026-09-28: all ways closed, no thinner border
-        targets: [lifeline, key_place, thin_place]
-        fits: {"lifeline": ["water", "passage", "mine"], "key_place": ["crossing", "bridge", "gate", "descent", "network"]}
+        targets: [key_place, thin_place]
+        fits: {"key_place": ["crossing", "bridge", "gate", "descent", "network"]}
         forms: {"past": "closed", "present": "is closing", "imminent": "is about to close"}
       - id: act_merged_with_plane
         label: "Merged with a plane"
@@ -1972,30 +1985,30 @@ tables:
           - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: act_true_face
         label: "Showed its true face"
-        targets: [lifeline, remnant, key_place]
-        fits: {"lifeline": ["water", "creatures", "mine", "treaty"], "remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["bridge", "water", "gate", "descent", "landmark"]}
+        targets: [remnant, key_place]
+        fits: {"remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["bridge", "water", "gate", "descent", "landmark"]}
         forms: {"past": "showed its true face", "present": "is showing its true face", "imminent": "is about to show its true face"}
       - id: act_turned_on_keepers
         label: "Turned on its keepers"
-        targets: [lifeline, remnant, role]
-        fits: {"lifeline": ["creatures", "treaty"], "remnant": ["network", "structure", "body", "machine", "object"]}
+        targets: [remnant, role]
+        fits: {"remnant": ["network", "structure", "body", "machine", "object"]}
         forms: {"past": "turned on its keepers", "present": "is turning on its keepers", "imminent": "is about to turn on its keepers"}
       - id: act_spread_unbounded
         label: "Spread without bound"
-        targets: [lifeline, remnant, thin_place]
-        fits: {"lifeline": ["water", "creatures", "crop"], "remnant": ["wasteland", "source", "rift"]}
+        targets: [remnant, thin_place]
+        fits: {"remnant": ["wasteland", "source", "rift"]}
         forms: {"past": "spread without bound", "present": "is spreading without bound", "imminent": "is about to spread without bound"}
       - id: act_migrated
         label: "Moved away"
-        targets: [lifeline, heart, role]
-        fits: {"lifeline": ["passage", "creatures", "treaty"]}
+        targets: [heart, role]
+        fits: {}
         destroys: [heart, role]
         forms: {"past": "migrated away", "present": "is migrating away", "imminent": "is about to migrate away"}
       - id: act_burned
         leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
         label: "Burned"
-        targets: [lifeline, key_place, heart]
-        fits: {"lifeline": ["passage", "mine", "crop", "craft"], "key_place": ["crossing", "bridge", "gate", "crossroad", "network", "landmark"]}
+        targets: [key_place, heart]
+        fits: {"key_place": ["crossing", "bridge", "gate", "crossroad", "network", "landmark"]}
         destroys: [heart]
         forms: {"past": "burned", "present": "is burning", "imminent": "is about to burn"}
       - id: act_rose
@@ -2013,8 +2026,8 @@ tables:
         forms: {"past": "sank", "present": "is sinking", "imminent": "is about to sink"}
       - id: act_twinned
         label: "Was twinned"
-        targets: [lifeline, heart, thin_place]
-        fits: {"lifeline": ["water", "passage", "mine"]}
+        targets: [heart, thin_place]
+        fits: {}
         forms: {"past": "was twinned", "present": "is being twinned", "imminent": "is about to be twinned"}
       - id: act_forgotten
         label: "Was forgotten"
@@ -2025,11 +2038,12 @@ tables:
       - id: act_gave_birth
         concretise: true                # owner, 2026-09-28: step 2's writer names what fell / what was born (a promise)
         label: "Gave birth to something new"
-        targets: [lifeline, remnant, thin_place]
-        fits: {"lifeline": ["water", "creatures", "mine"], "remnant": ["body", "wasteland", "source", "rift"]}
+        targets: [remnant, thin_place]
+        fits: {"remnant": ["body", "wasteland", "source", "rift"]}
         forms: {"past": "gave birth to something new", "present": "is giving birth to something new", "imminent": "is about to give birth to something new"}
 
   scar:
+    layer: texture
     roll:
       avoid_used: false
       row_wait: 3
@@ -2168,6 +2182,7 @@ tables:
           - {phase: P2, must: "the belief has its place in the pantheon"}
           - {phase: P4, must: "a faction holds it"}
   time:
+    layer: story
     roll: {avoid_used: false}
     hooks_common:
       - {phase: P2, must: "the break's dated event sits at this time"}
@@ -2197,6 +2212,7 @@ tables:
 
   # ── 7. the escalation: D&D's four tiers of play are the break's steps ───────────────────────────
   escalation_tier:
+    layer: story
     roll:
       avoid_used: false
       note: "not rolled: the steps are the tiers the campaign's level band touches (short 1-2, standard 3, epic 4)"

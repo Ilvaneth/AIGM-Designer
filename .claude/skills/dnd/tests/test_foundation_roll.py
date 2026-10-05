@@ -264,6 +264,16 @@ class ManySeeds(unittest.TestCase):
                 self.assertTrue(lay["break_at"])
                 for c in lay["contests"]:
                     self.assertTrue(c["prize"]["at"], (c["contest"], c["prize"]))
+                    self.assertNotEqual(c["prize"]["kind"], "lifeline")
+                    if c["prize"]["kind"] == "key_place" and not (CONTEST[c["contest"]].get("seats") or {}).get("prize"):
+                        self.assertEqual(c["prize"]["at"], "key_place")
+                    if c["prize"]["kind"] == "disputed_land":
+                        side = CONTEST[c["contest"]].get("prize_at")
+                        self.assertEqual(c["prize"]["at"], c["seats"][side] if side else "along", "a side's own land, else between")
+                    if c["prize"]["kind"] == "key_place":
+                        self.assertIn(SPINE[f["spine"]]["key_kind"], CONTEST[c["contest"]]["key_kinds"], "the key place fits the prize")
+                    if c["prize"]["kind"] == "seat":
+                        self.assertEqual(c["prize"]["at"], c["seats"]["a"], "the house of role a")
                     if c["prize"]["kind"] == "remnant" and not (CONTEST[c["contest"]].get("seats") or {}).get("prize"):
                         self.assertEqual(c["prize"]["at"], rem)
                     if c["prize"]["kind"] == "new":
@@ -297,25 +307,22 @@ class ManySeeds(unittest.TestCase):
         self.assertGreater(third, 0)
         self.assertGreater(fourth, 0)
 
-    def test_a_prize_contest_stands_on_a_lifeline_of_its_list(self):
-        """18.6 % of births paired a prize contest with a lifeline that cannot be its prize; now none."""
-        need = {}
-        for cid, row in CONTEST.items():
-            req = row.get("requires") or {}
-            for c in (req.get("all") or [req]):
-                lifes = [x for x in (c.get("any_of") or []) if x.startswith("life_")]
-                if lifes:
-                    need[cid] = set(lifes)
-        self.assertEqual(set(need), {"contest_one_harbour", "contest_one_pasture", "contest_two_banks", "contest_old_new_craft",
-                                     "contest_share_keep_knowledge", "contest_split_family", "contest_mine_owners_miners",
-                                     "contest_open_close_road"})
+    def test_the_lifeline_is_rolled_last_and_chooses_no_story(self):
+        """Build item 18a: the lifeline comes after the contest, the break and the scars; no contest stood on it. Every
+        contest that once needed a lifeline is still drawn, on its stage gate alone."""
+        gated = ("contest_one_harbour", "contest_one_pasture", "contest_two_banks", "contest_share_keep_knowledge",
+                 "contest_mine_owners_miners", "contest_open_close_road")
         drawn = set()
         for d, R, out, f in self.runs:
+            labels = [r["label"] for r in R.public]
+            life = labels.index("foundation.lifeline")
+            for before in ("foundation.contest.1", "foundation.break.target", "foundation.break.action", "foundation.break.time"):
+                self.assertLess(labels.index(before), life, before)
+            self.assertFalse([x for x in labels[life:] if x.startswith(("foundation.contest", "foundation.break."))])
             for c in f["contests"]:
                 drawn.add(c["id"])
-                if c["id"] in need:
-                    self.assertIn(f["lifeline"]["id"], need[c["id"]], (R.master, c["id"]))
-        self.assertEqual(set(need) - drawn, set(), "every prize contest is still drawn")
+                self.assertNotIn(c["id"], {r["id"] for r in dt.retired("foundation.yaml#contest")})
+        self.assertEqual(set(gated) - drawn, set(), "every contest that stood on a lifeline is still drawn")
         first = min(R.pool_of["foundation.contest.1"] for d, R, out, f in self.runs)
         self.assertGreaterEqual(first, 27, "the contest pool never falls under 27 of 40")
         second = min(R.pool_of["foundation.contest.2"] for d, R, out, f in self.runs if d["scale"] == "epic")

@@ -9,6 +9,7 @@ schema_version: 1
 table: signatures
 consumed_by: [P1, P2, P3, P4, P5, P6, P8]
 plan: "item 4.3, 17 #7, risk 24.1 #10 #18"
+layer: texture                    # build item 18a: the signatures hang on the story
 roll: {avoid_used: true, labels: [P1.people.*, P1.institution.*, P1.phenomenon.*], note: "design_identity.py rolls every piece; each sub-table states its own avoid_used"}
 
 tables:

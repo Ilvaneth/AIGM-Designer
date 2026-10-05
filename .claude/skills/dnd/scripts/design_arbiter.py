@@ -62,6 +62,60 @@ class EmptyPool(Exception):
     """The constraints left no row: a table fault, never papered over."""
 
 
+# ── the story slots (build item 18a; docs/p1-threat-first.md, "The layers") ─────────────────────────────────
+# A story slot accepts only a story or a stage piece. Texture may hang on the story (a scar the move left, a people
+# the move displaced, a phenomenon born of the ruin, a trope break explained by the lifeline): the arrow points one
+# way only. The arbiter excludes a texture candidate from a slot at the roll and refuses a set that holds one.
+STORY_SLOTS = {
+    "move_target": "the move's target",
+    "contest_prize": "the contest's prize",
+    "goal_piece": "the villain's goal piece",
+    "lair_where": "the lair's where",
+    "world_state_tie": "a world-state trope break's tie",
+    "escalation_step": "the escalation's steps",
+    "clue_place": "the clues' places",
+}
+SLOT_LAYERS = frozenset({"story", "stage"})
+# the pieces the rows name by kind (a target's `piece`, a contest's `prize`, a seat on the layout); a row id is
+# judged by its own table's layer
+PIECE_LAYERS = {
+    "heart": "stage", "key_place": "stage", "thin_place": "stage", "disputed_land": "stage", "end": "stage",
+    "remnant": "story", "role": "story", "seat": "story", "new": "story",
+    "lifeline": "texture", "scar": "texture", "palette": "texture",
+    "people": "texture", "institution": "texture", "phenomenon": "texture",
+}
+
+
+def piece_layer(piece) -> str | None:
+    """A piece's layer: a kind of the list above, else the layer of the table its row id belongs to."""
+    if piece in PIECE_LAYERS:
+        return PIECE_LAYERS[piece]
+    ref = dt.ref_of_row(str(piece)) if piece else None
+    return dt.layer(ref, str(piece)) if ref else None
+
+
+def slot_accepts(slot: str, piece) -> bool:
+    if slot not in STORY_SLOTS:
+        raise KeyError(f"design_arbiter: no story slot {slot!r}")
+    return piece_layer(piece) in SLOT_LAYERS
+
+
+def slot_pieces(row: dict) -> list:
+    """What a row would put in a slot: a target's `piece`, a contest's `prize` (and the pieces its `prize_with` may
+    turn it into), else the row itself."""
+    if "piece" in row:
+        return [row["piece"]]
+    if "prize" in row:
+        return [row["prize"], *(row.get("prize_with") or {}).values()]
+    return [row["id"]]
+
+
+def slot_errors(filled) -> list[str]:
+    """`filled`: (slot, piece) pairs of a set; one line per texture (or unknown) piece in a story slot."""
+    return [f"{STORY_SLOTS[slot]} holds {piece!r}, a {piece_layer(piece) or 'layerless'} piece: a story slot takes "
+            f"a story or a stage piece only" for slot, piece in filled if not slot_accepts(slot, piece)]
+
+
 @dataclass
 class Context:
     """What a draw is judged against: the dials, every row rolled so far (row id → rolled secretly) and the tokens
@@ -155,11 +209,13 @@ def weight_of(row: dict, ctx: Context) -> float:
     return w
 
 
-def constraint_reason(row: dict, ctx: Context, exclude: set, where, why: str, conflicts: dict) -> dict | None:
+def constraint_reason(row: dict, ctx: Context, exclude: set, where, why: str, conflicts: dict, slot: str | None = None) -> dict | None:
     """Why the constraints bar `row`, or None."""
     rid = row["id"]
     if rid in exclude:
         return {"row": rid, "why": "caller"}
+    if slot is not None and not all(slot_accepts(slot, p) for p in slot_pieces(row)):
+        return {"row": rid, "why": "texture_in_slot", "slot": slot}
     if where is not None and not where(row):
         return {"row": rid, "why": why}
     if row.get("forbidden") and not any(ctx.has(x) for x in row.get("allowed_via") or []):
@@ -197,11 +253,12 @@ def _names_secret(entry: dict, row: dict, ctx: Context, secret_ids: set) -> bool
 
 def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=None, why: str = "where",
               usage: dict | None = None, secret: bool = False, conflicts: dict | None = None,
-              secret_ids=None, weigh=None) -> dict:
+              secret_ids=None, weigh=None, slot: str | None = None) -> dict:
     """The pool a draw is thrown on: {'pool', 'weights', 'excluded', 'excluded_secret', 'usage_fallback',
     'visible'}. `visible` are the rows a public record may count (not publicly excluded), in table order.
     `conflicts` and `secret_ids` default to the committed tables' (tests pass their own). `weigh(row, ctx)` replaces
-    the rows' own weights for this draw (the people's lineage under a role's weights or inverted homes)."""
+    the rows' own weights for this draw (the people's lineage under a role's weights or inverted homes). `slot` names
+    the story slot the draw fills: a row that would put a texture piece in it is barred (build item 18a)."""
     exclude = set(exclude or ())
     usage = usage or {}
     if conflicts is None or secret_ids is None:
@@ -211,7 +268,7 @@ def arbitrate(ref: str, rows: list[dict], ctx: Context, *, exclude=None, where=N
     barred: list[dict] = []
     allowed: list[dict] = []
     for r in rows:
-        reason = constraint_reason(r, ctx, exclude, where, why, conflicts)
+        reason = constraint_reason(r, ctx, exclude, where, why, conflicts, slot)
         (barred if reason else allowed).append(reason or r)
     if not allowed:
         counts: dict = {}

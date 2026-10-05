@@ -11,6 +11,7 @@ schema_version: 1
 table: naming
 consumed_by: [P1, P2, P3, P4, P5, P6, P8]
 plan: "item 25 step 2 #8, item 4.6, 8.7, 17 #8, errata 24.2 #17 #18 #20 #25 #27, risk 24.1 #18"
+layer: texture                    # build item 18a: the names hang on the story
 roll: {notation: d17, count_by_scale: {short: 2, standard: 3, epic: 3}, avoid_used: true, labels: [P1.naming_family.1, P1.naming_family.2, P1.naming_family.3, P1.naming_family.old]}
 hooks_common:
   - {phase: P5, must: "person names come from the NPC's culture's family; no first-name collision inside a campaign"}

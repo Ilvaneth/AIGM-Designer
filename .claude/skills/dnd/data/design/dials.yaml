@@ -9,6 +9,7 @@ schema_version: 1
 table: dials
 consumed_by: [P0, P1, P2, P3, P4, P5, P6, P7, P8]
 plan: "item 2, 17 #1, errata 24.2 #8"
+layer: frame                    # build item 18a: the dials weigh tables and fill no slot; the era is the stage
 roll:
   when: blank            # only a blank dial is rolled
   mode: weighted         # weights below are the blank-roll odds, nothing more
@@ -140,6 +141,7 @@ tables:
           - {phase: P6, must: "loot budget rolls at the high multiplier; every major site has one attunement item"}
 
   era:
+    layer: stage
     notation: d5
     rows:
       - id: era_medieval
