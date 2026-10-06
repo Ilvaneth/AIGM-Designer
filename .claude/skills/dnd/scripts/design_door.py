@@ -201,6 +201,12 @@ def bare(name: str) -> str:
     return re.sub(r"^[Tt]he ", "", str(name or "").strip())
 
 
+def later_floor(phase) -> bool:
+    """A floor after P1 a signature's note may name: P2-P9, or `play` (build item 18f: the phenomenon's play hook,
+    the test birth's P1-1 #4; a play promise closes no phase's gate, build item 12b)."""
+    return phase == "play" or (phase in dm.PHASES and dm.PHASES.index(phase) > 1)
+
+
 def name_errors(eid: str, row: dict, names: Names, identity: dict) -> list[str]:
     """Section 9, the registry names. The refusal of a secret entity names no stock: it says where to look."""
     import design_names as dn
@@ -355,7 +361,7 @@ class Door:
             for rid in rolled.values():
                 row = dt.row(ref, rid)
                 for h in dp.hooks_of(ref, row) if row else []:
-                    if h["phase"] in dm.PHASES and dm.PHASES.index(h["phase"]) > 1:
+                    if later_floor(h["phase"]):
                         out.setdefault(h["phase"], set()).add(str(h["must"]))
         return out
 
@@ -374,10 +380,10 @@ class Door:
             errs.append(f"{eid}: `rolled` must hold the {slot} signature's rolled rows as design.json#identity.{slot} has them "
                         f"({', '.join(ROLLED[slot])}); the rolls are the writer's ground, never its choice")
         notes = row.get("appears")
-        bad = [n for n in notes or [] if not (isinstance(n, dict) and n.get("phase") in dm.PHASES and dm.PHASES.index(n["phase"]) > 1
+        bad = [n for n in notes or [] if not (isinstance(n, dict) and later_floor(n.get("phase"))
                                                 and isinstance(n.get("text"), str) and n["text"].strip())]
         if not isinstance(notes, list) or bad:
-            errs.append(f"{eid}: `appears` is a list of {{phase, hook, text}} notes, each naming a phase after P1 and saying where the signature shows there")
+            errs.append(f"{eid}: `appears` is a list of {{phase, hook, text}} notes, each naming a phase after P1 (or `play`) and saying where the signature shows there")
         else:
             hooks = self.hooks_by_floor(slot)
             missing = [p for p in sorted(hooks) if p not in {n["phase"] for n in notes}]

@@ -579,6 +579,16 @@ class RealCost(Base):
         self.assertIn("**Real output:** 200", card)
         self.assertIn("**Context (Workflow):**", card)
 
+    def test_a_run_no_merge_recorded_reaches_the_ledger(self):
+        """Build item 18f (test birth P1-1, #2): a Workflow that returned failed is not merged; `design_cost.py record`
+        puts its cost on the phase's ledger, marked not merged, and the report counts it apart."""
+        self.c.reopen("P6", "running")
+        self.c.run("design_cost.py", "record", "--phase", "P6", "--run-dir", str(self.run_dir()), check=True)
+        cost = self.c.json("design/design.json")["phases"]["P6"]["cost"]
+        self.assertEqual((cost["totals"]["output"], cost["runs"]["wf_rca-cost"]["merged"]), (200, False))
+        out = self.c.run("designer.py", "phase", "P6", "report", check=True).stdout
+        self.assertIn("(1 run(s), 1 not merged)", out)
+
 
 class PhaseReport(Base):
     """The review stop: `phase PN report` prints what the owner and the development tab judge before approve."""

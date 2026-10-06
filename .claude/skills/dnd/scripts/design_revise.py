@@ -226,6 +226,10 @@ def round_(campaign: str, a) -> int:
     affected_n = len(result["affected"]) + result["hidden"] + (0 if result["rerun"] == ["*"] else len([r for r in result["rerun"] if r not in result["affected"]]))
     rev = record(campaign, a.phase, a.scope, a.text, affected_n)
     data = dm.load(campaign)
+    # build item 18f: the round's record names what it reran, so the card can show what the round changed
+    data["phases"][a.phase]["approval"]["rounds"][-1].update({"revision": rev, "rerun": list(result["rerun"]),
+                                                             "affected_ids": list(result["affected"])})
+    dm.save(campaign, data, f"design_revise.py round --phase {a.phase} (the round's reruns)")
     out = {"campaign": campaign, "phase": a.phase, "scope": a.scope, "text": a.text, "entity": entities,
            "affected": result["affected"], "hidden": result["hidden"], "rerun": result["rerun"],
            "round": len(data["phases"][a.phase]["approval"]["rounds"]), "revision": rev}

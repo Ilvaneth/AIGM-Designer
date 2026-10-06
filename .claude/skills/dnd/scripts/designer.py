@@ -643,7 +643,10 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
     if R.naming is not None:
         # build item 11b: the script writes design/naming.json, the stocks, the secret stock and the candidates
         naming = dn.write_rolled(campaign, R.naming, phase, attempt)
-        print("designer: names — " + "; ".join(f"{lid}: {L['bag']} (group {L['group']}), {len(L['roots'])} roots"
+        # build item 18f (test birth P1-1, #13): the old tongue rolls no roots; it names its sites from its bag
+        print("designer: names — " + "; ".join(f"{lid}: {L['bag']} (group {L['group']}), "
+                                                + ("no roots (the old tongue names its sites from its bag's parts)"
+                                                   if L.get("owner") == "old" else f"{len(L['roots'])} roots")
                                                 for lid, L in naming["languages"].items()))
         print("designer: candidates — " + "; ".join(f"{slot}: {', '.join(c['name'] for c in s['names'])}"
                                                      for slot, s in naming["candidates"].items()))
@@ -769,6 +772,7 @@ def phase_begin(campaign: str, phase: str, as_json: bool, session_id: str | None
         return 1
     arm(campaign, "birth", session_id)
     dm.reconcile(campaign, quiet=True)
+    serve_phase_fixes(campaign, phase)
     data = dm.load(campaign)
     ph = data["phases"][phase]
     staged = [e for e in ph.get("roster") or [] if data["entities"].get(e, {}).get("status") == "staged"]
@@ -915,6 +919,26 @@ def heavy_entity(row: dict) -> bool:
     return row.get("tier") == "major" or str(row.get("role") or "") in ("bbeg", "lieutenant") or bool(row.get("goal_tracked"))
 
 
+def serve_phase_fixes(campaign: str, phase: str) -> list[str]:
+    """Build item 18f (test birth P1-1, #5): a phase critic's fix on an entity a roster unit writes (itself or a row it
+    covers) sends that unit back to its writer, once per attempt, with the findings in its prompt."""
+    import design_approval as da
+    data = dm.load(campaign)
+    due = da.phase_fixes_due(campaign, phase, data)
+    attempt = int(data["phases"][phase].get("attempt") or 1)
+    for unit, findings in due.items():
+        row = data["entities"].setdefault(unit, {"phase": phase, "status": "pending", "attempt": 0, "critique_loops": 0,
+                                                 "last_error": None, "file": None, "stage_file": None, "agent": None})
+        row["status"] = "pending"
+        row["attempt"] = int(row.get("attempt") or 0) + 1
+        row["rerun"] = True
+        row["phase_fix"] = {"attempt": attempt, "findings": findings, "at": now_iso()}
+    if due:
+        dm.save(campaign, data, f"designer.py phase {phase} begin (the phase critic's fix)")
+        print(f"designer: {phase} the phase critic's fix goes to {', '.join(sorted(due))}", file=sys.stderr)
+    return sorted(due)
+
+
 def pending_with_prompts(campaign: str, phase: str) -> dict:
     data = dm.load(campaign)
     canonical = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
@@ -936,7 +960,12 @@ def pending_with_prompts(campaign: str, phase: str) -> dict:
         files = [dm.rel(campaign, Path(f)) if os.path.isabs(f) else f for f in files]
         files = list(dict.fromkeys(files))
         entry = {"id": eid, "status": row.get("status", "pending"), "attempt": recorded, "render_attempt": render_attempt,
-                 "last_error": row.get("last_error"), "files": files}
+                 "last_error": row.get("last_error"), "files": files,
+                 # build item 18f: the rows the unit writes beside itself (the workflow routes a phase fix on them here)
+                 "covers": sorted(k for k, r in canonical.items() if k != eid and r.get("file") and r.get("file") == (canonical.get(eid) or {}).get("file"))}
+        pf = row.get("phase_fix") or {}
+        if row.get("rerun") and pf.get("attempt") == attempt:
+            entry["phase_fix"] = pf.get("findings") or []
         name = dp.prompt_for(phase, eid)
         if name:
             entry.update(prompt_bundle(campaign, phase, name, eid, render_attempt))
@@ -1020,7 +1049,7 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
     # transcripts say what the phase cost, per role
     for rd in run_dirs or []:
         import design_cost as dc
-        dc.record(campaign, phase, rd)
+        dc.record(campaign, phase, rd, merged=True)
     report_path = design_dir(campaign) / "_staging" / phase / "merge.report.json"
     if report_path.is_file():
         report_path.unlink()            # birth 2: never read a previous run's report
@@ -1357,8 +1386,11 @@ def phase_report(campaign: str, phase: str) -> int:
     promised = dpr.report_line(campaign, phase)
     if promised:
         lines.append(promised)
+    runs = ((ph.get("cost") or {}).get("runs") or {}).values()
+    unmerged = sum(1 for r in runs if r.get("merged") is False)       # build item 18f: a run no merge recorded
     lines.append(f"- cost: " + (f"{cost.get('agents', 0)} agents, {fmt(cost.get('requests'))} requests, output {fmt(cost.get('output'))}, "
-                                f"cache read {fmt(cost.get('cache_read'))}" if cost else "no run recorded (merge --run-dir)")
+                                f"cache read {fmt(cost.get('cache_read'))} ({len(runs)} run(s)" + (f", {unmerged} not merged" if unmerged else "") + ")"
+                                if cost else "no run recorded (merge --run-dir, or design_cost.py record for a run not merged)")
                  + f" · Workflow context {fmt((ph.get('tokens') or {}).get('out'))} · wall {round(int(ph.get('wall_s') or 0) / 60)} min")
     look = [f"phase critic: {x}" for x in phase_lines[:4]] + [f"chain ended fix: {e}" for e in ended_fix[:4]]
     minor = da.minor_orphans(campaign, phase) if phase in dm.PHASES and phase != "P0" else {}
@@ -1504,6 +1536,7 @@ def phase_rerun(campaign: str, phase: str, reason: str, reseed: bool, direction:
     ph["status"] = "pending"
     ph["skeleton"] = {"status": "pending", "agent": None}
     ph["door"] = None                   # the next attempt's door has not run
+    ph["validator"] = None              # ...nor its validator: the last attempt's "0 errors" never reaches the new card (build item 18f)
     # dry-3: the conductor's rerun reason ("STOP P7 attempt 1: …; fixed in 9cb4002") reached every writer as a creative
     # direction and the player's card; a reason is a record, a direction is the owner's correction sentence
     ph.setdefault("reruns", []).append({"attempt": ph["attempt"], "reason": reason, "at": now_iso()})

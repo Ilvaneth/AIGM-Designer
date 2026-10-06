@@ -319,6 +319,13 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
     scope = str(fm.get("rubric_scope") or "") or None
     directions = "\n".join(f"- {x}" for x in ph.get("directions") or []) or "- (none)"
     erow = manifest.get("entities", {}).get(entity_id or "", {})
+    pf = erow.get("phase_fix") or {}
+    if role == "writer" and erow.get("rerun") and pf.get("findings"):
+        # build item 18f (test birth P1-1, #5): the phase critic's fix on this unit or a row it writes, ids and codes only
+        directions += ("\n- **The phase critic's fix:** " + "; ".join(
+            f"{f.get('rubric_id')} on {f.get('entity_id')}" + (f" ({f['reason_code']})" if f.get("reason_code") else "")
+            for f in pf["findings"]) + f". Its reasoning is in `design/_staging/{phase}/phase.critique.md` (and its dm-only copy "
+            "when the phase critic wrote one). Repair exactly that; everything else stays as it was.")
     if erow.get("last_error") and role == "writer":
         directions += (f"\n- **Attempt {attempt}:** your previous fragment was refused by the registry — {erow['last_error']} "
                        "Repair exactly that; everything else stays as it was.")

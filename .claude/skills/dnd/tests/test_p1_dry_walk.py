@@ -2,7 +2,7 @@
 test_p1_dry_walk.py — build item 17 (docs/p1-build-17.md): the dry walk of P1. Model-free, with the real commands, on
 a `_test-` campaign of its own, at each scale: new → preroll → begin → the stand-in writer → merge (the door) → check
 (the script rules) → the stand-in critics → card (the gate) → approve (used.json) → a second campaign on the same
-used.json. Then eight wrong turns, each from the state after the stand-in writer.
+used.json. Then eleven wrong turns, each from the state after the stand-in writer (three on the chain, build item 18f).
 
 The stand-in writer and the stand-in critics live here; they are no part of the product. The writer invents nothing:
 every name is a candidate or a stock name, every id is copied from the records.
@@ -232,6 +232,8 @@ class Walk(Base):
         # brings its text as advice; every note is in the ledger
         notes = [p for p in m["promises"] if p["source"] == "note" or any(a["source"] == "note" for a in p.get("also") or [])]
         written = [n for r in w.rows.values() if r["type"] == "signature" for n in r["appears"]]
+        # build item 18f (test birth P1-1, #4): the phenomenon's play floor has a note the door accepts
+        self.assertIn("play", {n["phase"] for r in w.rows.values() if r.get("slot") == "phenomenon" for n in r["appears"]})
         self.assertEqual({(n["phase"], n["hook"]) for n in written}, {(p["due"], p["text"]) for p in notes})
         self.assertTrue(all(n["text"] in next(p for p in notes if p["text"] == n["hook"] and p["due"] == n["phase"])["advice"] for n in written))
         secret = dp.load_secret(w.name)
@@ -373,6 +375,52 @@ class WrongTurns(Base):
         out, refused = self.refused(w)
         sig = next(e for e, r in w.rows.items() if r.get("slot") == "institution")
         self.assertTrue(any("no `appears` note for" in l for l in refused[sig]), refused[sig])
+
+    # build item 18f: three wrong turns on the chain
+
+    def test_a_texture_piece_in_a_clue_s_place(self):
+        """A stage's chain clue stands on a piece of the chain; the lifeline (texture) there is refused at the door."""
+        w = self.walker()
+
+        def change(rows, picked):
+            rows[w.premise_id]["dm_only"]["clues"][0]["piece"] = "lifeline"
+        w.write(change)
+        out, refused = self.refused(w)
+        self.assertTrue(any("`dm_only.clues.piece` names 'lifeline', a texture piece" in l for l in refused[w.premise_id]),
+                        "the door names the field and the layer")
+        self.assertNotIn(w.premise_id, w.merged())
+
+    def test_a_hidden_truth_that_serves_no_clue(self):
+        """A signature's hidden truth exists only as the medium of a stage's clue; one that names no stage is refused."""
+        w = self.walker()
+
+        def change(rows, picked):
+            sig = next(r for r in rows.values() if r.get("slot") == "phenomenon")
+            sig["dm_only"] = {"true_rule": "what the natives do not know of the rule, in a line."}
+        w.write(change)
+        out, refused = self.refused(w)
+        sig = next(e for e, r in w.rows.items() if r.get("slot") == "phenomenon")
+        self.assertTrue(any("exists only as the medium of a stage's clue" in l for l in refused[sig]), "the door asks for `serves_clue`")
+        self.assertNotIn(sig, w.merged())
+
+    def test_a_missing_lair_closes_the_d_and_d_gate(self):
+        """The D&D line (G9): a threat without its lair closes the gate; the card shows the cross, approve is refused."""
+        w = self.good()
+        w.critics()
+        w.d("phase", "P1", "merge")
+        self.assertEqual(da.gate(w.name, "P1"), [], "the gate is open before")
+        path = w.dir / "design/dm-only/dice-log.json"
+        log = json.loads(path.read_text(encoding="utf-8"))
+        log["threat"]["lair"] = {"form": None, "where": None}
+        path.write_text(json.dumps(log), encoding="utf-8")
+        item = next(i for i in da.gate(w.name, "P1") if i["code"] == "dnd_incomplete")
+        self.assertIn("lair", item["detail"])
+        w.d("phase", "P1", "card")
+        card = (w.dir / "design/_approval/P1.card.md").read_text(encoding="utf-8")
+        self.assertIn("✗ lair", card)
+        approve = w.d("phase", "P1", "approve", check=False)
+        self.assertEqual(approve.returncode, 1)
+        self.assertIn("dnd_incomplete", approve.stderr)
 
     def good(self) -> Walker:
         w = self.walker()

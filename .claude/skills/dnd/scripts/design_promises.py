@@ -399,7 +399,7 @@ def sync(campaign: str, phase: str | None = None) -> int:
         if row.get("type") == "signature" and not hidden:
             # build item 13b: where the writer says a signature will appear is a promise to that floor
             for n in row.get("appears") or []:
-                if isinstance(n, dict) and n.get("phase") in dm.PHASES and str(n.get("text") or "").strip():
+                if isinstance(n, dict) and (n.get("phase") in dm.PHASES or n.get("phase") == "play") and str(n.get("text") or "").strip():
                     # W4 (build item 18e): the promise binds the hook the note restates; the note's text is advice
                     bound = str(n.get("hook") or n["text"]).strip()
                     p = L.add("note", eid, "P1", n["phase"], bound, str(row.get("name") or eid))

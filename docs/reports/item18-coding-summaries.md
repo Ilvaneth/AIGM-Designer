@@ -191,3 +191,78 @@ Summarised to the owner in the coding tab on 2026-10-05; the owner's two correct
 **Changed files:** `tests/_corpus.py` (new), `tests/_floor.py`, `test_identity_roll.py`, `test_identity_secret_roll.py`, `test_layers.py`, `test_move.py`, `test_name_pools.py`, `test_p1_story.py`, `test_promises.py`, `test_secret_layer.py`, `test_threat.py`, `test_world_states.py`; `scripts/design_foundation.py` (the two lifted functions). The unused `itertools` imports and two helpers the move left dead (`run`, `dials_of`) are removed.
 
 **The suite:** the timing run above (825 tests, 28.4 min) was red on one test only: the replaced "exercised" assertion, loaded before its fix. After the fix: the new test passes alone; the gating full run on the final tree: 826 tests, OK, exit code 0, 1,381 s (23.0 min).
+
+## 18f-2 — the chain measured and walked (the fourth coding tab)
+
+**Twenty spine sentences, for the owner** (standard scale, mixed dials, seeds FRESH-202610061840-4984-0 … FRESH-202610061840-4984-19):
+
+ 1. A generation ago, a monstrous beast besieged the city on the middle terrace; now the penitent branch and the ambitious branch fight over the city on the middle terrace.
+ 2. A generation ago, slavers enslaved the native hunters; now the crown's official expedition and a mercenary company fight over the tower of ascension.
+ 3. A generation ago, a cult replaced the leader of the exiles with an impostor; now the dark lord's dominion and the last free realm fight over the city in the middle layer.
+ 4. Brigands drove the collaborating local nobles out; now the occupiers and the resistance in the mountains fight over the largest island.
+ 5. A foreign army sealed the great shaft; now the old nobles and the reformers fight over the city in the middle layer.
+ 6. A coven of hags is about to poison the leader of one half of the city; now one half of the city and the other half fight over the town by the crater's stone.
+ 7. Sea raiders opened the way down to the floor; now the shrine's old keepers and the new faith fight over the gods' fallen weapons.
+ 8. A generation ago, fiends seized the thin place; now the open-road traders and the road-closers fight over the gates of the wall.
+ 9. Things from beyond are about to seize the only safe strait; now a country and the neighbouring country fight over the land between them.
+10. A generation ago, shapechangers opened the stairs between the terraces; now the old temples and the fast-spreading new faith fight over the city on the middle terrace.
+11. A traitor within is raising the native hunters in revolt; now the crown's official expedition and a mercenary company fight over the experiment centre.
+12. A cursed pack is about to curse the neck of the peninsula; now the penitent branch and the ambitious branch fight over the city near the neck.
+13. A coven of hags is corrupting the strait between the lakes; now the magic-holding bloodline and the casterless majority fight over the city on the strait.
+14. A traitor within is seizing the thin place; now the crown's official expedition and a mercenary company fight over the stone roads and their forts.
+15. A monstrous beast is about to seize the glass desert; now the landowning lords and the peasants' union fight over the city at the belt's middle.
+16. A cursed pack is spreading a plague among the profiteering merchants; now the land's old owners and the newcomers fight over the land between them.
+17. Shapechangers are about to seize the oasis's water; now the land's old owners and the newcomers fight over the land between them.
+18. An unwitting faction carried off the order's steward; now the old leadership and the breakaway branch fight over the experiment centre.
+19. A generation ago, a dragon seized the black fortress; now the house that signed and the rival house fight over the seat of the house that signed.
+20. A cursed pack is about to burn the only bridge over the void; now the old temples and the fast-spreading new faith fight over the city above the void.
+
+**The whole-P1 measurement** (`tests/p1_measure.py`, over the shared corpus):
+
+**The measures (3000 corpus births; docs/p1-threat-first.md's findings)**
+
+- 1. texture in a story slot: 0 births; the lifeline as the move's target 0.0 %, as a prize 0.0 % (before item 18: 17.8 % and 43 %, one or both 52.6 %)
+- 2. a move with a hand: 100.0 % (27 of 27 hands); the goal joins the contest by move 53.9 %, prize 34.0 %, role_goal 12.0 %
+- 5. a threat with a goal, a weakness and a lair: 100.0 %; its families drawn: 19 of 19 (rows not named: secret)
+- 4. the secret's three stages with three clues each: 100.0 %
+- 6. world states drawn: 726 in 702 births; joined: 100.0 %
+- 8. the palette by the spine's breadth (the scar's and the ruin's kinds on top): tight epic 4.49 (band 4-5); tight short 2.81 (band 2-3); tight standard 3.55 (band 3-4); wide epic 7.06 (band 6-8); wide short 3.61 (band 3-4); wide standard 4.99 (band 4-6); over the band's top 45 (1.5 %: the forced kinds and the needs alone; 18b measured 1.6 %)
+- the story sentence: 100.0 % of births
+
+**The move (test_move --report, on the corpus)**
+
+3000 seeds
+targets: role 37.0 %, key_place 29.3 %, remnant 16.8 %, heart 14.1 %, thin_place 2.8 %
+joins: prize/None 34.0 %, move/side_holding 27.0 %, move/role 20.8 %, role_goal/None 12.0 %, move/prize_piece 6.2 %
+hands: 27 of 27, 31-151 each; verbs: 23 of 23, 23-512 each
+start: end_a 40.6 %, end_b 30.7 %, key_place 25.1 %, along 3.5 %, end_c 0.1 %, end_d 0.0 %
+state: move_backfired 20.9 %, move_unnoticed 20.6 %, move_stopped_short 20.2 %, move_done 19.6 %, None 18.6 %
+world states: magic_is_nobility 151, rule_by_lottery 142, no_kings_only_guilds 99, gods_among_mortals 94, the_enemy_won 94, beasts_own_land 53, moon_trades 47, dragons_rule 46
+
+**The threat's variety (test_threat --report: its own births, the three-birth wait)**
+
+short: 15 families drawn; share max 8.4 %, min 5.3 %; consecutive repeats 0; distinct (family, creature, shape, goal) 970 of 1,000; reskins 28.8 %; the join: prize 34.0 %, role goal 11.3 %, move 54.7 %
+standard: 18 families drawn; share max 7.9 %, min 4.3 %; consecutive repeats 0; distinct (family, creature, shape, goal) 960 of 1,000; reskins 48.9 %; the join: prize 33.5 %, role goal 11.8 %, move 54.7 %
+epic: 18 families drawn; share max 8.4 %, min 4.2 %; consecutive repeats 0; distinct (family, creature, shape, goal) 922 of 1,000; reskins 61.3 %; the join: prize 30.5 %, role goal 13.6 %, move 55.9 %
+
+**Changed and new files.**
+- Scripts: `designer.py` (`phase rerun` clears the validator's last result beside the door's; the preroll's names line gives the old tongue "no roots (the old tongue names its sites from its bag's parts)"; the report counts the runs and the ones not merged; `merge --run-dir` records its runs as merged), `design_manifest.py` (a row whose status reaches merged drops its `last_error`: a refusal a later fragment answered never reaches the next prompt), `design_door.py` (`later_floor`: an `appears` note may name `play`, and the phenomenon's play hook asks for one like any floor), `design_promises.py` (a `play` note joins its hook's promise), `design_approval.py` (the cards: "attempt N · correction round K" in the header, a section for the round, the card before the round kept as `P1.attempt-N.round-K.card.md`; the critique record refuses a finding that is not a pass with no reason code and records a code that carries a secret term as `secret_term`: `secret_code_terms`, `carries_secret`), `design_revise.py` (the round's record names its revision, the entities it reran and the ones it affected), `design_cost.py` (`record` marks a run it records by itself as not merged), `design_prompts.py` (the writer's prompt carries the phase critic's fix), and `.claude/workflows/design-fanout.js` (a phase fix routed through `covers`, its findings in the fix agent's text): #5 below.
+- Prompts: `critic.md`, `phase_critic.md` (every finding that is not a pass has a reason code slug that never names a secret row or a secret name).
+- Tests: new `test_p1_birth_faults.py` (7 tests: the phase critic's fix on a covered row, the stale refusal, the correction round on the card, the reason codes, the old tongue's line, the Read tool in the three P1 prompts, rerun and the validator); `test_p1_dry_walk.py` (three wrong turns on the chain: a texture piece in a clue's place, a hidden truth that serves no clue, a missing lair closing the D&D gate through card and approve; the walk sees the phenomenon's play note accepted); `test_root_cause_1.py` (a run no merge recorded reaches the ledger, counted apart); new `p1_measure.py` (the report above; no test: the rules it reports are asserted by the many-seed tests).
+
+**The test birth's faults (docs/reports/p1-test-birth-1.md section 6), one by one:**
+1. The Bash read of dm-only refused by the classifier: the writer's prompt and both critics' read lines say "with the Read tool, never with Bash" (already since 18e); now pinned by a test.
+2. An unmerged Workflow's cost: `design_cost.py -c CAMP record --phase PN --run-dir DIR` records it, marked `merged: false`; `merge --run-dir` marks its own merged; the report reads "(N run(s), M not merged)". The protocol has to say when the conductor runs it (a Workflow that returned failed or was stopped).
+3. (The protocol's reading of a failed Workflow: the protocol's, not code.)
+4. The phenomenon's play floor: the door accepts `{phase: play, hook, text}` and asks for it (the phenomenon rule's `hooks_common` has a play hook, so every birth's phenomenon carries one); the note joins the play promise, which closes no phase's gate (12b).
+5. The phase critic's `fix` that reached no writer (the audit's addition): the cause was in `.claude/workflows/design-fanout.js`, which looked for the entities a phase `fix` names among the roster's units only; P1's roster is the premise, and the critic named a signature row and a break row the premise's fragment writes. Now (a) a phase fix on a row a unit writes beside itself (the same prose file) belongs to that unit: `design_approval.unit_of`, `phase_fixes_due`; (b) `phase PN begin --json` serves the due ones (`designer.serve_phase_fixes`): the unit goes back to its writer once per attempt (a unit whose re-critique at `PHASE_FIX_LOOP` (4) is recorded, or that begin served, is not served again), its entry carries `phase_fix` (the findings: rubric id, entity id, reason code) and `covers` (the rows it writes), and its prompt reads "**The phase critic's fix:** <rubric> on <entity> (<code>)" with the pointer to `phase.critique.md`; (c) the gate shows `phase_fix_due` until it is served; (d) the workflow routes an in-run phase fix through `covers` to the unit and puts the findings in the fix agent's text (a first run's rows are not known to it yet: begin serves those). The critique records now carry their `attempt` and `loop`. Proved model-free by `test_a_phase_critic_s_fix_on_a_covered_row_reaches_the_premise_s_writer`.
+6. Reason codes checked against secret terms: a code whose words hold a secretly rolled row's id, its distinctive tail (two words, or eight letters) or a secret name is recorded as `secret_term`; the report and the public manifest never hold it.
+7. The stale `last_error`: cleared when the row's status reaches merged (reconcile, at every merge and begin).
+8. A null reason code: a finding that is not a pass with none is refused at the record; the return stays in staging.
+10, 11. The card and the correction round: header "attempt 1 · correction round 1"; the section "CHANGES FROM THE PREVIOUS CARD (correction round 0 → 1)" with the round's scope and revision, what it reran (public ids; secret ones counted) and which public files changed since the card before (by digest); that card is kept.
+13. The old tongue's 0 roots: the line says why.
+And item 17's note: `phase rerun` clears the validator's last result.
+
+**Decisions a principle settled:** a correction round's own text is not printed on the card (the owner's sentence may name a secret; the scope and the revision id stand for it); a reason code with a secret term is redacted, not refused (refusing would stop the critic's chain on a word); the secret terms leave out single short words of row ids (`lairat_remnant` → `remnant` is no term) to spare ordinary codes.
+
+**The suite:** 836 tests, OK, exit code 0, 1,536 s (25.6 min, with the measurement running beside it), before the audit's addition (#5). The gating run on the final tree: 837 tests, OK, exit code 0, 1464 s (24 min).

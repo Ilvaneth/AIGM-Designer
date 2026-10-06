@@ -162,6 +162,28 @@ def secret_terms(campaign: str) -> tuple[set, list]:
     return names, sentences
 
 
+def secret_code_terms(campaign: str) -> set:
+    """The secret terms a reason code is checked against (build item 18f): every secret name of `secret_terms` as a
+    slug (a secret entity's, the secret stock's) and every secretly rolled row's id with its tail after the table's
+    prefix when the tail is distinctive (two words, or eight letters: `goal_patron_will` → `patron_will`)."""
+    names, _ = secret_terms(campaign)
+    out = set()
+    for n in names:
+        slug = re.sub(r"[^a-z0-9]+", "_", str(n).lower()).strip("_")
+        if len(slug) >= 3:
+            out.add(slug)
+        tail = slug.split("_", 1)[1] if "_" in slug else ""
+        if tail and ("_" in tail or len(tail) >= 8):
+            out.add(tail)
+    return out
+
+
+def carries_secret(code: str, terms: set) -> bool:
+    """A slug carries a term when the term's words stand in it as a run of whole words."""
+    padded = "_" + re.sub(r"[^a-z0-9]+", "_", code.lower()).strip("_") + "_"
+    return any(f"_{t}_" in padded for t in terms)
+
+
 def leaks_in(text: str, names: set, sentences: list) -> list[str]:
     hits = []
     for n in sorted(names):
@@ -184,9 +206,52 @@ def previous_card(path: Path) -> dict | None:
     ids = re.search(r"<!-- ids: (.*?) -->", text)
     names = re.search(r"<!-- names: (.*?) -->", text)
     attempt = re.search(r"<!-- attempt: (\d+) -->", text)
+    rnd = re.search(r"<!-- round: (\d+) -->", text)
+    files = re.search(r"<!-- files: (.*?) -->", text)
     return {"ids": set(filter(None, (ids.group(1).split(",") if ids else []))),
             "names": dict(x.split("=", 1) for x in (names.group(1).split("|") if names and names.group(1) else []) if "=" in x),
-            "attempt": int(attempt.group(1)) if attempt else 0, "text": text}
+            "attempt": int(attempt.group(1)) if attempt else 0, "text": text,
+            "round": int(rnd.group(1)) if rnd else 0,
+            "files": dict(x.split("=", 1) for x in (files.group(1).split("|") if files and files.group(1) else []) if "=" in x)}
+
+
+# build item 18f (test birth P1-1, #10-11): a correction round shows on the card: its number beside the attempt, and what
+# it changed (the entities it reran, the public files whose text changed since the previous card)
+
+def card_round(ph: dict) -> int:
+    return len((ph.get("approval") or {}).get("rounds") or [])
+
+
+def public_file_digests(campaign: str, rows: dict) -> dict:
+    """{public prose file: its digest} for the files the card's rows live in (never a dm-only file)."""
+    import hashlib
+    out = {}
+    for e in rows.values():
+        path = str(e.get("file") or "")
+        full = campaign_dir(campaign) / path
+        if path and "dm-only" not in path and full.is_file():
+            out[path] = hashlib.sha256(full.read_bytes()).hexdigest()[:12]
+    return dict(sorted(out.items()))
+
+
+def round_marks(rnd: int, files: dict) -> list[str]:
+    return [f"<!-- round: {rnd} -->", "<!-- files: " + "|".join(f"{p}={s}" for p, s in files.items()) + " -->"]
+
+
+def round_changes(prev: dict | None, ph: dict, rows: dict, files: dict, attempt: int, rnd: int, heading: str) -> list[str]:
+    """The card's section for a correction round, when the previous card was this attempt before the round."""
+    if not prev or prev["attempt"] != attempt or prev.get("round", 0) == rnd or not rnd:
+        return []
+    last = ((ph.get("approval") or {}).get("rounds") or [])[-1]
+    rerun = list(last.get("rerun") or [])
+    reran = [e for e in rerun if e in rows]
+    hidden = len([e for e in rerun if e not in rows and e != "*"])
+    changed = [p for p, s in files.items() if prev["files"].get(p) != s]
+    same = [p for p in files if p not in changed]
+    return [heading.format(a=prev.get("round", 0), b=rnd),
+            f"  the round: {last.get('scope', '—')}" + (f" ({last['revision']})" if last.get("revision") else ""),
+            "  rewritten: " + (", ".join(reran) or ("the whole phase" if "*" in rerun else "—")) + (f" (+{hidden} hidden)" if hidden else ""),
+            f"  public files changed: {', '.join(changed) or '—'} · unchanged: {', '.join(same) or '—'}", ""]
 
 
 def validator_summary(campaign: str, phase: str) -> tuple[dict, list]:
@@ -257,7 +322,44 @@ def map_lines(campaign: str) -> list[str]:
 GATE_LABELS = {"render": "the player files could not be rendered", "incomplete": "roster incomplete", "band": "outside the band", "critic_missing": "a critic did not run",
                "validator": "validator error", "seed": "seed error", "orphan_stub": "orphan stub",
                "promise": "a due promise a script checks is not kept", "promise_unjudged": "a due promise has no verdict",
-               "dnd_incomplete": "a D&D campaign's piece is missing"}
+               "dnd_incomplete": "a D&D campaign's piece is missing", "phase_fix_due": "the phase critic's fix waits for its writer"}
+
+# the loop of the re-critique after a phase critic's fix (.claude/workflows/design-fanout.js: MAX_FIX_LOOPS + 2)
+PHASE_FIX_LOOP = 4
+
+
+def unit_of(eid: str, roster: list, rows: dict) -> str | None:
+    """The roster unit that writes an entity: itself, or the unit whose prose file the entity's row lives in (P1's
+    roster is the premise; its signature and break rows are written beside it in design/premise.md)."""
+    if eid in roster:
+        return eid
+    path = (rows.get(eid) or {}).get("file")
+    return next((u for u in roster if path and (rows.get(u) or {}).get("file") == path), None)
+
+
+def phase_fixes_due(campaign: str, phase: str, manifest: dict | None = None) -> dict:
+    """{roster unit: its findings} — build item 18f (test birth P1-1, #5): the latest phase critic return of this attempt
+    says fix (or rerun) on entities a unit writes, itself or a row it covers; each finding goes to that unit's writer as
+    {rubric_id, entity_id, reason_code}. A unit that already had its phase fix this attempt (the workflow's re-critique
+    at PHASE_FIX_LOOP, or one `phase begin` served) is left to the gate's other items and the owner."""
+    m = manifest if manifest is not None else dm.load(campaign)
+    ph = m["phases"].get(phase) or {}
+    attempt = int(ph.get("attempt") or 1)
+    recs = [r for r in (ph.get("critique") or {}).get("records") or [] if r.get("attempt") == attempt]
+    last = next((r for r in reversed(recs) if r.get("kind") == "phase"), None)
+    if not last or last.get("verdict") not in ("fix", "rerun"):
+        return {}
+    roster, rows = ph.get("roster") or [], canonical(campaign)
+    out: dict = {}
+    for f in last.get("findings") or []:
+        if f.get("verdict") not in ("fix", "rerun"):
+            continue
+        unit = unit_of(str(f.get("entity_id")), roster, rows)
+        if unit:
+            out.setdefault(unit, []).append({k: f.get(k) for k in ("rubric_id", "entity_id", "reason_code")})
+    served = {r["entity_id"] for r in recs if r.get("kind") == "entity" and r.get("loop") == PHASE_FIX_LOOP}
+    served |= {u for u in out if ((m["entities"].get(u) or {}).get("phase_fix") or {}).get("attempt") == attempt}
+    return {u: fs for u, fs in out.items() if u not in served}
 
 
 def dnd_ticks(campaign: str, m: dict) -> list[tuple[str, bool]]:
@@ -328,6 +430,10 @@ def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
         missing = [k for k, ok in dnd_ticks(campaign, m) if not ok]
         if missing:
             out.append({"code": "dnd_incomplete", "ids": [], "detail": f"the D&D campaign misses: {', '.join(missing)}"})
+    due = phase_fixes_due(campaign, phase, m)
+    if due:
+        out.append({"code": "phase_fix_due", "ids": sorted(due),
+                    "detail": f"the phase critic's fix waits for its writer: run `phase {phase} begin --json` and the Workflow"})
     # build item 12b: a due promise a script checks and that is not kept closes the gate, and so does a due promise
     # the critic gave no verdict; a critic's `not_kept` does not (the card lists it, the owner decides). A secret
     # promise is an id and a count here, never a sentence. A legacy birth has no ledger: nothing is added.
@@ -445,9 +551,11 @@ def build_card(campaign: str, phase: str) -> str:
     spoilers = {eid: e for eid, e in mine.items() if e.get("type") in SPOILER_TYPES}
     shown_rows = {eid: e for eid, e in mine.items() if eid not in spoilers}
     attempt = int(ph.get("attempt") or 1)
+    rnd, files = card_round(ph), public_file_digests(campaign, shown_rows)
 
-    lines = [f"# Phase card — {phase} ({PHASE_TITLES.get(phase, phase)}) · {campaign} · attempt {attempt}",
-             f"<!-- attempt: {attempt} -->", f"<!-- ids: {','.join(sorted(mine))} -->",
+    lines = [f"# Phase card — {phase} ({PHASE_TITLES.get(phase, phase)}) · {campaign} · attempt {attempt}"
+             + (f" · correction round {rnd}" if rnd else ""),
+             f"<!-- attempt: {attempt} -->", *round_marks(rnd, files), f"<!-- ids: {','.join(sorted(mine))} -->",
              "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(shown_rows.items())) + " -->", ""]
     val = ph.get("validator") or {}
     crit = ph.get("critique") or {}
@@ -577,6 +685,7 @@ def build_card(campaign: str, phase: str) -> str:
         lines.append(f"- removed: {', '.join(removed) or '—'}")
         lines.append(f"- renamed: {', '.join(renamed) or '—'}")
         lines.append("")
+    lines += round_changes(prev, ph, shown_rows, files, attempt, rnd, "## Changes from the previous card (correction round {a} → {b})")
 
     lines.append("## Onay")
     if m["_meta"].get("auto_approve"):
@@ -610,11 +719,13 @@ def p1_card(campaign: str) -> str:
     proj = projection(campaign)
     attempt = int(ph.get("attempt") or 1)
     mine = {eid: e for eid, e in proj.items() if e.get("created_phase") == "P1" and e.get("type") not in SPOILER_TYPES}
+    rnd, files = card_round(ph), public_file_digests(campaign, mine)
     label = lambda ref, rid: (dt.row(ref, rid) or {}).get("label") or "—"
     row = lambda lab, text: f"  {lab:<19} {text}"
     empty = "(not written yet)"
-    L = [f"# P1 — THE FOUNDATION AND THE IDENTITY            campaign: {campaign}   attempt {attempt}",
-         f"<!-- attempt: {attempt} -->", f"<!-- ids: {','.join(sorted(mine))} -->",
+    L = [f"# P1 — THE FOUNDATION AND THE IDENTITY            campaign: {campaign}   attempt {attempt}"
+         + (f" · correction round {rnd}" if rnd else ""),
+         f"<!-- attempt: {attempt} -->", *round_marks(rnd, files), f"<!-- ids: {','.join(sorted(mine))} -->",
          "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(mine.items())) + " -->", ""]
     if f.get("spine_sentence"):              # build item 18e: the story's skeleton first, before a word of prose
         L += ["## THE STORY", f"  {f['spine_sentence']}", ""]
@@ -703,6 +814,7 @@ def p1_card(campaign: str) -> str:
         L += [f"## CHANGES FROM THE PREVIOUS CARD (attempt {prev['attempt']} → {attempt})",
               f"  added: {', '.join(sorted(set(mine) - prev['ids'])) or '—'}", f"  removed: {', '.join(sorted(prev['ids'] - set(mine))) or '—'}",
               "  renamed: " + (", ".join(sorted(e for e in set(mine) & prev["ids"] if prev["names"].get(e, "") != (mine[e].get("name") or ""))) or "—"), ""]
+    L += round_changes(prev, ph, mine, files, attempt, rnd, "## CHANGES FROM THE PREVIOUS CARD (correction round {a} → {b})")
 
     L += ["## YOUR MOVES", "  " + " · ".join(what for what, _ in P1_MOVES)]
     L += [f"    {what}: `{cmd.format(c=campaign)}`" for what, cmd in P1_MOVES]
@@ -729,6 +841,8 @@ def write_card(campaign: str, phase: str, out: str | None) -> int:
     attempt = int(m["phases"][phase].get("attempt") or 1)
     if prev and prev["attempt"] and prev["attempt"] != attempt:
         (path.parent / f"{phase}.attempt-{prev['attempt']}.card.md").write_text(prev["text"], encoding="utf-8", newline="\n")
+    elif prev and prev["attempt"] == attempt and prev.get("round", 0) != card_round(m["phases"][phase]):
+        (path.parent / f"{phase}.attempt-{attempt}.round-{prev.get('round', 0)}.card.md").write_text(prev["text"], encoding="utf-8", newline="\n")
     path.write_text(text, encoding="utf-8", newline="\n")
     print(f"design_approval: {phase} card written to {path} ({len(text)} chars, leak scan clean)")
     return 0
@@ -754,6 +868,8 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
               "the verdict is pass or fix (the premise is rewritten on the same rolls)", file=sys.stderr)
         return 1
     findings = []
+    terms = None
+    redacted = 0
     for f in ret.get("findings") or []:
         if not isinstance(f, dict) or f.get("verdict") not in FINDING_VERDICTS:
             continue
@@ -761,7 +877,18 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
         if not (SLUG.match(rid) and SLUG.match(fid) and (not code or SLUG.match(code))):
             print(f"design_approval: a finding carries free text, refused ({rid[:20]}…)", file=sys.stderr)
             return 1
+        # build item 18f (test birth P1-1, #8): a finding that is not a pass names its reason, a slug; null is refused
+        if f["verdict"] != "pass" and not code:
+            print(f"design_approval: a {f['verdict']} finding names its reason code (a slug), refused ({rid[:20]}…)", file=sys.stderr)
+            return 1
+        # ...and (#6) a code that carries a secret term never reaches the public record: it is kept as `secret_term`
+        if code:
+            terms = secret_code_terms(campaign) if terms is None else terms
+            if carries_secret(code, terms):
+                code, redacted = "secret_term", redacted + 1
         findings.append({"rubric_id": rid, "entity_id": fid, "verdict": f["verdict"], "reason_code": code or None})
+    if redacted:
+        print(f"design_approval: {redacted} reason code(s) carried a secret term; recorded as `secret_term`")
     # build item 12b: one entry per promise the critic judged: an id, a verdict and a slug; never prose (the reasoning
     # stays in the critic's own file, a secret promise's under dm-only)
     promises = []
@@ -783,8 +910,11 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
         else "phase" if (entity == phase or entity.startswith("phase")) else "entity"
     if kind == "entity" and entity.startswith("skeleton"):
         kind = "skeleton"
+    loop = re.search(r"\.loop(\d+)\.json$", Path(file).name)
     crit.setdefault("records", []).append({"entity_id": entity if kind == "entity" else stem, "critic": critic, "verdict": verdict,
-                                           "findings": findings, "kind": kind, "at": now_iso()})
+                                           "findings": findings, "kind": kind, "at": now_iso(),
+                                           # build item 18f: the attempt and the loop, so a phase fix is served once
+                                           "attempt": int(ph.get("attempt") or 1), "loop": int(loop.group(1)) if loop else 1})
     if kind == "skeleton":
         crit.setdefault("skeleton_verdicts", []).append(verdict)
     elif kind == "wishes":

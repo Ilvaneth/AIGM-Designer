@@ -274,6 +274,9 @@ def reconcile(campaign: str, quiet: bool = False) -> dict:
         if new != recorded:
             row["status"] = new
             changed += 1
+        if row.get("last_error") and ENTITY_RANK.get(new, 0) >= ENTITY_RANK["merged"]:
+            row["last_error"] = None        # build item 18f (test birth P1-1, #7): a refusal a later fragment answered never reaches the next prompt
+            changed += 1
     for eid, (disk, stage_file, attempt) in seen.items():
         if eid not in data["entities"]:
             phase = Path(stage_file).parts[2] if len(Path(stage_file).parts) > 2 else None

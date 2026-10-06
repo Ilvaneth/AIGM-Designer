@@ -98,8 +98,9 @@ const critique = (e, order, loop) => agent(bootstrap('critic', (order === 2 ? e.
   effort: 'medium',
 })
 
-const fix = (e, loop, verdict) => agent(bootstrap('writer (fix loop)', e.prompt_cmd, e,
-  `A critic returned "${verdict}" on your previous attempt. Read design/_staging/${a.phase}/${e.id}.critique.md (and the dm-only copy if the critic wrote one; the phase critic writes design/_staging/${a.phase}/phase.critique.md) and repair exactly what its findings name; keep every stamped field; this is fix loop ${loop} of ${MAX_FIX_LOOPS}. Overwrite the prose and rewrite the fragment last.`), {
+const fix = (e, loop, verdict, findings) => agent(bootstrap('writer (fix loop)', e.prompt_cmd, e,
+  `A critic returned "${verdict}" on your previous attempt. Read design/_staging/${a.phase}/${e.id}.critique.md (and the dm-only copy if the critic wrote one; the phase critic writes design/_staging/${a.phase}/phase.critique.md) and repair exactly what its findings name; keep every stamped field; this is fix loop ${loop} of ${MAX_FIX_LOOPS}. Overwrite the prose and rewrite the fragment last.` +
+  (findings && findings.length ? `\nThe findings: ${findings.map(f => f.rubric_id + ' on ' + f.entity_id + (f.reason_code ? ' (' + f.reason_code + ')' : '')).join('; ')}.` : '')), {
   label: `${a.phase}.${e.id}.fix${loop}`,
   phase: 'Write',
   schema: WRITER,
@@ -164,10 +165,14 @@ if (a.phase_critic && a.phase_critic.prompt_cmd && staged.length) {
   // reads the phase once more and that verdict is the phase's (RC-05: an entity critic does not carry the
   // phase-scope rubric the fix was for, so a phase critic's fix was final by construction).
   if (pc && pc.verdict !== 'pass') {
-    const named = [...new Set((pc.findings || []).filter(f => f.verdict === 'fix' || f.verdict === 'rerun').map(f => f.entity_id))]
-    const targets = entities.filter(e => staged.includes(e.id) && named.includes(e.id))
+    // build item 18f (test birth P1-1, #5): a finding on a row a unit writes beside itself (P1's signature and break
+    // rows, written with the premise) goes to that unit; `covers` comes from `phase PN begin --json`. Rows a first run
+    // wrote are not known yet: the next `phase PN begin --json` serves those (designer.py serve_phase_fixes)
+    const bad = (pc.findings || []).filter(f => f.verdict === 'fix' || f.verdict === 'rerun')
+    const mine = (e) => bad.filter(f => f.entity_id === e.id || (e.covers || []).includes(f.entity_id))
+    const targets = entities.filter(e => staged.includes(e.id) && mine(e).length)
     phaseFixes = await parallel(targets.map(e => () =>
-      fix(e, 3, 'fix (phase critic)').then(async (w) => {
+      fix(e, 3, 'fix (phase critic)', mine(e)).then(async (w) => {
         if (!w || w.status !== 'staged') return { id: e.id, fixed: false }
         const v = await critique(e, 1, PHASE_FIX_LOOP)
         return { id: e.id, fixed: true, verdict: v ? v.verdict : 'critique_missing' }
