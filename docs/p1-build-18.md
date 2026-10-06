@@ -79,7 +79,7 @@ The story slots, as one constant in `design_arbiter.py`: the move's target, the 
 
 Written once, each roll filtered by the ones before it; the arbiter refuses a dead end:
 
-1. spine; palette (18b); 2. ruin source; 3. contest(s); 4. **the threat** (secret): family → creature → power source (humanoid families above short) → shape → origin → visibility → goal → weakness → lair; 5. **the move** (public): hand → verb → target → time → state → the stronger role; 6. scars; 7. escalation and the start; 8. the secret (18d); 9. the identity (trope breaks with joins, people, institution, phenomenon, question, names); 10. the lifeline.
+1. spine; palette (18b); 2. ruin source; 3. contest(s); 4. **the threat** (secret): family → creature → power source (humanoid families above short) → shape → origin → visibility → goal → weakness → lair; 5. **the move** (public): hand → target → verb → time → state → the stronger role (amended 2026-10-06 at the 18c-2 audit: the target before the verb, so the goal → target relation decides what is struck and the verb is how the hand strikes it); 6. scars; 7. escalation and the start; 8. the secret (18d); 9. the identity (trope breaks with joins, people, institution, phenomenon, question, names); 10. the lifeline.
 
 The threat's rolls move from `design_identity.roll_secret` into this chain (a new module, `design_threat.py`, called from `design_foundation.roll` or from the preroll between the foundation and the identity: the coding tab chooses and says why). The secret records stay in dm-only (`dice-log.json`, a new key `threat`); the move's records are public (`design.json#foundation.move`).
 
