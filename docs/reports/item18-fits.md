@@ -72,3 +72,44 @@ A world state is drawn only where one of its joins holds; the first join that ho
 ## 18c-1 — the threat's fit lists
 
 The villain tables are secret: the threat's fit lists (family → creatures and reskin bases, the family weights, weakness → families, lair form → families, the lair's where, the goal's join) and their seven questions are in `docs/reports/item18c-fits-SPOILER.md`. The shape rows read for Part 18c section 5 are in `docs/reports/item18c-shapes-SPOILER.md`.
+
+## 18c-2 — the move's fit lists (public tables)
+
+**List 1: the hand → verb fit** (a verb's `by`; absent: every hand). An intrigue move (replaced, possessed, betrayed, divided) belongs to a hand that can scheme; a few verbs to the hands that can do the thing.
+
+- `act_split` (Divided): villain_itself, traitor, cult, thieves_guild, deceived_side, zealous_order, fey_court, shapechangers, fiends, hag_coven
+- `act_corrupted` (Corrupted): villain_itself, cult, fiends, from_beyond, druid_circle, hag_coven, risen_dead, ruin_power, dragon, fey_court, werewolves
+- `act_awakened` (Woke): villain_itself, cult, ruin_power, from_beyond, fiends, druid_circle, bound_elemental, risen_dead, hag_coven, zealous_order, rival_band
+- `act_merged_with_plane` (Dragged into another plane): villain_itself, cult, fiends, from_beyond, fey_court, ruin_power, bound_elemental, hag_coven
+- `act_rose` (Raised in revolt): villain_itself, cult, traitor, deceived_side, zealous_order, thieves_guild, fiends, shapechangers, risen_dead, druid_circle
+- `act_sank` (Drowned): villain_itself, sea_raiders, bound_elemental, monstrous_beast, ruin_power, from_beyond, dragon, giants, fiends, cult, druid_circle
+- `act_poisoned` (Poisoned): villain_itself, cult, thieves_guild, traitor, druid_circle, dragon, hag_coven, fiends, shapechangers
+- `act_cursed` (Cursed): villain_itself, cult, hag_coven, fiends, fey_court, druid_circle, risen_dead, ruin_power, werewolves, from_beyond
+- `act_summoned` (Summoned): villain_itself, cult, fiends, from_beyond, hag_coven, druid_circle, ruin_power, bound_elemental, fey_court
+- `act_plague` (Spread a plague): villain_itself, risen_dead, cult, druid_circle, fiends, from_beyond, hag_coven, ruin_power, werewolves
+- `act_replaced` (Replaced): villain_itself, shapechangers, fey_court, hag_coven, fiends, cult, traitor
+- `act_possessed` (Possessed): villain_itself, fiends, from_beyond, cult
+- `act_enslaved` (Enslaved / took hostage): villain_itself, slavers, from_beyond, fiends, giants, war_band, dragon, foreign_army, sea_raiders, fey_court, hag_coven
+- `act_betrayed` (Betrayed): villain_itself, traitor, deceived_side, cult, thieves_guild, hired_company, zealous_order, rival_band, shapechangers
+- every other verb: every hand.
+
+**List 2: the goal's piece → the targets on the way** (with the guards of the 18c-2 answer):
+
+- heart: heart, role, key_place, remnant, thin_place
+- key_place: key_place, role
+- disputed_land: role, key_place
+- remnant: remnant, key_place, role, thin_place
+- thin_place: thin_place, remnant, key_place, role
+- role: role, heart
+- new: remnant, thin_place, key_place, role
+
+A goal that joins through the move: every joinable piece (the prize's piece, a contest role, a piece standing on a side's part: the main contest's seats, and the key place, which borders the ends); the ones on the way to the goal weigh x3; the thin place weighs x3 more wherever it is allowed.
+
+**List 3: the hand's requirements:** the villain itself only with a known visibility; sea raiders on a coast or an island; the golem army at magic medium or high; the ruin's power with one of sixteen ruins whose remnant can wake: ruin_dead_god, ruin_imprisoned_god, ruin_failed_apotheosis, ruin_golem_army, ruin_bound_elements, ruin_sundered_relic, ruin_dried_source, ruin_sleeper, ruin_deep_minds, ruin_planar_rift, ruin_demon_gate, ruin_devils_bargain, ruin_sleeping_realm, ruin_failed_experiment, ruin_great_curse, ruin_kingdom_of_the_dead.
+
+**List 4: the start** (finding D3): the part where the move struck when it is an end, the key place or a place along the spine; else end_a (the nearest end to the heart); a coming move at end_b (the hand's base).
+
+**Questions (18c-2):**
+1. The hand's public creature families: the cult carries `served` (what it serves, left for P6 to read: it is not the villain's type, which would leak it); the ruin's power carries `ruin` (P6 reads the ruin). Right?
+2. The new verbs' forms (killed, poisoned, cursed, plundered, summoned, plague, replaced, possessed, enslaved, betrayed) and the rewritten ones are the coding tab's wording: please read them in foundation.yaml#action.
+3. `act_vanished` (carried off) keeps `destroys: [heart, role]` from the old "vanished": does carrying off a leader destroy the role?

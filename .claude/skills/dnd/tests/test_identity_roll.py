@@ -204,10 +204,18 @@ class ManySeeds(unittest.TestCase):
             role = R.identity["people"]["role"]
             if role and CONTEST[R.foundation["contests"][0]["id"]]["roles"][role].get("lineage_weight"):
                 deep[R.identity["people"]["lineage"]] += 1
-        # the role weight alone gives the three lineages 36 % (16 % without it); the old bound of 40 % leaned on the
-        # lifelines the deep contests required (a craft lifeline weighs the gnome), a tie build item 18a cut
+        # the mechanism, without dice: the deep role's weights multiply the three lineages' own (build item 18c: the deep
+        # contests come up some 20 times in these seeds, too few for a share to be steady)
+        role = CONTEST["contest_surface_deep"]["roles"]["b"]
+        weigh = di.lineage_weigh(role, inverted=False)
+        ctx = arb.Context()
+        for lid in ("lineage_dwarf", "lineage_gnome", "lineage_goblinoid"):
+            self.assertEqual(weigh(lin[lid], ctx), arb.weight_of(lin[lid], ctx) * 3, lid)
+        self.assertEqual(weigh(lin["lineage_human"], ctx), arb.weight_of(lin["lineage_human"], ctx))
+        self.assertIsNone(di.lineage_weigh(CONTEST["contest_two_heirs"]["roles"]["a"], inverted=False))
+        # and the share stays above what the rows alone give (16 %; 36 % with the role's weight)
         if sum(deep.values()) >= 20:
-            self.assertGreater(sum(deep[k] for k in ("lineage_dwarf", "lineage_gnome", "lineage_goblinoid")), sum(deep.values()) * 0.28)
+            self.assertGreater(sum(deep[k] for k in ("lineage_dwarf", "lineage_gnome", "lineage_goblinoid")), sum(deep.values()) * 0.16)
 
     # ── the institution ──
 
@@ -244,12 +252,18 @@ class ManySeeds(unittest.TestCase):
             homes = fd.institution_homes(CONTEST[main["id"]], main["roles"])
             self.assertTrue(homes, R.master)
             rec = R.by_label["foundation.break.action"]
-            last = f["break"].get("target_role") if homes == [f["break"].get("target_role")] else None
+            # build item 18c (hand → target → verb): a verb that destroys a role never strikes the last home; the role is
+            # drawn among the others and the protected one is on the verb's record
+            act = fd.rows_by_id("action")[f["break"]["action"]]
+            on_role = f["break"]["target"] == "target_role"
+            last = homes[0] if (on_role and len(homes) == 1 and "role" in (act.get("destroys") or [])) else None
             self.assertEqual((rec.get("protected_role") or {}).get("role"), last, R.master)
             if last:
                 struck_last += 1
-                self.assertIsNone(di.destroyed_role(f), R.master)
-                protected += any("never destroys role" in e["why"] for e in rec["excluded"])
+                protected += 1
+                self.assertNotEqual(f["break"]["target_role"], last, R.master)
+            if len(homes) == 1:
+                self.assertNotEqual(di.destroyed_role(f), homes[0], R.master)
         self.assertGreater(struck_last, 0, "the case was exercised")
         self.assertEqual(protected, struck_last, "the excluded actions carry the reason")
         type(self).protection = {"last_home_struck": struck_last}

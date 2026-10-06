@@ -117,7 +117,7 @@ class Rows(unittest.TestCase):
         self.assertEqual(w("break_maps_are_illegal", dials={"content_mix": ["exploration", "war", "horror"]}), 2)
         self.assertEqual(w("break_casting_forbidden", dials={"magic": "low"}, rolled={"contest_casters_casterless": False}), 4)
         self.assertEqual(w("break_underground_forbidden", rolled={"land_underground": False, "life_deep_lake": False}), 4)
-        self.assertEqual(w("break_gods_among_mortals", rolled={"ruin_dead_god": False}), 2)
+        self.assertEqual(w("break_gods_among_mortals", rolled={"ruin_dead_god": False}), 6, "x2 the fit, on its base weight 3 (18c-2)")
         self.assertEqual(w("break_monsters_have_treaties", rolled={"contest_humans_fey": False}), 2)
         guild = BREAKS["break_no_kings_only_guilds"]["weight_by"][0]["when"]["any_of"]
         contests = {r["id"]: r for r in dt.rows("foundation.yaml#contest")}

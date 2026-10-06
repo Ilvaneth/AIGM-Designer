@@ -205,14 +205,14 @@ class References(unittest.TestCase):
         """The public rows the specification lists exist, and the secret is barred from standing beside the ones
         that already show it (the count is the summary's; the audit reads the pairs)."""
         listed = ("spine_titan_back", "spine_two_worlds", "ruin_imprisoned_god", "ruin_dead_god", "ruin_departed_god",
-                  "ruin_made_peoples", "ruin_failed_experiment", "ruin_broken_time", "ruin_planar_rift", "act_true_face",
+                  "ruin_made_peoples", "ruin_failed_experiment", "ruin_broken_time", "ruin_planar_rift",   # act_true_face: retired (18c)
                   "break_gods_are_ancestors_known", "break_gods_among_mortals", "break_the_enemy_won", "break_dragons_rule",
                   "break_rule_by_lottery", "break_no_direct_lies", "break_no_writing", "rule_true_names")
         self.assertFalse(set(listed) - ALL_IDS)
         secret_public = pairs_between(SECRET, is_public)
         self.assertGreaterEqual(len(secret_public), 31)
         barring = {o for p in pairs_between(SECRET + VILLAIN, is_public) for o in p} & set(listed)
-        self.assertEqual(len(barring), 15,
+        self.assertEqual(len(barring), 14,       # 15 until build item 18c retired one barring verb
                          "three listed rows bar nothing: each tells a different thing from what any archetype hides")
 
 

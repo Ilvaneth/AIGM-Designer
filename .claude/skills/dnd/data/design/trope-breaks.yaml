@@ -97,7 +97,8 @@ rows:
       - {phase: P5, must: "caster NPCs are nobles or their bastards"}
       - {phase: P8, must: "the player files and character creation state it"}
   - id: break_dragons_rule
-    layer: story                   # a world state: it joins a story piece (build item 18b)
+    layer: story
+    weight: 3                      # a classic world state, drawn only where a public join holds (the 18c-2 answer)                   # a world state: it joins a story piece (build item 18b)
     label: "Dragons rule the lands"
     family: governance
     statement: "Each realm's sovereign is a dragon; a mortal household speaks and acts for it."
@@ -108,7 +109,9 @@ rows:
     text: {"name": "the lands are ruled by dragons", "at_table": "speaking with the ruler means speaking with a dragon"}
     joins:
       - {piece: contest, any_of: [contest_humans_dragon], how: "the sovereign dragon is the contest's side"}
-      - {piece: threat, threat: {creature: dragon}, how: "the threat is a dragon, or its hand is a dragon"}
+      - {piece: hand, hand: dragon, how: "the move's hand is the dragon"}
+      - {piece: ruin_source, ruins: [ruin_giants_and_dragons, ruin_age_of_dragons], how: "the dragons' old age or war is the ruin"}
+      - {piece: threat, threat: {creature: dragon}, how: "the villain, known to all, is the dragon"}
     hooks:
       - {phase: P4, must: "each polity's ruler is a dragon and its household a faction"}
       - {phase: P5, must: "a dragon ruler is a major NPC"}
@@ -180,7 +183,7 @@ rows:
     text: {"name": "there are those who live on the moon, and they trade", "at_table": "goods and strangers that come from the sky"}
     joins:
       - {piece: thin_place, palette: land_thin_place, how: "the thin place is the way to the moon"}
-      - {piece: hand, threat: {hand: any}, how: "the hand trades with the moon or comes from it"}
+      - {piece: hand, hand: moon, how: "the hand trades with the moon or comes from it"}
     hooks:
       - {phase: P2, must: "the moon is a touched plane with a way in, a cost and a time rate; the moon is one of the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - {phase: P4, must: "a trade faction holds the right to the moon trade"}
@@ -208,7 +211,8 @@ rows:
       - {phase: P5, must: "an NPC knows the name"}
       - {phase: P8, must: "the player files and character creation state it"}
   - id: break_gods_among_mortals
-    layer: story                   # a world state: it joins a story piece (build item 18b)
+    layer: story
+    weight: 3                      # a classic world state, drawn only where a public join holds (the 18c-2 answer)                   # a world state: it joins a story piece (build item 18b)
     label: "The gods live among mortals"
     family: gods
     statement: "The gods live among mortals; each keeps a house, and one may knock at its door."
@@ -216,8 +220,9 @@ rows:
     weight_by: [{"when": {"any_of": ["ruin_dead_god", "ruin_gods_quarrel", "ruin_departed_god", "ruin_imprisoned_god", "ruin_failed_apotheosis"]}, "x": 2}]
     text: {"name": "the gods live among mortals; each has a house, and one knocks at its door", "at_table": "the party can speak with a god face to face"}
     joins:
-      - {piece: threat, threat: {family: god}, scales: [standard, epic], how: "the threat is a god among mortals"}
+      - {piece: threat, threat: {family: god}, scales: [standard, epic], how: "the villain, known to all, is a god among mortals"}
       - {piece: contest, any_of: [contest_one_shrine, contest_old_gods_new_faith], how: "a side of the contest is a god's house"}
+      - {piece: ruin_source, ruin_family: [gods], how: "the ruin is the gods' own: a god died, fell out, left, was bound, or failed to rise"}
     hooks:
       - {phase: P2, must: "each great god has a house and receives petitioners; a fallen god's house stands empty or shut"}
       - {phase: P3, must: "the god's house is a map node"}

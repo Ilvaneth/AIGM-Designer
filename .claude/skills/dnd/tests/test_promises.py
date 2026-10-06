@@ -217,7 +217,7 @@ class Ledger(unittest.TestCase):
             for p in made:
                 concrete += 1
                 self.assertEqual((p["due"], p["check"]), ("P1", "critic"))
-        self.assertGreater(concrete, 20, "what fell from the sky and what was born are both reached")
+        self.assertEqual(concrete, 0, "build item 18c: the concretised verbs are retired (W5)")
 
     def test_the_p0_hooks_are_decided_by_script(self):
         for b in births(SEEDS)[:200]:

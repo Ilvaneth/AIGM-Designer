@@ -1942,7 +1942,8 @@ tables:
         `leaves_ruins`: a heart this action destroys leaves ruins, where the campaign starts; otherwise it starts
         at the end nearest the heart (end_a).
         `fits` are the compatibility tables (review #8): remnant kinds and key-place kinds the action can
-        strike (build item 18a: the lifeline is no target); the heart, a role and the thin place need only the action's `targets`. `destroys`
+        strike (build item 18a: the lifeline is no target); `by` names the hands that can make the move
+        (absent: every hand; build item 18c: an intrigue move belongs to a hand that can scheme); the heart, a role and the thin place need only the action's `targets`. `destroys`
         names the pieces the action destroys (a destroyed role cannot be the winner; a destroyed heart moves
         the start). The illustrations stay in docs/p1-foundation-rows.md only; examples anchor births.
     hooks_common:
@@ -1950,128 +1951,182 @@ tables:
       - {phase: P8, must: "the day-0 news carries the break's latest sign"}
     rows:
       - id: act_vanished
-        label: "Vanished"
-        targets: [remnant, key_place, heart, role]
-        fits: {"remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
-        destroys: [heart, role]
-        forms: {"past": "vanished", "present": "is vanishing", "imminent": "is about to vanish"}
+        label: Carried off
+        targets: [remnant, role, heart]
+        fits: {remnant: [network, structure, city, body, wasteland, machine, object, source, rift]}
+        forms: {imminent: is about to be carried off, past: was carried off, present: is being carried off}
       - id: act_seized
-        label: "Was seized"
-        targets: [remnant, key_place, heart, thin_place]
-        fits: {"remnant": ["network", "structure", "city", "body", "machine", "object", "source", "rift"], "key_place": ["crossing", "bridge", "water", "gate", "descent", "crossroad", "network", "landmark"]}
-        forms: {"past": "was seized", "present": "is being seized", "imminent": "is about to be seized"}
-      - id: act_reversed
-        label: "Turned backwards"
-        targets: [key_place]
-        fits: {"key_place": ["water", "descent", "network"]}
-        forms: {"past": "turned backwards", "present": "is turning backwards", "imminent": "is about to turn backwards"}
+        label: Seized
+        targets: [heart, key_place, remnant, thin_place]
+        fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark], remnant: [network, structure, city, body, machine, object, source, rift]}
+        forms: {imminent: is about to be seized, past: was seized, present: is being seized}
       - id: act_split
-        label: "Split in two"
-        targets: [key_place, heart, role]
-        fits: {"key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
+        label: Divided
+        targets: [role, heart]
         destroys: [role]
-        forms: {"past": "split in two", "present": "is splitting in two", "imminent": "is about to split in two"}
+        forms: {imminent: is about to be divided against itself, past: was divided against itself, present: is being divided against itself}
+        by: [hand_villain_itself, hand_traitor, hand_cult, hand_thieves_guild, hand_deceived_side, hand_zealous_order, hand_fey_court, hand_shapechangers, hand_fiends, hand_hag_coven]
       - id: act_corrupted
-        leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
-        label: "Was corrupted"
+        leaves_ruins: true
+        label: Corrupted
         targets: [remnant, key_place, heart]
-        fits: {"remnant": ["network", "structure", "city", "body", "wasteland", "source", "rift"], "key_place": ["crossing", "water", "gate", "network", "landmark"]}
-        forms: {"past": "was corrupted", "present": "is being corrupted", "imminent": "is about to be corrupted"}
+        fits: {key_place: [crossing, water, gate, network, landmark], remnant: [network, structure, city, body, wasteland, source, rift]}
+        forms: {imminent: is about to be corrupted, past: was corrupted, present: is being corrupted}
+        by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_druid_circle, hand_hag_coven, hand_risen_dead, hand_ruin_power, hand_dragon, hand_fey_court, hand_werewolves]
       - id: act_awakened
-        label: "Came alive"
+        label: Woke
         targets: [remnant, key_place]
-        fits: {"remnant": ["body", "machine", "structure", "object", "network"], "key_place": ["bridge", "gate", "descent", "landmark"]}
-        forms: {"past": "came alive", "present": "is coming alive", "imminent": "is about to come alive"}
-      - id: act_fell_from_sky
-        requires: {dial: {era: [medieval, renaissance, ancient, nautical]}}   # not below ground
-        leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
-        concretise: true                # owner, 2026-09-28: step 2's writer names what fell / what was born (a promise)
-        label: "Crushed by what fell from the sky"
-        targets: [key_place, heart]
-        fits: {"key_place": ["crossing", "bridge", "water", "gate", "crossroad", "landmark"]}
-        destroys: [heart]
-        forms: {"past": "was crushed by something that fell from the sky", "present": "is being crushed by something falling from the sky", "imminent": "is about to be crushed by something that will fall from the sky"}
+        fits: {key_place: [bridge, gate, descent, landmark], remnant: [body, machine, structure, object, network]}
+        forms: {imminent: is about to be woken, past: was woken, present: is being woken}
+        by: [hand_villain_itself, hand_cult, hand_ruin_power, hand_from_beyond, hand_fiends, hand_druid_circle, hand_bound_elemental, hand_risen_dead, hand_hag_coven, hand_zealous_order, hand_rival_band]
       - id: act_stopped
-        label: "Stopped"
+        label: Besieged / cut off
         targets: [key_place, heart]
-        fits: {"key_place": ["crossing", "water", "crossroad", "network"]}
-        forms: {"past": "stopped", "present": "is stopping", "imminent": "is about to stop"}
+        fits: {key_place: [crossing, water, crossroad, network]}
+        forms: {imminent: is about to be besieged and cut off, past: was besieged and cut off, present: is being besieged and cut off}
       - id: act_opened
-        label: "Opened"
+        label: Opened
         targets: [remnant, key_place, thin_place]
-        fits: {"remnant": ["city", "structure", "body", "object", "source", "rift"], "key_place": ["gate", "descent", "network", "landmark"]}
-        forms: {"past": "opened", "present": "is opening", "imminent": "is about to open"}
+        fits: {key_place: [gate, descent, network, landmark], remnant: [city, structure, body, object, source, rift]}
+        forms: {imminent: is about to open, past: opened, present: is opening}
       - id: act_closed
-        label: "Closed"
-        bars_scars_on_target: {thin_place: [scar_plane_thinned]}   # owner, 2026-09-28: all ways closed, no thinner border
+        label: Sealed
+        bars_scars_on_target: {thin_place: [scar_plane_thinned]}
         targets: [key_place, thin_place]
-        fits: {"key_place": ["crossing", "bridge", "gate", "descent", "network"]}
-        forms: {"past": "closed", "present": "is closing", "imminent": "is about to close"}
+        fits: {key_place: [crossing, bridge, gate, descent, network]}
+        forms: {imminent: is about to be sealed, past: was sealed, present: is being sealed}
       - id: act_merged_with_plane
-        label: "Merged with a plane"
-        targets: [key_place, heart, thin_place]
-        fits: {"key_place": ["gate", "descent", "crossroad", "network", "landmark"]}
-        forms: {"past": "merged with a plane", "present": "is merging with a plane", "imminent": "is about to merge with a plane"}
-        hooks:
-          - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
-      - id: act_true_face
-        label: "Showed its true face"
-        targets: [remnant, key_place]
-        fits: {"remnant": ["network", "structure", "city", "body", "wasteland", "machine", "object", "source", "rift"], "key_place": ["bridge", "water", "gate", "descent", "landmark"]}
-        forms: {"past": "showed its true face", "present": "is showing its true face", "imminent": "is about to show its true face"}
-      - id: act_turned_on_keepers
-        label: "Turned on its keepers"
-        targets: [remnant, role]
-        fits: {"remnant": ["network", "structure", "body", "machine", "object"]}
-        forms: {"past": "turned on its keepers", "present": "is turning on its keepers", "imminent": "is about to turn on its keepers"}
-      - id: act_spread_unbounded
-        label: "Spread without bound"
-        targets: [remnant, thin_place]
-        fits: {"remnant": ["wasteland", "source", "rift"]}
-        forms: {"past": "spread without bound", "present": "is spreading without bound", "imminent": "is about to spread without bound"}
+        label: Dragged into another plane
+        targets: [heart, key_place, thin_place]
+        fits: {key_place: [gate, descent, crossroad, network, landmark]}
+        forms: {imminent: is about to merge with a plane, past: merged with a plane, present: is merging with a plane}
+        hooks: [{must: this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count, phase: P2}]
+        by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_fey_court, hand_ruin_power, hand_bound_elemental, hand_hag_coven]
       - id: act_migrated
-        label: "Moved away"
-        targets: [heart, role]
+        label: Drove out
+        targets: [role, heart]
         fits: {}
-        destroys: [heart, role]
-        forms: {"past": "migrated away", "present": "is migrating away", "imminent": "is about to migrate away"}
+        destroys: [heart]
+        forms: {imminent: is about to be driven out, past: was driven out, present: is being driven out}
       - id: act_burned
-        leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
-        label: "Burned"
+        leaves_ruins: true
+        label: Burned
         targets: [key_place, heart]
-        fits: {"key_place": ["crossing", "bridge", "gate", "crossroad", "network", "landmark"]}
+        fits: {key_place: [crossing, bridge, gate, crossroad, network, landmark]}
         destroys: [heart]
-        forms: {"past": "burned", "present": "is burning", "imminent": "is about to burn"}
+        forms: {imminent: is about to burn, past: burned, present: is burning}
       - id: act_rose
-        label: "Rose"
-        winner_is_target_role: true     # owner, 2026-09-28: a role that rose is the break's winner
-        targets: [remnant, key_place, heart, role]
-        fits: {"remnant": ["city", "structure", "body", "machine", "object"], "key_place": ["crossing", "water", "crossroad", "landmark"]}
-        forms: {"past": "rose", "present": "is rising", "imminent": "is about to rise"}
+        label: Raised in revolt
+        winner_is_target_role: true
+        targets: [role, heart]
+        forms: {imminent: is about to be raised in revolt, past: was raised in revolt, present: is being raised in revolt}
+        by: [hand_villain_itself, hand_cult, hand_traitor, hand_deceived_side, hand_zealous_order, hand_thieves_guild, hand_fiends, hand_shapechangers, hand_risen_dead, hand_druid_circle]
       - id: act_sank
-        leaves_ruins: true              # owner, 2026-09-28: a destroyed heart leaves ruins to start in
-        label: "Sank"
+        leaves_ruins: true
+        label: Drowned
         targets: [remnant, key_place, heart]
-        fits: {"remnant": ["network", "structure", "city", "body", "object"], "key_place": ["crossing", "bridge", "gate", "crossroad", "landmark"]}
+        fits: {key_place: [crossing, bridge, gate, crossroad, landmark], remnant: [network, structure, city, body, object]}
         destroys: [heart]
-        forms: {"past": "sank", "present": "is sinking", "imminent": "is about to sink"}
+        forms: {imminent: is about to be drowned, past: was drowned, present: is being drowned}
+        by: [hand_villain_itself, hand_sea_raiders, hand_bound_elemental, hand_monstrous_beast, hand_ruin_power, hand_from_beyond, hand_dragon, hand_giants, hand_fiends, hand_cult, hand_druid_circle]
+      - id: act_killed
+        label: Killed
+        targets: [role, heart]
+        forms: {imminent: is about to lose its leader to murder, past: lost its leader to murder, present: is losing its leaders to murder}
+      - id: act_poisoned
+        label: Poisoned
+        targets: [heart, role]
+        forms: {imminent: is about to be poisoned, past: was poisoned, present: is being poisoned}
+        by: [hand_villain_itself, hand_cult, hand_thieves_guild, hand_traitor, hand_druid_circle, hand_dragon, hand_hag_coven, hand_fiends, hand_shapechangers]
+      - id: act_cursed
+        label: Cursed
+        targets: [heart, key_place, role]
+        fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark]}
+        forms: {imminent: is about to be cursed, past: was cursed, present: is being cursed}
+        by: [hand_villain_itself, hand_cult, hand_hag_coven, hand_fiends, hand_fey_court, hand_druid_circle, hand_risen_dead, hand_ruin_power, hand_werewolves, hand_from_beyond]
+      - id: act_plundered
+        label: Plundered
+        targets: [remnant]
+        fits: {remnant: [structure, city, body, machine, object, source]}
+        forms: {imminent: is about to be plundered, past: was plundered, present: is being plundered}
+      - id: act_summoned
+        label: Summoned
+        targets: [thin_place, heart, key_place]
+        fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark]}
+        forms: {past: had something summoned into it, present: is having something summoned into it, imminent: is about to have something summoned into it}
+        by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_hag_coven, hand_druid_circle, hand_ruin_power, hand_bound_elemental, hand_fey_court]
+      - id: act_plague
+        label: Spread a plague
+        targets: [heart, role]
+        forms: {imminent: is about to be struck by a plague, past: was struck by a plague, present: is being struck by a plague}
+        by: [hand_villain_itself, hand_risen_dead, hand_cult, hand_druid_circle, hand_fiends, hand_from_beyond, hand_hag_coven, hand_ruin_power, hand_werewolves]
+      - id: act_replaced
+        label: Replaced
+        targets: [role, heart]
+        forms: {imminent: is about to have its leader replaced by an impostor, past: had its leader replaced by an impostor, present: is having its leaders replaced by impostors}
+        by: [hand_villain_itself, hand_shapechangers, hand_fey_court, hand_hag_coven, hand_fiends, hand_cult, hand_traitor]
+      - id: act_possessed
+        label: Possessed
+        targets: [role, heart]
+        forms: {imminent: is about to have its leader possessed, past: had its leader possessed, present: is having its leaders possessed}
+        by: [hand_villain_itself, hand_fiends, hand_from_beyond, hand_cult]
+      - id: act_enslaved
+        label: Enslaved / took hostage
+        targets: [role]
+        forms: {imminent: is about to be enslaved or taken hostage, past: was enslaved or taken hostage, present: is being enslaved and taken hostage}
+        by: [hand_villain_itself, hand_slavers, hand_from_beyond, hand_fiends, hand_giants, hand_war_band, hand_dragon, hand_foreign_army, hand_sea_raiders, hand_fey_court, hand_hag_coven]
+      - id: act_betrayed
+        label: Betrayed
+        targets: [role, heart]
+        forms: {imminent: is about to be betrayed, past: was betrayed, present: is being betrayed}
+        by: [hand_villain_itself, hand_traitor, hand_deceived_side, hand_cult, hand_thieves_guild, hand_hired_company, hand_zealous_order, hand_rival_band, hand_shapechangers]
+    retired:                          # build item 18c: deleted verbs, readable by id for legacy births
+      - id: act_reversed
+        label: Turned backwards
+        targets: [key_place]
+        fits: {key_place: [water, descent, network]}
+        forms: {imminent: is about to turn backwards, past: turned backwards, present: is turning backwards}
+      - id: act_fell_from_sky
+        requires: {dial: {era: [medieval, renaissance, ancient, nautical]}}
+        leaves_ruins: true
+        concretise: true
+        label: Crushed by what fell from the sky
+        targets: [key_place, heart]
+        fits: {key_place: [crossing, bridge, water, gate, crossroad, landmark]}
+        destroys: [heart]
+        forms: {imminent: is about to be crushed by something that will fall from the sky, past: was crushed by something that fell from the sky, present: is being crushed by something falling from the sky}
+      - id: act_true_face
+        label: Showed its true face
+        targets: [remnant, key_place]
+        fits: {key_place: [bridge, water, gate, descent, landmark], remnant: [network, structure, city, body, wasteland, machine, object, source, rift]}
+        forms: {imminent: is about to show its true face, past: showed its true face, present: is showing its true face}
+      - id: act_turned_on_keepers
+        label: Turned on its keepers
+        targets: [remnant, role]
+        fits: {remnant: [network, structure, body, machine, object]}
+        forms: {imminent: is about to turn on its keepers, past: turned on its keepers, present: is turning on its keepers}
+      - id: act_spread_unbounded
+        label: Spread without bound
+        targets: [remnant, thin_place]
+        fits: {remnant: [wasteland, source, rift]}
+        forms: {imminent: is about to spread without bound, past: spread without bound, present: is spreading without bound}
       - id: act_twinned
-        label: "Was twinned"
+        label: Was twinned
         targets: [heart, thin_place]
         fits: {}
-        forms: {"past": "was twinned", "present": "is being twinned", "imminent": "is about to be twinned"}
+        forms: {imminent: is about to be twinned, past: was twinned, present: is being twinned}
       - id: act_forgotten
-        label: "Was forgotten"
+        label: Was forgotten
         targets: [remnant, heart, role]
-        fits: {"remnant": ["network", "structure", "city", "object", "source"]}
+        fits: {remnant: [network, structure, city, object, source]}
         destroys: [heart, role]
-        forms: {"past": "was forgotten", "present": "is being forgotten", "imminent": "is about to be forgotten"}
+        forms: {imminent: is about to be forgotten, past: was forgotten, present: is being forgotten}
       - id: act_gave_birth
-        concretise: true                # owner, 2026-09-28: step 2's writer names what fell / what was born (a promise)
-        label: "Gave birth to something new"
+        concretise: true
+        label: Gave birth to something new
         targets: [remnant, thin_place]
-        fits: {"remnant": ["body", "wasteland", "source", "rift"]}
-        forms: {"past": "gave birth to something new", "present": "is giving birth to something new", "imminent": "is about to give birth to something new"}
+        fits: {remnant: [body, wasteland, source, rift]}
+        forms: {imminent: is about to give birth to something new, past: gave birth to something new, present: is giving birth to something new}
 
   scar:
     layer: texture

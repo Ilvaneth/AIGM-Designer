@@ -194,10 +194,12 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     threat = dth.roll(R, dials, spine, palette + out["palette_extra"], ruin_id, out["contests"], villain_pairs)
     R.threat = threat
 
-    # 5. the break
+    # 5. the move (build item 18c; docs/p1-build-18.md section 6): the hand, the target on the way to the goal, the
+    #    verb, the time, the state, the stronger role; public. The labels keep `foundation.break.*` (the break is the move)
     remnant_kind = ruin["remnant_kind"]
     key_kind = spine["key_kind"]
     actions = {r["id"]: r for r in dt.rows(ref("action"))}
+    targets = {r["piece"]: r for r in dt.rows(ref("break_target"))}
 
     def fits(act: dict, piece: str) -> bool:
         if piece not in act["targets"]:
@@ -206,29 +208,39 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
         return {"remnant": remnant_kind in table.get("remnant", []),
                 "key_place": key_kind in table.get("key_place", [])}.get(piece, True)
 
+    story = lay_out_story(R, spine, palette + out["palette_extra"], out["contests"], out)
+    hand_id = R.table("move.hand", "antagonists.yaml#hand", why="the hand")["row_id"]
+    hand = dt.row("antagonists.yaml#hand", hand_id)
+    allowed = move_targets(threat["goal"], main, ruin_id, palette + out["palette_extra"], story)
+    # the order is hand → target → verb (the 18c-2 answer): the goal decides what must be struck, the verb is how the
+    # hand strikes it; the target among those the hand can strike with one of its verbs
+    hand_verbs = [a for a in actions.values() if not a.get("by") or hand_id in a["by"]]
     target_id = R.table("foundation.break.target", ref("break_target"), avoid=False, slot="move_target",
-                        where=lambda r: any(fits(a, r["piece"]) for a in actions.values()), why="an action can strike it")["row_id"]
+                        where=lambda r: r["piece"] in allowed and any(fits(a, r["piece"]) for a in hand_verbs),
+                        why="on the way to the goal, and the hand has a verb that strikes it",
+                        weigh=lambda r, ctx: allowed[r["piece"]]["weight"])["row_id"]
     piece = PIECE_OF_TARGET[target_id]
     out["target"] = target_id
-    role = None
-    if piece == "role":
-        role = main_roles[int(R.notation("foundation.break.role", f"d{len(main_roles)}")["raw"]) - 1]
-        out["target_role"] = role
+    join_by = allowed[piece]["join_by"]
     spent = {a for a in actions if f"{piece}|{a}" in (used_pairs or set())}
-    # the institution is never left homeless (owner, 2026-10-03): the break does not destroy the last seated role of
-    # the main contest that carries an archetype hint and is no people's role
-    homes = institution_homes(main, main_roles)
-    last_home = role if (role is not None and homes == [role]) else None
-    rec = R.table("foundation.break.action", ref("action"),
-                  where=lambda r: fits(r, piece) and not (last_home and "role" in (r.get("destroys") or [])),
-                  why=f"fits the target; never destroys role {last_home}, the institution's last home" if last_home else "fits the target",
-                  also_used=spent)
-    if last_home:
-        rec["protected_role"] = {"role": last_home, "why": "the last seated role with an archetype hint that is no people's role"}
+    rec = R.table("foundation.break.action", ref("action"), also_used=spent,
+                  where=lambda r: (not r.get("by") or hand_id in r["by"]) and fits(r, piece),
+                  why="the hand can make it, and it strikes the target")
     act_id = rec["row_id"]
-    rec["used_keys"] = {PAIR_KEY: f"{piece}|{act_id}"}     # approve writes it; the pair never repeats
     act = actions[act_id]
     out["action"] = act_id
+    rec["used_keys"] = {PAIR_KEY: f"{piece}|{act_id}"}     # approve writes it; the pair never repeats
+    role = None
+    if piece == "role":
+        # the institution is never left homeless (owner, 2026-10-03): a verb that destroys a role never strikes the
+        # last seated role of the main contest that carries an archetype hint and is no people's role
+        homes = institution_homes(main, main_roles)
+        protected = homes[0] if (len(homes) == 1 and "role" in (act.get("destroys") or [])) else None
+        roles = [k for k in main_roles if k != protected]
+        role = roles[int(R.notation("foundation.break.role", f"d{len(roles)}")["raw"]) - 1]
+        out["target_role"] = role
+        if protected:
+            rec["protected_role"] = {"role": protected, "why": "the last seated role with an archetype hint that is no people's role"}
 
     barred = set((act.get("bars_scars_on_target") or {}).get(piece, []))
     scars: list[str] = []
@@ -246,6 +258,8 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
             palette.append(rec["row_id"])
     out["scars"] = scars
     out["time"] = R.table("foundation.break.time", ref("time"))["row_id"]
+    # the move's state (the old tie, re-read); a move still coming has none
+    state = None if out["time"] == "time_coming" else R.table("move.state", "antagonists.yaml#move_state")["row_id"]
 
     destroyed = role if (piece == "role" and "role" in (act.get("destroys") or [])) else None
     if act.get("winner_is_target_role") and piece == "role":
@@ -254,11 +268,6 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     else:
         candidates = [k for k in main_roles if k != destroyed]
         out["winner"] = candidates[int(R.notation("foundation.break.winner", f"d{len(candidates)}")["raw"]) - 1]
-    # a destroyed heart moves the start (owner, 2026-09-28): to its ruins when the action leaves some, else end_a
-    if piece == "heart" and "heart" in (act.get("destroys") or []):
-        out["start"] = "heart_ruins" if act.get("leaves_ruins") else "end_a"
-    else:
-        out["start"] = "heart"
 
     # 6. the lifeline, last (build item 18a): its palette fit stays; the story is rolled and reads nothing of it
     life_id = R.table("foundation.lifeline", ref("lifeline"))["row_id"]
@@ -266,7 +275,7 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     out["lifeline"] = life_id
 
     # the layout: the palette on the spine's parts, the lifeline and the contests' roles seated on them
-    out["layout"] = lay_out(R, spine, palette + out["palette_extra"], life, out["contests"], out)
+    out["layout"] = lay_out_finish(R, story, palette + out["palette_extra"], life, out)
     # the layout's tokens (build item 7c): a heart below ground is a land lived in below; the remnant on the heart
     lay_tokens = []
     if out["layout"]["parts"].get("heart") == "land_underground":
@@ -274,6 +283,16 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     if out["layout"]["remnant"] == "heart":
         lay_tokens.append("layout:remnant_on_heart")
     R.add_tokens("foundation.layout.tokens", lay_tokens, "the layout")
+
+    # the start (finding D3): a small settlement at a part that is not the heart, where step 1 lands; the timeline (G2)
+    out["start"], start_why = start_part(out["layout"], out["time"])
+    families = [threat["creature_type"] if f == "villain" else f for f in hand.get("families") or []]
+    out["move"] = {"hand": hand_id, "verb": act_id, "target": target_id, "target_role": out.get("target_role"),
+                   "time": out["time"], "state": state, "at": "end" if out["time"] == "time_coming" else "start",
+                   "join_by": join_by, "goal_join": threat["goal"]["join"],
+                   "winner": out["winner"], "start": out["start"], "start_why": start_why, "start_kind": "a village or a small town",
+                   "families": families}
+    threat["families"] = {"public": families, "secret": [threat["creature_type"]]}      # finding D4; P6 weighs them
 
     # 7. the escalation
     out["escalation"] = tiers_touched(dials["level_band"])
@@ -288,6 +307,65 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     return out
 
 
+# ── the move's targets and the start (build item 18c) ───────────────────────────────────────────────────────────
+
+# the goal's piece → the targets on the way to it: the piece itself, a piece that guards it, a contest role; the
+# guards of the 18c-2 answer: the thin place guards the remnant and the heart, the remnant the heart, the key place the
+# heart and the disputed land
+GOAL_TARGETS = {"heart": ("heart", "role", "key_place", "remnant", "thin_place"), "key_place": ("key_place", "role"),
+                "disputed_land": ("role", "key_place"), "remnant": ("remnant", "key_place", "role", "thin_place"),
+                "thin_place": ("thin_place", "remnant", "key_place", "role"), "role": ("role", "heart"),
+                "new": ("remnant", "thin_place", "key_place", "role")}
+TARGET_PIECES = ("remnant", "key_place", "heart", "role", "thin_place")
+
+
+def side_parts(story: dict) -> set:
+    """The parts the main contest's sides sit on (an end, the key place, the heart), and the key place, which borders
+    the ends: a piece standing there is a side's holding (the 18c-2 answer)."""
+    seats = {p for p in story["contests"][0]["seats"].values() if p != "along"}
+    return seats | ({"key_place"} if seats & {"end_a", "end_b", "end_c", "end_d"} else set())
+
+
+def move_targets(goal: dict, main_row: dict, ruin_id: str, kinds, story: dict) -> dict:
+    """The pieces the move may strike, each with how it joins the contest (`prize_piece | role | side_holding`, None
+    when the goal joins already) and its weight. A goal that joins by its prize or as a role goal: the targets on the
+    way to it. A goal that joins through the move: every joinable piece (the prize's piece, a contest role, a piece
+    standing on a side's part), the ones on the way to the goal weighing x3. The thin place weighs x3 more wherever it
+    is allowed (the 18c-2 answer)."""
+    has_thin = "land_thin_place" in kinds
+    on_way = {p for p in GOAL_TARGETS[goal["piece"]] if p != "thin_place" or has_thin}
+    thin = lambda p: 3.0 if p == "thin_place" else 1.0      # a planar gate stands in few worlds: where it does, it weighs
+    if goal["join"] != "move":
+        return {p: {"join_by": None, "weight": thin(p)} for p in on_way}
+    prize = (main_row.get("prize_with") or {}).get(ruin_id, main_row["prize"])
+    sides = side_parts(story)
+    spot = {"remnant": story["remnant"], "key_place": "key_place", "thin_place": thin_part(story["parts"]) if has_thin else None}
+    out = {}
+    for p in TARGET_PIECES:
+        if p == prize:
+            by = "prize_piece"
+        elif p == "role":
+            by = "role"
+        elif p in spot and spot[p] in sides:
+            by = "side_holding"
+        else:
+            continue
+        out[p] = {"join_by": by, "weight": (3.0 if p in on_way else 1.0) * thin(p)}
+    return out
+
+
+def start_part(layout: dict, time_id: str) -> tuple[str, str]:
+    """The start (finding D3): never the heart. The part nearest the move's target (the target's own part when it is an
+    end, the key place or a place along the spine; else the first end); a move still coming starts at the far end
+    (the hand's base: the end opposite the main contest's first side)."""
+    if time_id == "time_coming":
+        return "end_b", "the move is coming: the start is the hand's base, the far end"
+    at = layout.get("break_at")
+    if at and at != "heart" and (at.startswith(("end_", "along:")) or at == "key_place"):
+        return at, "the part where the move struck"
+    return "end_a", "the move struck the heart (or a seat on it): the nearest end"
+
+
 # ── the layout (build item 6b; owner, 2026-09-29) ────────────────────────────────────────────────────────────
 
 END_PARTS = ("end_a", "end_b", "end_c", "end_d")
@@ -300,7 +378,14 @@ def _choose(R, label: str, options: list):
 
 
 def lay_out(R, spine: dict, kinds: list[str], life: dict, contests: list[dict], out: dict) -> dict:
-    """The palette's kinds on the spine's parts: the key place on a kind its key_kind stands on, the ends on
+    """The whole layout in one call (a caller that has rolled everything): the story half, then the finish."""
+    return lay_out_finish(R, lay_out_story(R, spine, kinds, contests, out), kinds, life, out)
+
+
+def lay_out_story(R, spine: dict, kinds: list[str], contests: list[dict], out: dict) -> dict:
+    """The layout's story half (build item 18c: drawn before the move, which reads which piece stands on a side's
+    part): the parts, the remnant, the contests' seats and their prizes but a legacy lifeline's and a new one's.
+    The palette's kinds on the spine's parts: the key place on a kind its key_kind stands on, the ends on
     different kinds, the heart on its preference; every other kind along the spine. The lifeline sits on a part (or
     an along node) whose kind its `where` holds; an everywhere row on any part. The contests' roles: a on end_a, b on
     end_b, the third on the heart, the fourth along, unless the row's `seats` say otherwise; epic's second contest
@@ -330,17 +415,6 @@ def lay_out(R, spine: dict, kinds: list[str], life: dict, contests: list[dict], 
             raise SystemExit(f"design_foundation: no palette kind for the spine's {part} — a table fault")
         parts[part] = _choose(R, f"foundation.layout.{part}", cand)
     along = [k for k in kinds if k not in parts.values()]
-
-    # the lifeline
-    where = set(life.get("where") or [])
-    seats = [p for p in order if not where or parts[p] in where]
-    seats += [f"along:{k}" for k in along if where and k in where]
-    if life["family"] == "passage" and "key_place" in seats:
-        life_seat = "key_place"
-    else:
-        if not seats:
-            raise SystemExit(f"design_foundation: the lifeline {life['id']} finds no part of its kind — a table fault")
-        life_seat = _choose(R, "foundation.layout.lifeline", seats)
 
     # the ruin's remnant
     ruin = rows_by_id("ruin_source")[out["ruin"]]
@@ -381,20 +455,41 @@ def lay_out(R, spine: dict, kinds: list[str], life: dict, contests: list[dict], 
             # unless `prize_at` names the side whose own land it is (owner, the 18a audit); a seat is the house of role
             # a, whose inheritance it is; a legacy lifeline prize sat on the lifeline
             disputed = seat.get(row["prize_at"], "along") if row.get("prize_at") else "along"
-            at = {"lifeline": life_seat, "heart": "heart", "key_place": "key_place", "disputed_land": disputed,
-                  "seat": seat.get("a")}.get(prize)
+            at = {"heart": "heart", "key_place": "key_place", "disputed_land": disputed, "seat": seat.get("a")}.get(prize)
         seated.append({"contest": c["id"], "seats": seat, "prize": {"kind": prize, "at": at}})
+    for c in seated:
+        if c["prize"]["at"] is None and c["prize"]["kind"] == "remnant":
+            c["prize"]["at"] = remnant
+    return {"order": order, "parts": parts, "along": along, "remnant": remnant, "contests": seated}
 
-    # where the break struck, from its target; then the prizes a place follows from
+
+def lay_out_finish(R, story: dict, kinds: list[str], life: dict, out: dict) -> dict:
+    """The layout's second half, after the move and the lifeline: the lifeline's seat (texture, rolled last), where
+    the break struck, and the prizes a place follows from (a new one where the break struck; a legacy lifeline's on
+    the lifeline). A kind a scar brought after the story half lies along the spine."""
+    order, parts, remnant, seated = story["order"], story["parts"], story["remnant"], story["contests"]
+    along = list(story["along"]) + [k for k in kinds if k not in parts.values() and k not in story["along"]]
+    where = set(life.get("where") or [])
+    seats = [p for p in order if not where or parts[p] in where]
+    seats += [f"along:{k}" for k in along if where and k in where]
+    if life["family"] == "passage" and "key_place" in seats:
+        life_seat = "key_place"
+    else:
+        if not seats:
+            raise SystemExit(f"design_foundation: the lifeline {life['id']} finds no part of its kind — a table fault")
+        life_seat = _choose(R, "foundation.layout.lifeline", seats)
     piece = PIECE_OF_TARGET[out["target"]]
-    thin = next((p for p, k in parts.items() if k == "land_thin_place"), "along:land_thin_place")
     break_at = {"lifeline": life_seat, "remnant": remnant, "key_place": "key_place", "heart": "heart",
-                "role": seated[0]["seats"].get(out.get("target_role")), "thin_place": thin}[piece]
+                "role": seated[0]["seats"].get(out.get("target_role")), "thin_place": thin_part(parts)}[piece]
     for c in seated:
         if c["prize"]["at"] is None:
-            c["prize"]["at"] = {"remnant": remnant, "new": break_at}[c["prize"]["kind"]]
+            c["prize"]["at"] = {"new": break_at, "lifeline": life_seat}[c["prize"]["kind"]]
     return {"parts": parts, "along": along, "lifeline": life_seat, "remnant": remnant, "break_at": break_at,
             "contests": seated}
+
+
+def thin_part(parts: dict) -> str:
+    return next((p for p, k in parts.items() if k == "land_thin_place"), "along:land_thin_place")
 
 
 # ── the build: merges, start, the sentence ───────────────────────────────────────────────────────────────────
@@ -485,5 +580,6 @@ def build(out: dict, level_band) -> dict:
         "merges": merges(spine_id, ruin_id),
         "landmarks": landmarks(spine_id, ruin_id),
         "start": out["start"],
+        "move": out["move"],
         "rendering": rendering(out),
     }

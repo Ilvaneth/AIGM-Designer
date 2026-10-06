@@ -48,11 +48,13 @@ class Rows(unittest.TestCase):
                 for j in BREAKS[rid]["joins"]:
                     self.assertTrue(j["how"])
                     self.assertTrue(arb.slot_accepts("world_state_tie", j["piece"]), j)
-                    self.assertEqual(len({"always", "any_of", "prize", "people_side", "palette", "ruin_family", "threat"} & set(j)), 1, j)
+                    self.assertEqual(len({"always", "any_of", "prize", "people_side", "palette", "ruin_family", "threat", "hand", "ruins"} & set(j)), 1, j)
                 self.assertFalse(arb._condition_ids([w["when"] for w in BREAKS[rid].get("weight_by") or []]) & {r["id"] for r in dt.rows("foundation.yaml#lifeline")},
                                  "no lifeline weighs a world state")
         self.assertFalse(any(r.get("joins") for k, r in BREAKS.items() if k not in WORLD))
-        self.assertEqual([j["piece"] for j in BREAKS["break_dragons_rule"]["joins"]], ["contest", "threat"])
+        self.assertEqual([j["piece"] for j in BREAKS["break_dragons_rule"]["joins"]], ["contest", "hand", "ruin_source", "threat"],
+                         "build item 18c-2: the dragon hand and the dragons' ruins")
+        self.assertEqual({BREAKS[k].get("weight") for k in ("break_dragons_rule", "break_gods_among_mortals")}, {3})
         self.assertEqual(BREAKS["break_gods_among_mortals"]["joins"][0]["scales"], ["standard", "epic"], "no god family at short")
         self.assertEqual(BREAKS["break_the_enemy_won"]["joins"][0]["ruin_family"], ["wars", "fallen_kingdoms"])
 
@@ -128,7 +130,7 @@ class ManySeeds(unittest.TestCase):
                     self.assertIn(R.threat["visibility"], dth.PUBLIC_VISIBILITY, "the villain itself is public")
                 self.assertTrue(arb.slot_accepts("world_state_tie", b["join"]["piece"]))
                 if b["id"] == "break_gods_among_mortals" and d["scale"] == "short":
-                    self.assertEqual(b["join"]["piece"], "contest", "at short only a side at the gods' level")
+                    self.assertIn(b["join"]["piece"], ("contest", "ruin_source"), "at short no god family: a faith contest or a gods' ruin")
                 if b["id"] == "break_beasts_own_land":
                     self.assertIn(b["join"]["piece"], ("disputed_land", "role"))
         self.assertEqual(set(drawn), WORLD, "every world state is still drawn")

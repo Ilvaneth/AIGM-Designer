@@ -88,7 +88,7 @@ def joins_of(row: dict, foundation: dict, scale: str, threat: dict | None = None
     """The joins of a world state that hold on what is rolled, in the row's order: each `{piece, how, ...}` with the
     piece's id where one is rolled. Every join is to a public piece (the 18c-1 audit): a join to the threat holds only
     when the villain itself is public (its visibility known) and the rolled threat meets the requirement; with no
-    threat (a legacy roll) it does not hold. A join to a hand waits for the move's public hand (18c-2)."""
+    threat (a legacy roll) it does not hold. A join to a hand reads the move's public hand."""
     contests = foundation["contests"]
     prizes = foundation["layout"]["contests"]
     kinds = set(foundation["palette"]) | set(foundation["palette_extra"])
@@ -117,6 +117,14 @@ def joins_of(row: dict, foundation: dict, scale: str, threat: dict | None = None
         elif j.get("palette"):
             if j["palette"] in kinds:
                 out.append(dict(base, kind=j["palette"]))
+        elif j.get("ruins"):
+            if ruin["id"] in j["ruins"]:
+                out.append(dict(base, ruin_source=ruin["id"]))
+        elif j.get("hand"):
+            # the move's public hand (build item 18c): a dragon hand for the dragons, a trading or outside hand for the moon
+            hrow = dt.row("antagonists.yaml#hand", str((foundation.get("move") or {}).get("hand") or ""))
+            if hrow and (hrow.get("moon") if j["hand"] == "moon" else j["hand"] in (hrow.get("families") or [])):
+                out.append(dict(base, hand=hrow["id"]))
         elif j.get("ruin_family"):
             families = j["ruin_family"] if isinstance(j["ruin_family"], list) else [j["ruin_family"]]
             if ruin["family"] in families:
@@ -136,7 +144,7 @@ def threat_holds(req: dict, threat: dict) -> bool:
         return threat["family"] == f"family_{req['family']}"
     if req.get("creature"):
         return threat["creature_type"] == req["creature"]
-    return False            # a hand: the move's hand comes with 18c-2
+    return False
 
 
 def destroyed_role(foundation: dict) -> str | None:
@@ -165,6 +173,18 @@ def fit_tie(row: dict, R, pieces: dict) -> tuple[str, str] | None:
             if hit and (best is None or (-x, order) < best[0]):
                 best = ((-x, order), tie, f"{row['id']} fits {hit[0]} (×{rule.get('x')})")
     return (best[1], best[2]) if best else None
+
+
+def lineage_weigh(role_row: dict, inverted: bool):
+    """The people's lineage weights: the role's `lineage_weight` on the rows' own (or, under "lineage homes are
+    inverted", the inverted homes); None when neither applies (the rows' own weights stand)."""
+    role_weight = role_row.get("lineage_weight") or {}
+    if not (inverted or role_weight):
+        return None
+
+    def weigh(r, ctx):
+        return (inverted_weight(r, ctx) if inverted else arb.weight_of(r, ctx)) * float(role_weight.get(r["id"], 1))
+    return weigh
 
 
 def inverted_weight(row: dict, ctx) -> float:
@@ -246,12 +266,8 @@ def roll(R, dials: dict, foundation: dict) -> dict:
         lineage = R.forced("people.lineage", lineage_ref, role_row["lineage_forced"], f"the people's role {people_role} of {main['id']}")["row_id"]
         lineage_by = "role"
     else:
-        role_weight = role_row.get("lineage_weight") or {}
-        inverted = "break_lineage_homes_inverted" in break_ids
-
-        def weigh(r, ctx):
-            return (inverted_weight(r, ctx) if inverted else arb.weight_of(r, ctx)) * float(role_weight.get(r["id"], 1))
-        lineage = R.table("people.lineage", lineage_ref, weigh=weigh if (inverted or role_weight) else None)["row_id"]
+        weigh = lineage_weigh(role_row, "break_lineage_homes_inverted" in break_ids)
+        lineage = R.table("people.lineage", lineage_ref, weigh=weigh)["row_id"]
         lineage_by = "rolled"
     trait_ref = S + "people_trait"
     visible = R.table("people.trait.visible", trait_ref, where=lambda r: r["kind"] == "visible", why="a visible trait")["row_id"]

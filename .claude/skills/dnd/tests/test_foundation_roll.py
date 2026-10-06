@@ -137,9 +137,9 @@ class ManySeeds(unittest.TestCase):
                         self.assertNotEqual(b["winner"], b["target_role"], "a destroyed role cannot win")
                     if act.get("winner_is_target_role"):
                         self.assertEqual(b["winner"], b["target_role"], "a role that rose is the winner")
-                heart_gone = piece == "heart" and "heart" in (act.get("destroys") or [])
-                want = ("heart_ruins" if act.get("leaves_ruins") else "end_a") if heart_gone else "heart"
-                self.assertEqual(f["start"], want)
+                # build item 18c (finding D3): the start is never the heart; design_foundation.start_part decides it
+                self.assertEqual((f["start"], f["move"]["start_why"]), fd.start_part(f["layout"], b["time"]))
+                self.assertNotEqual(f["start"], "heart")
                 action_rec = R.by_label["foundation.break.action"]
                 self.assertEqual(action_rec["used_keys"], {fd.PAIR_KEY: f"{piece}|{b['action']}"})
 
@@ -154,8 +154,8 @@ class ManySeeds(unittest.TestCase):
             seen["closed_thin"] += piece == "thin_place" and b["action"] == "act_closed"
             seen["new_land"] += "scar_new_land_kind" in b["scars"]
             seen["ruin_extra"] += bool(f["palette_extra"])
-            seen["heart_ruins"] = seen.get("heart_ruins", 0) + (f["start"] == "heart_ruins")
-            seen["heart_gone_bare"] = seen.get("heart_gone_bare", 0) + (f["start"] == "end_a")
+            seen["start_where_struck"] = seen.get("start_where_struck", 0) + (f["start"] == f["layout"]["break_at"])
+            seen["start_far_end"] = seen.get("start_far_end", 0) + (f["start"] == "end_b")
         for k, v in seen.items():
             self.assertGreater(v, 0, k)
 
@@ -337,13 +337,13 @@ class ManySeeds(unittest.TestCase):
                                      "a break still coming has no products")
                 if d["era"] == "underground":
                     self.assertFalse({"scar_sky_changed", "scar_seasons_broken"} & set(b["scars"]))
-                    self.assertNotEqual(b["action"], "act_fell_from_sky")
+                    pass                    # the verb that fell from the sky is retired (build item 18c)
                 if d["magic"] == "high":
                     self.assertNotEqual(f["ruin_source"], "ruin_age_of_mages", "the faded age never stands beside plentiful magic")
         runs = self.runs
         self.assertTrue(any(f["break"]["time"] == "time_coming" for _, _, _, f in runs))
         self.assertTrue(any(f["ruin_source"] == "ruin_age_of_mages" for d, _, _, f in runs if d["magic"] != "high"))
-        self.assertTrue(any(f["break"]["action"] == "act_fell_from_sky" for d, _, _, f in runs if d["era"] != "underground"))
+        self.assertFalse(any(f["break"]["action"] == "act_fell_from_sky" for d, _, _, f in runs), "retired (build item 18c)")
 
     def test_the_escalation_follows_the_level_band(self):
         for d, R, out, f in self.runs:

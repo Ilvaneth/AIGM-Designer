@@ -52,3 +52,26 @@ Summarised to the owner in the coding tab on 2026-10-05; the owner's two correct
 **Questions:** seven, in `docs/reports/item18c-fits-SPOILER.md`; one active shape row is listed in `docs/reports/item18c-shapes-SPOILER.md` for a reading.
 
 **The audit's corrections (2026-10-05), applied:** the law of its nature fits the fey too; every family's lair-form pool reaches five (the development tab's four families, the dragons' colour forms, and the coding tab's widenings listed in the SPOILER fits file); the dragon's colour weighs its lair x3; every world state's join is public: a join to the threat counts only when the villain's visibility is known, and the dm-only join record is gone. **World states over 3,000 seeds after it:** 584 births hold one (900 before); rulers by lot 122, guilds 117, magic nobility 132 (all on the heart); the beast-lord 64 (disputed land 41, people side 23); the enemy won 107 (a war or fallen-kingdom ruin 55, a known villain 52); the moon 24 (the thin place; the hand comes with 18c-2); the gods among mortals 17 (a faith contest 13, a known god 4); dragons rule 9 (the dragon contest 3, a known dragon 6).
+
+## 18c-2 — the move (the second half of 18c)
+
+**Changed and new files.**
+- Tables: `foundation.yaml#action` (23 verbs: 13 kept or rewritten with the rows' labels and targets, 10 new; 8 retired; `by` the hand → verb fit; `act_summoned` also strikes the heart and the key place, `act_poisoned` and `act_plague` also a role, as answered), `antagonists.yaml` (`#hand`, 27 public rows with their creature families, requirements and the moon fit; `#move_state`, 4 public rows; both `own_hooks_only`, so the file's antagonist hooks never reach the public ledger), `trope-breaks.yaml` (dragons rule: the dragon hand and the dragons' two ruins as public joins; the gods among mortals: a ruin of the gods' family; the moon: the trading and outside hands; both rare world states weigh x3), `secrets.yaml` (one weight that named only a retired verb removed), `reviewed.json` (restamped).
+- Scripts: `design_foundation.py` (the move: hand → target → verb, as answered; the goal → target relation with the guards and the thin place's weight; the move's join `prize_piece | role | side_holding`; the move's state, none for a coming move; `move.at`; the start never the heart, `start_part`; `foundation.move` public with the hand's creature families; the threat's families secret; the layout split in two, `lay_out_story` before the move and `lay_out_finish` after the lifeline), `design_identity.py` (the hand and ruin joins of the world states), `design_promises.py` (`own_hooks_only`).
+- Tests: new `test_move.py` (10 tests, 3,000 seeds; `--report`); updated `test_foundation_tables.py`, `test_foundation_roll.py`, `test_promises.py`, `test_trope_claims.py`, `test_world_states.py`, `test_identity_roll.py`, `test_secret_villain_tables.py`.
+
+**The suite:** 800 tests, exit code 0.
+
+**The order of the move, amended:** hand → target → verb → time → state → the stronger role (the development tab amends docs/p1-build-18.md).
+
+**Faults met while building:** (1) the hand, a public sub-table of the secret `antagonists.yaml`, inherited the file's antagonist hooks, and they reached the public promise ledger (`test_promises` caught it); fixed with `own_hooks_only`. (2) With the verb drawn before the target, the target's weights could not act (thin place 0.9 %); fixed by the order.
+
+**The move over 3,000 seeds** (`test_move.py --report`, start levels 1, 4, 7 and 10): targets role 36.7 %, key place 29.6 %, remnant 16.6 %, heart 14.6 %, thin place 2.5 % (3.1 % at start level 1 alone); joins prize 33.8 %, move/side holding 27.3 %, move/role 20.5 %, role goal 12.5 %, move/prize piece 5.8 %; all 27 hands (26-154 each), all 23 verbs (19-407 each); the start end_a 38.2 %, end_b 32.6 %, key place 25.2 %, along 3.9 %, never the heart; the state done 20.5 %, stopped short 20.7 %, backfired 18.8 %, unnoticed 20.2 %, none (coming) 19.7 %; world states magic nobility 125, lottery 120, guilds 110, gods among mortals 83, enemy won 76, dragons rule 54, moon 54, beast-lord 47.
+
+**The variety report with the threat** (`test_threat.py --report`, unchanged by the move): short 15 families, 970 distinct (family, creature, shape, goal) of 1,000; standard 18, 960; epic 18, 922; no consecutive repeat.
+
+**Questions:** three, in `docs/reports/item18-fits.md` (18c-2).
+
+**The audit's correction (2026-10-05), applied:** carried off destroys nothing (the side remains, now with a cause); drove out destroys the heart only (the side lives on in exile). The answers: the cult's `served` and the ruin's `ruin` stay for P6; the verbs' forms stand.
+
+**A test made steady after the correction:** `test_identity_roll`'s lineage share over the deep contests rests on about 20 births in these seeds, too few for a bound of 28 % to hold every time (the correction's new dice gave 4 of 20). The weight is now tested without dice (`design_identity.lineage_weigh`, extracted from the roll unchanged: the deep role's three lineages weigh x3), and the share only has to pass the no-weight baseline of 16 %.

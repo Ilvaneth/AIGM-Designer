@@ -409,9 +409,10 @@ class Break(unittest.TestCase):
         self.assertEqual([r["id"] for r in dt.retired("foundation.yaml#break_target")], ["target_lifeline"])
         self.assertEqual(dt.row("foundation.yaml#break_target", "target_lifeline")["piece"], "lifeline")
 
-    def test_twenty_one_actions_each_with_three_forms(self):
-        """Item 25 step 1 #7: every action carries its past, present and imminent form; a missing one is caught."""
-        self.assertEqual(len(ACTIONS), 21)
+    def test_twenty_three_actions_each_with_three_forms(self):
+        """Item 25 step 1 #7: every action carries its past, present and imminent form; a missing one is caught. Build item
+        18c: 23 verbs (eight retired, ten new)."""
+        self.assertEqual(len(ACTIONS), 23)
         for r in ACTIONS:
             with self.subTest(action=r["id"]):
                 self.assertEqual(set(r["forms"]), {"past", "present", "imminent"})
@@ -426,14 +427,14 @@ class Break(unittest.TestCase):
         closed = {"remnant": set(DOC["remnant_kinds"]), "key_place": set(DOC["key_kinds"])}
         for r in ACTIONS:
             with self.subTest(action=r["id"]):
-                fits = r["fits"]
+                fits = r.get("fits") or {}
                 self.assertEqual(set(fits), {t for t in r["targets"] if t in closed})
                 for piece, values in fits.items():
                     self.assertTrue(values)
                     self.assertFalse(set(values) - closed[piece])
                 self.assertTrue(set(r.get("destroys") or []) <= set(r["targets"]))
         for piece, values in closed.items():
-            reach = set().union(*(set(r["fits"].get(piece) or []) for r in ACTIONS))
+            reach = set().union(*(set((r.get("fits") or {}).get(piece) or []) for r in ACTIONS))
             self.assertEqual(reach, values, f"every {piece} kind can be struck by some action")
 
     def test_no_table_row_carries_an_example(self):
@@ -446,9 +447,8 @@ class Break(unittest.TestCase):
         by = {r["id"]: r for r in ACTIONS}
         self.assertTrue(by["act_rose"]["winner_is_target_role"])
         self.assertEqual(by["act_closed"]["bars_scars_on_target"], {"thin_place": ["scar_plane_thinned"]})
-        self.assertEqual({r["id"] for r in ACTIONS if r.get("concretise")}, {"act_fell_from_sky", "act_gave_birth"})
-        self.assertEqual({r["id"] for r in ACTIONS if r.get("leaves_ruins")},
-                         {"act_sank", "act_burned", "act_fell_from_sky", "act_corrupted"})
+        self.assertEqual({r["id"] for r in ACTIONS if r.get("concretise")}, set(), "build item 18c: retired with their verbs (W5)")
+        self.assertEqual({r["id"] for r in ACTIONS if r.get("leaves_ruins")}, {"act_sank", "act_burned", "act_corrupted"})
         for r in dt.rows("foundation.yaml#time"):
             self.assertEqual(set(r["text"]), {"name", "name_note"}, "the lead phrases went with the Turkish sentence (build item 13a)")
         for r in ACTIONS:
@@ -574,7 +574,7 @@ class TagReview(unittest.TestCase):
         self.assertEqual(times["time_coming"]["conflicts_with"], ["scar_new_people", "scar_magic_rule_changed"])
         surface = {"dial": {"era": ["medieval", "renaissance", "ancient", "nautical"]}}
         scars = {r["id"]: r for r in SCARS}
-        acts = {r["id"]: r for r in ACTIONS}
+        acts = {r["id"]: r for r in ACTIONS + dt.retired("foundation.yaml#action")}     # a retired verb stays readable
         for row in (scars["scar_sky_changed"], scars["scar_seasons_broken"], acts["act_fell_from_sky"]):
             self.assertEqual(row["requires"], surface, row["id"])
         generic = ("carry this scar", "the identity takes this scar")

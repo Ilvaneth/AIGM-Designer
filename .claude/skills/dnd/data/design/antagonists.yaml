@@ -133,6 +133,50 @@ tables:
       - {id: bond_product_of_it, label: Is its product, rule: "the break made the villain what they are; they were born with it", conflicts_with: [time_coming, origin_inheritance, origin_ambition_for_a_seat], hooks: [{phase: P2, must: "the villain's first day is the break's dated event"}]}
 
 
+
+  # ── the move (build item 18c; docs/p1-build-18-rows.md sections 1, 2 and 5 #8): public, unlike the rest of this file ──
+
+  hand:
+    own_hooks_only: true             # the file's hooks are the antagonists'; the hand is public and takes none of them
+    roll: {secret: false, avoid_used: false, row_wait: 3, labels: [P1.move.hand], note: "the visible hand: an organisation or a creature, never a whole people (a hand drawn from a people is a part of it, and another part stands elsewhere); `families` are the campaign's public creature families (finding D4); `moon`: a hand that trades with the moon or comes from it"}
+    rows:
+      - {id: hand_villain_itself, label: "The villain itself, openly", families: [villain], requires: {any_of: [vis_known_untouchable, vis_known_unknown_where]}, text: {name: "the villain itself, openly"}}
+      - {id: hand_war_band, label: "A war band (a part of the orcs, gnolls or hobgoblins)", families: [humanoid], text: {name: "a war band, a part of its people"}}
+      - {id: hand_sea_raiders, label: "Sea raiders, pirates", families: [humanoid], requires: {any_of: [land_coast, land_island]}, moon: true, text: {name: "sea raiders"}}
+      - {id: hand_cult, label: "A cult", families: [humanoid, served], text: {name: "a cult"}}
+      - {id: hand_thieves_guild, label: "A guild of thieves and assassins", families: [humanoid], moon: true, text: {name: "a guild of thieves and assassins"}}
+      - {id: hand_traitor, label: "A traitor inside (a councillor, a general, a priest)", families: [humanoid], text: {name: "a traitor inside"}}
+      - {id: hand_deceived_side, label: "A deceived side (a contest role, not knowing what it did)", families: [humanoid], text: {name: "a side that does not know what it did"}}
+      - {id: hand_hired_company, label: "A hired company", families: [humanoid], moon: true, text: {name: "a hired company"}}
+      - {id: hand_foreign_army, label: "A foreign army", families: [humanoid], text: {name: "a foreign army"}}
+      - {id: hand_dragon, label: "A dragon (with its kobolds and dragonborn servants)", families: [dragon], text: {name: "a dragon and its servants"}}
+      - {id: hand_risen_dead, label: "The risen dead", families: [undead], text: {name: "the risen dead"}}
+      - {id: hand_ruin_power, label: "The ruin's power, woken", families: [ruin], requires: {any_of: [ruin_dead_god, ruin_imprisoned_god, ruin_failed_apotheosis, ruin_golem_army, ruin_bound_elements, ruin_sundered_relic, ruin_dried_source, ruin_sleeper, ruin_deep_minds, ruin_planar_rift, ruin_demon_gate, ruin_devils_bargain, ruin_sleeping_realm, ruin_failed_experiment, ruin_great_curse, ruin_kingdom_of_the_dead]}, text: {name: "the ruin's power, woken"}}
+      - {id: hand_fiends, label: "Fiends (summoned or bargained with)", families: [fiend], text: {name: "fiends, summoned or bargained with"}}
+      - {id: hand_from_beyond, label: "Things from beyond (mind flayers, aberrations)", families: [aberration], moon: true, text: {name: "things from beyond"}}
+      - {id: hand_giants, label: "Giants", families: [giant], text: {name: "giants"}}
+      - {id: hand_monstrous_beast, label: "A monstrous beast (a hydra, a behir, a purple worm)", families: [monstrosity], text: {name: "a monstrous beast"}}
+      - {id: hand_fey_court, label: "A fey court's emissaries", families: [fey], text: {name: "a fey court's emissaries"}}
+      - {id: hand_bound_elemental, label: "A bound elemental", families: [elemental], text: {name: "a bound elemental"}}
+      - {id: hand_werewolves, label: "Werewolves, a cursed pack", families: [lycanthrope], text: {name: "a cursed pack"}}
+      - {id: hand_golem_army, label: "A golem army", families: [construct], requires: {dial: {magic: [medium, high]}}, text: {name: "a golem army"}}
+      - {id: hand_hag_coven, label: "A coven of hags", families: [fey], text: {name: "a coven of hags"}}
+      - {id: hand_brigands, label: "Brigands, outlaws", families: [humanoid], text: {name: "brigands"}}
+      - {id: hand_slavers, label: "Slavers", families: [humanoid], moon: true, text: {name: "slavers"}}
+      - {id: hand_zealous_order, label: "A zealous order (a church militant, a knightly order)", families: [humanoid], text: {name: "a zealous order"}}
+      - {id: hand_rival_band, label: "A rival band of adventurers", families: [humanoid], text: {name: "a rival band of adventurers"}}
+      - {id: hand_shapechangers, label: "Shapechangers wearing trusted faces", families: [monstrosity], text: {name: "shapechangers wearing trusted faces"}}
+      - {id: hand_druid_circle, label: "A corrupted druid circle and its blights", families: [plant], text: {name: "a corrupted druid circle and its blights"}}
+
+  move_state:
+    own_hooks_only: true
+    roll: {secret: false, avoid_used: false, labels: [P1.move.state], note: "the move's state (the old tie to the break, re-read: the move is always the villain's); a move still coming has no state"}
+    rows:
+      - {id: move_done, label: Done, conflicts_with: [time_coming], text: {name: "done: the first step is taken and the plan moves on"}}
+      - {id: move_stopped_short, label: Stopped short, conflicts_with: [time_coming], text: {name: "stopped short: something stopped it, and it will try again"}}
+      - {id: move_backfired, label: Backfired, conflicts_with: [time_coming], text: {name: "backfired: it let loose something it did not intend, and now fights that too"}}
+      - {id: move_unnoticed, label: Unnoticed, conflicts_with: [time_coming], text: {name: "unnoticed: nobody ties the move to anyone"}}
+
   # ── the threat (build item 18c; docs/p1-build-18-rows.md sections 4 and 8; docs/p1-threat-first.md G1, G4, G8) ──
   # Every roll secret, in design_threat.py's order: family, creature, power source, visibility, shape, origin, goal,
   # weakness, the lair's form and where. The rows' hooks come with build item 18d.

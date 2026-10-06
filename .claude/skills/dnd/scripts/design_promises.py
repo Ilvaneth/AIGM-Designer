@@ -157,6 +157,8 @@ def hooks_of(ref: str, row: dict) -> list[dict]:
     doc = dt.load(name)
     common = list(doc.get("hooks_common") or [])
     node = (doc.get("tables") or {}).get(sub) if sub else None
+    if isinstance(node, dict) and node.get("own_hooks_only"):
+        common = []         # a public sub-table of a secret file (build item 18c: the hand) takes none of the file's hooks
     if isinstance(node, dict):
         common += list(node.get("hooks_common") or [])
     return list(row.get("hooks") or []) + common
