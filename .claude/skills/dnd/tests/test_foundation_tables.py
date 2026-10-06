@@ -67,8 +67,9 @@ class Palette(unittest.TestCase):
             if r.get("fantastic") and not r.get("thin_place"):
                 self.assertEqual(r.get("requires"), {"dial": {"magic": ["medium", "high"]}}, r["id"])
         self.assertEqual(DOC["tables"]["palette"]["roll"]["fantastic_cap_by_magic"], {"low": 0, "medium": 1, "high": 2})
-        self.assertEqual(DOC["tables"]["palette"]["roll"]["count_by_scale"],
-                         {"short": [4, 5], "standard": [6, 8], "epic": [9, 12]})
+        self.assertEqual(DOC["tables"]["palette"]["roll"]["count_by_spine"],     # build item 18b: by the spine's breadth
+                         {"tight": {"short": [2, 3], "standard": [3, 4], "epic": [4, 5]},
+                          "wide": {"short": [3, 4], "standard": [4, 6], "epic": [6, 8]}})
 
     def test_the_thin_place_never_counts_toward_the_cap(self):
         """Owner review of item 3: 'low: only the thin place' — it is a plane's touch, drawable at every magic level

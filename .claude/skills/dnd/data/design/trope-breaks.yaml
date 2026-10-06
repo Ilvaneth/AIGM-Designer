@@ -8,7 +8,9 @@ schema_version: 1
 table: trope-breaks
 consumed_by: [P1, P2, P3, P4, P5, P6, P8]
 plan: "item 4.4, 17 #5, item 25 step 2 #5, risk 24.1 #10"
-layer: texture                    # build item 18a: rules of life; a world-state row may say story (18b)
+layer: texture                    # build item 18a: rules of life; the eight world states say `layer: story` and carry
+                                  # `joins` (build item 18b): each is drawn only where one of its joins holds; its tie
+                                  # is never the lifeline
 roll: {count_by_scale: {short: 1, standard: 2, epic: 2}, avoid_used: true, families_distinct: true}
 hooks_common:
   - {phase: P1, must: "the break is stated in one sentence in the player pitch and explained through its tied foundation piece; it is public knowledge unless the row says otherwise"}
@@ -27,6 +29,7 @@ tables:
       - {id: tie_break, label: The break, piece: break, conflicts_with: [time_coming]}   # no break to explain by yet
 rows:
   - id: break_rule_by_lottery
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "Rulers are drawn by lot"
     family: governance
     statement: "Every office is filled by lottery for a fixed term; ambition is shameful and secretly universal."
@@ -34,10 +37,13 @@ rows:
     conflicts_with: ["tension_inheritance_merit"]
     overrides: [{"default": "state_succession", "to": "the lottery"}, {"default": "ruler_heir", "to": "the next draw"}, {"default": "politics_node_kinds", "to": "succession and election become the day of the draw"}]
     text: {"name": "rulers are chosen by lot", "at_table": "every draw is a political crisis"}
+    joins:
+      - {piece: heart, always: true, how: "the heart is ruled so, and the contest is fought under that rule"}
     hooks:
       - {phase: P4, must: "the state faction's succession rule is the lottery; an operation is rigging it"}
       - {phase: P5, must: "the ruler NPC is an ordinary person; the heir field is `next draw`"}
   - id: break_no_kings_only_guilds
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "Guilds rule; there are no lords"
     family: governance
     statement: "There is no nobility; the guild charters are the constitution and the masters sit as the council."
@@ -45,6 +51,8 @@ rows:
     overrides: [{"default": "forced_state_faction", "to": "its archetype is guild"}, {"default": "seat_of_rule_anchor", "to": "a guild hall"}, {"default": "politics_node_kinds", "to": "succession becomes the choosing of masters"}]
     weight_by: [{"when": {"any_of": ["contest_one_harbour", "contest_mine_owners_miners", "contest_share_keep_knowledge", "contest_monster_bounty", "contest_new_resource", "contest_surface_deep"]}, "x": 2}]
     text: {"name": "there are no lords; the guilds rule", "at_table": "power means craft and money"}
+    joins:
+      - {piece: heart, always: true, how: "the heart is ruled so, and the contest is fought under that rule"}
     hooks:
       - {phase: P4, must: "the state faction has archetype guild; the access chain runs through masters"}
       - {phase: P3, must: "the seat of rule anchor is a guild hall"}
@@ -69,7 +77,9 @@ rows:
       - {phase: P3, must: "the law ladder names who may bear arms; a settlement's gate checks it"}
       - {phase: P4, must: "the armed class is a faction, or a privilege a faction guards"}
       - {phase: P5, must: "NPCs of the armed class carry weapons openly; the rest do not"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_magic_is_nobility
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "Magic is nobility"
     family: governance
     statement: "Every noble can cast and every caster is noble, or a noble's hidden child."
@@ -79,20 +89,26 @@ rows:
     weight_by: [{"when": {"any_of": ["contest_casters_casterless"]}, "x": 2}]
     merges_with: {"contest_casters_casterless": "role a is the nobility; one regulator"}
     text: {"name": "magic is nobility; there is no noble without magic", "at_table": "a spellcaster PC holds a status by birth"}
+    joins:
+      - {piece: heart, always: true, how: "the heart is ruled so, and the contest is fought under that rule"}
     hooks:
       - {phase: P2, must: "magic's regulator is the nobility itself"}
       - {phase: P4, must: "the state faction's leaders are casters"}
       - {phase: P5, must: "caster NPCs are nobles or their bastards"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_dragons_rule
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "Dragons rule the lands"
     family: governance
     statement: "Each realm's sovereign is a dragon; a mortal household speaks and acts for it."
     claims: {"rule": "dragon_sovereign"}
     overrides: [{"default": "state_leader", "to": "a dragon"}]
-    weight_by: [{"when": {"any_of": ["life_dragon_protection"]}, "x": 2}]
     merges_with: {"contest_humans_dragon": "role b takes the hint state (the sovereign dragon and its household); role a takes resistance; third and fourth stay"}
     merge_role_hints: {"contest_humans_dragon": {"a": "resistance", "b": "state"}}     # the merge above, for the script (build item 10)
     text: {"name": "the lands are ruled by dragons", "at_table": "speaking with the ruler means speaking with a dragon"}
+    joins:
+      - {piece: contest, any_of: [contest_humans_dragon], how: "the sovereign dragon is the contest's side"}
+      - {piece: threat, threat: {creature: dragon}, how: "the threat is a dragon, or its hand is a dragon"}
     hooks:
       - {phase: P4, must: "each polity's ruler is a dragon and its household a faction"}
       - {phase: P5, must: "a dragon ruler is a major NPC"}
@@ -121,11 +137,15 @@ rows:
       - {phase: P6, must: "their lairs are sites with attitude `negotiate`; monster-ecology marks the species as a people"}
       - {phase: P8, must: "the primer lists the treaty terms a native knows"}
   - id: break_beasts_own_land
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "Some lands' lord is a beast-person"
     family: peoples
     statement: "A born lineage is both beast and person and holds land; a wood may have a lord who is a stag and walks as a man."
     weight_by: [{"when": {"any_of": ["ruin_beast_blood"]}, "x": 2}]
     text: {"name": "the lord of some lands is a beast-person", "at_table": "the forest has an owner, and a say"}
+    joins:
+      - {piece: disputed_land, prize: disputed_land, how: "the disputed land is the beast-lord's"}
+      - {piece: role, people_side: true, how: "the beast-lord's folk is the contest's people side"}
     hooks:
       - {phase: P3, must: "a beast-lord holds one part of the map; its travel table is negotiated passage"}
       - {phase: P4, must: "the beast lord is a faction with a stance row"}
@@ -139,6 +159,7 @@ rows:
       - {phase: P1, must: "the people signature's lineage takes an inverted home"}
       - {phase: P3, must: "each lineage's settlements sit where the defaults would not put them"}
       - {phase: P5, must: "NPCs' lineages and trades break the defaults"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_gods_are_ancestors_known
     label: "The gods are the souls of mortal ancestors"
     family: gods
@@ -151,24 +172,29 @@ rows:
       - {phase: P2, must: "every god has a mortal biography in the history; rank is earned; one candidate is pending"}
       - {phase: P4, must: "a religious faction's endgame is raising its founder"}
   - id: break_moon_trades
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "The moon is inhabited and trades"
     family: gods
     statement: "Ships go to the moon when it is full; the moon folk sell what nothing here can make."
     weight_by: [{"when": {"dial": {"era": ["nautical"]}}, "x": 2}]
     text: {"name": "there are those who live on the moon, and they trade", "at_table": "goods and strangers that come from the sky"}
+    joins:
+      - {piece: thin_place, palette: land_thin_place, how: "the thin place is the way to the moon"}
+      - {piece: hand, threat: {hand: any}, how: "the hand trades with the moon or comes from it"}
     hooks:
       - {phase: P2, must: "the moon is a touched plane with a way in, a cost and a time rate; the moon is one of the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - {phase: P4, must: "a trade faction holds the right to the moon trade"}
   - id: break_divine_magic_holy_ground
-    label: "Divine magic works only on holy ground"
+    label: "Divine magic is strongest on holy ground"
     family: gods
-    statement: "A god's power reaches only as far as its holy places."
+    statement: "A god's power is strongest in its holy places; beyond them it still answers, and asks a price."
     weight_by: [{"when": {"any_of": ["contest_one_shrine", "life_pilgrim_road"]}, "x": 2}]
-    text: {"name": "the magic of the gods works only in holy places", "at_table": "a cleric PC loses power the farther they go from the holy place"}
+    text: {"name": "the magic of the gods is strongest in holy places and costs something beyond them", "at_table": "a cleric or paladin PC keeps every feature; beyond holy ground each divine spell asks the god's price"}
     hooks:
-      - {phase: P2, must: "each god's holy ground is named"}
+      - {phase: P2, must: "each god's holy ground is named, with the price its magic asks beyond it"}
       - {phase: P3, must: "the holy grounds are map nodes"}
       - {phase: P6, must: "a site's holy ground changes what a cleric can do there"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_god_name_forbidden
     label: "Naming one of the gods is forbidden"
     family: gods
@@ -180,18 +206,24 @@ rows:
       - {phase: P2, must: "the unnamed god has a public epithet and a hidden name"}
       - {phase: P4, must: "the unnamed god's priests are a hidden faction"}
       - {phase: P5, must: "an NPC knows the name"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_gods_among_mortals
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "The gods live among mortals"
     family: gods
     statement: "The gods live among mortals; each keeps a house, and one may knock at its door."
     overrides: [{"default": "great_gods_floor", "to": 1}, {"default": "pantheon_type", "to": "the silent-gods and dead-gods types leave the pool"}]
     weight_by: [{"when": {"any_of": ["ruin_dead_god", "ruin_gods_quarrel", "ruin_departed_god", "ruin_imprisoned_god", "ruin_failed_apotheosis"]}, "x": 2}]
     text: {"name": "the gods live among mortals; each has a house, and one knocks at its door", "at_table": "the party can speak with a god face to face"}
+    joins:
+      - {piece: threat, threat: {family: god}, scales: [standard, epic], how: "the threat is a god among mortals"}
+      - {piece: contest, any_of: [contest_one_shrine, contest_old_gods_new_faith], how: "a side of the contest is a god's house"}
     hooks:
       - {phase: P2, must: "each great god has a house and receives petitioners; a fallen god's house stands empty or shut"}
       - {phase: P3, must: "the god's house is a map node"}
       - {phase: P6, must: "a god's house is no dungeon and a god is no boss"}
       - {phase: P8, must: "the primer says how a god is addressed"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_night_is_safe
     label: "Night is safe and day is dangerous"
     family: danger
@@ -244,6 +276,7 @@ rows:
       - {phase: P3, must: "the law ladder punishes descent; the ways down are watched"}
       - {phase: P5, must: "an NPC came back from below and is shunned"}
       - {phase: P6, must: "every underground site is entered against the law"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_ruins_forbidden
     label: "Entering the ruins is forbidden"
     family: danger
@@ -257,6 +290,7 @@ rows:
       - {phase: P4, must: "one faction guards the ruins and another sells what comes out"}
       - {phase: P6, must: "every ruin site is entered against the law; its loot needs a fence"}
       - {phase: P8, must: "the primer says what natives say of the ruins"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_night_forbidden
     label: "Going out at night is forbidden"
     family: danger
@@ -269,6 +303,7 @@ rows:
       - {phase: P4, must: "the night watch is a faction or a faction's asset"}
       - {phase: P5, must: "an NPC works by night against the law"}
   - id: break_the_enemy_won
+    layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "The enemy won and everyone is fine"
     family: time
     statement: "The taught war was lost; the party's people live under the victors, and life is better than the songs admit."
@@ -276,6 +311,9 @@ rows:
     weight_by: [{"when": {"any_of": ["contest_occupier_resistance"]}, "x": 3}, {"when": {"any_of": ["ruin_besieged_land"]}, "x": 2}]
     merges_with: {"contest_occupier_resistance": "the victors are role a; role third is the state faction under them", "contest_dark_lord": "the enemy that won is the dark lord (role a)"}
     text: {"name": "the old enemy won and everyone is fine", "at_table": "the world of the \"villains\" is an ordinary world"}
+    joins:
+      - {piece: ruin_source, ruin_family: [wars, fallen_kingdoms], how: "the ruin's war, or the empire that fell, is the enemy's victory"}
+      - {piece: threat, threat: {villain: any}, how: "the enemy that won is the villain's own"}
     hooks:
       - {phase: P2, must: "the founding event is the defeat; taught and true layers differ on how bad the victors are"}
       - {phase: P4, must: "the resistance faction's true belief is nostalgia; the state faction is the victors"}
@@ -288,6 +326,7 @@ rows:
     hooks:
       - {phase: P2, must: "the calendar names the month; the simulation's volatility doubles in it"}
       - {phase: P7, must: "one beat or the doom sits in the empty month"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_lawless_day
     label: "One day a year no law holds"
     family: time
@@ -310,6 +349,7 @@ rows:
       - {phase: P3, must: "the price table marks iron goods ×5 and licensed"}
       - {phase: P4, must: "the iron priesthood is a faction; its fracture is a smuggler"}
       - {phase: P6, must: "a loot rule: iron weapons are a payoff, never filler"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_maps_are_illegal
     label: "Maps are forbidden"
     family: knowledge
@@ -321,6 +361,7 @@ rows:
     hooks:
       - {phase: P3, must: "the player map shows only the primer's named places; travel-times exist for the DM only"}
       - {phase: P4, must: "the guides are a guild faction; a map fragment is an item_ everyone wants"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_no_direct_lies
     label: "No one can lie outright"
     family: knowledge
@@ -329,17 +370,19 @@ rows:
     hooks:
       - {phase: P5, must: "NPCs speak in evasions, never plain lies"}
       - {phase: P8, must: "the primer teaches how a native evades"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_no_writing
-    label: "Writing is unknown"
+    label: "Writing is sacred"
     family: knowledge
-    statement: "Knowledge lives in memory; a word is a handshake."
+    statement: "Only the ordained may write; a caster writes their own spellbook and scrolls by right of the art; letters, maps and records are an ordained hand's work, and everything else lives in memory."
     conflicts_with: ["claim:writing=printed"]
-    overrides: [{"default": "loot_writing", "to": "knots, memory or signs"}]
-    text: {"name": "writing is unknown; knowledge is carried in memory, a word is a handshake", "at_table": "witnesses and memorisers are valuable"}
+    overrides: [{"default": "loot_writing", "to": "rare, and an ordained hand's work"}]
+    text: {"name": "writing is sacred; only the ordained may write", "at_table": "a wizard keeps their spellbook and scrolls by right of the art; any other written page carries an ordination's weight; witnesses and memorisers keep the rest"}
     hooks:
-      - {phase: P3, must: "no settlement has a library; memorisers keep the records"}
+      - {phase: P3, must: "a settlement's records are kept by the ordained; a library is a temple's"}
       - {phase: P5, must: "at least one NPC is a memoriser"}
-      - {phase: P6, must: "no site's clue is a written page"}
+      - {phase: P6, must: "a written clue is an ordained hand's work and shows it"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_no_common_tongue
     label: "There is no common tongue"
     family: knowledge
@@ -349,6 +392,7 @@ rows:
     hooks:
       - {phase: P5, must: "every NPC carries the languages it speaks; at least one NPC is an interpreter"}
       - {phase: P8, must: "the primer says which tongue is spoken where"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_casting_forbidden
     label: "Casting is forbidden"
     family: knowledge
@@ -365,6 +409,7 @@ rows:
       - {phase: P4, must: "one faction hunts casters and another shelters them"}
       - {phase: P5, must: "caster NPCs hide what they are"}
       - {phase: P8, must: "the primer says what befalls a caught caster"}
+      - {phase: P8, must: "the player files and character creation state it"}
   # ── the general themes (build item 16b; owner-approved 2026-10-04; hooks by the coding tab) ──
   - id: break_dead_rise
     label: "The dead rise unless they are laid"
@@ -377,6 +422,7 @@ rows:
       - {phase: P5, must: "every settlement has someone who lays the dead"}
       - {phase: P6, must: "a site's unlaid dead rose where they fell; its ecology says so"}
       - {phase: P8, must: "the primer says what is done with a body, and how soon"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_chosen_are_many
     label: "The chosen are many"
     family: gods
@@ -397,6 +443,7 @@ rows:
       - {phase: P3, must: "the dream-land has places that answer to places of the waking map"}
       - {phase: P6, must: "one site can be entered only in sleep"}
       - {phase: play, must: "a long rest may open a scene in the dream-land"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_oath_curse
     label: "A broken oath curses the breaker"
     family: knowledge
@@ -408,6 +455,7 @@ rows:
       - {phase: P5, must: "one NPC lives under a broken oath's curse"}
       - {phase: P8, must: "the primer says how an oath is sworn and what its breaking brings"}
       - {phase: P9, must: "an oath a PC has sworn is recorded with what its breaking would bring"}
+      - {phase: P8, must: "the player files and character creation state it"}
   - id: break_magic_sold
     label: "Magic is bought and sold like bread"
     family: knowledge

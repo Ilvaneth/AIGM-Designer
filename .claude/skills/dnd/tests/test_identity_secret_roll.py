@@ -253,7 +253,7 @@ class RealBirth(unittest.TestCase):
         manifest = json.loads(public_text)
         log = json.loads((design / "dm-only" / "dice-log.json").read_text(encoding="utf-8"))
         ident = log["identity"]
-        self.assertEqual(set(ident), {"secret", "villain"})
+        self.assertEqual(set(ident), {"secret", "villain", "world_states"}, "build item 18b: a world state's join to the threat")
         self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "trail"})
         self.assertEqual(set(ident["villain"]), {"visibility", "shape", "origin", "tie", "pole", "public_figure", "majority_pole"})
         by_label = {r["label"]: r for r in log["rolls"] if r["phase"] == "P1"}

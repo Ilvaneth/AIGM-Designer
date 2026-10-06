@@ -10,7 +10,10 @@ design_arbiter against everything rolled before it), on the foundation step 1 bu
    drawn from the prohibition rows and tied to the break (the one exception to "the break's tie never stands with a
    break still coming"). Every other tie: a fit of the row's own on a rolled lifeline, contest or ruin source sets it
    (the largest weight, then that order); otherwise it is rolled. A row rolled beside one its `merges_with` names is
-   recorded as merged; `merge_role_hints` rewrites the contest's role hints for everything after;
+   recorded as merged; `merge_role_hints` rewrites the contest's role hints for everything after. A world state (a
+   row whose layer is story, build item 18b) is drawn only where one of its `joins` holds, records the join, and
+   is never tied to the lifeline; a join to the threat is a requirement the threat's roll honours (18c), kept in
+   dm-only;
 2. the people: home (the lifeline, or the "a new people" scar), the role (the main contest's seated people's role
    the break did not destroy), the lineage (forced by the role, or rolled with the role's weights and, under
    "lineage homes are inverted", the palette weights inverted), a visible and a behaving trait, the attitude;
@@ -76,6 +79,54 @@ def named(cond) -> list[str]:
     return out
 
 
+def is_world_state(row: dict) -> bool:
+    """A trope break that says who rules or what dominates the world (build item 18b): layer story, with joins."""
+    return dt.layer(BREAKS, row["id"]) == "story"
+
+
+def joins_of(row: dict, foundation: dict, scale: str, threat: dict | None = None) -> list[dict]:
+    """The joins of a world state that hold on what is rolled, in the row's order: each `{piece, how, ...}` with the
+    piece's id where one is rolled. A join to the threat holds as `pending` (the requirement) while no threat is
+    rolled; build item 18c's roll passes `threat` and honours it."""
+    contests = foundation["contests"]
+    prizes = foundation["layout"]["contests"]
+    kinds = set(foundation["palette"]) | set(foundation["palette_extra"])
+    ruin = fd.rows_by_id("ruin_source")[foundation["ruin_source"]]
+    main_row = fd.rows_by_id("contest")[contests[0]["id"]]
+    gone = destroyed_role(foundation)
+    out = []
+    for j in row.get("joins") or []:
+        if j.get("scales") and scale not in j["scales"]:
+            continue
+        base = {"piece": j["piece"], "how": j["how"]}
+        if j.get("always"):
+            out.append(dict(base, contest=contests[0]["id"]))
+        elif j.get("any_of"):
+            hit = next((c["id"] for c in contests if c["id"] in j["any_of"]), None)
+            if hit:
+                out.append(dict(base, contest=hit))
+        elif j.get("prize"):
+            hit = next((c["contest"] for c in prizes if c["prize"]["kind"] == j["prize"]), None)
+            if hit:
+                out.append(dict(base, contest=hit))
+        elif j.get("people_side"):
+            role = next((k for k in contests[0]["roles"] if (main_row["roles"].get(k) or {}).get("people_role") and k != gone), None)
+            if role:
+                out.append(dict(base, contest=contests[0]["id"], role=role))
+        elif j.get("palette"):
+            if j["palette"] in kinds:
+                out.append(dict(base, kind=j["palette"]))
+        elif j.get("ruin_family"):
+            families = j["ruin_family"] if isinstance(j["ruin_family"], list) else [j["ruin_family"]]
+            if ruin["family"] in families:
+                out.append(dict(base, ruin_source=ruin["id"]))
+        elif j.get("threat"):
+            if threat is None:
+                out.append(dict(base, pending=dict(j["threat"])))
+            # build item 18c judges a rolled threat against the requirement here
+    return out
+
+
 def destroyed_role(foundation: dict) -> str | None:
     """The main contest's role the break destroyed (the struck role under an action that destroys a role)."""
     brk = foundation["break"]
@@ -87,7 +138,8 @@ def destroyed_role(foundation: dict) -> str | None:
 
 def fit_tie(row: dict, R, pieces: dict) -> tuple[str, str] | None:
     """(tie id, reason) when one of the trope row's own weights holds on a rolled lifeline, contest or ruin source
-    row: the largest weight wins, then the order lifeline, contest, ruin source."""
+    row: the largest weight wins, then the order lifeline, contest, ruin source. A world state's tie is never the
+    lifeline (build item 18b: the tie of a world state fills a story slot)."""
     best = None
     for rule in row.get("weight_by") or []:
         x = float(rule.get("x", 1))
@@ -95,6 +147,8 @@ def fit_tie(row: dict, R, pieces: dict) -> tuple[str, str] | None:
             continue
         ids = set(named(rule.get("when")))
         for order, (piece, tie) in enumerate(TIE_OF_PIECE):
+            if piece == "lifeline" and is_world_state(row):
+                continue
             hit = sorted(ids & set(pieces[piece]))
             if hit and (best is None or (-x, order) < best[0]):
                 best = ((-x, order), tie, f"{row['id']} fits {hit[0]} (×{rule.get('x')})")
@@ -132,28 +186,49 @@ def roll(R, dials: dict, foundation: dict) -> dict:
     taboo = "scar_new_taboo" in scars
     hints = {c["id"]: {k: (contest_rows[c["id"]]["roles"].get(k) or {}).get("hint") for k in c["roles"]} for c in contests}
     breaks: list[dict] = []
+    secret_joins: list[dict] = []
+    joinable = lambda r: not is_world_state(r) or bool(joins_of(r, foundation, scale))
     for n in range(1, int(sc["trope_breaks"]) + 1):
         drawn = {b["id"] for b in breaks}
         if n == 1 and taboo:
-            rid = R.table(f"break.{n}", BREAKS, exclude=drawn, where=lambda r: bool(r.get("prohibition")),
+            rid = R.table(f"break.{n}", BREAKS, exclude=drawn, where=lambda r: bool(r.get("prohibition")) and joinable(r),
                           why="the new-prohibition scar draws a prohibition")["row_id"]
             R.forced(f"break_tie.{n}", TIES, "tie_break", "scar_new_taboo: the prohibition is the break's own", exempt={"time_coming"})
             tie, how = "tie_break", "scar"
         else:
-            rid = R.table(f"break.{n}", BREAKS, exclude=drawn)["row_id"]
+            rid = R.table(f"break.{n}", BREAKS, exclude=drawn, where=joinable, why="a world state joins a story piece")["row_id"]
             fit = fit_tie(break_rows[rid], R, pieces)
             if fit:
                 R.forced(f"break_tie.{n}", TIES, fit[0], fit[1])
                 tie, how = fit[0], "fit"
             else:
-                tie, how = R.table(f"break_tie.{n}", TIES, avoid=False)["row_id"], "rolled"
+                tie, how = R.table(f"break_tie.{n}", TIES, avoid=False,
+                                   slot="world_state_tie" if is_world_state(break_rows[rid]) else None)["row_id"], "rolled"
         row = break_rows[rid]
+        join = None
+        if is_world_state(row):
+            options = joins_of(row, foundation, scale)
+            concrete = [j for j in options if "pending" not in j]
+            join = (concrete or options)[0]           # a rolled piece first, in the row's order; else the threat's requirement
+            ties = {t["id"]: t for t in dt.rows(TIES)}
+            errs = arb.slot_errors([("world_state_tie", ties[tie]["piece"]), ("world_state_tie", join["piece"])])
+            if errs:
+                raise SystemExit(f"design_identity: {rid}: " + "; ".join(errs) + " — a table fault")
+            if join["piece"] in ("threat",) or "pending" in join:
+                # the threat is secret: the join lives in dm-only alone; the public record holds the world state and no
+                # join (the development tab, the 18b audit: a waiting join must not hint at the villain)
+                secret_joins.append({"break": rid, "join": join})
+                join = None
         merged = [{"with": other, "note": note} for other, note in (row.get("merges_with") or {}).items() if R.ctx.has(other)]
         for cid, change in (row.get("merge_role_hints") or {}).items():
             if cid in hints:
                 hints[cid].update({k: v for k, v in change.items() if k in hints[cid]})
-        breaks.append({"id": rid, "tie": tie, "tie_by": how, "merges": merged})
+        rec = {"id": rid, "tie": tie, "tie_by": how, "merges": merged}
+        if join is not None:
+            rec["join"] = join
+        breaks.append(rec)
     out["trope_breaks"] = breaks
+    out["world_state_secret"] = secret_joins          # preroll_p1 hands it to the dm-only identity
     out["role_hints"] = hints
     break_ids = {b["id"] for b in breaks}
 

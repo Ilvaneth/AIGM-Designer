@@ -341,6 +341,7 @@ def preroll_p1(R: Roller, m: dict) -> None:
     ident = di.roll(R, dials_of(m), R.foundation)
     R.identity = di.build(ident, [r["row_id"] for r in R.public if r.get("row_id")])
     R.identity_secret = di.roll_secret(R, dials_of(m), R.foundation, R.identity)     # every roll secret; dm-only alone
+    R.identity_secret["world_states"] = ident["world_state_secret"]     # a world state's join to the threat (18b)
     chance = int(sc["signature_mechanic_chance"])
     if chance <= 0:
         R.forced("mechanic", "dice", "no", "scale never rolls the signature mechanic")

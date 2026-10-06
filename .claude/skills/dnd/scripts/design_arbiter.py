@@ -81,6 +81,8 @@ SLOT_LAYERS = frozenset({"story", "stage"})
 PIECE_LAYERS = {
     "heart": "stage", "key_place": "stage", "thin_place": "stage", "disputed_land": "stage", "end": "stage",
     "remnant": "story", "role": "story", "seat": "story", "new": "story",
+    "contest": "story", "ruin_source": "story", "break": "story",
+    "threat": "story", "hand": "story", "villain": "story",
     "lifeline": "texture", "scar": "texture", "palette": "texture",
     "people": "texture", "institution": "texture", "phenomenon": "texture",
 }

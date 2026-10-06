@@ -32,7 +32,8 @@ tables:
     layer: texture
     roll:
       avoid_used: false                 # palettes are never excluded across campaigns
-      count_by_scale: {short: [4, 5], standard: [6, 8], epic: [9, 12]}
+      # build item 18b: the count follows the spine (docs/p1-build-18-rows.md section 7); the forced kinds count inside it
+      count_by_spine: {tight: {short: [2, 3], standard: [3, 4], epic: [4, 5]}, wide: {short: [3, 4], standard: [4, 6], epic: [6, 8]}}
       fantastic_cap_by_magic: {low: 0, medium: 1, high: 2}   # `cap_exempt` rows (the thin place) never count
       needs: [height, water]            # at least one of each
       forces_by_dial: {era: {underground: [land_underground], nautical: [land_coast]}}   # owner: never optional in those eras
@@ -113,6 +114,7 @@ tables:
     rows:
       # 1. single line
       - id: spine_river_to_sea
+        breadth: wide
         label: A river from source to sea
         family: line
         key_kind: crossing
@@ -121,6 +123,7 @@ tables:
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         text: {"name": "a river from source to sea", "heart": "the bridge-city on the middle course", "ends": ["the mountain peoples at the source", "the port in the delta"], "key_place": "the river's only passable ford", "travel": "down and up along the river, by barge and by road"}
       - id: spine_great_rift
+        breadth: wide
         label: A great rift
         family: line
         key_kind: descent
@@ -129,6 +132,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         text: {"name": "a giant rift", "heart": "the bridge that joins the two sides", "ends": ["the floor of the rift", "the highlands on the rims"], "key_place": "the bridge or the stair that goes down to the floor", "travel": "along the rims and the descent below"}
       - id: spine_mountain_passes
+        breadth: wide
         label: Passes along a range
         family: line
         key_kind: crossing
@@ -137,6 +141,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         text: {"name": "passes along a mountain range", "heart": "the fortress-city in the greatest pass", "ends": ["the rain-fed slope of the range", "its dry slope"], "key_place": "the main pass", "travel": "from pass to pass, depending on the season"}
       - id: spine_long_coast
+        breadth: wide
         label: A long coastline
         family: line
         key_kind: landmark
@@ -145,6 +150,7 @@ tables:
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         text: {"name": "a long coastline", "heart": "the great port", "ends": ["glacier fjords at one end", "warm bays at the other end"], "key_place": "the cape that splits the coast in two", "travel": "by ship along the coast; the mountains cut the land road"}
       - id: spine_barren_corridor
+        breadth: wide
         label: A barren corridor
         family: line
         key_kind: water
@@ -154,6 +160,7 @@ tables:
         text: {"name": "barren corridor", "heart": "the caravanserai-city in the middle of the corridor", "ends_both": "two civilisations at the two ends of the corridor", "key_place": "the only water source on the road", "travel": "from halt to halt, bound to water"}
       # 2. centred
       - id: spine_lake_basin
+        breadth: tight
         label: A mountain-ringed basin with a lake
         family: centred
         key_kind: gate
@@ -162,6 +169,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         text: {"name": "a basin ringed by mountains, a lake at its centre", "heart": "the island-city in the lake", "ends": ["the fertile basin", "the unknown beyond the mountains"], "key_place": "the only pass out of the basin", "travel": "inward, over the lake and by the shore roads"}
       - id: spine_lone_mountain
+        breadth: tight
         label: One giant mountain
         family: centred
         key_kind: descent
@@ -170,6 +178,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         text: {"name": "a single giant mountain", "heart": "the largest city on the slope", "ends": ["the summit", "the foot"], "key_place": "the road up to the summit or the mouth that goes down into the mountain", "travel": "up and down in rings"}
       - id: spine_star_crater
+        breadth: tight
         label: The crater of a fallen stone
         family: centred
         key_kind: descent
@@ -183,6 +192,7 @@ tables:
         hooks:
           - {phase: P3, must: "the crater is a landmark and the heart's node"}
       - id: spine_oasis_ring
+        breadth: tight
         label: An oasis and its ring
         family: centred
         key_kind: water
@@ -191,6 +201,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         text: {"name": "an oasis and the ring around it", "heart": "the oasis", "ends": ["the oasis", "the far side of the desert"], "key_place": "the oasis's water", "travel": "expeditions outward from the oasis; coming back is a must"}
       - id: spine_crossroads
+        breadth: wide
         label: Four roads meeting
         family: centred
         key_kind: crossroad
@@ -199,6 +210,7 @@ tables:
         text: {"name": "a crossroads of four roads", "heart": "the crossroads city", "ends_both": "four different climates and countries in the four directions", "key_place": "the crossroads itself", "travel": "outward from the centre, along four arms"}
       # 3. fragmented
       - id: spine_archipelago
+        breadth: wide
         label: An archipelago
         family: fragmented
         key_kind: crossing
@@ -207,6 +219,7 @@ tables:
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
         text: {"name": "an archipelago", "heart": "the largest island", "ends": ["the inner islands", "the far and wild outer islands"], "key_place": "the only safe strait that links the islands", "travel": "from island to island by ship, depending on the season"}
       - id: spine_valley_maze
+        breadth: tight
         label: A maze of valleys
         family: fragmented
         key_kind: network
@@ -215,6 +228,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         text: {"name": "a maze of valleys", "heart": "the widest valley", "ends_both": "valleys parted from one another by mountains, each the valley of a different people", "key_place": "the tunnels and passes that link the valleys", "travel": "through the passes; each valley is a world apart"}
       - id: spine_forest_clearings
+        breadth: tight
         label: Clearings in an endless forest
         family: fragmented
         key_kind: network
@@ -223,6 +237,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         text: {"name": "the clearings of an endless forest", "heart": "the largest clearing", "ends": ["the clearings", "the depths of the forest"], "key_place": "the trails that link the clearings", "travel": "from clearing to clearing, without roads"}
       - id: spine_mesa_land
+        breadth: tight
         label: A land of mesas
         family: fragmented
         key_kind: bridge
@@ -231,6 +246,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         text: {"name": "a land of mesas", "heart": "the city on top of the largest mesa", "ends": ["the inhabited mesa tops", "the wild canyons between"], "key_place": "the bridges and ropeways that link the mesas", "travel": "from mesa to mesa, descents into the canyons"}
       - id: spine_lake_chain
+        breadth: wide
         label: A chain of lakes
         family: fragmented
         key_kind: crossing
@@ -240,6 +256,7 @@ tables:
         text: {"name": "a chain of lakes", "heart": "the city on the strait that joins two lakes", "ends_both": "the lakes at the two ends of the chain", "key_place": "the strait between the lakes", "travel": "from lake to lake, by water"}
       # 4. layered
       - id: spine_three_depths
+        breadth: tight
         label: Surface, middle depth and the deep
         family: layered
         claims: {below_ground: lived_in}
@@ -249,6 +266,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         text: {"name": "the surface, the middle depth and the deep", "heart": "the city in the middle layer", "ends": ["the surface", "the deepest layer"], "key_place": "the great shaft or lift that links the layers", "travel": "down and up"}
       - id: spine_terraces
+        breadth: tight
         label: Terraces
         family: layered
         key_kind: descent
@@ -257,6 +275,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
         text: {"name": "terraces", "heart": "the city on the middle terrace", "ends": ["the highland at the very top", "the plain at the very bottom"], "key_place": "the stairs and waterfalls between the terraces", "travel": "step by step"}
       - id: spine_two_worlds
+        breadth: wide
         label: Two worlds, one over the other
         family: layered
         key_kind: network
@@ -268,6 +287,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
         text: {"name": "two worlds, one on top of the other", "heart": "the city where the two worlds overlap", "ends": ["our world", "the other plane"], "key_place": "the crossing points", "travel": "going back and forth between the two layers"}
       - id: spine_mountain_within
+        breadth: tight
         label: The mountain's inside and outside
         family: layered
         claims: {below_ground: lived_in}
@@ -277,6 +297,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
         text: {"name": "the inside and the outside of the mountain", "heart": "the city inside the mountain", "ends": ["the outside of the mountain", "the inside of the mountain"], "key_place": "the gates of the mountain", "travel": "in and out through the gates"}
       - id: spine_above_below_sea
+        breadth: tight
         label: Above and below the sea
         family: layered
         key_kind: network
@@ -286,6 +307,7 @@ tables:
         text: {"name": "above the sea and under the sea", "heart": "the coastal city or a reef", "ends": ["the coast people", "the undersea peoples"], "key_place": "the underwater caves", "travel": "diving and underwater ways"}
       # 5. frontier
       - id: spine_peninsula
+        breadth: wide
         label: A peninsula
         family: frontier
         key_kind: crossing
@@ -294,6 +316,7 @@ tables:
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [short]}}, x: 2}]
         text: {"name": "a peninsula", "heart": "the city near the neck", "ends": ["the tip of the peninsula", "the mainland"], "key_place": "the neck, the only land crossing", "travel": "within the peninsula; out by the neck or by sea"}
       - id: spine_strait_two_continents
+        breadth: wide
         label: A strait and two continents
         family: frontier
         key_kind: crossing
@@ -302,6 +325,7 @@ tables:
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [epic]}}, x: 2}]
         text: {"name": "a strait and two continents", "heart": "the twin city on the two shores", "ends_both": "the two continents", "key_place": "the strait", "travel": "crossing the strait, going along the two shores"}
       - id: spine_long_wall
+        breadth: wide
         label: A border along a long wall
         family: frontier
         key_kind: gate
@@ -309,6 +333,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         text: {"name": "a border along a long wall", "heart": "the main gate of the wall", "ends": ["inside the wall", "outside it"], "key_place": "the gates", "travel": "along the wall and out through the gates"}
       - id: spine_climate_belt
+        breadth: wide
         label: A climate belt
         family: frontier
         key_kind: crossing
@@ -317,6 +342,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
         text: {"name": "a climate belt", "heart": "the city in the middle of the belt", "ends": ["the frozen north", "the scorching south"], "key_place": "the place where the belt narrows", "travel": "east-west along the belt, expeditions to the edges"}
       - id: spine_edge_of_civilisation
+        breadth: wide
         label: The edge of civilisation
         family: frontier
         key_kind: gate
@@ -325,6 +351,7 @@ tables:
         text: {"name": "the edge of civilisation", "heart": "the last great city", "ends": ["the known lands", "the unmapped wild"], "key_place": "the border fortress or the last bridge", "travel": "from the border out into the wild"}
       # 6. fantastic
       - id: spine_titan_back
+        breadth: tight
         label: A titan's back
         family: fantastic
         key_kind: descent
@@ -333,6 +360,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
         text: {"name": "a titan's back", "heart": "the city on the back", "ends": ["the head", "the tail"], "key_place": "the way down into the creature", "travel": "along the back"}
       - id: spine_floating_archipelago
+        breadth: tight
         label: A floating archipelago
         family: fantastic
         key_kind: network
@@ -342,6 +370,7 @@ tables:
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
         text: {"name": "a floating archipelago", "heart": "the largest floating island", "ends": ["the high islands", "the islands close to the ground"], "key_place": "the chains and wind roads that link the islands", "travel": "flying ships and bridges"}
       - id: spine_void_ring
+        breadth: tight
         label: A ring around a bottomless void
         family: fantastic
         key_kind: bridge
@@ -350,6 +379,7 @@ tables:
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
         text: {"name": "a ring around a bottomless void", "heart": "the city that looks onto the void", "ends_both": "the two opposite sides of the ring", "key_place": "the only bridge over the void", "travel": "along the ring or by the bridge"}
       - id: spine_giant_tree
+        breadth: tight
         label: One giant tree, mountain-tall
         family: fantastic
         key_kind: landmark
@@ -361,6 +391,7 @@ tables:
         hooks:
           - {phase: validator, must: "the giant tree is no 'world tree'; nothing in it refers to a real-world mythology (errata #19)"}
       - id: spine_world_edge
+        breadth: wide
         label: The edge of the world
         family: fantastic
         key_kind: descent

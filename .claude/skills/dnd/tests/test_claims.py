@@ -312,7 +312,9 @@ class Overrides(unittest.TestCase):
         if ra != rb:
             return True
         head = dt.roll_header(ra)
-        many = max(dt.band(v)[1] for v in (head.get("count_by_scale") or {"x": 1}).values()) > 1
+        counts = list((head.get("count_by_scale") or {}).values())
+        counts += [v for by in (head.get("count_by_spine") or {}).values() for v in by.values()]     # the palette (18b)
+        many = max((dt.band(v)[1] for v in counts), default=1) > 1
         if not many:
             return False
         return not (head.get("families_distinct") and a_row.get("family") == b_row.get("family"))

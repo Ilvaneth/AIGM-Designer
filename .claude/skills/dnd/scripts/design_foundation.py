@@ -7,7 +7,7 @@ docs/p1-foundation-rows.md §1-6 and §18; the owner's rulings on items 3-5 of t
 
 1. the spine (`foundation.yaml#spine`);
 2. the palette: the spine's `forces`, one of its `forces_one_of`, the era's forced kinds, then a height and a water if
-   none came, then the rest up to the scale's count; fantastic kinds up to the magic dial's cap (a `cap_exempt` kind
+   none came, then the rest up to the count the spine's breadth and the scale give (build item 18b); fantastic kinds up to the magic dial's cap (a `cap_exempt` kind
    never counts); an `implies` kind comes along;
 3. the ruin source: its `adds_palette` kind comes on top of the count (+1), skips the kind's own magic requirement and
    is the only exempt one;
@@ -113,7 +113,13 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
     for dial, by_value in (pal_head.get("forces_by_dial") or {}).items():
         for kind in (by_value or {}).get(dials.get(dial), []):
             add_forced(kind, f"forced by the {dial} dial ({dials.get(dial)})")
-    count = R.count("foundation.palette_count", pal_head["count_by_scale"][scale])
+    # build item 18b: the count follows the spine's breadth (a tight spine one dominant feature, a wide one a journey)
+    count = R.count("foundation.palette_count", pal_head["count_by_spine"][spine["breadth"]][scale])
+    # the ends lie on different kinds (build item 6b): the count never falls under the spine's ends (the crossroads'
+    # four at short, inside its band)
+    ends = sum(1 for p in spine["parts"] if p.startswith("end_"))
+    if count < ends:
+        R.by_label["foundation.palette_count"]["value"] = count = ends
 
     def capped_now() -> int:
         return sum(1 for k in palette if is_capped(palette_rows[k]))
@@ -130,6 +136,8 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
         draw_kind(lambda r: bool(r.get("height")), "a height")
     if not any(palette_rows[k].get("water") and not palette_rows[k].get("fantastic") for k in palette):
         draw_kind(lambda r: bool(r.get("water")) and not r.get("fantastic"), "a water")
+    # what the forced kinds and the needs gave before the fill: above the count, they stand and nothing is drawn
+    R.by_label["foundation.palette_count"]["before_fill"] = len(palette)
     while len(palette) < count:
         draw_kind(lambda r: True, "the palette")
 
