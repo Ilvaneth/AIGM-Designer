@@ -166,6 +166,7 @@ def roll(R, dials: dict, spine: dict, palette, ruin_id: str, contests: list[dict
         piece = options[0] if len(options) == 1 else options[int(R.notation("threat.goal.piece", f"d{len(options)}", secret=True)["raw"]) - 1]
         join = "move"
     goal = {"id": goal_id, "piece": piece, "join": join, "contest": contests[0]["id"]}
+    R.add_tokens("threat.goal.tokens", [f"goal_piece:{piece}"], "the goal's piece", secret=True)   # a twist may require it (18e)
 
     # 6. the weakness; 7. the lair
     weakness = R.table("threat.weakness", V + "weakness", secret=True, where=lambda r: weakness_fits(r, family),

@@ -50,7 +50,8 @@ SCRIPT_SOURCES = ("hook", "override", "foundation", "concretise", "clue_stage", 
 # registry fields that hold no prose: ids, closed values, paths
 NO_PROSE_KEYS = {"id", "type", "file", "secrecy", "origin", "created_phase", "lang", "row", "tie", "home", "slot", "name", "aliases",
                  "status", "owner_phase", "reserved_by", "refs", "stamped", "rolled", "tensions", "signatures", "trope_breaks",
-                 "kind", "phase", "dm_only", "secret_class", "secret_class_tr", "naming_languages"}
+                 "kind", "phase", "dm_only", "secret_class", "secret_class_tr", "naming_languages",
+                 "hook"}     # build item 18e: an `appears` note's hook is a table's own sentence, checked word for word
 WORD = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z'’]*(?![0-9_])")
 OPENERS = ".!?:;|—–#>"
 
@@ -58,7 +59,7 @@ OPENERS = ".!?:;|—–#>"
 # build item 18a, the one-way rule at the door: a writer's structured field that fills a story slot names a story or
 # a stage piece, never texture. (entity type, dotted field path) → the slot it fills; build item 18e names the fields
 # (the clues' places, the god pin's piece). A list is judged item by item; an absent or empty field is not judged.
-STORY_FIELDS: dict = {}
+STORY_FIELDS: dict = {("premise", "dm_only.clues.piece"): "clue_place", ("premise", "dm_only.pinned.piece"): "secret_pin"}   # 18e
 
 
 def _field_values(node, path: str) -> list:
@@ -343,10 +344,11 @@ class Door:
             return {"lineage": ident["lineage"], "visible": ident["traits"]["visible"], "behaving": ident["traits"]["behaving"], "attitude": ident["attitude"]}
         return {k: ident[k] for k in ROLLED[slot]}
 
-    def floors_of(self, slot: str) -> list[str]:
-        """The later floors a signature's tables promised: the phases of its rolled rows' hooks."""
+    def hooks_by_floor(self, slot: str) -> dict:
+        """The later floors a signature's tables promised, each with the hooks that promise it (W4, build item 18e: an
+        `appears` note restates one of them)."""
         import design_promises as dp
-        phases = set()
+        out: dict = {}
         rolled = self.rolled_of(slot)
         for sub in SIGNATURE_TABLES[slot]:
             ref = f"signatures.yaml#{sub}"
@@ -354,8 +356,12 @@ class Door:
                 row = dt.row(ref, rid)
                 for h in dp.hooks_of(ref, row) if row else []:
                     if h["phase"] in dm.PHASES and dm.PHASES.index(h["phase"]) > 1:
-                        phases.add(h["phase"])
-        return sorted(phases)
+                        out.setdefault(h["phase"], set()).add(str(h["must"]))
+        return out
+
+    def floors_of(self, slot: str) -> list[str]:
+        """The later floors a signature's tables promised: the phases of its rolled rows' hooks."""
+        return sorted(self.hooks_by_floor(slot))
 
     def signature_errors(self, eid: str, row: dict) -> list[str]:
         slot = row.get("slot")
@@ -371,11 +377,18 @@ class Door:
         bad = [n for n in notes or [] if not (isinstance(n, dict) and n.get("phase") in dm.PHASES and dm.PHASES.index(n["phase"]) > 1
                                                 and isinstance(n.get("text"), str) and n["text"].strip())]
         if not isinstance(notes, list) or bad:
-            errs.append(f"{eid}: `appears` is a list of {{phase, text}} notes, each naming a phase after P1 and saying where the signature shows there")
+            errs.append(f"{eid}: `appears` is a list of {{phase, hook, text}} notes, each naming a phase after P1 and saying where the signature shows there")
         else:
-            missing = [p for p in self.floors_of(slot) if p not in {n["phase"] for n in notes}]
+            hooks = self.hooks_by_floor(slot)
+            missing = [p for p in sorted(hooks) if p not in {n["phase"] for n in notes}]
             if missing:
                 errs.append(f"{eid}: no `appears` note for {', '.join(missing)}; the signature's tables promised those floors, one note each")
+            for n in notes:          # W4 (build item 18e): the note restates its table's hook; the promise binds the hook
+                if n["phase"] in hooks and n.get("hook") not in hooks[n["phase"]]:
+                    errs.append(f"{eid}: the `appears` note for {n['phase']} names no hook its tables gave that floor (`hook` restates one, word for word)")
+        dm_only = row.get("dm_only") or {}
+        if dm_only.get("true_rule") and dm_only.get("serves_clue") not in (1, 2, 3):
+            errs.append(f"{eid}: a signature's hidden truth exists only as the medium of a stage's clue: `dm_only.serves_clue` names the stage (1, 2 or 3)")
         return errs
 
     def break_errors(self, eid: str, row: dict) -> list[str]:
@@ -403,7 +416,9 @@ class Door:
         # 11: the spoiler-safe abstract is the archetype's class and nothing else
         arch = dt.row("secrets.yaml#archetype", (self.secret_identity.get("secret") or {}).get("archetype") or "")
         if arch and row.get("secret_class") != arch.get("hides_in"):
-            errs.append(f"{eid}: `secret_class` is the secret archetype's class as its row gives it (`hides_in`) and nothing else")
+            errs.append(f"{eid}: `secret_class` is the twist's class as its row gives it (`hides_in`) and nothing else")
+        elif not arch and (self.secret_identity.get("secret") or {}).get("facts") and row.get("secret_class") != "threat":
+            errs.append(f"{eid}: `secret_class` is `threat` when no twist was rolled (build item 18e)")
         return errs
 
     # 9 (prose), 11, 12

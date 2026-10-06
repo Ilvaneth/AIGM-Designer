@@ -353,6 +353,9 @@ def preroll_p1(R: Roller, m: dict) -> None:
     else:
         hit = R.notation("mechanic_gate", "d100")["raw"] <= chance
         R.forced("mechanic", "dice", "yes" if hit else "no", f"d100 against {chance}")
+    # W6 (build item 18e): the mechanic's shape is rolled; the writer fills its numbers inside the shape's bands
+    if R.by_label["mechanic"]["row_id"] == "yes":
+        R.identity["mechanic"] = {"shape": R.table("mechanic.shape", "signatures.yaml#mechanic_shape")["row_id"]}
     R.naming = dn.roll(R, dials_of(m), R.foundation, R.identity)
 
 

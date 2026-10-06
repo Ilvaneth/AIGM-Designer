@@ -55,13 +55,14 @@ class Prompt(unittest.TestCase):
         t = self.text
         for needle in ("design/design.json#foundation", "design/design.json#identity", "`overrides`", "recorded merges",
                        "`design/naming.json`", "`candidates`", "**Names (rolled, never invented).**", "**Promises due at this phase.**",
-                       "the archetype row's `cause` field", "the chooser as the person who chose it", "design/dm-only/dice-log.json",
-                       "`dm_only.pinned: {god, event}`", "`slot`", "`home` and `rolled`", "`appears`", "`row` and `tie`", "`secret_class`"):
+                       "design/dm-only/dice-log.json", "under `threat`", "the four `facts`", "`spine_sentence`",   # build item 18e: the chain
+                       "`pinned` (`{god, relation, event}` when a god is pinned, else `{piece, event}`", "`slot`", "`home` and `rolled`",
+                       "`appears`", "`row` and `tie`", "`secret_class`"):
             self.assertIn(needle, t, needle)
         m = json.loads((self.dir / "design/design.json").read_text(encoding="utf-8"))
         for p in m["promises"]:
             self.assertEqual(f"`{p['id']}`" in t, p["due"] == "P1", "the promises due at P1 and no other")
-        self.assertIn(f"design_promises.py -c {self.name} list --phase P6 --secret", t, "the clue stages come from the secret ledger")
+        self.assertIn("`stages`", t, "build item 18e: the clue stages come from the chain's secret record")
         self.assertIn("No people is evil by birth", t)
         self.assertNotIn("{{", t)
 
@@ -100,7 +101,7 @@ class Prompt(unittest.TestCase):
                              f"the prompt file names a secret row ({word})")
 
     def test_the_template_follows_the_sections(self):
-        for head in ("### The question", "### The three signatures", "### The trope break(s)", "### What it was", "### The languages",
+        for head in ("### The question", "### The three signatures", "### The trope break(s)", "### The languages",   # 18e: "What it was" gone (W5)
                      "### The player pitch", "### Only here", "### The secret", "### The three clues, by stage", "### The villain", "### DM pitch", "### Signature mechanic"):
             self.assertIn(head, TEMPLATE, head)
         self.assertIn("stamped: [question, signatures, trope_breaks]", TEMPLATE)

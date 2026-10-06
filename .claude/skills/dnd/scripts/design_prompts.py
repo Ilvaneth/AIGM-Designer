@@ -250,9 +250,11 @@ def promises_text(campaign: str, name: str, role: str, phase: str, detail: bool)
 PHASE_READS = ("Cross-entity rubrics cannot be answered per entity: you read the phase's skeleton (`design/_staging/{phase}/skeleton.json` "
                "and the phase's fragments), the premise, and each entity's one-line identity / telegraph / voice lines from the registry "
                "export (`registry.py export --public`), not the full files, unless a rubric below says entity or dm-only.")
-P1_ROLLS = ("what was rolled, so that you judge what the writer made of it and never the rolls: `design/design.json#foundation` and "
-            "`#identity`, and the signature candidates in `design/naming.json`; when a rubric's scope is dm-only, the secret identity "
-            "record too (`design/dm-only/dice-log.json`, under `identity`), which never leaves dm-only")
+P1_ROLLS = ("what was rolled, so that you judge what the writer made of it and never the rolls: `design/design.json#foundation` "
+            "(with the move, `move`, and the story's `spine_sentence`) and `#identity`, and the signature candidates in "
+            "`design/naming.json`; when a rubric's scope is dm-only, the threat and the secret too (`design/dm-only/dice-log.json`, "
+            "under `threat` and `identity`: the four facts, the stages, the twist, the keeping, the pin), which never leave dm-only. "
+            "Read every dm-only file with the Read tool, never with Bash")
 
 
 def scripted_p1(manifest: dict, phase: str) -> bool:

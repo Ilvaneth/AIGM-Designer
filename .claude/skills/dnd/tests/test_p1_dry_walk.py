@@ -76,8 +76,10 @@ class Walker:
         naming, pool = self.json("design/naming.json"), self.json("design/dm-only/name-pool.json")
         secret_ledger = self.json("design/dm-only/promises.json")["promises"]
         the_door = door.Door(self.name, {"entities": {}}, [])
-        twist = self.json("design/dm-only/dice-log.json")["identity"]["secret"]["twist"]         # build item 18d: optional
+        secret = self.json("design/dm-only/dice-log.json")["identity"]["secret"]
+        twist = secret["twist"]                                                                   # build item 18d: optional
         arch = dt.row("secrets.yaml#twist", twist) if twist else {"id": None, "hides_in": "threat"}
+        self.pin = pin = secret["pin"]                                                            # build item 18e (W1)
         base = lambda eid, etype, name, **extra: dict({
             "id": eid, "type": etype, "name": name, "aliases": [], "summary": "what a native would say of it, in one line.",
             "file": "design/premise.md", "secrecy": "public", "created_phase": "P1", "origin": "birth", "stamped": {}, "refs": []}, **extra)
@@ -88,7 +90,8 @@ class Walker:
             eid = "signature_" + re.sub(r"[^a-z0-9]+", "_", door.bare(picked[slot]).lower()).strip("_")
             rows[eid] = base(eid, "signature", picked[slot], kind="institution" if slot == "institution" else "magic", stamped={"kind": slot},
                              slot=slot, home=the_door.home_id(slot), rolled=the_door.rolled_of(slot), rule="how a native knows it, in a line.",
-                             appears=[{"phase": p, "text": f"at this floor the {slot} shows in what the natives do every day"} for p in the_door.floors_of(slot)])
+                             appears=[{"phase": p, "hook": sorted(hooks)[0], "text": f"at this floor the {slot} shows in what the natives do every day"}
+                                      for p, hooks in sorted(the_door.hooks_by_floor(slot).items())])
         for b in ident["trope_breaks"]:
             eid = "break_" + b["id"][len("break_"):]
             rows[eid] = base(eid, "break", dt.row("trope-breaks.yaml", b["id"])["label"], row=b["id"], tie=b["tie"], stamped={"row": b["id"]})
@@ -100,10 +103,11 @@ class Walker:
             tensions=[q["id"] for q in ident["questions"]], signatures=sig_ids, trope_breaks=[e for e in rows if e.startswith("break_")],
             secret_class=arch["hides_in"], stamped={"question": "who keeps what the old keepers left?"},
             refs=sig_ids,
-            dm_only={"secret_archetype": arch["id"], "secret": "the truth of the break, told once and only here.", "villain_answer": "the pole carried to its end.",
-                     "dm_pitch": "what the keeper of the table steers toward.", "stamped_fields": ["secret_archetype"],
-                     "pinned": {"god": god, "event": "the night the old road closed"},
-                     "clues": [{"n": p["clue"], "levels": p["levels"], "kind": "a thing seen", "place_kind": "a ruin", "how": "a search", "placed_in": None} for p in stages]})
+            dm_only={"secret_twist": arch["id"], "secret": "the truth of the move, told once and only here.", "villain_answer": "the pole carried to its end.",
+                     "dm_pitch": "what the keeper of the table steers toward.", "stamped_fields": ["secret_twist"],
+                     "pinned": ({"god": god, "relation": pin["relation"], "event": "the move"} if pin["god"] else {"piece": pin["piece"], "event": "the move"}),
+                     "clues": [{"n": p["clue"], "levels": p["levels"], "kind": "a thing seen", "piece": secret["stages"][p["clue"] - 1]["clues"][0]["piece"],
+                                "how": "a search", "placed_in": None} for p in stages]})
         if change:
             change(rows, picked)
         self.rows, self.picked = rows, picked
@@ -115,7 +119,8 @@ class Walker:
                   f"- **The institution:** nobody argues with {picked['institution']} twice.\n- **The phenomenon:** when {picked['phenomenon']} comes, the natives stay indoors.\n\n"
                   f"### The player pitch\nOne thing is asked. Three things are only here. One rule is turned over.\n{public_extra}\n## Discoverable\n\n- a native could learn why the road is kept.\n")
         mirror = (f"---\nentity: {self.premise_id}\ntype: premise\nsecrecy: secret\nphase: P1\nmirror_of: design/premise.md\n---\n\n## Secret\n\n### The secret\n"
-                  f"The truth of the break is written in this file and in no other file of this birth; {god} is the god it is pinned to.\n{mirror_extra}")
+                  f"The truth of the move is written in this file and in no other file of this birth"
+                  + (f"; {god} is the god it is pinned to.\n" if pin["god"] else ".\n") + mirror_extra)
         (self.dir / "design/dm-only").mkdir(parents=True, exist_ok=True)
         (self.dir / "design/premise.md").write_text(public, encoding="utf-8", newline="\n")
         (self.dir / "design/dm-only/premise-secret.md").write_text(mirror, encoding="utf-8", newline="\n")
@@ -223,11 +228,15 @@ class Walk(Base):
         report = w.json("design/_staging/P1/merge.report.json")
         self.assertFalse(report.get("refused"))
         m = dm.load(w.name)
-        notes = [p for p in m["promises"] if p["source"] == "note"]
-        self.assertEqual(len(notes), sum(len(r["appears"]) for r in w.rows.values() if r["type"] == "signature"))
+        # W4 (build item 18e): a note restates its table's hook, so it joins that hook's promise as a further source and
+        # brings its text as advice; every note is in the ledger
+        notes = [p for p in m["promises"] if p["source"] == "note" or any(a["source"] == "note" for a in p.get("also") or [])]
+        written = [n for r in w.rows.values() if r["type"] == "signature" for n in r["appears"]]
+        self.assertEqual({(n["phase"], n["hook"]) for n in written}, {(p["due"], p["text"]) for p in notes})
+        self.assertTrue(all(n["text"] in next(p for p in notes if p["text"] == n["hook"] and p["due"] == n["phase"])["advice"] for n in written))
         secret = dp.load_secret(w.name)
         placed = [p for p in secret if p["source"] == "placement"]
-        self.assertEqual(sorted(str(p.get("kind")) for p in placed), ["clue", "clue", "clue", "event", "god"])
+        self.assertEqual(sorted(str(p.get("kind")) for p in placed), ["clue", "clue", "clue", "event"] + (["god"] if w.pin["god"] else []))
         self.assertEqual(door.seal_errors(w.name, m), [], "the merge left the preroll's records as they were")
         self.assertEqual(m["entities"][w.premise_id]["status"], "merged")
         # 6. check: the script rules run; every script promise due by P1 is kept

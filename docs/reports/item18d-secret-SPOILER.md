@@ -156,3 +156,18 @@
   - new cause: the villain is a pawn: a greater power behind it means to take what the goal wins, and the villain believes it is the master
   - old statement: (none)
   - new statement: Behind the villain stands a greater power ({a fiend lord, a god, an elder mind, an old empire's ghost}) that means to take what the goal wins; the villain believes it is the master.
+
+## 18e: the god relation (W1), rolled when the secret is pinned to a god
+
+- `godrel_deceived` — Deceived: the god was deceived: it believes it blesses something else (P2: the god's church can be shown the deceit)
+- `godrel_impersonated` — Impersonated: the god is impersonated: another speaks in its voice (P2: the god's true voice can be told from the false one)
+- `godrel_complicit` — Complicit: the god is complicit: it wants what the villain wants (P2: the god's ends stand in the history, read rightly)
+- `godrel_silent` — Silent: the god is silent: it knows and does nothing (P2: the god's silence has a reason the party can learn)
+- `godrel_opposed` — Opposed: the god is opposed: it works against the villain, and cannot act directly (P2: the god's church can be an ally of the party)
+
+## 18e: the twists that name a piece now require it
+
+- `secret_history_looping`: requires {'any_of': ['ruin_road_kingdom', 'ruin_water_kingdom', 'ruin_sorcerer_kings', 'ruin_city_states', 'ruin_steppe_union', 'ruin_kingdom_of_the_dead', 'ruin_empire', 'ruin_mage_war', 'ruin_giants_and_dragons', 'ruin_besieged_land', 'ruin_kin_war', 'ruin_celestial_war', 'ruin_dark_lords_fall', 'ruin_fallen_order']}
+- `secret_artifact_is_seal`: requires {'any_of': ['prize:new', 'prize:remnant']}
+- `secret_artifact_is_alive`: requires {'any_of': ['goal_piece:remnant', 'goal_piece:new']}
+- `secret_monsters_were_made`: requires {'any_of': ['hand_family:monstrosity', 'hand_family:undead', 'hand_family:lycanthrope', 'hand_family:plant', 'hand_family:aberration', 'hand_family:construct']}

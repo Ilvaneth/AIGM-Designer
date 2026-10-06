@@ -1,0 +1,187 @@
+"""
+test_p1_story.py — build item 18e (docs/p1-build-18.md, Part 18e): the spine sentence in every birth and first on the
+card; the writer's prompt on the chain's records with none of the removed decisions; the door refuses a texture piece
+in a clue's place or the pin, and a hidden truth that serves no clue; the rubrics' texts; the card's secret line, its
+D&D line and the gate `dnd_incomplete`; the god pin and the mechanic's shape rolled; the twists that name a piece
+require it. Failure messages give counts and positions only.
+"""
+
+import itertools
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import unittest
+import uuid
+
+from _campaign import CAMPAIGNS, SCRIPTS, USED, MarkerGuard
+
+sys.path.insert(0, str(SCRIPTS))
+import design_approval as da  # noqa: E402
+import design_arbiter as arb  # noqa: E402
+import design_door as door  # noqa: E402
+import design_manifest as dm  # noqa: E402
+import design_prompts as dpm  # noqa: E402
+import design_tables as dt  # noqa: E402
+import designer  # noqa: E402
+
+PROMPT = (SCRIPTS.parent / "prompts" / "design" / "P1.premise.md").read_text(encoding="utf-8")
+SPAN = {"short": 4, "standard": 11, "epic": 19}
+
+
+class Tables(unittest.TestCase):
+
+    def test_the_rubrics(self):
+        by = {r["id"]: r for r in dt.rows("rubrics.yaml#phase_rubric")}
+        self.assertIn("four facts", by["rubric_p1_secret_trail"]["question"])
+        self.assertIn("any one of its three clues", by["rubric_p1_secret_trail"]["question"])
+        self.assertIn("prize", by["rubric_p1_question_concrete"]["question"])
+        self.assertIn("goal", by["rubric_p1_question_concrete"]["question"])
+        self.assertEqual(by["rubric_p1_legible"]["question"],
+                         "Does the player pitch show a threat with a face and something the party can do in the first session?")
+        self.assertFalse([r for r in by.values() if r["phase"] == "P1" and re.search(r"\bthe break\b|\bchooser\b", r["question"])])
+
+    def test_the_small_tables(self):
+        self.assertEqual({r["label"] for r in dt.rows("secrets.yaml#god_relation")},
+                         {"Deceived", "Impersonated", "Complicit", "Silent", "Opposed"})
+        self.assertTrue(dt.roll_header("secrets.yaml#god_relation").get("secret"))
+        shapes = dt.rows("signatures.yaml#mechanic_shape")
+        self.assertEqual(len(shapes), 6)
+        self.assertTrue(all(r.get("bands") for r in shapes))
+        self.assertIn("never originates the main thread", json.dumps(dt.load("signatures.yaml"), ensure_ascii=False))
+
+    def test_the_twists_that_name_a_piece_require_it(self):
+        by = {r["id"]: r for r in dt.rows("secrets.yaml#twist")}
+        self.assertEqual(by["secret_artifact_is_seal"]["requires"], {"any_of": ["prize:new", "prize:remnant"]})
+        self.assertEqual(by["secret_artifact_is_alive"]["requires"], {"any_of": ["goal_piece:remnant", "goal_piece:new"]})
+        self.assertTrue(by["secret_history_looping"]["requires"]["any_of"])
+        self.assertTrue(all(t.startswith("hand_family:") for t in by["secret_monsters_were_made"]["requires"]["any_of"]))
+
+    def test_the_door_s_story_fields(self):
+        self.assertEqual(set(door.STORY_FIELDS.values()), {"clue_place", "secret_pin"})
+        self.assertIn("secret_pin", arb.STORY_SLOTS)
+        row = {"type": "premise", "dm_only": {"clues": [{"piece": "remnant"}, {"piece": "lifeline"}], "pinned": {"piece": "scar_new_people"}}}
+        self.assertEqual(len(door.story_field_errors("premise_x", row)), 2)
+
+
+def births(n, tag):
+    combos = list(itertools.product(dt.dial_values("scale"), dt.dial_values("magic"), dt.dial_values("era"), dt.dial_values("tone")))
+    mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
+    out = []
+    for i in range(n):
+        sc, mg, era, tone = combos[i % len(combos)]
+        d = {"scale": sc, "magic": mg, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]), "party_size": 2,
+             "level_band": [1, 1 + SPAN[sc]]}
+        R = designer.Roller.in_memory(f"{tag}-{i}", d)
+        designer.preroll_p1(R, {"dials": d})
+        out.append((d, R))
+    return out
+
+
+class ManySeeds(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.runs = births(1500, "STORY18E")
+
+    def test_the_spine_sentence(self):
+        for d, R in self.runs:
+            s = R.foundation["spine_sentence"]
+            self.assertTrue(s and s[0].isupper() and s.endswith("."))
+            self.assertIn("; now ", s)
+            self.assertIn(dt.row("antagonists.yaml#hand", R.foundation["move"]["hand"])["text"]["name"], s)
+            self.assertNotIn("lifeline", s)
+
+    def test_the_pin_and_the_mechanic(self):
+        gods = 0
+        for d, R in self.runs:
+            pin = R.identity_secret["secret"]["pin"]
+            needs = (R.threat["family"] == "family_god" or R.threat["goal"]["id"] == "goal_patron_will"
+                     or R.identity_secret["secret"]["twist"] == "twist_greater_power")
+            self.assertEqual(pin["god"], needs)
+            self.assertEqual(pin["event"], "the move")
+            if needs:
+                gods += 1
+                self.assertIsNotNone(dt.row("secrets.yaml#god_relation", pin["relation"]))
+            else:
+                self.assertIn(pin["piece"], ("thin_place", "remnant"))
+                self.assertTrue(arb.slot_accepts("secret_pin", pin["piece"]))
+            self.assertEqual("mechanic" in R.identity, R.by_label["mechanic"]["row_id"] == "yes")
+        self.assertGreater(gods, 0)
+
+    def test_a_twist_s_piece_is_there(self):
+        for d, R in self.runs:
+            t = R.identity_secret["secret"]["twist"]
+            main = R.foundation["layout"]["contests"][0]["prize"]["kind"]
+            if t == "secret_artifact_is_seal":
+                self.assertIn(main, ("new", "remnant"))
+            if t == "secret_artifact_is_alive":
+                self.assertIn(R.threat["goal"]["piece"], ("remnant", "new"))
+
+    def test_the_twists_floor(self):
+        smallest = min(R.pools["secrets.yaml#twist"] for d, R in self.runs if "secrets.yaml#twist" in R.pools)
+        self.assertGreaterEqual(smallest, 5)
+        type(self).twist_floor = smallest
+
+
+def run(script, *args, check=True):
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("DND_", "CLAUDE_"))}
+    proc = subprocess.run([sys.executable, "-X", "utf8", str(SCRIPTS / script), *args], capture_output=True, text=True, env=env, encoding="utf-8")
+    if check and proc.returncode != 0:
+        raise AssertionError(f"{script} {' '.join(args)} failed ({proc.returncode})")
+    return proc
+
+
+class Birth(unittest.TestCase):
+
+    def setUp(self):
+        self.guard = MarkerGuard().__enter__()
+        self.used_backup = USED.read_bytes() if USED.is_file() else None
+        self.name = f"_test-story18e-{os.getpid()}-{uuid.uuid4().hex[:6]}"
+        run("designer.py", "new", self.name, "--party-size", "2", "--seed", "STORY-18E", "--lang", "tr", "--scale", "standard")
+        run("designer.py", "-c", self.name, "preroll", "--phase", "P1")
+        run("designer.py", "-c", self.name, "phase", "P1", "begin", "--json")
+
+    def tearDown(self):
+        shutil.rmtree(CAMPAIGNS / self.name, ignore_errors=True)
+        if self.used_backup is not None:
+            USED.write_bytes(self.used_backup)
+        elif USED.is_file():
+            USED.unlink()
+        self.guard.__exit__(None, None, None)
+
+    def test_the_card(self):
+        run("designer.py", "-c", self.name, "phase", "P1", "card")
+        card = (CAMPAIGNS / self.name / "design/_approval/P1.card.md").read_text(encoding="utf-8")
+        m = dm.load(self.name)
+        self.assertLess(card.index("## THE STORY"), card.index("## THE FOUNDATION"), "the spine sentence first")
+        self.assertIn(m["foundation"]["spine_sentence"], card)
+        self.assertRegex(card, r"the threat: rolled, hidden · hidden facts: [34] of 4 · twist: (yes|no) · stages: 3 × 3 clues")
+        self.assertIn("D&D: ✓ villain · ✓ hand · ✓ goal · ✓ weakness · ✓ lair · ✓ start · ✓ families · ✓ stages 3×3 · ✓ breaks bend", card)
+        self.assertNotIn("dnd_incomplete", {i["code"] for i in da.gate(self.name, "P1")})
+
+    def test_a_missing_piece_closes_the_gate(self):
+        path = CAMPAIGNS / self.name / "design/dm-only/dice-log.json"
+        log = json.loads(path.read_text(encoding="utf-8"))
+        log["threat"]["lair"] = {"form": None, "where": None}
+        path.write_text(json.dumps(log), encoding="utf-8")
+        item = next(i for i in da.gate(self.name, "P1") if i["code"] == "dnd_incomplete")
+        self.assertIn("lair", item["detail"])
+        self.assertEqual(item["ids"], [])
+
+    def test_the_prompt(self):
+        begin = run("designer.py", "-c", self.name, "phase", "P1", "begin", "--json")
+        text = dpm.render(self.name, "P1.premise")
+        for needle in ("spine_sentence", "under `threat`", "the four `facts`", "`stages`", "`pin`", "`identity.mechanic.shape`",
+                       "{phase, hook, text}", "`dm_only.serves_clue`", "with the Read tool and never with Bash",
+                       "You decide nothing the rolls decide"):
+            self.assertIn(needle, text, needle)
+        for gone in ("concretise", "the chooser as the person", "archetype row's `cause`", "fell from the sky", "the break's true cause"):
+            self.assertNotIn(gone, text, gone)
+        self.assertIn("Read every dm-only file with the Read tool, never with Bash", dpm.P1_ROLLS)
+
+
+if __name__ == "__main__":
+    unittest.main()

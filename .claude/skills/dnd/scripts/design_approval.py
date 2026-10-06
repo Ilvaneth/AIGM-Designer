@@ -256,7 +256,26 @@ def map_lines(campaign: str) -> list[str]:
 
 GATE_LABELS = {"render": "the player files could not be rendered", "incomplete": "roster incomplete", "band": "outside the band", "critic_missing": "a critic did not run",
                "validator": "validator error", "seed": "seed error", "orphan_stub": "orphan stub",
-               "promise": "a due promise a script checks is not kept", "promise_unjudged": "a due promise has no verdict"}
+               "promise": "a due promise a script checks is not kept", "promise_unjudged": "a due promise has no verdict",
+               "dnd_incomplete": "a D&D campaign's piece is missing"}
+
+
+def dnd_ticks(campaign: str, m: dict) -> list[tuple[str, bool]]:
+    """The D&D campaign's completeness (build item 18e, G9), read from the records: a villain kind and creature, a hand,
+    a goal, a weakness, a lair, a start, the creature families, three stages with three clues each, trope breaks that
+    bend. Names the pieces only, never what they hold."""
+    f = m.get("foundation") or {}
+    move = f.get("move") or {}
+    log = read_json(dm_only_dir(campaign) / "dice-log.json") or {}
+    threat = log.get("threat") or {}
+    stages = ((log.get("identity") or {}).get("secret") or {}).get("stages") or []
+    removes = [b for b in (m.get("identity") or {}).get("trope_breaks") or [] if (dt.row("trope-breaks.yaml", b["id"]) or {}).get("removes")]
+    return [("villain", bool(threat.get("family") and threat.get("creature"))), ("hand", bool(move.get("hand"))),
+            ("goal", bool((threat.get("goal") or {}).get("id"))), ("weakness", bool(threat.get("weakness"))),
+            ("lair", bool((threat.get("lair") or {}).get("form") and (threat.get("lair") or {}).get("where"))),
+            ("start", bool(f.get("start")) and f.get("start") != "heart"), ("families", bool(move.get("families"))),
+            ("stages 3×3", len(stages) == 3 and all(len(s.get("clues") or []) == 3 for s in stages)),
+            ("breaks bend", not removes)]
 PROMISE_VERDICTS = ("kept", "not_kept")
 
 
@@ -305,6 +324,10 @@ def gate(campaign: str, phase: str, findings: list | None = None) -> list[dict]:
     orphans = [e for e in dm.orphan_stubs(campaign, phase, dm.BLOCKING_STUB_TYPES) if e not in roster]
     if orphans:
         out.append({"code": "orphan_stub", "ids": orphans, "detail": f"{len(orphans)} owned stub(s) never written"})
+    if phase == "P1" and (m.get("foundation") or {}).get("move"):          # build item 18e (G9); a legacy birth has no move
+        missing = [k for k, ok in dnd_ticks(campaign, m) if not ok]
+        if missing:
+            out.append({"code": "dnd_incomplete", "ids": [], "detail": f"the D&D campaign misses: {', '.join(missing)}"})
     # build item 12b: a due promise a script checks and that is not kept closes the gate, and so does a due promise
     # the critic gave no verdict; a critic's `not_kept` does not (the card lists it, the owner decides). A secret
     # promise is an id and a count here, never a sentence. A legacy birth has no ledger: nothing is added.
@@ -593,6 +616,8 @@ def p1_card(campaign: str) -> str:
     L = [f"# P1 — THE FOUNDATION AND THE IDENTITY            campaign: {campaign}   attempt {attempt}",
          f"<!-- attempt: {attempt} -->", f"<!-- ids: {','.join(sorted(mine))} -->",
          "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(mine.items())) + " -->", ""]
+    if f.get("spine_sentence"):              # build item 18e: the story's skeleton first, before a word of prose
+        L += ["## THE STORY", f"  {f['spine_sentence']}", ""]
 
     by = {l["label"]: l["text"] for l in f.get("rendering") or []}
     L += ["## THE FOUNDATION", row("The world's shape", f"{by.get('The world\'s shape', '—')}; lands: {by.get('The lands', '—')}"),
@@ -626,8 +651,15 @@ def p1_card(campaign: str) -> str:
         L += ["## WISHES"] + [f"  {w}" for w in wishes] + [""]
 
     log = read_json(dm_only_dir(campaign) / "dice-log.json") or {}
-    arch = dt.row("secrets.yaml#archetype", ((log.get("identity") or {}).get("secret") or {}).get("archetype") or "") or {}
-    L += ["## THE SECRET (spoiler-safe)", f"  class: {arch.get('hides_in', 'unknown')}     the villain: rolled, hidden", ""]
+    sec = (log.get("identity") or {}).get("secret") or {}
+    if sec.get("facts"):                     # build item 18e: the threat's hidden half, in counts
+        n_st = len(sec.get("stages") or [])
+        n_cl = min((len(s.get("clues") or []) for s in sec.get("stages") or []), default=0)
+        L += ["## THE SECRET (spoiler-safe)", f"  the threat: rolled, hidden · hidden facts: {sec['facts']['hidden']} of 4 · "
+              f"twist: {'yes' if sec.get('twist') else 'no'} · stages: {n_st} × {n_cl} clues", ""]
+    else:
+        arch = dt.row("secrets.yaml#archetype", sec.get("archetype") or "") or {}
+        L += ["## THE SECRET (spoiler-safe)", f"  class: {arch.get('hides_in', 'unknown')}     the villain: rolled, hidden", ""]
 
     import design_names as dn
     pool = dn.load_pool(campaign) or {}
@@ -662,6 +694,7 @@ def p1_card(campaign: str) -> str:
     tokens_out = int((ph.get("tokens") or {}).get("out") or 0)
     L += ["## CHECKS", f"  door: {door_line} · critics: {crit.get('entity_loops_total') or 0} fix loop(s), "
           f"phase {phase_verdict}, wishes {wishes_verdict} · validator: {validator_line}",
+          *(["  D&D: " + " · ".join(("✓ " if ok else "✗ ") + k for k, ok in dnd_ticks(campaign, m))] if f.get("move") else []),
           "  " + gate_card_line(closed, proj).lstrip("- "),
           f"  cost: {f'{tokens_out:,}'.replace(',', '.') + ' tokens' if tokens_out else '—'}, {elapsed_minutes(ph)} min" + real_cost_text(ph), ""]
 

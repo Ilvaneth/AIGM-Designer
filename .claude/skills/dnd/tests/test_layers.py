@@ -27,7 +27,8 @@ import designer  # noqa: E402
 
 SEEDS = 3000
 SPAN = {"short": 4, "standard": 11, "epic": 19}
-SLOTS = {"move_target", "contest_prize", "goal_piece", "lair_where", "world_state_tie", "escalation_step", "clue_place"}
+SLOTS = {"move_target", "contest_prize", "goal_piece", "lair_where", "world_state_tie", "escalation_step", "clue_place",
+         "secret_pin"}      # build item 18e: the pin is a piece of the chain when no god is pinned
 
 
 class Layers(unittest.TestCase):
@@ -116,7 +117,8 @@ class Slots(unittest.TestCase):
         self.assertEqual(len(errs), 2, errs)
         self.assertTrue(all("takes a story or a stage piece" in e for e in errs))
         self.assertEqual(door.story_field_errors("sig_x", dict(row, type="signature"), fields), [])
-        self.assertEqual(door.story_field_errors("premise_x", row), [], "no field is named before 18e")
+        self.assertEqual(door.STORY_FIELDS, {("premise", "dm_only.clues.piece"): "clue_place", ("premise", "dm_only.pinned.piece"): "secret_pin"},
+                         "build item 18e names the fields")
 
 
 class ManySeeds(unittest.TestCase):

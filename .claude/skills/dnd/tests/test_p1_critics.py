@@ -21,8 +21,8 @@ sys.path.insert(0, str(SCRIPTS))
 import design_prompts as dpm  # noqa: E402
 import design_tables as dt  # noqa: E402
 
-RECORDS = ("`design/design.json#foundation` and `#identity`", "the signature candidates in `design/naming.json`",
-           "the secret identity record too (`design/dm-only/dice-log.json`, under `identity`)")
+RECORDS = ("`design/design.json#foundation`", "`#identity`", "the signature candidates in `design/naming.json`",     # 18e: the move, the threat
+           "the threat and the secret too (`design/dm-only/dice-log.json`, under `threat` and `identity`", "with the Read tool, never with Bash")
 
 
 def run(script, *args, check=True):

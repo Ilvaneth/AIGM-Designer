@@ -371,8 +371,16 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
     tone = dt.dial_row("tone", dials.get("tone")) or {}
     facts = secret_facts(threat, side)
     stages = secret_stages(foundation, threat, trail)
+    # W1 (build item 18e): the secret is pinned to a god only when the family is the god or the goal or the twist names
+    # a patron; the god's part is rolled. Otherwise the pin is a piece of the chain. The event is always the move
+    if threat["family"] == "family_god" or threat["goal"]["id"] == "goal_patron_will" or twist == "twist_greater_power":
+        pin = {"god": True, "relation": R.table("secret_pin.relation", SECRETS + "god_relation", secret=True)["row_id"],
+               "piece": None, "event": "the move"}
+    else:
+        thin = "land_thin_place" in list(foundation["palette"]) + list(foundation["palette_extra"])
+        pin = {"god": False, "relation": None, "piece": "thin_place" if thin else "remnant", "event": "the move"}
     return {"secret": {"archetype": archetype, "chooser": chooser, "chooser_role": chooser_role, "twist": twist,
-                       "keeping": keeping, "trail": trail, "facts": facts, "stages": stages},
+                       "keeping": keeping, "trail": trail, "facts": facts, "stages": stages, "pin": pin},
             "villain": {"visibility": visibility, "shape": shape, "origin": origin, "tie": tie,
                         "pole": {"question": identity["questions"][0]["id"], "contest": main["id"], "role": side},
                         "public_figure": {"contest": figure["contest"], "role": figure["role"]} if figure else None,
@@ -423,16 +431,20 @@ def secret_stages(foundation: dict, threat: dict, trail_id: str) -> list[dict]:
         base = "end_a"                  # the move struck the far end and the party starts there: the hand sits at the other
     lair_at = {"lairat_remnant": lay["remnant"], "lairat_thin_place": fd.thin_part(lay["parts"]), "lairat_heart": "heart",
                "lairat_key_place": "key_place", "lairat_far_end": far, "lairat_built": "along", "lairat_on_the_move": None}
-    at = {1: (base, "the hand's base"), 2: (lay["break_at"], "where the move struck"),
-          3: ((lair_at.get(threat["lair"]["where"]), "the lair") if lair_at.get(threat["lair"]["where"])
-              else (clue_part(foundation, threat["goal"]["piece"]), "the goal's piece"))}
+    lair_piece = {"lairat_remnant": "remnant", "lairat_thin_place": "thin_place", "lairat_heart": "heart", "lairat_key_place": "key_place",
+                  "lairat_far_end": "end", "lairat_built": "new"}
+    target_piece = fd.PIECE_OF_TARGET[foundation["break"]["target"]]
+    at = {1: (base, "the hand's base", "heart" if base == "heart" else "end"),
+          2: (lay["break_at"], "where the move struck", target_piece),
+          3: ((lair_at.get(threat["lair"]["where"]), "the lair", lair_piece[threat["lair"]["where"]]) if lair_at.get(threat["lair"]["where"])
+              else (clue_part(foundation, threat["goal"]["piece"]), "the goal's piece", threat["goal"]["piece"]))}
     trail = dt.row(SECRETS + "trail", trail_id) or {}
     out = []
     for n in (1, 2, 3):
-        part, why = at[n]
+        part, why, piece = at[n]
         out.append({"n": n, "conclusion": CONCLUSIONS[n], "levels": list(levels[n - 1]),
                     "shape": (trail.get("stages") or {}).get(f"stage{n}"), "reveals": "how it is stopped" if n == 3 else None,
-                    "clues": [{"by": "chain", "at": part, "why": why}, {"by": "P5", "kind": "a person"}, {"by": "P6", "kind": "a site"}]})
+                    "clues": [{"by": "chain", "at": part, "why": why, "piece": piece}, {"by": "P5", "kind": "a person"}, {"by": "P6", "kind": "a site"}]})
     return out
 
 

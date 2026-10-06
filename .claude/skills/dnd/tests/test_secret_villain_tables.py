@@ -186,7 +186,7 @@ class References(unittest.TestCase):
     def test_every_named_id_exists(self):
         for ref in SECRET + VILLAIN + ("antagonists.yaml#bbeg_faction_archetype",):
             for i, r in enumerate(rows(ref)):
-                unknown = {x for x in references(r) if not x.startswith(dt.CLAIM)} - ALL_IDS
+                unknown = {x for x in references(r) if not x.startswith(dt.CLAIM) and not re.match(r"^(prize|goal_piece|hand_family):", str(x))} - ALL_IDS   # 18e tokens
                 self.assertFalse(bool(unknown), f"{where(ref, i)} names {len(unknown)} id(s) that do not exist")
 
     def test_every_conflict_is_symmetric_after_load(self):
@@ -325,11 +325,11 @@ class Legacy(unittest.TestCase):
         real = dd.used_path
         tmp = Path(tempfile.mkdtemp()) / "used.json"
         tmp.write_text(json.dumps({"_meta": {"schema_version": 1}, "births": ["old-birth"], "campaigns": {"old-birth": {
-            "secrets.yaml#twist": ["h:" + next(iter(GONE)), dd.hashed("secret_no_such_row")],
+            "secrets.yaml#trail": ["h:" + next(iter(GONE)), dd.hashed("secret_no_such_row")],   # 18e: the twists carry requirements
             "antagonists.yaml#origin": [dd.hashed("origin_no_such_row")]}}}), encoding="utf-8")
         dd.used_path = lambda: tmp
         try:
-            for ref in ("secrets.yaml#twist", "antagonists.yaml#origin"):
+            for ref in ("secrets.yaml#trail", "antagonists.yaml#origin"):
                 use = dd.usage("_test-item9", ref)
                 res = arb.arbitrate(ref, rows(ref), arb.Context(), usage=use, secret=True)
                 self.assertEqual(len(res["pool"]), len(usable(ref)), ref)

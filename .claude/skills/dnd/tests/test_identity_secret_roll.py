@@ -238,7 +238,7 @@ class RealBirth(unittest.TestCase):
         ident = log["identity"]
         self.assertEqual(set(ident), {"secret", "villain"}, "the 18c-1 audit: no world state's join lives in dm-only")
         self.assertIn("threat", log, "build item 18c: the threat's record, dm-only")
-        self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "keeping", "trail", "facts", "stages"})
+        self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "keeping", "trail", "facts", "stages", "pin"})
         self.assertEqual(set(ident["villain"]), {"visibility", "shape", "origin", "tie", "pole", "public_figure", "majority_pole"})
         by_label = {r["label"]: r for r in log["rolls"] if r["phase"] == "P1"}
         for label in P1_SECRET:

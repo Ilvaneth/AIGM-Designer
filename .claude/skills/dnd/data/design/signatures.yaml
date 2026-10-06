@@ -128,7 +128,7 @@ tables:
       - {phase: P3, must: "the institution sits in a central settlement"}
       - {phase: P5, must: "its leader and members show its sign"}
       - {phase: P6, must: "a site it holds or guards"}
-      - {phase: P7, must: "quests grow from its practice"}
+      - {phase: P7, must: "the institution offers or colours quests; it never originates the main thread"}
       - {phase: P8, must: "what natives know of it"}
     rows:
       - {id: "practice_hold_the_key_place", label: "They hold the spine's key place", family: "guard", hints: ["state", "martial", "guild"], text: {"name": "they hold the key place of the spine", "gives": "leave to pass, the tasks and the enemies there", "name_note": "pass, bridge, strait"}}
@@ -307,3 +307,14 @@ tables:
       - {id: "user_children", label: "Only children"}
       - {id: "user_casters", label: "Only spellcasters"}
       - {id: "user_born_here", label: "Only those born in this land", text: {"name": "only those born in that land"}}
+
+  mechanic_shape:
+    layer: texture
+    roll: {avoid_used: false, labels: [P1.mechanic.shape], note: "W6 (build item 18e): the signature mechanic's shape, rolled when the mechanic gate says yes; the writer fills its numbers inside the shape's bands and invents no other shape"}
+    rows:
+      - {id: mech_meter, label: A meter that fills, bands: {steps: [4, 8], thresholds: [2, 3]}, text: {name: "a meter that fills as the party acts, with thresholds that change what the world does"}, hooks: [{phase: P8, must: "the player files state the mechanic"}]}
+      - {id: mech_favour_ledger, label: A favour ledger, bands: {sides: [2, 4], favours_to_call: [3, 6]}, text: {name: "a ledger of favours owed and owing between the party and the world's sides"}, hooks: [{phase: P8, must: "the player files state the mechanic"}]}
+      - {id: mech_corruption_track, label: A corruption track, bands: {steps: [5, 10], thresholds: [2, 4]}, text: {name: "a corruption track that rises with what the party uses, and marks them"}, hooks: [{phase: P8, must: "the player files state the mechanic"}]}
+      - {id: mech_reputation_clock, label: A reputation clock, bands: {segments: [4, 8], factions: [2, 4]}, text: {name: "a reputation clock per side, filled and emptied by deeds"}, hooks: [{phase: P8, must: "the player files state the mechanic"}]}
+      - {id: mech_bargain_debt, label: "A bargain's debt", bands: {debt: [3, 6], payments: [1, 3]}, text: {name: "a debt owed for a bargain, paid in services the world names"}, hooks: [{phase: P8, must: "the player files state the mechanic"}]}
+      - {id: mech_countdown, label: A countdown, bands: {ticks: [6, 12], warnings: [2, 3]}, text: {name: "a countdown to an event, its ticks moved by the party's choices and by time"}, hooks: [{phase: P8, must: "the player files state the mechanic"}]}

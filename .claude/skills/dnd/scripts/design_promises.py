@@ -49,6 +49,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import math
 import os
 import re
@@ -382,6 +383,7 @@ def sync(campaign: str, phase: str | None = None) -> int:
     canon = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities", {})
     L = Ledger(m[KEY], load_secret(campaign))
     before = set(L.items)
+    content = json.dumps([m[KEY], load_secret(campaign)], sort_keys=True)     # a source or an advice joining a promise changes it too (18e)
     for key, p in list(L.items.items()):
         if p["source"] == "stub" and p["status"] == "open" and p["from"] not in canon:
             del L.items[key]
@@ -398,7 +400,12 @@ def sync(campaign: str, phase: str | None = None) -> int:
             # build item 13b: where the writer says a signature will appear is a promise to that floor
             for n in row.get("appears") or []:
                 if isinstance(n, dict) and n.get("phase") in dm.PHASES and str(n.get("text") or "").strip():
-                    L.add("note", eid, "P1", n["phase"], str(n["text"]).strip(), str(row.get("name") or eid))
+                    # W4 (build item 18e): the promise binds the hook the note restates; the note's text is advice
+                    bound = str(n.get("hook") or n["text"]).strip()
+                    p = L.add("note", eid, "P1", n["phase"], bound, str(row.get("name") or eid))
+                    advice = p.setdefault("advice", [])          # the same hook's promise may carry several signatures' advice
+                    if str(n["text"]).strip() not in advice:
+                        advice.append(str(n["text"]).strip())
         if row.get("type") == "premise":
             dm_only = row.get("dm_only") or {}
             pinned = dm_only.get("pinned") or {}
@@ -411,7 +418,7 @@ def sync(campaign: str, phase: str | None = None) -> int:
                 L.add("placement", eid, "P1", "P6", f"clue {c.get('n')} of the secret has its place: a site, an NPC or an item of the registry",
                       f"The secret's clue {c.get('n')}", "script:clue_placed", secret=True, kind="clue", clue=c.get("n"))
     public, secret = L.split()
-    if len(public) != len(m[KEY]) or set(L.items) != before or len(secret) != len(load_secret(campaign)):
+    if len(public) != len(m[KEY]) or set(L.items) != before or len(secret) != len(load_secret(campaign))             or json.dumps([public, secret], sort_keys=True) != content:
         save(campaign, public, secret, f"design_promises.py sync{' --phase ' + phase if phase else ''}")
     return len(set(L.items) - before)
 

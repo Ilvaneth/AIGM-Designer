@@ -74,6 +74,7 @@ STORY_SLOTS = {
     "world_state_tie": "a world-state trope break's tie",
     "escalation_step": "the escalation's steps",
     "clue_place": "the clues' places",
+    "secret_pin": "the secret's pin (a piece of the chain, when no god is pinned)",
 }
 SLOT_LAYERS = frozenset({"story", "stage"})
 # the pieces the rows name by kind (a target's `piece`, a contest's `prize`, a seat on the layout); a row id is

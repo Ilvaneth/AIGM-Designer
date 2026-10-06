@@ -299,7 +299,7 @@ class Rules(unittest.TestCase):
             yield from rows(sub)
 
     def test_the_eleven_sub_tables(self):
-        self.assertEqual(set(dt.load("signatures.yaml")["tables"]), set(NEW), "the old three went with build item 10")
+        self.assertEqual(set(dt.load("signatures.yaml")["tables"]), set(NEW) | {"mechanic_shape"}, "the old three went with build item 10; 18e adds the mechanic's shapes")
 
     def test_the_removed_ids_are_gone(self):
         """Nothing in the committed data names a row the tag review removed or renamed."""

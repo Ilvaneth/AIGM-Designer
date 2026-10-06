@@ -74,7 +74,7 @@ class ManySeeds(unittest.TestCase):
         for d, R in self.runs:
             idn = R.identity
             self.assertTrue(idn["stamped"])
-            self.assertEqual(set(idn), {"stamped", "trope_breaks", "role_hints", "people", "institution", "phenomenon", "questions", "overrides"})
+            self.assertEqual(set(idn), {"stamped", "trope_breaks", "role_hints", "people", "institution", "phenomenon", "questions", "overrides"} | ({"mechanic"} if "mechanic" in idn else set()))   # 18e: the mechanic's shape
             self.assertEqual(idn["people"]["lineage"], R.row("people.lineage"))
             self.assertEqual(idn["institution"]["practice"], R.row("institution.practice"))
             self.assertEqual(idn["phenomenon"]["rule"], R.row("phenomenon.rule"))

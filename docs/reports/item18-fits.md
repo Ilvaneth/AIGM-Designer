@@ -125,3 +125,12 @@ A goal that joins through the move: every joinable piece (the prize's piece, a c
 7. **The twists' texts** were moved onto the chain mechanically; read them in the SPOILER file: a rewrite by hand may read better.
 8. **The trails' third element** carries the weakness by a suffix (`…_and_how_it_is_stopped`).
 9. **clue_order:** the act reading stays only for a legacy birth without a ledger (item 23); every birth with a ledger reads stages.
+
+## 18e — the writer's choices
+
+1. **The spine sentence's grammar:** "<the target> <the verb's form>, by <the hand>; now <side a> and <side b> fight over <the prize>". The verbs' forms are singular ("was", "is being"), so a plural target reads "the march lords was enslaved"; the rows' forms would need a plural or the sentence a rewording. Accept, or reword the forms?
+2. **W1, when a god is pinned:** the god family, the goal "carry out a patron's will", or the twist "a greater power stands behind the villain" (the greater power may be no god: a fiend lord or an elder mind). Otherwise the pin is the thin place when the palette holds one, else the remnant.
+3. **The monsters were people** requires a hand of reshaped kinds: monstrosity, undead, lycanthrope, plant, aberration, construct. **It was done before** requires a ruin of the fallen kingdoms or the wars (14 rows).
+4. **The card's secret line** shows the hidden facts' count (3 when the villain is known): a player who sees "3 of 4" learns the villain is known, which a known villain already is.
+5. **The D&D line** ticks "breaks bend" when no rolled trope break carries `removes: true`; no row carries it today (18b bent the two).
+6. **The mechanic's shapes** (summaries file) and their bands are the coding tab's; the owner reads them.

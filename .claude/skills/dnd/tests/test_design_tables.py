@@ -284,7 +284,7 @@ class Floors(unittest.TestCase):
         test_identity_tables holds the counts of the eleven that remain."""
         subs = set(dt.load("signatures.yaml")["tables"])
         self.assertFalse(subs & {"phenomenon", "people", "institution"})
-        self.assertEqual(len(subs), 11)
+        self.assertEqual(len(subs), 12, "the eleven of item 10 and the mechanic's shapes (18e)")
         for name in dt.list_tables():
             self.assertNotRegex((dt.tables_dir() / name).read_text(encoding="utf-8"), r"\bsig_(phen|people|inst)_", name)
 

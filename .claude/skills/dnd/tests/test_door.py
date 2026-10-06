@@ -141,7 +141,8 @@ class NewBirth(unittest.TestCase):
             out[eid] = row(eid, "signature", name, created_phase="P1", kind="institution" if slot == "institution" else "magic",
                            summary="what a native knows of it, in one line.", slot=slot, home=self.d.home_id(slot),
                            rolled=self.d.rolled_of(slot), stamped={"kind": "x"},
-                           appears=[{"phase": p, "text": f"it shows at this floor in its own way, among the {slot} of the land"} for p in self.d.floors_of(slot)])
+                           appears=[{"phase": p, "hook": sorted(h)[0], "text": f"it shows at this floor in its own way, among the {slot} of the land"}
+                                    for p, h in sorted(self.d.hooks_by_floor(slot).items())])   # W4 (build item 18e): the hook restated
         for b in ident["trope_breaks"]:
             eid = "break_" + b["id"][len("break_"):]
             out[eid] = row(eid, "break", dt.row("trope-breaks.yaml", b["id"])["label"], created_phase="P1", row=b["id"], tie=b["tie"],
@@ -186,10 +187,13 @@ class NewBirth(unittest.TestCase):
         self.assertEqual(set(self.merged()), set(units), proc.stderr[:1500])
         self.assertNotIn("✗", proc.stderr)
         added = dp.sync(self.name, "P1")
-        notes = [p for p in dm.load(self.name)["promises"] if p["source"] == "note"]
-        self.assertEqual(len(notes), sum(len(u["appears"]) for u in units.values() if u["type"] == "signature"))
-        self.assertEqual(added, len(notes))
-        self.assertTrue(all(p["check"] == "critic" and p["from"].startswith("signature_") and p["due"] != "P1" for p in notes))
+        # W4 (build item 18e): a note binds the hook it restates, joining that hook's promise
+        notes = [p for p in dm.load(self.name)["promises"] if p["source"] == "note" or any(a["source"] == "note" for a in p.get("also") or [])]
+        written = [n for u in units.values() if u["type"] == "signature" for n in u["appears"]]
+        self.assertEqual({(n["phase"], n["hook"]) for n in written}, {(p["due"], p["text"]) for p in notes})
+        self.assertGreaterEqual(added, 0, "a note that restates a hook adds no new promise: it joins the hook's (18e)")
+        self.assertTrue(all(p["check"] == "critic" and p["due"] != "P1" and any(str(s["from"]).startswith("signature_")
+                                                                                for s in [p] + list(p.get("also") or [])) for p in notes))
         self.assertEqual(door.seal_errors(self.name, dm.load(self.name)), [], "a note is no change of the script-built ledger")
 
     def test_the_rolls_are_the_writers_ground(self):
@@ -221,7 +225,7 @@ class NewBirth(unittest.TestCase):
         bad[pid]["secret_class"] = "a long sentence that gives the secret away"
         err = self.refusal(bad)
         self.assertIn("`tensions` must be the rolled question id(s)", err)
-        self.assertIn("`secret_class` is the secret archetype's class", err)
+        self.assertRegex(err, r"`secret_class` is (the twist's class|`threat` when no twist was rolled)")
         self.stage(units)
         self.assertEqual(set(self.merged()), set(units), "the corrected set passes")
 
@@ -315,13 +319,13 @@ class NewBirth(unittest.TestCase):
         self.assertEqual([w["word"] for f in log if f["kind"] == "capitalised" for w in f["words"]], ["Zarvoth", "Gloomhand"])
         # no secret row's id or sentence, no secret-stock name, in the public file or a public field
         rolled = json.loads((self.dir / "design/dm-only/dice-log.json").read_text(encoding="utf-8"))
-        arch_id = rolled["identity"]["secret"]["archetype"]
-        arch = dt.row("secrets.yaml#archetype", arch_id)
-        err = self.refusal(units, public=f"The land is old; see {arch_id} for more.\n\nNobody knows that {secret_person.lower()} was here; {arch['statement']}\n".replace(secret_person.lower(), secret_person))
+        arch_id = rolled["identity"]["secret"]["keeping"]            # build item 18d: the keeping is rolled in every birth
+        arch = dt.row("secrets.yaml#keeping", arch_id)
+        err = self.refusal(units, public=f"The land is old; see {arch_id} for more.\n\nNobody knows that {secret_person.lower()} was here; {arch["rule"]}\n".replace(secret_person.lower(), secret_person))
         self.assertIn("names 1 secretly rolled row(s) by id", err)
         self.assertIn("repeats 1 sentence(s) of a secretly rolled row", err)
         self.assertIn("carries 1 name(s) of the secret stock", err)
-        for hidden in (arch_id, arch["statement"], arch["label"]):
+        for hidden in (arch_id, arch["rule"], arch["label"]):
             self.assertNotIn(hidden, err.replace(f"capitalised word '{secret_person}'", ""), "a refusal line names the kind, never the row")
         bad = copy.deepcopy(units)
         sig = next(e for e in bad if e.startswith("signature_"))

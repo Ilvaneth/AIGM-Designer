@@ -30,7 +30,7 @@ from design_io import text_field  # noqa: E402
 SECTIONS = ["# P1 — THE FOUNDATION AND THE IDENTITY", "## THE FOUNDATION", "## THE IDENTITY", "## THE PLAYER PITCH",
             "## THE SECRET (spoiler-safe)", "## NAMES", "## PROMISES", "## CHECKS", "## YOUR MOVES"]
 P1_RUBRICS = ["rubric_p1_question_concrete", "rubric_p1_only_true_here", "rubric_p1_differs_from_earlier",
-              "rubric_p1_signatures_pervade", "rubric_p1_secret_trail", "rubric_p1_forbidden"]
+              "rubric_p1_signatures_pervade", "rubric_p1_secret_trail", "rubric_p1_forbidden", "rubric_p1_legible"]   # 18e
 
 
 def run(script, *args, check=True):
@@ -56,10 +56,11 @@ class Rubrics(unittest.TestCase):
         by = {r["id"]: r for r in rows}
         self.assertEqual((by["rubric_p1_secret_trail"]["scope"], by["rubric_p1_secret_trail"]["critics"]), ("dm-only", 2))
         self.assertTrue(all(r["scope"] == "phase" and r["critics"] == 1 for r in rows if r["id"] != "rubric_p1_secret_trail"))
+        self.assertIn("any one of its three clues", by["rubric_p1_secret_trail"]["question"], "build item 18e: the threat's hidden half")
         text = json.dumps(rows)
         for gone in ("rubric_p1_question_not_adjective", "rubric_p1_hundred_campaigns", "villain_answer", "world_default", "act order", "rerun"):
             self.assertNotIn(gone, text, gone)
-        self.assertIn("stage by stage", by["rubric_p1_secret_trail"]["question"])
+        self.assertIn("each stage's conclusion", by["rubric_p1_secret_trail"]["question"])
         self.assertIn("Is any people told as evil by nature?", by["rubric_p1_forbidden"]["question"], "one question since build 16a")
         self.assertIn("earlier-campaigns block", by["rubric_p1_differs_from_earlier"]["question"])
         self.assertEqual(by["rubric_p1_differs_from_earlier"]["fails_when"],
@@ -104,7 +105,7 @@ class Card(unittest.TestCase):
         self.assertIn("(not named yet)", card)
         self.assertIn("  (not written yet)", card, "the writer's lines stand empty")
         self.assertRegex(card, r"The escalation +3 steps \(levels 1-12\)")
-        self.assertRegex(card, r"(?m)^  class: \S.*     the villain: rolled, hidden$")
+        self.assertRegex(card, r"(?m)^  the threat: rolled, hidden · hidden facts: [34] of 4 · twist: (yes|no) · stages: 3 × 3 clues$")   # 18e
         self.assertNotIn("act ", card.split("## THE SECRET")[1].split("##")[0].lower(), "no clues per act")
         self.assertIsNone(re.search("[çğıöşüÇĞİÖŞÜ]", card))
         self.assertIn("the old tongue", card)

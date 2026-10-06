@@ -188,6 +188,8 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
         seat_claims(2, c2, roles2)
     main = rows_by_id("contest")[c1]
     main_roles = out["contests"][0]["roles"]
+    # the main prize's kind as a token (build item 18e): a twist that names the prize requires its kind
+    R.add_tokens("foundation.prize.tokens", [f"prize:{(main.get('prize_with') or {}).get(ruin_id, main['prize'])}"], "the main contest's prize")
 
     # 4b. the threat (G4: after the contest, before the move); secret, kept on R for dm-only
     import design_threat as dth
@@ -211,6 +213,7 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     story = lay_out_story(R, spine, palette + out["palette_extra"], out["contests"], out)
     hand_id = R.table("move.hand", "antagonists.yaml#hand", why="the hand")["row_id"]
     hand = dt.row("antagonists.yaml#hand", hand_id)
+    R.add_tokens("move.hand.tokens", [f"hand_family:{x}" for x in hand.get("families") or []], "the hand's creature families")
     allowed = move_targets(threat["goal"], main, ruin_id, palette + out["palette_extra"], story)
     # the order is hand → target → verb (the 18c-2 answer): the goal decides what must be struck, the verb is how the
     # hand strikes it; the target among those the hand can strike with one of its verbs
@@ -293,6 +296,7 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
                    "winner": out["winner"], "start": out["start"], "start_why": start_why, "start_kind": "a village or a small town",
                    "families": families}
     threat["families"] = {"public": families, "secret": [threat["creature_type"]]}      # finding D4; P6 weighs them
+    out["spine_sentence"] = spine_sentence(out)
 
     # 7. the escalation
     out["escalation"] = tiers_touched(dials["level_band"])
@@ -544,6 +548,38 @@ def target_phrase(out: dict) -> str:
     return rows_by_id("palette")["land_thin_place"]["text"]["name"]
 
 
+def prize_phrase(out: dict, seated: dict) -> str:
+    """The main contest's prize in words, from the rows' English fields."""
+    spine = rows_by_id("spine")[out["spine"]]["text"]
+    contest = rows_by_id("contest")[seated["contest"]]
+    kind = seated["prize"]["kind"]
+    if kind == "disputed_land":
+        side = contest.get("prize_at")
+        return f"the land of {contest['roles'][side]['text']}" if side else "the land between them"
+    return {"heart": spine["heart"], "key_place": spine["key_place"], "remnant": rows_by_id("ruin_source")[out["ruin"]]["text"]["remnant"],
+            "seat": f"the seat of {contest['roles']['a']['text']}", "new": "a new thing both want",
+            "thin_place": rows_by_id("palette")["land_thin_place"]["text"]["name"]}.get(kind, "")
+
+
+def spine_sentence(out: dict) -> str:
+    """The spine sentence (build item 18e; docs/p1-threat-first.md): one public sentence from the story pieces alone,
+    "<the target> <was struck>, by <the hand>; now <side a> and <side b> fight over <the prize>". A slot that would hold
+    texture or nothing is a table fault."""
+    move = out["move"]
+    hand = (dt.row("antagonists.yaml#hand", move["hand"]) or {}).get("text", {}).get("name")
+    act = rows_by_id("action")[out["action"]]
+    tense = rows_by_id("time")[out["time"]]["tense"]
+    main = out["layout"]["contests"][0]
+    contest = rows_by_id("contest")[main["contest"]]
+    parts = {"the hand": hand, "the target": target_phrase(out), "the verb": act["forms"][tense],
+             "side a": contest["roles"]["a"]["text"], "side b": contest["roles"]["b"]["text"], "the prize": prize_phrase(out, main)}
+    empty = [k for k, v in parts.items() if not v]
+    if empty or PIECE_OF_TARGET[out["target"]] == "lifeline" or main["prize"]["kind"] == "lifeline":
+        raise SystemExit(f"design_foundation: the spine sentence has no {', '.join(empty) or 'story piece'} — a table fault")
+    s = f"{parts['the target']} {parts['the verb']}, by {parts['the hand']}; now {parts['side a']} and {parts['side b']} fight over {parts['the prize']}."
+    return s[0].upper() + s[1:]
+
+
 def rendering(out: dict) -> list[dict]:
     """The foundation in English, for the owner's eyes and the writer's: a labelled list built from the rows' own
     English fields (build item 13a; the Turkish five-template sentence is gone). No sentence is assembled: every
@@ -596,5 +632,6 @@ def build(out: dict, level_band) -> dict:
         "landmarks": landmarks(spine_id, ruin_id),
         "start": out["start"],
         "move": out["move"],
+        "spine_sentence": out.get("spine_sentence"),
         "rendering": rendering(out),
     }
