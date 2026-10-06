@@ -48,3 +48,7 @@ Thresholds before the commit: every target but the thin place at 5 % or more (th
 
 ## 18d — the secret as the threat's hidden half (in progress)
 **18d audited from the working tree** (810 tests, exit 0 by the coding tab): four facts in every birth (three with a known villain); three stages with three clues each (the chain's: the hand's base, where the move struck, the lair or the goal's piece; one to P5, one to P6), nine clue promises; the twist always with mystery and about half without; the public ledger identical with and without the secret rolls; the brittle lineage share dropped, its weight tested without dice. **Accepted with corrections:** a hand's base is the far end unless the hand is inside by nature (the traitor, the deceived side, the shapechangers: the heart or the side's seat); the twists' texts rewritten by hand (no "break" and no destroying verb for the move; the protector who makes the threat is a story actor, never the signature institution; the repeated working is the one that felled the old kingdom; the reshaped monsters are victims; the greater power gets its statement). The rows document's "17" keeping rows was my slip: 16.
+
+**Committed as `f24f717`; the clean run on it: 811 tests, OK, exit code 0, five skipped (read from the log). Accepted.** The twists' hand-written texts read; carried into 18e: a twist that names a piece (the seal, the living relic) needs that piece.
+
+## 18e — the writer, the rubrics and the card (in progress)
