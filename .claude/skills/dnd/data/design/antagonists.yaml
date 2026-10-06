@@ -248,6 +248,9 @@ tables:
   weakness:
     roll: {secret: true, avoid_used: true, labels: [P1.threat.weakness], note: "`fits` names the families a row fits (absent: every family but one whose own `weaknesses` list leaves it out); the third clue stage reveals it"}
     rows:
+      # build item 19b: the mask is a fourth candidate where it fits (a mask that can be taken, freed or broken; the agent
+      # who wears its name is no mask the villain stands behind); every family, the rolled mask's token decides
+      - {id: weak_strip_the_mask, by_mask: true, label: Strip its mask, requires: {any_of: ["mask:item", "mask:possessed", "mask:glamour"]}, text: {name: "strip its mask, and the mystery breaks: the candidates fall away and its true form stands alone"}, hooks: [{phase: P6, must: "the place where its mask is stripped is a site the party can reach"}]}
       - {id: weak_hidden_object, label: A hidden object holds its life, text: {name: "a hidden object holds its life"}, hooks: [{phase: P6, must: "the hidden object that holds its life lies at a site the party can reach"}]}
       - {id: weak_weapon_or_metal, label: A weapon or a metal it cannot bear, text: {name: "a weapon or a metal it cannot bear"}, hooks: [{phase: P6, must: "the weapon or metal it cannot bear is an item at a site"}]}
       - {id: weak_true_name, label: Its true name, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_god], text: {name: "its true name"}, hooks: [{phase: P2, must: "its true name stands in the history or with a god, findable"}]}
@@ -267,6 +270,20 @@ tables:
       - {id: weak_drawn_from_lair, label: Drawn from its lair it is weaker, fits: [family_chromatic_dragon, family_metallic_dragon, family_undead, family_from_beyond, family_monstrous_mind, family_sea_titan, family_fallen_celestial, family_god], text: {name: "drawn from its lair it is weaker"}, hooks: [{phase: P6, must: "a way to draw it from its lair is a site or an event the party can make"}]}
       - {id: weak_rite_binds_again, label: The rite that bound it once can bind it again, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_from_beyond, family_sea_titan, family_god], text: {name: "the rite that bound it once can bind it again"}, hooks: [{phase: P2, must: "the rite that bound it once stands in the history"}]}
       - {id: weak_army_by_compulsion, label: Its army serves by compulsion, text: {name: "its army serves by compulsion and leaves when the compulsion breaks"}, hooks: [{phase: P5, must: "the compulsion's holder or breaker is an NPC"}]}
+
+  mask:
+    own_hooks_only: true          # its promises are its own hooks, never the file's antagonist hooks
+    # build item 19b: a villain the visibility hides as a person among people must pass as one at the table: a humanoid, an
+    # SRD creature with the Shapechanger trait, Change Shape or Illusory Appearance, or a disguise spell it casts at will,
+    # by the day or from its slots (srd-index-2014.json); any other wears a mask, rolled here. The mask is an item at a
+    # site (P6) or a mortal who fronts for it (P4); its `kind` is the token a weakness of the mask requires
+    roll: {secret: true, avoid_used: false, labels: [P1.threat.mask], note: "rolled only for a villain hidden as a person among people that cannot pass as one (design_threat.passes_as_person); `kind` sets the token mask:<kind>"}
+    passes_in_its_own_form: [vampire-vampire, vampire-bat, vampire-mist]     # its shapes are a bat and a mist; its own form passes
+    rows:
+      - {id: mask_disguise_item, kind: item, label: A disguise item, text: {name: "a disguise item it wears: a hat of disguise, or a mask with another face"}, hooks: [{phase: P6, must: "the disguise item lies or is kept at a site the party can reach; taking it strips the villain's mask"}]}
+      - {id: mask_possessed_mortal, kind: possessed, label: A possessed or bound mortal who fronts for it, text: {name: "a mortal it possesses or binds, who stands among the candidates in its place"}, hooks: [{phase: P4, must: "the possessed or bound mortal is a person among the candidates, and can be freed"}]}
+      - {id: mask_mortal_agent, kind: agent, label: A mortal agent who wears its name, text: {name: "a mortal agent who wears its name and speaks for it"}, hooks: [{phase: P4, must: "the agent who wears its name is a person among the candidates, and knows where the villain is"}]}
+      - {id: mask_bought_glamour, kind: glamour, label: A glamour bought from a power, text: {name: "a glamour bought from a power, which shows the world a mortal face"}, hooks: [{phase: P6, must: "the glamour has an anchor at a site; breaking it shows the villain's true form"}]}
 
   lair_form:
     roll: {secret: true, avoid_used: false, labels: [P1.threat.lair_form], note: "`fits` names the families (every family at least five); `built`: a place the threat can have built; `mobile`: a lair on the move (and only those are); `dragon_colours`: a dragon of that colour weighs the form x3"}

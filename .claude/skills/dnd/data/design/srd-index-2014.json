@@ -57,6 +57,8 @@
     "Enslave (3/Day)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "water",
@@ -105,6 +107,39 @@
     "Spellcasting",
     "Dagger"
    ],
+   "spells_daily": [
+    "banishment",
+    "bless",
+    "cone of cold",
+    "counterspell",
+    "cure wounds",
+    "detect magic",
+    "detect thoughts",
+    "fire bolt",
+    "fire shield",
+    "fly",
+    "globe of invulnerability",
+    "identify",
+    "light",
+    "lightning bolt",
+    "mage armor",
+    "mage hand",
+    "magic missile",
+    "mind blank",
+    "mirror image",
+    "misty step",
+    "prestidigitation",
+    "sacred flame",
+    "sanctuary",
+    "scrying",
+    "shocking grasp",
+    "stoneskin",
+    "teleport",
+    "thaumaturgy",
+    "time stop",
+    "wall of force"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -158,6 +193,8 @@
     "Frightful Presence",
     "Acid Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -211,6 +248,8 @@
     "Legendary Actions"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -263,6 +302,8 @@
     "Frightful Presence",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -317,6 +358,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -369,6 +412,8 @@
     "Frightful Presence",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -422,6 +467,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -477,6 +524,8 @@
     "Frightful Presence",
     "Poison Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -528,6 +577,8 @@
     "Frightful Presence",
     "Fire Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -580,6 +631,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -633,6 +686,8 @@
     "Frightful Presence",
     "Cold Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -696,6 +751,8 @@
     "Slam",
     "Whirlwind (Recharge 4–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -748,6 +805,8 @@
     "Frightful Presence",
     "Acid Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -800,6 +859,8 @@
     "Frightful Presence",
     "Lightning Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -853,6 +914,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "desert",
@@ -907,6 +970,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -960,6 +1025,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -1013,6 +1080,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -1068,6 +1137,8 @@
     "Frightful Presence",
     "Poison Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -1119,6 +1190,8 @@
     "Frightful Presence",
     "Fire Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -1171,6 +1244,8 @@
     "Breath Weapons (Recharge 5–6)",
     "Change Shape"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -1224,6 +1299,8 @@
     "Frightful Presence",
     "Cold Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -1280,6 +1357,24 @@
     "Claw",
     "Roar (3/Day)"
    ],
+   "spells_daily": [
+    "banishment",
+    "command",
+    "detect evil and good",
+    "detect magic",
+    "dispel magic",
+    "flame strike",
+    "freedom of movement",
+    "greater restoration",
+    "heroes’ feast",
+    "lesser restoration",
+    "sacred flame",
+    "spare the dying",
+    "thaumaturgy",
+    "tongues",
+    "zone of truth"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -1337,6 +1432,8 @@
     "Multiattack",
     "Slam"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -1378,6 +1475,8 @@
     "Bite",
     "Acid Spray (Recharge 6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "farmland",
@@ -1421,6 +1520,8 @@
     "Fist",
     "Rock"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -1458,6 +1559,8 @@
    "condition_immunities": [],
    "traits": [],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban"
@@ -1507,6 +1610,8 @@
     "Shortsword",
     "Light Crossbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -1554,6 +1659,8 @@
    "actions": [
     "Rake"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -1599,6 +1706,8 @@
    "actions": [
     "Slam"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -1637,6 +1746,8 @@
    "actions": [
     "Beak"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -1685,6 +1796,8 @@
    "actions": [
     "Warhammer"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -1728,6 +1841,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -1770,6 +1885,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -1829,6 +1946,8 @@
     "Whip",
     "Teleport"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -1870,6 +1989,8 @@
     "Scimitar",
     "Light Crossbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -1917,6 +2038,8 @@
     "Dagger",
     "Parry"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -1978,6 +2101,8 @@
     "Tail",
     "Hurl Flame"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -2018,6 +2143,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -2062,6 +2189,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -2118,6 +2247,8 @@
     "Beard",
     "Glaive"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower",
@@ -2166,6 +2297,8 @@
     "Lightning Breath (Recharge 5–6)",
     "Swallow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -2207,6 +2340,8 @@
    "actions": [
     "Greataxe"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "steppe",
@@ -2255,6 +2390,8 @@
     "Bite",
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -2301,6 +2438,8 @@
     "Bite",
     "Acid Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -2361,6 +2500,8 @@
     "Reactions",
     "Split"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -2403,6 +2544,8 @@
     "Bite",
     "Teleport (Recharge 4–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -2446,6 +2589,8 @@
    "actions": [
     "Beak"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -2491,6 +2636,8 @@
     "Bite",
     "Lightning Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -2535,6 +2682,8 @@
    "actions": [
     "Tusk"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -2589,6 +2738,8 @@
     "Claw",
     "Sting"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -2634,6 +2785,8 @@
     "Bite",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -2682,6 +2835,8 @@
     "Bite",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -2728,6 +2883,8 @@
     "Bite",
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -2770,6 +2927,8 @@
     "Morningstar",
     "Javelin"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -2817,6 +2976,8 @@
     "Bite",
     "Deadly Leap"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -2857,6 +3018,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -2900,6 +3063,8 @@
    "actions": [
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -2944,6 +3109,8 @@
     "Longbow"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -2998,6 +3165,8 @@
     "Animate Chains (Recharges after a Short or Long Rest)",
     "Unnerving Mask"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -3043,6 +3212,8 @@
     "Claws",
     "Fire Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -3093,6 +3264,8 @@
     "Pincer",
     "Tentacles"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "water",
@@ -3157,6 +3330,8 @@
     "Slam",
     "Haste (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -3205,6 +3380,8 @@
     "Moan",
     "Phantasms (Recharges after a Short or Long Rest)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -3249,6 +3426,18 @@
     "Morningstar",
     "Rock"
    ],
+   "spells_daily": [
+    "control weather",
+    "detect magic",
+    "feather fall",
+    "fly",
+    "fog cloud",
+    "gaseous form",
+    "light",
+    "misty step",
+    "telekinesis"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -3289,6 +3478,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "grassland",
@@ -3329,6 +3520,8 @@
    "actions": [
     "Club"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -3371,6 +3564,8 @@
     "Bite",
     "Constrict"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -3416,6 +3611,8 @@
     "Bite",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -3470,6 +3667,22 @@
     "Constrict",
     "Change Shape"
    ],
+   "spells_daily": [
+    "bless",
+    "create food and water",
+    "cure wounds",
+    "detect evil and good",
+    "detect magic",
+    "detect thoughts",
+    "dream",
+    "greater restoration",
+    "lesser restoration",
+    "protection from poison",
+    "sanctuary",
+    "scrying",
+    "shield"
+   ],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "planar_upper",
@@ -3513,6 +3726,8 @@
    "actions": [
     "Claw"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -3555,6 +3770,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -3600,6 +3817,17 @@
     "Multiattack",
     "Dagger"
    ],
+   "spells_daily": [
+    "command",
+    "hold person",
+    "inflict wounds",
+    "light",
+    "sacred flame",
+    "shield of faith",
+    "spiritual weapon",
+    "thaumaturgy"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -3644,6 +3872,8 @@
    "actions": [
     "Scimitar"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -3691,6 +3921,8 @@
     "Crush",
     "Darkness Aura (1/Day)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -3734,6 +3966,8 @@
     "Multiattack",
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -3778,6 +4012,13 @@
     "War Pick",
     "Poisoned Dart"
    ],
+   "spells_daily": [
+    "blindness/deafness",
+    "blur",
+    "disguise self",
+    "nondetection"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -3817,6 +4058,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -3872,6 +4115,12 @@
     "Healing Touch (3/Day)",
     "Change Shape"
    ],
+   "spells_daily": [
+    "commune",
+    "detect evil and good",
+    "raise dead"
+   ],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "planar_upper"
@@ -3913,6 +4162,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -3962,6 +4213,21 @@
     "Scimitar",
     "Create Whirlwind"
    ],
+   "spells_daily": [
+    "conjure elemental",
+    "create food and water",
+    "creation",
+    "detect evil and good",
+    "detect magic",
+    "gaseous form",
+    "invisibility",
+    "major image",
+    "plane shift",
+    "thunderwave",
+    "tongues",
+    "wind walk"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -4010,6 +4276,8 @@
     "Slam",
     "Read Thoughts"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "urban"
@@ -4050,6 +4318,8 @@
    "actions": [
     "Hooves"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -4098,6 +4368,8 @@
     "Steam Breath (Recharge 5–6)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -4148,6 +4420,8 @@
     "Claws",
     "Fetid Cloud (1/Day)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -4198,6 +4472,12 @@
     "Longsword",
     "Longbow"
    ],
+   "spells_daily": [
+    "dancing lights",
+    "darkness",
+    "faerie fire"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -4242,6 +4522,12 @@
     "Shortsword",
     "Hand Crossbow"
    ],
+   "spells_daily": [
+    "dancing lights",
+    "darkness",
+    "faerie fire"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -4286,6 +4572,18 @@
    "actions": [
     "Quarterstaff"
    ],
+   "spells_daily": [
+    "animal messenger",
+    "barkskin",
+    "druidcraft",
+    "entangle",
+    "longstrider",
+    "produce flame",
+    "shillelagh",
+    "speak with animals",
+    "thunderwave"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -4336,6 +4634,15 @@
     "Club",
     "Fey Charm"
    ],
+   "spells_daily": [
+    "barkskin",
+    "druidcraft",
+    "entangle",
+    "goodberry",
+    "pass without trace",
+    "shillelagh"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -4382,6 +4689,8 @@
     "Javelin",
     "Invisibility (Recharges after a Short or Long Rest)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -4432,6 +4741,8 @@
     "Claws",
     "Blinding Breath (Recharge 6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -4475,6 +4786,8 @@
    "actions": [
     "Talons"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -4534,6 +4847,8 @@
     "Multiattack",
     "Slam"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -4581,6 +4896,17 @@
     "Scimitar",
     "Hurl Flame"
    ],
+   "spells_daily": [
+    "conjure elemental",
+    "detect magic",
+    "enlarge/reduce",
+    "gaseous form, invisibility",
+    "major image",
+    "plane shift",
+    "tongues",
+    "wall of fire"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -4624,6 +4950,8 @@
     "Gore",
     "Stomp"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -4666,6 +4994,8 @@
     "Ram",
     "Hooves"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -4722,6 +5052,8 @@
    "actions": [
     "Parry"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -4770,6 +5102,8 @@
     "Claws",
     "Web (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -4814,6 +5148,8 @@
     "Morningstar"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -4874,6 +5210,8 @@
     "Multiattack",
     "Touch"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -4918,6 +5256,8 @@
     "Greatsword",
     "Rock"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -4979,6 +5319,8 @@
     "Slam"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -5022,6 +5364,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -5078,6 +5422,8 @@
    "actions": [
     "Longsword"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -5119,6 +5465,8 @@
     "Standing Leap"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -5163,6 +5511,8 @@
     "Greataxe",
     "Rock"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -5218,6 +5568,8 @@
     "Bite",
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -5269,6 +5621,8 @@
     "Engulf"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -5320,6 +5674,8 @@
     "Bite",
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -5391,6 +5747,8 @@
     "Possession (Recharge 6)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -5438,6 +5796,8 @@
     "Bite",
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -5483,6 +5843,8 @@
     "Fist",
     "Rock"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -5527,6 +5889,8 @@
     "Claws"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -5570,6 +5934,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -5613,6 +5979,8 @@
    "actions": [
     "Tusk"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -5652,6 +6020,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -5693,6 +6063,8 @@
     "Bite",
     "Constrict"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -5736,6 +6108,8 @@
     "Claw"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -5780,6 +6154,8 @@
     "Bite",
     "Tail"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -5826,6 +6202,8 @@
     "Beak",
     "Talons"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -5869,6 +6247,8 @@
     "Ram",
     "Hooves"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -5909,6 +6289,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -5953,6 +6335,8 @@
     "Bite",
     "Swallow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -5996,6 +6380,8 @@
    "actions": [
     "Ram"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6037,6 +6423,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -6079,6 +6467,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6124,6 +6514,8 @@
     "Ink Cloud (Recharges after a Short or Long Rest)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -6167,6 +6559,8 @@
    "actions": [
     "Talons"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6207,6 +6601,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6250,6 +6646,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -6293,6 +6691,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -6334,6 +6734,8 @@
     "Claw",
     "Sting"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -6378,6 +6780,8 @@
    "actions": [
     "Ram"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -6421,6 +6825,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -6466,6 +6872,8 @@
     "Bite",
     "Web (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6511,6 +6919,8 @@
     "Bite",
     "Swallow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -6557,6 +6967,8 @@
     "Beak",
     "Talons"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -6600,6 +7012,8 @@
    "actions": [
     "Sting"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6643,6 +7057,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -6686,6 +7102,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6734,6 +7152,8 @@
     "Bites",
     "Blinding Spittle (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -6790,6 +7210,15 @@
     "Pincer",
     "Fist"
    ],
+   "spells_daily": [
+    "confusion",
+    "darkness",
+    "detect magic",
+    "dispel magic",
+    "fly",
+    "power word stun"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -6836,6 +7265,8 @@
     "Shield Bash",
     "Parry"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban"
@@ -6881,6 +7312,8 @@
     "Spear",
     "Longbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "grassland",
@@ -6926,6 +7359,8 @@
    "actions": [
     "Ram"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -6968,6 +7403,8 @@
     "Scimitar",
     "Shortbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -7018,6 +7455,8 @@
     "Bite",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -7065,6 +7504,8 @@
     "Hooves",
     "Petrifying Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -7120,6 +7561,8 @@
    "actions": [
     "Pseudopod"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -7168,6 +7611,8 @@
     "Bite",
     "Poison Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -7214,6 +7659,12 @@
     "Invisible Passage"
    ],
    "actions": [],
+   "spells_daily": [
+    "dancing lights",
+    "minor illusion",
+    "vicious mockery"
+   ],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "marsh",
@@ -7265,6 +7716,8 @@
     "Tentacles",
     "Beak"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -7309,6 +7762,8 @@
     "Claws"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "mountain",
@@ -7355,6 +7810,8 @@
    "actions": [
     "Spiked Bone Club"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -7395,6 +7852,8 @@
     "Spear"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -7446,6 +7905,24 @@
     "Bite",
     "Spit Poison"
    ],
+   "spells_daily": [
+    "banishment",
+    "bestow curse",
+    "calm emotions",
+    "clairvoyance",
+    "command",
+    "cure wounds",
+    "flame strike",
+    "freedom of movement",
+    "geas",
+    "hold person",
+    "mending",
+    "sacred flame",
+    "shield of faith",
+    "thaumaturgy",
+    "true seeing"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -7500,6 +7977,24 @@
     "Multiattack",
     "Claw"
    ],
+   "spells_daily": [
+    "banishment",
+    "darkness",
+    "detect magic",
+    "dispel magic",
+    "greater invisibility",
+    "identify",
+    "legend lore",
+    "locate object",
+    "mage hand",
+    "minor illusion",
+    "prestidigitation",
+    "remove curse",
+    "shield",
+    "suggestion",
+    "tongues"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -7547,6 +8042,8 @@
     "Heavy Crossbow",
     "Fire Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -7592,6 +8089,8 @@
     "Club",
     "Luring Song"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cliff",
@@ -7635,6 +8134,8 @@
    "actions": [
     "Talons"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -7681,6 +8182,8 @@
     "Bite",
     "Fire Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower",
@@ -7739,6 +8242,8 @@
     "Bite",
     "Claw"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -7781,6 +8286,8 @@
     "Greatclub",
     "Rock"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -7825,6 +8332,8 @@
     "Beak",
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -7868,6 +8377,8 @@
     "Longsword",
     "Longbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -7919,6 +8430,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -7975,6 +8488,8 @@
     "Tail",
     "Hurl Flame"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -8019,6 +8534,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -8065,6 +8582,8 @@
     "Multiattack",
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -8107,6 +8626,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -8157,6 +8678,8 @@
     "Devil’s Sight"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -8211,6 +8734,8 @@
     "Frost Breath (Recharge 6)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -8273,6 +8798,8 @@
     "Sting (Bite in Beast Form)",
     "Invisibility"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -8333,6 +8860,8 @@
     "Multiattack",
     "Slam"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -8394,6 +8923,8 @@
     "Sword",
     "Poison Breath (Recharge 6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -8436,6 +8967,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -8481,6 +9014,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -8527,6 +9062,8 @@
     "Leadership (Recharges after a Short or Long Rest)",
     "Parry"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -8574,6 +9111,8 @@
     "Dagger",
     "Sling"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -8633,6 +9172,8 @@
     "Fling",
     "Lightning Storm"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -8677,6 +9218,16 @@
     "Dagger",
     "Intoxicating Touch"
    ],
+   "spells_daily": [
+    "charm person",
+    "disguise self",
+    "geas",
+    "major image",
+    "mirror image",
+    "scrying",
+    "suggestion"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -8728,6 +9279,8 @@
    "actions": [
     "Fist"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -8788,6 +9341,35 @@
    "actions": [
     "Paralyzing Touch"
    ],
+   "spells_daily": [
+    "acid arrow",
+    "animate dead",
+    "blight",
+    "cloudkill",
+    "counterspell",
+    "detect magic",
+    "detect thoughts",
+    "dimension door",
+    "disintegrate",
+    "dispel magic",
+    "dominate monster",
+    "finger of death",
+    "fireball",
+    "globe of invulnerability",
+    "invisibility",
+    "mage hand",
+    "magic missile",
+    "mirror image",
+    "plane shift",
+    "power word kill",
+    "power word stun",
+    "prestidigitation",
+    "ray of frost",
+    "scrying",
+    "shield",
+    "thunderwave"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -8837,6 +9419,8 @@
     "Bite",
     "Claw"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -8877,6 +9461,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -8923,6 +9509,8 @@
     "Javelin",
     "Spiked Shield"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -8967,6 +9555,25 @@
    "actions": [
     "Dagger"
    ],
+   "spells_daily": [
+    "cone of cold",
+    "counterspell",
+    "detect magic",
+    "fire bolt",
+    "fireball",
+    "fly",
+    "greater invisibility",
+    "ice storm",
+    "light",
+    "mage armor",
+    "mage hand",
+    "magic missile",
+    "misty step",
+    "prestidigitation",
+    "shield",
+    "suggestion"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban"
@@ -9021,6 +9628,8 @@
     "Claws",
     "Fire Breath (Recharge 6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -9070,6 +9679,8 @@
     "Touch"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -9113,6 +9724,8 @@
     "Gore",
     "Stomp"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -9159,6 +9772,8 @@
     "Claw",
     "Tail Spike"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -9218,6 +9833,8 @@
     "Teleport",
     "Parry"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -9260,6 +9877,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -9304,6 +9923,8 @@
     "Shortsword",
     "Longbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -9346,6 +9967,8 @@
    "actions": [
     "Spear"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -9393,6 +10016,8 @@
     "Claws",
     "Harpoon"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -9442,6 +10067,8 @@
     "Pseudopod",
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -9487,6 +10114,8 @@
     "Greataxe",
     "Gore"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -9536,6 +10165,8 @@
     "Greataxe",
     "Gore"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -9580,6 +10211,8 @@
    "actions": [
     "Hooves"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -9636,6 +10269,8 @@
     "Rotting Fist",
     "Dreadful Glare"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -9698,6 +10333,24 @@
     "Dreadful Glare"
    ],
    "actions": [],
+   "spells_daily": [
+    "animate dead",
+    "command",
+    "contagion",
+    "dispel magic",
+    "divination",
+    "guardian of faith",
+    "guiding bolt",
+    "harm",
+    "hold person",
+    "insect plague",
+    "sacred flame",
+    "shield of faith",
+    "silence",
+    "spiritual weapon",
+    "thaumaturgy"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -9759,6 +10412,8 @@
     "Horror Nimbus (Recharge 5–6)",
     "Teleport"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -9813,6 +10468,14 @@
     "Nightmare Haunting (1/Day)"
    ],
    "actions": [],
+   "spells_daily": [
+    "detect magic",
+    "magic missile",
+    "plane shift",
+    "ray of enfeeblement",
+    "sleep"
+   ],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "planar_lower",
@@ -9862,6 +10525,8 @@
     "Hooves",
     "Ethereal Stride"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -9903,6 +10568,8 @@
     "Rapier",
     "Parry"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban"
@@ -9961,6 +10628,8 @@
     "Pseudopod",
     "Split"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -10007,6 +10676,8 @@
     "Tentacles",
     "Ink Cloud (Recharges after a Short or Long Rest)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -10047,6 +10718,8 @@
     "Greatclub",
     "Javelin"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -10093,6 +10766,8 @@
    "actions": [
     "Morningstar"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -10144,6 +10819,15 @@
     "Glaive",
     "Change Shape"
    ],
+   "spells_daily": [
+    "charm person",
+    "cone of cold",
+    "darkness",
+    "gaseous form",
+    "invisibility",
+    "sleep"
+   ],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "hills",
@@ -10186,6 +10870,8 @@
     "Greataxe",
     "Javelin"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -10234,6 +10920,8 @@
     "Tentacle",
     "Tentacle Slam"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -10277,6 +10965,8 @@
    "actions": [
     "Talons"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -10320,6 +11010,8 @@
     "Beak",
     "Claws"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -10364,6 +11056,8 @@
     "Bite",
     "Claw"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -10404,6 +11098,8 @@
    "actions": [
     "Hooves"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_upper",
@@ -10449,6 +11145,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -10508,6 +11206,13 @@
     "Mace",
     "Tail"
    ],
+   "spells_daily": [
+    "detect magic",
+    "fireball",
+    "hold monster",
+    "wall of fire"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -10565,6 +11270,18 @@
     "Greatsword",
     "Healing Touch (4/Day)"
    ],
+   "spells_daily": [
+    "blade barrier",
+    "commune",
+    "control weather",
+    "detect evil and good",
+    "dispel evil and good",
+    "flame strike",
+    "insect plague",
+    "invisibility",
+    "raise dead"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_upper"
@@ -10606,6 +11323,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -10646,6 +11365,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -10691,6 +11412,8 @@
     "Claws"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -10733,6 +11456,8 @@
     "Hooves"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -10775,6 +11500,19 @@
    "actions": [
     "Mace"
    ],
+   "spells_daily": [
+    "cure wounds",
+    "dispel magic",
+    "guiding bolt",
+    "lesser restoration",
+    "light",
+    "sacred flame",
+    "sanctuary",
+    "spirit guardians",
+    "spiritual weapon",
+    "thaumaturgy"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -10822,6 +11560,8 @@
     "Bite",
     "Sting"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "mountain",
@@ -10866,6 +11606,8 @@
     "Bite",
     "Tail Stinger"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -10921,6 +11663,8 @@
     "Scare (1/Day)",
     "Invisibility"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -10965,6 +11709,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -11014,6 +11760,22 @@
     "Multiattack",
     "Claw"
    ],
+   "spells_daily": [
+    "charm person",
+    "detect magic",
+    "detect thoughts",
+    "disguise self",
+    "dominate person",
+    "fly",
+    "invisibility",
+    "mage hand",
+    "major image",
+    "minor illusion",
+    "plane shift",
+    "true seeing",
+    "uggestion"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -11056,6 +11818,8 @@
     "Bite"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -11098,6 +11862,8 @@
    "actions": [
     "Beak"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -11143,6 +11909,8 @@
     "Bite",
     "Fire Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -11188,6 +11956,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -11234,6 +12004,8 @@
     "Bite",
     "Swallow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -11277,6 +12049,8 @@
    "actions": [
     "Gore"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -11317,6 +12091,8 @@
     "Hooves"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -11361,6 +12137,8 @@
     "Beak",
     "Talons"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -11409,6 +12187,8 @@
     "Tendril",
     "Reel"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -11463,6 +12243,8 @@
     "Smother"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -11506,6 +12288,8 @@
     "Bite",
     "Antennae"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -11549,6 +12333,8 @@
     "Bite",
     "Claw"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -11598,6 +12384,8 @@
     "Spear"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -11652,6 +12440,8 @@
     "Spear",
     "Tail"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -11696,6 +12486,8 @@
     "Shortsword",
     "Shortbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -11734,6 +12526,8 @@
    "actions": [
     "Sting"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -11778,6 +12572,8 @@
     "Shortsword",
     "Longbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -11828,6 +12624,8 @@
     "Death Glare",
     "Illusory Appearance"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "coast",
@@ -11868,6 +12666,8 @@
     "Water Breathing"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -11934,6 +12734,8 @@
    "actions": [
     "Strength Drain"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -11990,6 +12792,8 @@
     "Slam",
     "Engulf"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -12044,6 +12848,8 @@
    "actions": [
     "Shield"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -12091,6 +12897,8 @@
    "actions": [
     "Shriek"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -12134,6 +12942,8 @@
     "Bite",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -12182,6 +12992,8 @@
     "Shortsword",
     "Shortbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -12248,6 +13060,16 @@
     "Flying Sword",
     "Healing Touch (4/Day)"
    ],
+   "spells_daily": [
+    "blade barrier",
+    "commune",
+    "control weather",
+    "detect evil and good",
+    "dispel evil and good",
+    "invisibility",
+    "resurrection"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_upper"
@@ -12312,6 +13134,8 @@
    "actions": [
     "Life Drain"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -12356,6 +13180,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -12403,6 +13229,22 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [
+    "blight",
+    "charm person",
+    "detect magic",
+    "detect thoughts",
+    "dimension door",
+    "dominate person",
+    "hold person",
+    "lightning bolt",
+    "mage hand",
+    "minor illusion",
+    "ray of frost",
+    "sleep",
+    "water breathing"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -12447,6 +13289,8 @@
     "Invisibility"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -12490,6 +13334,8 @@
     "Shortsword",
     "Hand Crossbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban"
@@ -12542,6 +13388,8 @@
     "Claws",
     "Steam Breath (Recharge 6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_inner"
@@ -12581,6 +13429,8 @@
    "actions": [
     "Blood Drain"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -12626,6 +13476,8 @@
     "Rock",
     "Rock Catching"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -12684,6 +13536,8 @@
     "Slam",
     "Slow (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -12735,6 +13589,15 @@
     "Rock",
     "Lightning Strike (Recharge 5–6)"
    ],
+   "spells_daily": [
+    "control weather",
+    "detect magic",
+    "feather fall",
+    "levitate",
+    "light",
+    "water breathing"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -12790,6 +13653,8 @@
     "Draining Kiss",
     "Etherealness"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "planar_lower"
@@ -12848,6 +13713,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -12905,6 +13772,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -12961,6 +13830,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -13016,6 +13887,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -13071,6 +13944,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -13129,6 +14004,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "coast",
@@ -13184,6 +14061,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -13239,6 +14118,8 @@
    "actions": [
     "Beaks"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -13295,6 +14176,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -13350,6 +14233,8 @@
    "actions": [
     "Bites"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -13412,6 +14297,8 @@
     "Frightful Presence",
     "Swallow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -13455,6 +14342,8 @@
     "Mace",
     "Heavy Crossbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -13501,6 +14390,8 @@
     "Bite",
     "Claw"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "jungle",
@@ -13551,6 +14442,8 @@
     "Rock",
     "Animate Trees (1/Day)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -13591,6 +14484,8 @@
    "actions": [
     "Spear"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "steppe",
@@ -13637,6 +14532,8 @@
     "Gore",
     "Stomp"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -13681,6 +14578,8 @@
     "Bite",
     "Claw"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -13723,6 +14622,8 @@
     "Bite",
     "Tail"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -13777,6 +14678,15 @@
     "Healing Touch (3/Day)",
     "Teleport (1/Day)"
    ],
+   "spells_daily": [
+    "calm emotions",
+    "detect evil and good",
+    "dispel evil and good",
+    "druidcraft",
+    "entangle",
+    "pass without trace"
+   ],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_upper",
@@ -13832,6 +14742,8 @@
     "Charm",
     "Children of the Night (1/Day)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -13891,6 +14803,8 @@
     "Charm",
     "Children of the Night (1/Day)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -13949,6 +14863,8 @@
     "Charm",
     "Children of the Night (1/Day)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -14001,6 +14917,8 @@
     "Claws",
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -14045,6 +14963,8 @@
     "Shortsword",
     "Heavy Crossbow"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "urban",
@@ -14095,6 +15015,8 @@
     "Multiattack",
     "Rotting Touch"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -14152,6 +15074,8 @@
     "Stunning Screech (1/Day)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "planar_lower",
@@ -14198,6 +15122,8 @@
    "actions": [
     "Beak"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -14241,6 +15167,8 @@
    "actions": [
     "Hooves"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -14287,6 +15215,8 @@
    "actions": [
     "Hooves"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -14350,6 +15280,8 @@
     "Slam",
     "Whelm (Recharge 4–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "water",
@@ -14392,6 +15324,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest"
@@ -14441,6 +15375,8 @@
     "Greataxe (Humanoid or Hybrid Form Only)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -14493,6 +15429,8 @@
     "Greataxe (Humanoid or Hybrid Form Only)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -14546,6 +15484,8 @@
     "Greataxe (Humanoid or Hybrid Form Only)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -14598,6 +15538,8 @@
     "Maul (Humanoid or Hybrid Form Only)",
     "Tusks (Boar or Hybrid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -14650,6 +15592,8 @@
     "Maul (Humanoid or Hybrid Form Only)",
     "Tusks (Boar or Hybrid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -14702,6 +15646,8 @@
     "Maul (Humanoid or Hybrid Form Only)",
     "Tusks (Boar or Hybrid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -14754,6 +15700,8 @@
     "Hand Crossbow (Humanoid or Hybrid Form Only)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "ruins",
@@ -14807,6 +15755,8 @@
     "Hand Crossbow (Humanoid or Hybrid Form Only)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "ruins",
@@ -14860,6 +15810,8 @@
     "Hand Crossbow (Humanoid or Hybrid Form Only)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "ruins",
@@ -14915,6 +15867,8 @@
     "Scimitar (Humanoid or Hybrid Form Only)",
     "Longbow (Humanoid or Hybrid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "jungle",
@@ -14970,6 +15924,8 @@
     "Scimitar (Humanoid or Hybrid Form Only)",
     "Longbow (Humanoid or Hybrid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "jungle",
@@ -15025,6 +15981,8 @@
     "Scimitar (Humanoid or Hybrid Form Only)",
     "Longbow (Humanoid or Hybrid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "jungle",
@@ -15078,6 +16036,8 @@
     "Claws (Hybrid Form Only)",
     "Spear (Humanoid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -15130,6 +16090,8 @@
     "Claws (Hybrid Form Only)",
     "Spear (Humanoid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -15182,6 +16144,8 @@
     "Claws (Hybrid Form Only)",
     "Spear (Humanoid Form Only)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": true,
    "ecology": {
     "habitats": [
      "forest",
@@ -15230,6 +16194,8 @@
     "Bite",
     "Cold Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -15286,6 +16252,8 @@
     "Longbow"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -15328,6 +16296,8 @@
    "condition_immunities": [],
    "traits": [],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -15375,6 +16345,8 @@
     "Bite",
     "Cold Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -15419,6 +16391,8 @@
    "actions": [
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -15461,6 +16435,8 @@
     "Bite"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -15528,6 +16504,8 @@
     "Life Drain",
     "Create Specter"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",
@@ -15573,6 +16551,8 @@
     "Claws",
     "Stinger"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "mountain",
@@ -15622,6 +16602,8 @@
     "Claw",
     "Bite"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "underground",
@@ -15670,6 +16652,8 @@
     "Acid Breath (Recharge 5–6)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "marsh",
@@ -15718,6 +16702,8 @@
     "Claw",
     "Lightning Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -15766,6 +16752,8 @@
     "Claw",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "desert",
@@ -15816,6 +16804,8 @@
     "Claw",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -15864,6 +16854,8 @@
     "Claw",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -15913,6 +16905,8 @@
     "Claw",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -15965,6 +16959,8 @@
     "Claw",
     "Poison Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "forest",
@@ -16012,6 +17008,8 @@
     "Claw",
     "Fire Breath (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "volcanic",
@@ -16059,6 +17057,8 @@
     "Claw",
     "Breath Weapons (Recharge 5–6)"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "hills",
@@ -16109,6 +17109,8 @@
     "Cold Breath (Recharge 5–6)"
    ],
    "actions": [],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "cold",
@@ -16156,6 +17158,8 @@
    "actions": [
     "Slam"
    ],
+   "spells_daily": [],
+   "takes_humanoid_form": false,
    "ecology": {
     "habitats": [
      "ruins",

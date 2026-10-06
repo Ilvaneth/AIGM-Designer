@@ -182,3 +182,22 @@
 | power_old_empire_ghost | An old empire's ghost | the ghost of an old empire | | P2: the old empire stands in the history; its ghost wants it back |
 
 The pin is a god only for `power_god` (or, as before, the god family or the goal of a patron's will); otherwise the pin is the chain's piece, as in 18e. The kind is recorded as `identity.secret.greater_power` in `dice-log.json` (null without that twist), and the writer's prompt points at it. The two family labels whose commas YAML read as keys (`family_monstrous_mind`, `family_god`) are quoted now: their `label` was cut at the first comma and the rest became empty keys.
+
+## 19b — the villain hidden among people: the visibilities read, the mask, the weakness of the mask
+
+| Visibility | Rule | Hides it as a person among people? |
+|---|---|---|
+| vis_known_untouchable | everyone knows who; nobody can touch them (a seat, a law, a wall of allies) | no |
+| vis_known_wrong_person | the world names a villain; the world is wrong; the real one hides behind the named one | no |
+| vis_behind_visible_front | a face is public (a lieutenant, an institution); the BBEG is the hand nobody sees | no |
+| vis_mystery_among_candidates | three or four plausible candidates, all with motive; the truth is one of them | yes: it passes or wears a mask |
+| vis_known_unknown_where | everyone knows who; nobody knows where it lies; the hunt for the hidden lair is the campaign | no |
+
+| Mask | Kind | Text | Hook | Fits the weakness of the mask |
+|---|---|---|---|---|
+| mask_disguise_item | item | a disguise item it wears: a hat of disguise, or a mask with another face | P6: the disguise item lies or is kept at a site the party can reach; taking it strips the villain's mask | yes |
+| mask_possessed_mortal | possessed | a mortal it possesses or binds, who stands among the candidates in its place | P4: the possessed or bound mortal is a person among the candidates, and can be freed | yes |
+| mask_mortal_agent | agent | a mortal agent who wears its name and speaks for it | P4: the agent who wears its name is a person among the candidates, and knows where the villain is | no |
+| mask_bought_glamour | glamour | a glamour bought from a power, which shows the world a mortal face | P6: the glamour has an anchor at a site; breaking it shows the villain's true form | yes |
+
+The weakness row `weak_strip_the_mask`: strip its mask, and the mystery breaks: the candidates fall away and its true form stands alone; requires mask:item, mask:possessed, mask:glamour; hook P6: the place where its mask is stripped is a site the party can reach.

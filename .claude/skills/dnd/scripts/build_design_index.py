@@ -98,7 +98,8 @@ def walk_blocks(node, source: str, out: dict):
 def parse_block(lines: list) -> dict:
     text_lines = [x for x in lines if isinstance(x, str)]
     rec = {"damage_immunities": [], "damage_resistances": [], "damage_vulnerabilities": [], "condition_immunities": [],
-           "has_legendary": False, "legendary_resistance": False, "spellcaster": False, "actions": [], "traits": []}
+           "has_legendary": False, "legendary_resistance": False, "spellcaster": False, "actions": [], "traits": [],
+           "spells_daily": [], "takes_humanoid_form": False}
     section = "traits"
     for line in text_lines:
         for field, key in (("Damage Immunities", "damage_immunities"), ("Damage Resistances", "damage_resistances"),
@@ -117,6 +118,15 @@ def parse_block(lines: list) -> dict:
             rec["legendary_resistance"] = True
         if re.match(r"^\*\*\*(Innate )?Spellcasting", line):
             rec["spellcaster"] = True
+        # build item 19b: the spells it casts at will, by the day or from its slots (a spell list line: "At will: …",
+        # "3/day each: …", "Cantrips (at will): …", "1st level (4 slots): …")
+        # build item 19b: a shapeshifting or illusion feature that names a humanoid form (a doppelganger's, a night hag's,
+        # a metallic dragon's; not an imp's beasts or a mimic's objects)
+        if re.match(r"^\*\*\*(Shapechanger|Change Shape|Illusory Appearance)", line) and "humanoid" in line:
+            rec["takes_humanoid_form"] = True
+        if re.match(r"^(At will|Cantrips|\d+/day|\d+(st|nd|rd|th) level)", line.strip()):
+            names = {s.strip(" ,.").lower() for s in re.findall(r"\*([^*]+)\*", line)}
+            rec["spells_daily"] = sorted(set(rec["spells_daily"]) | {n for n in names if n and not n.startswith("(")})
         m = re.match(r"^\*\*\*([^.*]+)\.?\*\*\*?", line)
         if m and section in ("traits", "actions"):
             rec[section].append(m.group(1).strip())
@@ -295,7 +305,8 @@ def build_monsters(js: dict, ym: dict) -> dict:
             "spellcaster": parsed["spellcaster"] or "Spellcasting:" in m.get("description", ""),
             "damage_immunities": parsed["damage_immunities"], "damage_resistances": parsed["damage_resistances"],
             "damage_vulnerabilities": parsed["damage_vulnerabilities"], "condition_immunities": parsed["condition_immunities"],
-            "traits": parsed["traits"], "actions": parsed["actions"],
+            "traits": parsed["traits"], "actions": parsed["actions"], "spells_daily": parsed["spells_daily"],
+            "takes_humanoid_form": parsed["takes_humanoid_form"],
         }
     return out
 

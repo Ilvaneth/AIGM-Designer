@@ -42,6 +42,10 @@ VILLAIN_PAIR_KEY = "antagonists.yaml#shape_origin_pair"     # used.json: shape|o
 PIECES_ALWAYS = ("heart", "key_place", "disputed_land", "remnant", "role", "new")
 # the visibilities under which the villain itself is public (the 18c-1 audit): a world state may join it only then
 PUBLIC_VISIBILITY = ("vis_known_untouchable", "vis_known_unknown_where")
+# build item 19b: the visibilities that hide the villain as a person among people (the others put a face in front of it
+# or do not hide it); such a villain passes as a person or wears a mask
+HIDDEN_AMONG_PEOPLE = ("vis_mystery_among_candidates",)
+DISGUISE_SPELLS = ("disguise self", "alter self", "seeming")
 DRAGON_COLOURS = ("black", "blue", "green", "red", "white", "brass", "bronze", "copper", "gold", "silver")
 
 
@@ -54,6 +58,25 @@ def srd_creatures() -> dict:
     """SRD monster index → {name, cr, type}."""
     doc = json.loads((data_dir() / "dnd5e_srd.json").read_text(encoding="utf-8"))
     return {m["index"]: {"name": m["name"], "cr": float(m["cr"]), "type": m["type"]} for m in doc["monsters"]}
+
+
+@lru_cache(maxsize=1)
+def srd_index() -> dict:
+    """The designer's SRD index (srd-index-2014.json): traits, actions and the spells cast at will, by the day or from
+    slots, per monster."""
+    return json.loads((data_dir() / "design" / "srd-index-2014.json").read_text(encoding="utf-8"))["monsters"]
+
+
+def passes_as_person(creature: dict) -> bool:
+    """Build item 19b: can the creature (a reskin by its base) pass as a person among people at the table? A humanoid; a
+    Shapechanger, Change Shape or Illusory Appearance that names a humanoid form (an imp's beasts and a mimic's objects do
+    not pass); a disguise spell it casts at will, by the day or from its slots; or a creature the mask table names as
+    passing in its own form (the vampire, whose shapes are a bat and a mist)."""
+    key = creature.get("index") or (creature.get("reskin") or {}).get("base") or ""
+    m = srd_index().get(key) or {}
+    own = dt.load("antagonists.yaml")["tables"]["mask"].get("passes_in_its_own_form") or []
+    return (m.get("type") == "humanoid" or bool(m.get("takes_humanoid_form")) or key in own
+            or bool(set(m.get("spells_daily") or []) & set(DISGUISE_SPELLS)))
 
 
 def cr_window(top_level: int) -> tuple[float, float]:
@@ -93,7 +116,9 @@ def prize_piece(prize_kind: str) -> str:
     return {"seat": "role"}.get(prize_kind, prize_kind)
 
 
-def weakness_fits(row: dict, family: dict) -> bool:
+def weakness_fits(row: dict, family: dict, mask: str | None = None) -> bool:
+    if row.get("by_mask"):
+        return bool(mask)           # build item 19b: the mask's own weakness, with a mask; its kind's token decides (`requires`)
     if row.get("fits") and family["id"] not in row["fits"]:
         return False
     return not family.get("weaknesses") or row["id"] in family["weaknesses"]
@@ -168,8 +193,14 @@ def roll(R, dials: dict, spine: dict, palette, ruin_id: str, contests: list[dict
     goal = {"id": goal_id, "piece": piece, "join": join, "contest": contests[0]["id"]}
     R.add_tokens("threat.goal.tokens", [f"goal_piece:{piece}"], "the goal's piece", secret=True)   # a twist may require it (18e)
 
+    # 5b. the mask (build item 19b): a villain hidden as a person among people that cannot pass as one wears a mask
+    mask = None
+    if visibility in HIDDEN_AMONG_PEOPLE and not passes_as_person(creature):
+        mask = R.table("threat.mask", V + "mask", secret=True, why="hidden among people, it cannot pass as one")["row_id"]
+        R.add_tokens("threat.mask.tokens", [f"mask:{rows_by_id('mask')[mask]['kind']}"], "the villain's mask", secret=True)
+
     # 6. the weakness; 7. the lair
-    weakness = R.table("threat.weakness", V + "weakness", secret=True, where=lambda r: weakness_fits(r, family),
+    weakness = R.table("threat.weakness", V + "weakness", secret=True, where=lambda r: weakness_fits(r, family, mask),
                        why="fits the family")["row_id"]
     colour = next((c for c in DRAGON_COLOURS if f"-{c}-dragon" in str(creature.get("index") or "")), None)
     import design_arbiter as arb
@@ -181,6 +212,7 @@ def roll(R, dials: dict, spine: dict, palette, ruin_id: str, contests: list[dict
                        why="fits the form and the chain")["row_id"]
 
     return {"family": fam_id, "creature_type": family["creature_type"], "creature": creature, "power_source": power, "god_form": god_form,
+            "passes_as_person": passes_as_person(creature), "mask": mask,
             "visibility": visibility, "shape": shape, "origin": origin,
             "public_figure": {"contest": figure["contest"], "role": figure["role"], "main": figure["main"]} if figure else None,
             "goal": goal, "weakness": weakness, "lair": {"form": form_id, "where": where_id}, "band_top": top}

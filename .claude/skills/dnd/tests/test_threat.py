@@ -57,8 +57,8 @@ def births(n: int, tag: str, wait: bool = False, scale: str | None = None, start
 class Tables(unittest.TestCase):
 
     def test_the_counts(self):
-        want = {"villain_family": 19, "power_source": 5, "goal": 20, "weakness": 19, "lair_form": 16, "lair_where": 7,
-                "villain_shape": 19, "origin": 12, "visibility": 5, "break_tie": 0}
+        want = {"villain_family": 19, "power_source": 5, "goal": 20, "weakness": 20, "lair_form": 16, "lair_where": 7,
+                "villain_shape": 19, "origin": 12, "visibility": 5, "break_tie": 0, "mask": 4}      # 19b: the mask, and its weakness
         self.assertEqual({k: len(dt.rows(V + k)) for k in want}, want)
         self.assertEqual(len(dt.rows("secrets.yaml#chooser")), 0, "the villain always chose")
         self.assertEqual(len(dt.retired("secrets.yaml#chooser")), 6)
@@ -186,7 +186,7 @@ class ManySeeds(unittest.TestCase):
         for d, R in self.runs:
             th = R.threat
             fam = FAMILIES[th["family"]]
-            self.assertTrue(dth.weakness_fits(dt.row(V + "weakness", th["weakness"]), fam))
+            self.assertTrue(dth.weakness_fits(dt.row(V + "weakness", th["weakness"]), fam, th.get("mask")))      # 19b: the mask's own
             form = dt.row(V + "lair_form", th["lair"]["form"])
             where = dt.row(V + "lair_where", th["lair"]["where"])
             self.assertIn(th["family"], form["fits"])
