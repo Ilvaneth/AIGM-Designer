@@ -52,3 +52,5 @@ Thresholds before the commit: every target but the thin place at 5 % or more (th
 **Committed as `f24f717`; the clean run on it: 811 tests, OK, exit code 0, five skipped (read from the log). Accepted.** The twists' hand-written texts read; carried into 18e: a twist that names a piece (the seal, the living relic) needs that piece.
 
 ## 18e — the writer, the rubrics and the card (in progress)
+
+**18e committed as `53e66ca`; the clean run on it: 822 tests, OK, exit code 0, five skipped (read from the log).** The story sentence read on six fresh seeds is not yet D&D prose (passive singular forms, verbs on the wrong kind of target, long role texts): part 18e-2 specified and sent to the new coding tab (Coder-5-Opus), which took over from the handoff (`566929a`). The owner returned in the morning and pushed through 18d.
