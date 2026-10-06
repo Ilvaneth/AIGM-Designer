@@ -43,3 +43,7 @@ Changed files; the suite's count, exit code and time; for 19a the list of hand s
 7. **The report says who asked a fix.** `phase P1 report`'s `fix reasons` line groups its reasons by the critic that gave them (entity critic n, phase critic, wishes).
 8. **A promise that flipped is shown.** When a critic judged a promise not kept and a later return kept it, the report says so in one line (`judged not kept, then kept after fix N: <id>`).
 9. **The protocol's channel** (the design tab's own): the next protocol says that the review answer comes from the design tab by SendMessage and carries the owner's word.
+
+## Part 19c — the tests never touch a live guard (added 2026-10-06)
+
+Reported by the coding tab during 19a's suite: the tests' marker guard removes `.runtime/active-design.json` at each campaign test's exit, so a suite run in the main working tree during a live birth could disarm that birth's read guard. Every test that arms, disarms or reads the marker works on its own runtime directory (a temporary project root, or an override the paths module honours in tests only), never the project's `.runtime`; a test arms the real marker, runs a campaign test and finds the marker unchanged. One green commit after 19b: `Plan item 25, build 19c: the tests never touch a live guard`.
