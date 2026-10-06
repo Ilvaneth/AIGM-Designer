@@ -248,12 +248,14 @@ class Floors(unittest.TestCase):
             self.assertEqual(s["tensions"], {"short": 1, "standard": 1, "epic": 2}[s["value"]], "one question per contest")
 
     def test_secrets_floor_and_shape(self):
-        self.assertGreaterEqual(len(dt.rows("secrets.yaml#archetype")), 20)
-        self.assertGreaterEqual(len(dt.rows("secrets.yaml#twist")), 8)
+        # build item 18d: the archetypes retired, the twist (20), the keeping (16), the trails (11) with their stages
+        self.assertEqual(len(dt.rows("secrets.yaml#archetype")), 0)
+        self.assertGreaterEqual(len(dt.rows("secrets.yaml#twist")), 20)
+        self.assertGreaterEqual(len(dt.rows("secrets.yaml#keeping")), 8)
         self.assertGreaterEqual(len(dt.rows("secrets.yaml#trail")), 4)
         self.assertTrue(dt.load("secrets.yaml")["roll"]["secret"])
-        for n, r in enumerate(dt.rows("secrets.yaml#archetype")):      # a failure never names a secret row
-            self.assertEqual(set(r["clue_shape"]), {"act1", "act2", "act3"}, f"archetype row {n + 1}")
+        for n, r in enumerate(dt.rows("secrets.yaml#trail")):      # a failure never names a secret row
+            self.assertEqual(set(r["stages"]), {"stage1", "stage2", "stage3"}, f"trail row {n + 1}")
             self.assertNotIn("villain_relation", r, "build item 9: the villain's tie to the break replaced it")
 
     def test_trope_breaks_and_touch_two_phases(self):

@@ -333,6 +333,7 @@ REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.
                    "signatures.yaml#phenomenon_limit", "signatures.yaml#phenomenon_user",
                    # build item 9: the secret and the villain (their stamps are kept under hashed keys, below)
                    "secrets.yaml#archetype", "secrets.yaml#chooser", "secrets.yaml#twist", "secrets.yaml#trail",
+                   "secrets.yaml#keeping",     # build item 18d: the old twist table, renamed
                    "antagonists.yaml#visibility", "antagonists.yaml#villain_shape", "antagonists.yaml#origin",
                    "antagonists.yaml#break_tie",
                    # build item 18c: the threat

@@ -17,7 +17,7 @@ nothing the owner can read tells what was rolled in secret.
 
 A promise:
   id          `prm_<hash of due and text>` (a secret one hashes its ledger too): the same birth and seed give the same ids
-  source      hook | override | foundation | stub | placement | concretise | clue_stage | note (a signature's `appears`)
+  source      hook | override | foundation | stub | placement | concretise | clue_stage | clue | note (a signature's `appears`)
   from        the row id, the entity id or the foundation piece; `from_phase` the phase that made it
   also        further sources of the same promise (two promises with one due phase and one text are one promise)
   due         a phase (P0-P9), `validator` (the full validator run) or `play` (recorded, never gates a birth)
@@ -66,7 +66,7 @@ SOURCE_PHASES = ("P0", "P1")             # the phases whose rolled rows are sour
 DUE_OTHER = ("validator", "play")
 DUE_ALIASES = {"names": "P1", "slice2": "play"}     # claims.yaml#defaults: the naming rolls are P1's; slice 2 is play
 DUE_ORDER = dm.PHASES + DUE_OTHER
-SOURCES = ("hook", "override", "foundation", "stub", "placement", "concretise", "clue_stage", "note")
+SOURCES = ("hook", "override", "foundation", "stub", "placement", "concretise", "clue_stage", "clue", "note")
 STATUSES = ("open", "kept", "not_kept", "waived")
 NO_TABLE = ("dice", "tokens")            # dice-log records that name no table row
 PART_WORDS = {"key_place": "the key place", "heart": "the heart", "end_a": "the first end", "end_b": "the second end",
@@ -268,13 +268,41 @@ def build(dials: dict, public: list[dict], secret: list[dict], foundation: dict,
     if action.get("concretise"):
         add("concretise", action["id"], "P1", "P1", f"the premise says concretely what it was in this world: {action['label']}", action["label"])
 
-    # 6. the secret's three clue stages (secret): the archetype's clue shape and the trail row, each with its levels
-    if identity_secret:
+    # 3b. the move's columns (build item 18d, G6): the start to P3; the public creature families to P6; the villain's
+    #     own creatures to P6, secret
+    move = foundation.get("move")
+    if move:
+        add("foundation", "move.start", "P1", "P3", f"the start is a village or a small town {where(move['start'])}, where step 1 of the plan lands", "The start")
+        if move.get("families"):
+            add("foundation", "move.families", "P1", "P6", "the occupants of the sites and the travel encounters weigh the campaign's creature "
+                f"families: {', '.join(move['families'])}", "The creature families")
+    facts = ((identity_secret or {}).get("secret") or {}).get("facts")
+    if facts:
+        add("foundation", "threat.families", "P1", "P6", "the villain's own creatures (" + ", ".join(facts["creature_types"]["secret"])
+            + ") stand among the occupants of its sites and its lair", "The villain's creatures", hidden=True)
+
+    # 6. the secret's clues (secret). Build item 18d: three stages, three clues each: the chain's own (`clue_stage`, its
+    #    levels the validator reads) and the two promised to P5 and P6 (`clue`); a legacy birth keeps its archetype's three
+    stages = ((identity_secret or {}).get("secret") or {}).get("stages")
+    if stages:
+        for st in stages:
+            n, (lo, hi) = st["n"], st["levels"]
+            reveal = "; its clues reveal how the villain is stopped" if st.get("reveals") else ""
+            chain = st["clues"][0]
+            add("clue_stage", f"secret.stage{n}", "P1", "P6",
+                f"stage {n}'s first clue ({st.get('shape')}) sits {where(chain['at'])} ({chain['why']}), on a site or a node the party "
+                f"plays at {levels_text(lo, hi)}; the stage's conclusion: {st['conclusion']}{reveal}", f"The secret's stage {n}",
+                hidden=True, clue=n, levels=[lo, hi])
+            add("clue", f"secret.stage{n}.person", "P1", "P5", f"a person holds a second clue of stage {n}, met at {levels_text(lo, hi)}{reveal}",
+                f"The secret's stage {n}", hidden=True, stage=n, levels=[lo, hi])
+            add("clue", f"secret.stage{n}.site", "P1", "P6", f"a site holds a third clue of stage {n}, played at {levels_text(lo, hi)}{reveal}",
+                f"The secret's stage {n}", hidden=True, stage=n, levels=[lo, hi])
+    elif identity_secret and identity_secret["secret"].get("archetype") and dt.row("secrets.yaml#archetype", identity_secret["secret"]["archetype"]):
         arch = dt.row("secrets.yaml#archetype", identity_secret["secret"]["archetype"])
         trail = dt.row("secrets.yaml#trail", identity_secret["secret"]["trail"])
         for n, (lo, hi) in enumerate(clue_levels(band, steps[-1]), 1):
             add("clue_stage", arch["id"], "P1", "P6",
-                f"clue {n} of the secret ({arch['clue_shape'][f'act{n}']}; the trail carries it as: {trail['acts'][f'act{n}']}) "
+                f"clue {n} of the secret ({arch['clue_shape'][f'act{n}']}; the trail carries it as: {(trail.get('acts') or {}).get(f'act{n}') or (trail.get('stages') or {}).get(f'stage{n}')}) "
                 f"sits on a site or a node the party plays at {levels_text(lo, hi)}", f"The secret's clue {n}", hidden=True, clue=n, levels=[lo, hi])
     return L.split()
 

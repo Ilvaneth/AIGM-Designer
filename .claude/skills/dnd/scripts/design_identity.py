@@ -344,11 +344,16 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
         used_pairs = dd.used_values(R.campaign, VILLAIN_PAIR_KEY) if R.campaign else set()
     main = foundation["contests"][0]
 
-    # 6. the secret (build item 18c: the chooser is no longer rolled; the villain always chose)
-    archetype = R.table("secret_archetype", SECRETS + "archetype", secret=True)["row_id"]
-    chooser, chooser_role = "chooser_the_villain", None
-    twist = R.table("secret_twist", SECRETS + "twist", secret=True)["row_id"]
+    # 6. the secret, the threat's hidden half (build item 18d): the twist (always with mystery in the content mix, else
+    #    on a d2), the keeping, the trail; the four facts and the three stages come from the chain. The chooser is not
+    #    rolled (18c: the villain always chose); `archetype` keeps the twist's id for the readers of earlier births
+    if "mystery" in (dials.get("content_mix") or []) or int(R.notation("secret_twist.gate", "d2", secret=True)["raw"]) == 1:
+        twist = R.table("secret_twist", SECRETS + "twist", secret=True)["row_id"]
+    else:
+        twist = None
+    keeping = R.table("secret_keeping", SECRETS + "keeping", secret=True)["row_id"]
     trail = R.table("secret_trail", SECRETS + "trail", secret=True)["row_id"]
+    archetype, chooser, chooser_role = twist, "chooser_the_villain", None
 
     # 7. the villain: its visibility, shape and origin come from the threat (design_threat.py, rolled before the move);
     #    the tie to the break is retired (the move is always the villain's; 18c-2 rolls the move's state)
@@ -364,11 +369,71 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
     else:
         side = ("a", "b")[int(R.notation("bbeg_pole", "d2", secret=True)["raw"]) - 1]
     tone = dt.dial_row("tone", dials.get("tone")) or {}
-    return {"secret": {"archetype": archetype, "chooser": chooser, "chooser_role": chooser_role, "twist": twist, "trail": trail},
+    facts = secret_facts(threat, side)
+    stages = secret_stages(foundation, threat, trail)
+    return {"secret": {"archetype": archetype, "chooser": chooser, "chooser_role": chooser_role, "twist": twist,
+                       "keeping": keeping, "trail": trail, "facts": facts, "stages": stages},
             "villain": {"visibility": visibility, "shape": shape, "origin": origin, "tie": tie,
                         "pole": {"question": identity["questions"][0]["id"], "contest": main["id"], "role": side},
                         "public_figure": {"contest": figure["contest"], "role": figure["role"]} if figure else None,
                         "majority_pole": (tone.get("effects") or {}).get("majority_pole")}}
+
+
+CONCLUSIONS = {1: "someone stands behind the hand, and the hand's base is here",
+               2: "it is this one; it wants this, for this reason",
+               3: "it is there, and this is how it is stopped"}
+
+
+def secret_facts(threat: dict, pole: str) -> dict:
+    """The four hidden facts (build item 18d): who, what it wants and why, where, how it is stopped. A known villain
+    leaves three hidden."""
+    import design_threat as dth
+    known = threat["visibility"] in dth.PUBLIC_VISIBILITY
+    return {"who": {"family": threat["family"], "creature": threat["creature"], "shape": threat["shape"], "public": known},
+            "what_and_why": {"goal": threat["goal"]["id"], "piece": threat["goal"]["piece"], "pole": pole},
+            "where": dict(threat["lair"]), "how_stopped": {"weakness": threat["weakness"]},
+            "creature_types": {"public": list((threat.get("families") or {}).get("public") or []), "secret": [threat["creature_type"]]},
+            "hidden": 3 if known else 4}
+
+
+def clue_part(foundation: dict, piece: str) -> str | None:
+    """The layout part a piece of the chain stands on."""
+    lay = foundation["layout"]
+    return {"heart": "heart", "key_place": "key_place", "remnant": lay["remnant"], "thin_place": fd.thin_part(lay["parts"]),
+            "disputed_land": "along", "role": (lay["contests"][0]["seats"].get(foundation["break"]["winner"]) or "along"),
+            "new": lay["break_at"]}.get(piece)
+
+
+def secret_stages(foundation: dict, threat: dict, trail_id: str) -> list[dict]:
+    """The three stages (build item 18d; finding D2): each with its conclusion, its level range (the existing ranges:
+    the first third of the band, the middle third, the top step) and three clues: one the chain places (stage 1 at the
+    hand's base, stage 2 where the move struck, stage 3 at the lair, else at the goal's piece), one promised to P5 (a
+    person), one to P6 (a site). The third stage's clues reveal how the villain is stopped."""
+    import design_promises as dpr
+    lay, start = foundation["layout"], foundation["start"]
+    band = foundation["escalation"]["level_band"]
+    tiers = fd.rows_by_id("escalation_tier")
+    top = tiers[foundation["escalation"]["tiers"][-1]]["levels"]
+    levels = dpr.clue_levels(band, [max(int(band[0]), int(top[0])), min(int(band[1]), int(top[1]))])
+    coming = foundation["break"]["time"] == "time_coming"
+    far = "end_a" if start == "end_b" else "end_b"
+    hand_id = (foundation.get("move") or {}).get("hand")
+    base = fd.hand_base(lay, hand_id, foundation["break"]["winner"])       # the 18d answer: inside by nature, else the far end
+    if base == "end_b" and start == "end_b" and not coming:
+        base = "end_a"                  # the move struck the far end and the party starts there: the hand sits at the other
+    lair_at = {"lairat_remnant": lay["remnant"], "lairat_thin_place": fd.thin_part(lay["parts"]), "lairat_heart": "heart",
+               "lairat_key_place": "key_place", "lairat_far_end": far, "lairat_built": "along", "lairat_on_the_move": None}
+    at = {1: (base, "the hand's base"), 2: (lay["break_at"], "where the move struck"),
+          3: ((lair_at.get(threat["lair"]["where"]), "the lair") if lair_at.get(threat["lair"]["where"])
+              else (clue_part(foundation, threat["goal"]["piece"]), "the goal's piece"))}
+    trail = dt.row(SECRETS + "trail", trail_id) or {}
+    out = []
+    for n in (1, 2, 3):
+        part, why = at[n]
+        out.append({"n": n, "conclusion": CONCLUSIONS[n], "levels": list(levels[n - 1]),
+                    "shape": (trail.get("stages") or {}).get(f"stage{n}"), "reveals": "how it is stopped" if n == 3 else None,
+                    "clues": [{"by": "chain", "at": part, "why": why}, {"by": "P5", "kind": "a person"}, {"by": "P6", "kind": "a site"}]})
+    return out
 
 
 def overrides_of(row_ids) -> list[dict]:

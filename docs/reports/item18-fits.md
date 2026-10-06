@@ -113,3 +113,15 @@ A goal that joins through the move: every joinable piece (the prize's piece, a c
 1. The hand's public creature families: the cult carries `served` (what it serves, left for P6 to read: it is not the villain's type, which would leak it); the ruin's power carries `ruin` (P6 reads the ruin). Right?
 2. The new verbs' forms (killed, poisoned, cursed, plundered, summoned, plague, replaced, possessed, enslaved, betrayed) and the rewritten ones are the coding tab's wording: please read them in foundation.yaml#action.
 3. `act_vanished` (carried off) keeps `destroys: [heart, role]` from the old "vanished": does carrying off a leader destroy the role?
+
+## 18d — the secret's choices (rows in `docs/reports/item18d-secret-SPOILER.md`)
+
+1. **The keeping's count:** `docs/p1-build-18-rows.md` section 5 says 17 rows and lists 16 (the fourteen old twists left after "a PC is involved", the two rewritten among them, and the two new). Built with 16; is a row missing from the list?
+2. **The hand's base** (stage 1's chain clue): the far end, end_b (end_a when the move struck end_b); a coming move starts there too.
+3. **Stage 2's chain clue** is where the move struck (the layout's `break_at`), not with the stronger role.
+4. **Stage 3's chain clue** is at the lair's where when it is a part of the layout (the remnant, the thin place, the heart, the key place, the far end; a place it built: along the spine); a lair on the move falls back to the goal's piece.
+5. **The weakness's floors** are the coding tab's (the SPOILER file lists them): a thing at a site P6, a person P5, a name, a god, a time or a lore P2.
+6. **The twist's ids** stay the archetypes' (`secret_*`), so an earlier birth's archetype and a new birth's twist share their id; the keeping keeps the old twists' ids (`twist_*`), its two new rows are `keep_*`. Rename them?
+7. **The twists' texts** were moved onto the chain mechanically; read them in the SPOILER file: a rewrite by hand may read better.
+8. **The trails' third element** carries the weakness by a suffix (`…_and_how_it_is_stopped`).
+9. **clue_order:** the act reading stays only for a legacy birth without a ledger (item 23); every birth with a ledger reads stages.

@@ -388,10 +388,10 @@ def check_secrecy(b: Bible, only: str | None) -> list[Finding]:
             if v in text:
                 E(eid, "secret_line_leak", f"dm_only.{k} appears verbatim in {where}")
 
-    # the big secret's three clues are placed, in order. A birth with a promise ledger orders them by their stages
-    # (the secret ledger's level ranges: the first third of the band, the middle third, the top step): a clue's place
-    # is read where the party plays it, by the levels of the act the place is stamped to; a one-act campaign keeps
-    # its three clues. A legacy birth keeps the act reading.
+    # the secret's three chain-placed clues (one per stage) are placed, in order. A birth with a promise ledger orders
+    # them by their stages (the secret ledger's level ranges: the first third of the band, the middle third, the top
+    # step): a clue's place is read where the party plays it. Build item 18d: the secret speaks of stages only; the
+    # reading by acts below stays for a legacy birth without a ledger (item 23's compatibility rule).
     for eid, ent in ents.items():
         if ent.get("type") != "premise":
             continue

@@ -121,7 +121,8 @@ class ManySeeds(unittest.TestCase):
             self.assertNotIn(f["start"], ("heart_ruins",))
             self.assertEqual(f["move"]["start"], f["start"])
             if f["move"]["time"] == "time_coming":
-                self.assertEqual(f["start"], "end_b")
+                base = fd.hand_base(f["layout"], f["move"]["hand"], f["break"]["winner"])
+                self.assertEqual(f["start"], base if base != "heart" else "end_a")
 
     def test_the_creature_families(self):
         for d, R, f, ident in self.runs:

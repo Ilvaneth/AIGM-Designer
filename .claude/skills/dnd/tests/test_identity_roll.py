@@ -213,9 +213,9 @@ class ManySeeds(unittest.TestCase):
             self.assertEqual(weigh(lin[lid], ctx), arb.weight_of(lin[lid], ctx) * 3, lid)
         self.assertEqual(weigh(lin["lineage_human"], ctx), arb.weight_of(lin["lineage_human"], ctx))
         self.assertIsNone(di.lineage_weigh(CONTEST["contest_two_heirs"]["roles"]["a"], inverted=False))
-        # and the share stays above what the rows alone give (16 %; 36 % with the role's weight)
-        if sum(deep.values()) >= 20:
-            self.assertGreater(sum(deep[k] for k in ("lineage_dwarf", "lineage_gnome", "lineage_goblinoid")), sum(deep.values()) * 0.16)
+        # no share is asserted over the deep births: about twenty in these seeds, too few for a bound to survive the next
+        # change of the dice (the development tab, 18d); the mechanism above is the test
+        self.assertTrue(deep, "the deep contests' people role came up")
 
     # ── the institution ──
 

@@ -285,7 +285,7 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     R.add_tokens("foundation.layout.tokens", lay_tokens, "the layout")
 
     # the start (finding D3): a small settlement at a part that is not the heart, where step 1 lands; the timeline (G2)
-    out["start"], start_why = start_part(out["layout"], out["time"])
+    out["start"], start_why = start_part(out["layout"], out["time"], hand_id, out["winner"])
     families = [threat["creature_type"] if f == "villain" else f for f in hand.get("families") or []]
     out["move"] = {"hand": hand_id, "verb": act_id, "target": target_id, "target_role": out.get("target_role"),
                    "time": out["time"], "state": state, "at": "end" if out["time"] == "time_coming" else "start",
@@ -354,12 +354,27 @@ def move_targets(goal: dict, main_row: dict, ruin_id: str, kinds, story: dict) -
     return out
 
 
-def start_part(layout: dict, time_id: str) -> tuple[str, str]:
+def hand_base(layout: dict, hand_id: str | None, winner: str | None) -> str:
+    """The hand's base (the 18d answer): a hand from outside at the far end (end_b); a hand inside by nature in the heart,
+    or, for the deceived side, on the seat of the side the move made stronger."""
+    hand = dt.row("antagonists.yaml#hand", str(hand_id or "")) or {}
+    if hand.get("base") != "inside":
+        return "end_b"
+    if hand.get("id") == "hand_deceived_side" and winner:
+        seat = (layout["contests"][0]["seats"].get(winner) or "heart")
+        return "heart" if seat == "along" else seat
+    return "heart"
+
+
+def start_part(layout: dict, time_id: str, hand_id: str | None = None, winner: str | None = None) -> tuple[str, str]:
     """The start (finding D3): never the heart. The part nearest the move's target (the target's own part when it is an
-    end, the key place or a place along the spine; else the first end); a move still coming starts at the far end
-    (the hand's base: the end opposite the main contest's first side)."""
+    end, the key place or a place along the spine; else the first end); a move still coming starts at the hand's base,
+    and where that base is the heart, at the first end."""
     if time_id == "time_coming":
-        return "end_b", "the move is coming: the start is the hand's base, the far end"
+        base = hand_base(layout, hand_id, winner)
+        if base != "heart":
+            return base, "the move is coming: the start is the hand's base"
+        return "end_a", "the move is coming from the heart (a hand inside): the nearest end"
     at = layout.get("break_at")
     if at and at != "heart" and (at.startswith(("end_", "along:")) or at == "key_place"):
         return at, "the part where the move struck"

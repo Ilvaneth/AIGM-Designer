@@ -138,7 +138,7 @@ class ManySeeds(unittest.TestCase):
                     if act.get("winner_is_target_role"):
                         self.assertEqual(b["winner"], b["target_role"], "a role that rose is the winner")
                 # build item 18c (finding D3): the start is never the heart; design_foundation.start_part decides it
-                self.assertEqual((f["start"], f["move"]["start_why"]), fd.start_part(f["layout"], b["time"]))
+                self.assertEqual((f["start"], f["move"]["start_why"]), fd.start_part(f["layout"], b["time"], f["move"]["hand"], b["winner"]))
                 self.assertNotEqual(f["start"], "heart")
                 action_rec = R.by_label["foundation.break.action"]
                 self.assertEqual(action_rec["used_keys"], {fd.PAIR_KEY: f"{piece}|{b['action']}"})

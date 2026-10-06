@@ -76,7 +76,8 @@ class Walker:
         naming, pool = self.json("design/naming.json"), self.json("design/dm-only/name-pool.json")
         secret_ledger = self.json("design/dm-only/promises.json")["promises"]
         the_door = door.Door(self.name, {"entities": {}}, [])
-        arch = dt.row("secrets.yaml#archetype", self.json("design/dm-only/dice-log.json")["identity"]["secret"]["archetype"])
+        twist = self.json("design/dm-only/dice-log.json")["identity"]["secret"]["twist"]         # build item 18d: optional
+        arch = dt.row("secrets.yaml#twist", twist) if twist else {"id": None, "hides_in": "threat"}
         base = lambda eid, etype, name, **extra: dict({
             "id": eid, "type": etype, "name": name, "aliases": [], "summary": "what a native would say of it, in one line.",
             "file": "design/premise.md", "secrecy": "public", "created_phase": "P1", "origin": "birth", "stamped": {}, "refs": []}, **extra)
@@ -194,7 +195,7 @@ class Walk(Base):
         for key in ("foundation", "identity", "promises", "p1_seal"):
             self.assertTrue(m.get(key), key)
         log = w.json("design/dm-only/dice-log.json")
-        self.assertTrue(log["identity"]["secret"]["archetype"] and log["identity"]["villain"]["shape"])
+        self.assertTrue(log["identity"]["secret"]["keeping"] and log["identity"]["villain"]["shape"] and log["identity"]["secret"]["stages"])
         naming = w.json("design/naming.json")
         self.assertTrue(naming["rolled"] and len(naming["candidates"]) == 3)
         for rel in ("design/dm-only/name-pool.json", "design/dm-only/name-pool-secret.json", "design/dm-only/promises.json"):
@@ -278,8 +279,8 @@ class Walk(Base):
         villain = log["identity"]["villain"]
         self.assertEqual(mine[di.VILLAIN_PAIR_KEY], [dd.hashed(f"{villain['shape']}|{villain['origin']}")], "the pair, hashed")
         self.assertIn(m["foundation"]["lifeline"]["id"], mine["foundation.yaml#lifeline"])
-        self.assertIn(dd.hashed(log["identity"]["secret"]["archetype"]), mine["secrets.yaml#archetype"])
-        self.assertFalse(log["identity"]["secret"]["archetype"] in json.dumps(mine), "a secret row is kept as a hash")
+        self.assertIn(dd.hashed(log["identity"]["secret"]["keeping"]), mine["secrets.yaml#keeping"])
+        self.assertFalse(log["identity"]["secret"]["keeping"] in json.dumps(mine), "a secret row is kept as a hash")
         # 10. a second campaign on the same used.json draws none of the first one's unique rows, roots or bags
         second = self.walker(scale, f"WALK-{scale.upper()}-B")
         m2, naming2 = dm.load(second.name), second.json("design/naming.json")

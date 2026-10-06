@@ -147,12 +147,12 @@ class NewBirth(unittest.TestCase):
         self.assertEqual(len(set(fams)), 3)
         self.assertGreater(list(pub).index("naming_family.1"), list(pub).index("mechanic"), "the naming rolls stand last")
         self.assertEqual(pub["mechanic"]["row_id"], "no", "short never rolls the signature mechanic")
-        for secret_label in ("secret_archetype", "secret_twist", "secret_trail"):
+        for secret_label in ("secret_keeping", "secret_trail", "threat.family"):        # build item 18d: no archetype; the twist only sometimes
             self.assertNotIn(secret_label, pub, "secret rolls never enter design.json")
             self.assertIn(secret_label, m["dice_log_secret"]["labels"])
         secret = json.loads((CAMPAIGNS / name / "design" / "dm-only" / "dice-log.json").read_text(encoding="utf-8"))
         self.assertEqual(m["dice_log_secret"]["count"], len(secret["rolls"]))
-        self.assertTrue(any(r["label"] == "secret_archetype" and r["row_id"].startswith("secret_") for r in secret["rolls"]))
+        self.assertTrue(any(r["label"] == "secret_keeping" and r["row_id"].startswith(("twist_", "keep_")) for r in secret["rolls"]))
         self.assertEqual(m["phases"]["P1"]["status"], "prerolled")
         self.assertIn("prerolled", proc.stdout)
         again = run("-c", name, "preroll", "--phase", "P1")

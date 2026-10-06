@@ -139,34 +139,36 @@ tables:
   hand:
     own_hooks_only: true             # the file's hooks are the antagonists'; the hand is public and takes none of them
     roll: {secret: false, avoid_used: false, row_wait: 3, labels: [P1.move.hand], note: "the visible hand: an organisation or a creature, never a whole people (a hand drawn from a people is a part of it, and another part stands elsewhere); `families` are the campaign's public creature families (finding D4); `moon`: a hand that trades with the moon or comes from it"}
+    hooks_common:
+      - {phase: P4, must: "the front's first step is the move, made by this hand; the hand is a faction or a creature group of P4"}
     rows:
-      - {id: hand_villain_itself, label: "The villain itself, openly", families: [villain], requires: {any_of: [vis_known_untouchable, vis_known_unknown_where]}, text: {name: "the villain itself, openly"}}
-      - {id: hand_war_band, label: "A war band (a part of the orcs, gnolls or hobgoblins)", families: [humanoid], text: {name: "a war band, a part of its people"}}
-      - {id: hand_sea_raiders, label: "Sea raiders, pirates", families: [humanoid], requires: {any_of: [land_coast, land_island]}, moon: true, text: {name: "sea raiders"}}
-      - {id: hand_cult, label: "A cult", families: [humanoid, served], text: {name: "a cult"}}
-      - {id: hand_thieves_guild, label: "A guild of thieves and assassins", families: [humanoid], moon: true, text: {name: "a guild of thieves and assassins"}}
-      - {id: hand_traitor, label: "A traitor inside (a councillor, a general, a priest)", families: [humanoid], text: {name: "a traitor inside"}}
-      - {id: hand_deceived_side, label: "A deceived side (a contest role, not knowing what it did)", families: [humanoid], text: {name: "a side that does not know what it did"}}
-      - {id: hand_hired_company, label: "A hired company", families: [humanoid], moon: true, text: {name: "a hired company"}}
-      - {id: hand_foreign_army, label: "A foreign army", families: [humanoid], text: {name: "a foreign army"}}
-      - {id: hand_dragon, label: "A dragon (with its kobolds and dragonborn servants)", families: [dragon], text: {name: "a dragon and its servants"}}
-      - {id: hand_risen_dead, label: "The risen dead", families: [undead], text: {name: "the risen dead"}}
-      - {id: hand_ruin_power, label: "The ruin's power, woken", families: [ruin], requires: {any_of: [ruin_dead_god, ruin_imprisoned_god, ruin_failed_apotheosis, ruin_golem_army, ruin_bound_elements, ruin_sundered_relic, ruin_dried_source, ruin_sleeper, ruin_deep_minds, ruin_planar_rift, ruin_demon_gate, ruin_devils_bargain, ruin_sleeping_realm, ruin_failed_experiment, ruin_great_curse, ruin_kingdom_of_the_dead]}, text: {name: "the ruin's power, woken"}}
-      - {id: hand_fiends, label: "Fiends (summoned or bargained with)", families: [fiend], text: {name: "fiends, summoned or bargained with"}}
-      - {id: hand_from_beyond, label: "Things from beyond (mind flayers, aberrations)", families: [aberration], moon: true, text: {name: "things from beyond"}}
-      - {id: hand_giants, label: "Giants", families: [giant], text: {name: "giants"}}
-      - {id: hand_monstrous_beast, label: "A monstrous beast (a hydra, a behir, a purple worm)", families: [monstrosity], text: {name: "a monstrous beast"}}
-      - {id: hand_fey_court, label: "A fey court's emissaries", families: [fey], text: {name: "a fey court's emissaries"}}
-      - {id: hand_bound_elemental, label: "A bound elemental", families: [elemental], text: {name: "a bound elemental"}}
-      - {id: hand_werewolves, label: "Werewolves, a cursed pack", families: [lycanthrope], text: {name: "a cursed pack"}}
-      - {id: hand_golem_army, label: "A golem army", families: [construct], requires: {dial: {magic: [medium, high]}}, text: {name: "a golem army"}}
-      - {id: hand_hag_coven, label: "A coven of hags", families: [fey], text: {name: "a coven of hags"}}
-      - {id: hand_brigands, label: "Brigands, outlaws", families: [humanoid], text: {name: "brigands"}}
-      - {id: hand_slavers, label: "Slavers", families: [humanoid], moon: true, text: {name: "slavers"}}
-      - {id: hand_zealous_order, label: "A zealous order (a church militant, a knightly order)", families: [humanoid], text: {name: "a zealous order"}}
-      - {id: hand_rival_band, label: "A rival band of adventurers", families: [humanoid], text: {name: "a rival band of adventurers"}}
-      - {id: hand_shapechangers, label: "Shapechangers wearing trusted faces", families: [monstrosity], text: {name: "shapechangers wearing trusted faces"}}
-      - {id: hand_druid_circle, label: "A corrupted druid circle and its blights", families: [plant], text: {name: "a corrupted druid circle and its blights"}}
+      - {id: hand_villain_itself, base: far_end, label: "The villain itself, openly", families: [villain], requires: {any_of: [vis_known_untouchable, vis_known_unknown_where]}, text: {name: "the villain itself, openly"}}
+      - {id: hand_war_band, base: far_end, label: "A war band (a part of the orcs, gnolls or hobgoblins)", families: [humanoid], text: {name: "a war band, a part of its people"}}
+      - {id: hand_sea_raiders, base: far_end, label: "Sea raiders, pirates", families: [humanoid], requires: {any_of: [land_coast, land_island]}, moon: true, text: {name: "sea raiders"}}
+      - {id: hand_cult, base: far_end, label: "A cult", families: [humanoid, served], text: {name: "a cult"}}
+      - {id: hand_thieves_guild, base: far_end, label: "A guild of thieves and assassins", families: [humanoid], moon: true, text: {name: "a guild of thieves and assassins"}}
+      - {id: hand_traitor, base: inside, label: "A traitor inside (a councillor, a general, a priest)", families: [humanoid], text: {name: "a traitor inside"}}
+      - {id: hand_deceived_side, base: inside, label: "A deceived side (a contest role, not knowing what it did)", families: [humanoid], text: {name: "a side that does not know what it did"}}
+      - {id: hand_hired_company, base: far_end, label: "A hired company", families: [humanoid], moon: true, text: {name: "a hired company"}}
+      - {id: hand_foreign_army, base: far_end, label: "A foreign army", families: [humanoid], text: {name: "a foreign army"}}
+      - {id: hand_dragon, base: far_end, label: "A dragon (with its kobolds and dragonborn servants)", families: [dragon], text: {name: "a dragon and its servants"}}
+      - {id: hand_risen_dead, base: far_end, label: "The risen dead", families: [undead], text: {name: "the risen dead"}}
+      - {id: hand_ruin_power, base: far_end, label: "The ruin's power, woken", families: [ruin], requires: {any_of: [ruin_dead_god, ruin_imprisoned_god, ruin_failed_apotheosis, ruin_golem_army, ruin_bound_elements, ruin_sundered_relic, ruin_dried_source, ruin_sleeper, ruin_deep_minds, ruin_planar_rift, ruin_demon_gate, ruin_devils_bargain, ruin_sleeping_realm, ruin_failed_experiment, ruin_great_curse, ruin_kingdom_of_the_dead]}, text: {name: "the ruin's power, woken"}}
+      - {id: hand_fiends, base: far_end, label: "Fiends (summoned or bargained with)", families: [fiend], text: {name: "fiends, summoned or bargained with"}}
+      - {id: hand_from_beyond, base: far_end, label: "Things from beyond (mind flayers, aberrations)", families: [aberration], moon: true, text: {name: "things from beyond"}}
+      - {id: hand_giants, base: far_end, label: "Giants", families: [giant], text: {name: "giants"}}
+      - {id: hand_monstrous_beast, base: far_end, label: "A monstrous beast (a hydra, a behir, a purple worm)", families: [monstrosity], text: {name: "a monstrous beast"}}
+      - {id: hand_fey_court, base: far_end, label: "A fey court's emissaries", families: [fey], text: {name: "a fey court's emissaries"}}
+      - {id: hand_bound_elemental, base: far_end, label: "A bound elemental", families: [elemental], text: {name: "a bound elemental"}}
+      - {id: hand_werewolves, base: far_end, label: "Werewolves, a cursed pack", families: [lycanthrope], text: {name: "a cursed pack"}}
+      - {id: hand_golem_army, base: far_end, label: "A golem army", families: [construct], requires: {dial: {magic: [medium, high]}}, text: {name: "a golem army"}}
+      - {id: hand_hag_coven, base: far_end, label: "A coven of hags", families: [fey], text: {name: "a coven of hags"}}
+      - {id: hand_brigands, base: far_end, label: "Brigands, outlaws", families: [humanoid], text: {name: "brigands"}}
+      - {id: hand_slavers, base: far_end, label: "Slavers", families: [humanoid], moon: true, text: {name: "slavers"}}
+      - {id: hand_zealous_order, base: far_end, label: "A zealous order (a church militant, a knightly order)", families: [humanoid], text: {name: "a zealous order"}}
+      - {id: hand_rival_band, base: far_end, label: "A rival band of adventurers", families: [humanoid], text: {name: "a rival band of adventurers"}}
+      - {id: hand_shapechangers, base: inside, label: "Shapechangers wearing trusted faces", families: [monstrosity], text: {name: "shapechangers wearing trusted faces"}}
+      - {id: hand_druid_circle, base: far_end, label: "A corrupted druid circle and its blights", families: [plant], text: {name: "a corrupted druid circle and its blights"}}
 
   move_state:
     own_hooks_only: true
@@ -183,6 +185,8 @@ tables:
 
   villain_family:
     roll: {secret: true, avoid_used: false, row_wait: 3, labels: [P1.threat.family], note: "a family the last three births drew waits (never the same twice in a row); `creatures` are SRD indexes, `reskin` the bases where none fits the band (sites.yaml's reskin rule); `power_source` above short; the two dragon families carry no weight, so they never pass their share"}
+    hooks_common:
+      - {phase: P9, must: "at least one player character is tied to the threat's chain (a hero bound to the threat, in every campaign)"}
     rows:
       - {id: family_mage, label: A mage, creature_type: humanoid, power_source: true, creatures: [mage, archmage], reskin: [archmage], weight_by: [{when: {any_of: [ruin_age_of_mages, ruin_sorcerer_kings, ruin_mage_war, ruin_failed_experiment]}, x: 2}], text: {name: "a mage"}}
       - {id: family_ruler, label: A ruler or warlord, creature_type: humanoid, power_source: true, creatures: [knight, veteran, gladiator], reskin: [knight], weight_by: [{when: {any_of: [ruin_empire, ruin_dark_lords_fall]}, x: 2}], text: {name: "a ruler or a warlord"}}
@@ -202,19 +206,21 @@ tables:
       - {id: family_lycanthrope, label: A lycanthrope, creature_type: humanoid, power_source: true, requires: {dial: {scale: [short, standard]}}, creatures: [wererat-hybrid, werewolf-hybrid, wereboar-hybrid, weretiger-hybrid, werebear-hybrid], reskin: [werebear-hybrid], weight_by: [{when: {any_of: [ruin_beast_blood]}, x: 2}], text: {name: "a lycanthrope"}}
       - {id: family_fallen_celestial, label: A fallen celestial, creature_type: celestial, requires: {dial: {scale: [standard, epic]}}, creatures: [deva, planetar, solar], reskin: [solar], weight_by: [{when: {any_of: [ruin_celestial_war]}, x: 2}], text: {name: "a fallen celestial"}}
       - {id: family_sea_titan, label: A sea titan, creature_type: monstrosity, requires: {dial: {scale: [epic]}}, creatures: [dragon-turtle, kraken], reskin: [kraken], weight_by: [{when: {any_of: [ruin_great_flood, ruin_water_kingdom]}, x: 2}], text: {name: "a sea titan"}}
-      - {id: family_god, label: A god (an avatar, a fallen or an imprisoned god), creature_type: god, requires: {dial: {scale: [standard, epic]}}, creatures: [], reskin: [deva, planetar, solar], avatar: true, weaknesses: [weak_source_cut, weak_rite_binds_again, weak_true_name, weak_sacred_relic, weak_prophecy, weak_vow_or_bargain, weak_place_bound], weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}], text: {name: "a god: an avatar, a fallen or an imprisoned god"}}
+      - {id: family_god, label: A god (an avatar, a fallen or an imprisoned god), creature_type: god, requires: {dial: {scale: [standard, epic]}}, creatures: [], reskin: [deva, planetar, solar], avatar: true, weaknesses: [weak_source_cut, weak_rite_binds_again, weak_true_name, weak_sacred_relic, weak_prophecy, weak_vow_or_bargain, weak_place_bound], weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}], text: {name: "a god: an avatar, a fallen or an imprisoned god"}, forms: [imprisoned, forgotten_returning], hooks: [{phase: P2, must: "the god stands in the pantheon, imprisoned or forgotten and returning; its church is a hand or a faction"}]}
 
   power_source:
     roll: {secret: true, avoid_used: false, labels: [P1.threat.power_source], note: "a humanoid family above short draws one; the weakness may bind to it"}
     rows:
-      - {id: power_artifact, label: An artifact, text: {name: "an artifact it carries or wields"}}
-      - {id: power_pact, label: A pact with a power, text: {name: "a pact with a power"}}
-      - {id: power_curse, label: A curse it bears, text: {name: "a curse it bears and draws strength from"}}
-      - {id: power_serves, label: What it serves (a god, a fiend, a patron), text: {name: "what it serves: a god, a fiend or a patron"}}
-      - {id: power_stolen_essence, label: A stolen essence, text: {name: "an essence it stole"}}
+      - {id: power_artifact, label: An artifact, text: {name: "an artifact it carries or wields"}, hooks: [{phase: P6, must: "the artifact is an item the party can find or take"}]}
+      - {id: power_pact, label: A pact with a power, text: {name: "a pact with a power"}, hooks: [{phase: P2, must: "the power the pact is with stands in the pantheon or the planes"}]}
+      - {id: power_curse, label: A curse it bears, text: {name: "a curse it bears and draws strength from"}, hooks: [{phase: P2, must: "the curse it bears has a dated origin in the history"}]}
+      - {id: power_serves, label: What it serves (a god, a fiend, a patron), text: {name: "what it serves: a god, a fiend or a patron"}, hooks: [{phase: P2, must: "what it serves stands in the pantheon or the planes"}]}
+      - {id: power_stolen_essence, label: A stolen essence, text: {name: "an essence it stole"}, hooks: [{phase: P6, must: "where the essence was stolen from is a site"}]}
 
   goal:
     roll: {secret: true, avoid_used: true, labels: [P1.threat.goal], note: "the DMG's eight objectives, each bound to a story piece (`pieces`); a goal whose pieces hold the main contest's prize weighs x2; the threat joins the contest by the prize, by a role goal (`role_goal`), or through the move (18c-2)"}
+    hooks_common:
+      - {phase: P4, must: "the front's steps lead toward this goal; the doom is the goal achieved"}
     rows:
       - {id: goal_take_throne, label: Take the throne, drive: power, pieces: [heart], text: {name: "to take the throne"}}
       - {id: goal_power_behind_throne, label: Become the power behind the throne, drive: power, pieces: [heart], text: {name: "to become the power behind the throne"}}
@@ -240,28 +246,30 @@ tables:
   weakness:
     roll: {secret: true, avoid_used: true, labels: [P1.threat.weakness], note: "`fits` names the families a row fits (absent: every family but one whose own `weaknesses` list leaves it out); the third clue stage reveals it"}
     rows:
-      - {id: weak_hidden_object, label: A hidden object holds its life, text: {name: "a hidden object holds its life"}}
-      - {id: weak_weapon_or_metal, label: A weapon or a metal it cannot bear, text: {name: "a weapon or a metal it cannot bear"}}
-      - {id: weak_true_name, label: Its true name, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_god], text: {name: "its true name"}}
-      - {id: weak_loved_person, label: A person it loves, text: {name: "a person it loves"}}
-      - {id: weak_vow_or_bargain, label: A vow or a bargain it must keep, text: {name: "a vow or a bargain it must keep"}}
-      - {id: weak_place_bound, label: A place it cannot leave or must return to, text: {name: "a place it cannot leave or must return to"}}
-      - {id: weak_vulnerable_time, label: A time it is vulnerable, text: {name: "a time it is vulnerable: a night, an eclipse, a season"}}
-      - {id: weak_old_rival, label: An old rival who knows how, text: {name: "an old rival who knows how"}}
-      - {id: weak_plan_flaw, label: A flaw in its plan, text: {name: "a flaw in its plan: the device's or the rite's missing piece"}}
-      - {id: weak_prophecy, label: A prophecy or riddle that names its end, text: {name: "a prophecy or a riddle that names its end"}}
-      - {id: weak_enemy_forgiveness, label: "An ancient enemy's forgiveness", text: {name: "an ancient enemy's forgiveness"}}
-      - {id: weak_source_cut, label: Its source can be cut, text: {name: "its source can be cut: its hand, its cult, its thin place"}}
-      - {id: weak_cannot_refuse_challenge, label: It cannot refuse a challenge, text: {name: "it cannot refuse a challenge"}}
-      - {id: weak_secret_turns_followers, label: Its secret turns its own followers, text: {name: "its secret, made public, turns its own followers"}}
-      - {id: weak_law_of_nature, label: A law of its nature, fits: [family_undead, family_hag_fey], text: {name: "a law of its nature: sunlight, running water, an unfinished business, hospitality, an invitation, a given word"}}
-      - {id: weak_sacred_relic, label: A sacred relic or hallowed ground weakens it, fits: [family_undead, family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_fallen_celestial, family_god], text: {name: "a sacred relic or hallowed ground weakens it"}}
-      - {id: weak_drawn_from_lair, label: Drawn from its lair it is weaker, fits: [family_chromatic_dragon, family_metallic_dragon, family_undead, family_from_beyond, family_monstrous_mind, family_sea_titan, family_fallen_celestial, family_god], text: {name: "drawn from its lair it is weaker"}}
-      - {id: weak_rite_binds_again, label: The rite that bound it once can bind it again, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_from_beyond, family_sea_titan, family_god], text: {name: "the rite that bound it once can bind it again"}}
-      - {id: weak_army_by_compulsion, label: Its army serves by compulsion, text: {name: "its army serves by compulsion and leaves when the compulsion breaks"}}
+      - {id: weak_hidden_object, label: A hidden object holds its life, text: {name: "a hidden object holds its life"}, hooks: [{phase: P6, must: "the hidden object that holds its life lies at a site the party can reach"}]}
+      - {id: weak_weapon_or_metal, label: A weapon or a metal it cannot bear, text: {name: "a weapon or a metal it cannot bear"}, hooks: [{phase: P6, must: "the weapon or metal it cannot bear is an item at a site"}]}
+      - {id: weak_true_name, label: Its true name, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_god], text: {name: "its true name"}, hooks: [{phase: P2, must: "its true name stands in the history or with a god, findable"}]}
+      - {id: weak_loved_person, label: A person it loves, text: {name: "a person it loves"}, hooks: [{phase: P5, must: "the person it loves is an NPC with a dossier"}]}
+      - {id: weak_vow_or_bargain, label: A vow or a bargain it must keep, text: {name: "a vow or a bargain it must keep"}, hooks: [{phase: P5, must: "the vow or bargain is held by an NPC who can call it in"}]}
+      - {id: weak_place_bound, label: A place it cannot leave or must return to, text: {name: "a place it cannot leave or must return to"}, hooks: [{phase: P6, must: "the place it cannot leave or must return to is a site"}]}
+      - {id: weak_vulnerable_time, label: A time it is vulnerable, text: {name: "a time it is vulnerable: a night, an eclipse, a season"}, hooks: [{phase: P2, must: "the time it is vulnerable is a dated night, eclipse or season of the calendar"}]}
+      - {id: weak_old_rival, label: An old rival who knows how, text: {name: "an old rival who knows how"}, hooks: [{phase: P5, must: "the old rival who knows how is an NPC"}]}
+      - {id: weak_plan_flaw, label: A flaw in its plan, text: {name: "a flaw in its plan: the device's or the rite's missing piece"}, hooks: [{phase: P6, must: "the missing piece of its device or rite lies at a site"}]}
+      - {id: weak_prophecy, label: A prophecy or riddle that names its end, text: {name: "a prophecy or a riddle that names its end"}, hooks: [{phase: P2, must: "the prophecy or riddle that names its end is in the history"}]}
+      - {id: weak_enemy_forgiveness, label: "An ancient enemy's forgiveness", text: {name: "an ancient enemy's forgiveness"}, hooks: [{phase: P5, must: "the ancient enemy who can forgive is an NPC or a power with a dossier"}]}
+      - {id: weak_source_cut, label: Its source can be cut, text: {name: "its source can be cut: its hand, its cult, its thin place"}, hooks: [{phase: P6, must: "its source (its hand, its cult, its thin place) is a site the party can strike"}]}
+      - {id: weak_cannot_refuse_challenge, label: It cannot refuse a challenge, text: {name: "it cannot refuse a challenge"}, hooks: [{phase: P5, must: "one NPC knows that it cannot refuse a challenge"}]}
+      - {id: weak_secret_turns_followers, label: Its secret turns its own followers, text: {name: "its secret, made public, turns its own followers"}, hooks: [{phase: P5, must: "its secret is known to one NPC who can make it public"}]}
+      - {id: weak_law_of_nature, label: A law of its nature, fits: [family_undead, family_hag_fey], text: {name: "a law of its nature: sunlight, running water, an unfinished business, hospitality, an invitation, a given word"}, hooks: [{phase: P2, must: "the law of its nature is a known lore of its kind"}]}
+      - {id: weak_sacred_relic, label: A sacred relic or hallowed ground weakens it, fits: [family_undead, family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_fallen_celestial, family_god], text: {name: "a sacred relic or hallowed ground weakens it"}, hooks: [{phase: P6, must: "the sacred relic or hallowed ground is an item or a site"}]}
+      - {id: weak_drawn_from_lair, label: Drawn from its lair it is weaker, fits: [family_chromatic_dragon, family_metallic_dragon, family_undead, family_from_beyond, family_monstrous_mind, family_sea_titan, family_fallen_celestial, family_god], text: {name: "drawn from its lair it is weaker"}, hooks: [{phase: P6, must: "a way to draw it from its lair is a site or an event the party can make"}]}
+      - {id: weak_rite_binds_again, label: The rite that bound it once can bind it again, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_from_beyond, family_sea_titan, family_god], text: {name: "the rite that bound it once can bind it again"}, hooks: [{phase: P2, must: "the rite that bound it once stands in the history"}]}
+      - {id: weak_army_by_compulsion, label: Its army serves by compulsion, text: {name: "its army serves by compulsion and leaves when the compulsion breaks"}, hooks: [{phase: P5, must: "the compulsion's holder or breaker is an NPC"}]}
 
   lair_form:
     roll: {secret: true, avoid_used: false, labels: [P1.threat.lair_form], note: "`fits` names the families (every family at least five); `built`: a place the threat can have built; `mobile`: a lair on the move (and only those are); `dragon_colours`: a dragon of that colour weighs the form x3"}
+    hooks_common:
+      - {phase: P6, must: "the final site is the lair: this form, at the lair's where"}
     rows:
       - {id: lair_castle, label: A castle or palace, fits: [family_ruler, family_undead, family_devil, family_mage, family_metallic_dragon, family_shadow, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_god], dragon_colours: [gold, silver], built: true, text: {name: "a castle or a palace"}}
       - {id: lair_tower, label: A tower, fits: [family_mage, family_undead, family_fallen_celestial, family_ruler, family_devil], built: true, text: {name: "a tower"}}

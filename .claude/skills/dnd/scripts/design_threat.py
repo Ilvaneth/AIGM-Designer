@@ -123,6 +123,9 @@ def roll(R, dials: dict, spine: dict, palette, ruin_id: str, contests: list[dict
     power = None
     if family.get("power_source") and scale != "short":
         power = R.table("threat.power_source", V + "power_source", secret=True)["row_id"]
+    god_form = None
+    if family.get("forms"):       # the god family's two forms (build item 18d: the retired archetypes of an imprisoned and a forgotten god)
+        god_form = family["forms"][int(R.notation("threat.god_form", f"d{len(family['forms'])}", secret=True)["raw"]) - 1]
 
     # 4. the visibility, the shape (a public figure's when its contest is rolled), the origin
     visibility = R.table("bbeg_visibility", V + "visibility", secret=True)["row_id"]
@@ -176,7 +179,7 @@ def roll(R, dials: dict, spine: dict, palette, ruin_id: str, contests: list[dict
     where_id = R.table("threat.lair_where", V + "lair_where", secret=True, where=lambda r: where_fits(r, form, palette),
                        why="fits the form and the chain")["row_id"]
 
-    return {"family": fam_id, "creature_type": family["creature_type"], "creature": creature, "power_source": power,
+    return {"family": fam_id, "creature_type": family["creature_type"], "creature": creature, "power_source": power, "god_form": god_form,
             "visibility": visibility, "shape": shape, "origin": origin,
             "public_figure": {"contest": figure["contest"], "role": figure["role"], "main": figure["main"]} if figure else None,
             "goal": goal, "weakness": weakness, "lair": {"form": form_id, "where": where_id}, "band_top": top}

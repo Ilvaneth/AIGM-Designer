@@ -268,8 +268,9 @@ class Secrecy(unittest.TestCase):
                 self.assertNotIn(p["id"], ledger)
             secret_ids = {r["id"] for _, r in hidden}
             for n, p in enumerate(b["secret"]):
-                self.assertTrue(p["source"] == "clue_stage" or {s["from"] for s in sources(p)} <= secret_ids,
-                                f"secret promise {n} carries a public source")
+                froms = {s["from"] for s in sources(p)}
+                self.assertTrue(p["source"] in ("clue_stage", "clue") or froms <= secret_ids or all(str(f).startswith("threat.") for f in froms),
+                                f"secret promise {n} carries a public source")       # 18d: the clues and the threat's own
             # the sentences only a secret roll gives (not also a public row's own hook) are in no public promise
             public_texts = {(p["due"], p["text"]) for p in b["public"]}
             moved += sum(1 for p in b["secret"] if (p["due"], p["text"]) in public_texts)

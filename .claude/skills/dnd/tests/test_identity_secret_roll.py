@@ -27,7 +27,7 @@ import designer  # noqa: E402
 A, V = "secrets.yaml#", "antagonists.yaml#"
 SEEDS = 1800
 # build item 18c: the chooser and the tie are no longer rolled; the threat's rolls are secret too
-P1_SECRET = ("secret_archetype", "secret_twist", "secret_trail", "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_pole",
+P1_SECRET = ("secret_keeping", "secret_trail", "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_pole",   # 18d: the twist only sometimes
              "threat.family", "threat.goal", "threat.weakness", "threat.lair_form", "threat.lair_where")
 MOVED = ("bbeg_visibility", "bbeg_shape", "bbeg_origin")
 SECRET_IDS = dt.secret_row_ids()
@@ -91,9 +91,9 @@ class ManySeeds(unittest.TestCase):
         """The secret's non-repeating tables keep five rows after the constraints; the villain's shape and origin
         may repeat (the pair is what never does) and are reported only."""
         low = {ref: min(p1.pools[ref] for _, p1, _ in self.runs if ref in p1.pools)      # a forced tie has no pool
-               for ref in (A + "archetype", A + "twist", A + "trail", V + "villain_shape", V + "origin")}
+               for ref in (A + "keeping", A + "twist", A + "trail", V + "villain_shape", V + "origin") if any(ref in p1.pools for _, p1, _ in self.runs)}
         type(self).floors = low
-        for ref in (A + "archetype", A + "twist", A + "trail"):
+        for ref in (A + "keeping", A + "twist", A + "trail"):
             self.assertGreaterEqual(low[ref], 5, f"{ref}: the smallest pool is {low[ref]}")
 
     def test_the_pole_and_the_majority(self):
@@ -238,7 +238,7 @@ class RealBirth(unittest.TestCase):
         ident = log["identity"]
         self.assertEqual(set(ident), {"secret", "villain"}, "the 18c-1 audit: no world state's join lives in dm-only")
         self.assertIn("threat", log, "build item 18c: the threat's record, dm-only")
-        self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "trail"})
+        self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "keeping", "trail", "facts", "stages"})
         self.assertEqual(set(ident["villain"]), {"visibility", "shape", "origin", "tie", "pole", "public_figure", "majority_pole"})
         by_label = {r["label"]: r for r in log["rolls"] if r["phase"] == "P1"}
         for label in P1_SECRET:

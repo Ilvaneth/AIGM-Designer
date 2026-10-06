@@ -46,7 +46,7 @@ SIGNATURE_TABLES = {"people": ("people_lineage", "people_trait", "people_attitud
                     "phenomenon": ("phenomenon_rule", "phenomenon_sign", "phenomenon_limit", "phenomenon_user")}
 PLACE_STOCKS = {"settlement": ("places",), "region": ("regions",), "district": ("buildings", "places"),
                 "place": ("places", "inns", "buildings", "ships"), "site": ("sites", "places", "buildings")}
-SCRIPT_SOURCES = ("hook", "override", "foundation", "concretise", "clue_stage")
+SCRIPT_SOURCES = ("hook", "override", "foundation", "concretise", "clue_stage", "clue")
 # registry fields that hold no prose: ids, closed values, paths
 NO_PROSE_KEYS = {"id", "type", "file", "secrecy", "origin", "created_phase", "lang", "row", "tie", "home", "slot", "name", "aliases",
                  "status", "owner_phase", "reserved_by", "refs", "stamped", "rolled", "tensions", "signatures", "trope_breaks",

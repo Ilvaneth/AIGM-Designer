@@ -23,7 +23,7 @@ import design_dice as dd  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
 
-SECRET = ("secrets.yaml#archetype", "secrets.yaml#chooser", "secrets.yaml#twist", "secrets.yaml#trail")
+SECRET = ("secrets.yaml#archetype", "secrets.yaml#chooser", "secrets.yaml#twist", "secrets.yaml#trail", "secrets.yaml#keeping")
 VILLAIN = ("antagonists.yaml#visibility", "antagonists.yaml#villain_shape", "antagonists.yaml#origin", "antagonists.yaml#break_tie")
 P4_OWN = ("front_template", "doom_shape", "lieutenant_role", "buy_time_lever", "escalation_stage", "bbeg_faction_archetype")
 REPO = SCRIPTS.parents[3]
@@ -111,9 +111,11 @@ def is_public(other):
 class Counts(unittest.TestCase):
 
     def test_the_counts(self):
-        self.assertGreaterEqual(len(rows("secrets.yaml#archetype")), 22)
-        self.assertEqual(len(rows("secrets.yaml#twist")), 15)
-        self.assertIn(len(rows("secrets.yaml#trail")), (9, 10, 11))
+        # build item 18d: the archetypes are retired (nineteen live on as the twist); the old twists are the keeping
+        self.assertEqual(len(rows("secrets.yaml#archetype")), 0)
+        self.assertEqual(len(rows("secrets.yaml#twist")), 20)
+        self.assertEqual(len(rows("secrets.yaml#keeping")), 16)
+        self.assertEqual(len(rows("secrets.yaml#trail")), 11)
         self.assertEqual(len(rows("secrets.yaml#chooser")), 0, "build item 18c: retired, the villain always chose")
         self.assertEqual(len(rows("antagonists.yaml#break_tie")), 0, "build item 18c: retired, the move is the villain's")
         self.assertEqual(len(rows("antagonists.yaml#visibility")), 5)
@@ -128,26 +130,26 @@ class Counts(unittest.TestCase):
         secret_ids = dt.secret_row_ids()
         self.assertTrue(all(rid in secret_ids for rid in TABLE_OF))
 
-    def test_the_archetype_tells_the_breaks_cause(self):
-        for i, r in enumerate(rows("secrets.yaml#archetype")):
-            at = where("archetype", i)
-            self.assertIn("{the chooser}", r.get("cause") or "", f"{at}: the cause line names who chose")
-            self.assertEqual(set(r["clue_shape"]), {"act1", "act2", "act3"}, at)
-            self.assertTrue(r.get("hides_in") and r.get("statement") and r.get("hooks"), at)
-            self.assertNotIn("villain_relation", r, f"{at}: the villain's tie to the break replaced it")
+    def test_the_twist_tells_the_threats_hidden_truth(self):
+        """Build item 18d: the nineteen kept archetypes, their cause told with the villain and the move."""
+        for i, r in enumerate(rows("secrets.yaml#twist")):
+            at = where("twist", i)
+            self.assertNotIn("{the chooser}", r.get("cause") or "", f"{at}: the villain always chose")
+            self.assertTrue(r.get("cause") and r.get("hides_in") and r.get("hooks"), at)
+            self.assertNotIn("villain_relation", r, at)
         common = " ".join(hk["must"] for hk in dt.load("secrets.yaml")["hooks_common"])
-        self.assertIn("the break's dated event", common)
+        self.assertIn("the move is the secret's dated event", common)
         self.assertNotIn("deep-past", common)
         self.assertNotIn("relation to the secret", common)
 
     def test_the_trail_keeps_its_three_stages(self):
         for i, r in enumerate(rows("secrets.yaml#trail")):
-            self.assertEqual(list(r["acts"]), ["act1", "act2", "act3"], where("trail", i))
-            needs_writing = any(w in v for v in r["acts"].values() for w in ("letter", "document"))
+            self.assertEqual(list(r["stages"]), ["stage1", "stage2", "stage3"], where("trail", i))
+            needs_writing = any(w in v for v in r["stages"].values() for w in ("letter", "document"))
             self.assertEqual("break_no_writing" in (r.get("conflicts_with") or []), needs_writing, where("trail", i))
 
     def test_the_twists_and_the_rest_carry_a_rule_and_a_hook(self):
-        for ref in ("secrets.yaml#twist", "secrets.yaml#chooser", "antagonists.yaml#visibility", "antagonists.yaml#break_tie"):
+        for ref in ("secrets.yaml#keeping", "secrets.yaml#chooser", "antagonists.yaml#visibility", "antagonists.yaml#break_tie"):
             for i, r in enumerate(rows(ref)):
                 self.assertTrue(r.get("rule") and r.get("hooks"), where(ref, i))
         for i, r in enumerate(usable("antagonists.yaml#villain_shape")):
@@ -210,9 +212,9 @@ class References(unittest.TestCase):
                   "break_rule_by_lottery", "break_no_direct_lies", "break_no_writing", "rule_true_names")
         self.assertFalse(set(listed) - ALL_IDS)
         secret_public = pairs_between(SECRET, is_public)
-        self.assertGreaterEqual(len(secret_public), 31)
+        self.assertGreaterEqual(len(secret_public), 14, "31 until build item 18d retired the world-lore archetypes")
         barring = {o for p in pairs_between(SECRET + VILLAIN, is_public) for o in p} & set(listed)
-        self.assertEqual(len(barring), 14,       # 15 until build item 18c retired one barring verb
+        self.assertEqual(len(barring), 8,        # 15 until 18c retired a barring verb; 14 until 18d retired the world-lore archetypes
                          "three listed rows bar nothing: each tells a different thing from what any archetype hides")
 
 
@@ -288,9 +290,10 @@ class ManySeeds(unittest.TestCase):
         drawn = {p4.by_label["bbeg_faction_archetype"]["row_id"] for _, p4 in self.runs}
         self.assertEqual(len(drawn), len(rows("antagonists.yaml#bbeg_faction_archetype")))
 
-    def test_the_archetypes_floor(self):
-        smallest = min(p1.pools["secrets.yaml#archetype"] for p1, _ in self.runs)
-        self.assertGreaterEqual(smallest, 5, f"the archetype's smallest pool after the constraints is {smallest}")
+    def test_the_secrets_floor(self):
+        for ref in ("secrets.yaml#twist", "secrets.yaml#keeping", "secrets.yaml#trail"):       # build item 18d
+            smallest = min(p1.pools[ref] for p1, _ in self.runs if ref in p1.pools)          # the twist is not always rolled
+            self.assertGreaterEqual(smallest, 5, f"{ref}: the smallest pool after the constraints is {smallest}")
         for ref in ("antagonists.yaml#villain_shape", "antagonists.yaml#origin"):
             self.assertGreaterEqual(min(p1.pools[ref] for p1, _ in self.runs if ref in p1.pools), 5, ref)      # a forced shape has no pool
 
@@ -309,7 +312,7 @@ class ManySeeds(unittest.TestCase):
 
     def test_every_secret_piece_is_rolled_secretly(self):
         for p1, p4 in self.runs[:45]:
-            for label in ("secret_archetype", "secret_twist", "secret_trail",          # build item 18c: no chooser, no tie
+            for label in ("secret_keeping", "secret_trail",          # build item 18c: no chooser, no tie; 18d: no archetype
                           "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_pole"):
                 self.assertIn(p1.by_label[label], p1.secret)
                 self.assertNotIn(label, p4.by_label, "P4 no longer rolls what P1 rolled")
@@ -322,11 +325,11 @@ class Legacy(unittest.TestCase):
         real = dd.used_path
         tmp = Path(tempfile.mkdtemp()) / "used.json"
         tmp.write_text(json.dumps({"_meta": {"schema_version": 1}, "births": ["old-birth"], "campaigns": {"old-birth": {
-            "secrets.yaml#archetype": ["h:" + next(iter(GONE)), dd.hashed("secret_no_such_row")],
+            "secrets.yaml#twist": ["h:" + next(iter(GONE)), dd.hashed("secret_no_such_row")],
             "antagonists.yaml#origin": [dd.hashed("origin_no_such_row")]}}}), encoding="utf-8")
         dd.used_path = lambda: tmp
         try:
-            for ref in ("secrets.yaml#archetype", "antagonists.yaml#origin"):
+            for ref in ("secrets.yaml#twist", "antagonists.yaml#origin"):
                 use = dd.usage("_test-item9", ref)
                 res = arb.arbitrate(ref, rows(ref), arb.Context(), usage=use, secret=True)
                 self.assertEqual(len(res["pool"]), len(usable(ref)), ref)
