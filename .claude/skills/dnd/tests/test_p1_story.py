@@ -22,6 +22,7 @@ sys.path.insert(0, str(SCRIPTS))
 import design_approval as da  # noqa: E402
 import design_arbiter as arb  # noqa: E402
 import design_door as door  # noqa: E402
+import design_foundation as fd  # noqa: E402
 import design_manifest as dm  # noqa: E402
 import design_prompts as dpm  # noqa: E402
 import design_tables as dt  # noqa: E402
@@ -59,6 +60,20 @@ class Tables(unittest.TestCase):
         self.assertTrue(by["secret_history_looping"]["requires"]["any_of"])
         self.assertTrue(all(t.startswith("hand_family:") for t in by["secret_monsters_were_made"]["requires"]["any_of"]))
 
+    def test_the_short_names_and_the_hands(self):
+        """Build item 18e-2: every contest role the sentence may name reads in five words or fewer; every hand is a
+        subject with a number; the greater power's kinds are a secret table, one of them a god."""
+        for c in dt.rows("foundation.yaml#contest"):
+            for key in c["roles"]:
+                self.assertLessEqual(len(fd.role_short(c, key).split()), 5, f"{c['id']}.{key}")
+                self.assertIn(fd.role_kind(c, key), ("group", "settlement", "person", "creature"))
+        for h in dt.rows("antagonists.yaml#hand"):
+            self.assertIn(h["number"], ("singular", "plural"), h["id"])
+            self.assertTrue(h["text"]["subject"] and h["text"]["subject"][0].islower(), h["id"])
+        self.assertTrue(dt.roll_header("secrets.yaml#greater_power").get("secret"))
+        self.assertEqual(len(dt.rows("secrets.yaml#greater_power")), 4)
+        self.assertEqual(sum(1 for r in dt.rows("secrets.yaml#greater_power") if r.get("god")), 1)
+
     def test_the_door_s_story_fields(self):
         self.assertEqual(set(door.STORY_FIELDS.values()), {"clue_place", "secret_pin"})
         self.assertIn("secret_pin", arb.STORY_SLOTS)
@@ -80,6 +95,14 @@ def births(n, tag):
     return out
 
 
+def subject_of(R):
+    """The hand as the sentence's subject (lower case) and its number; the villain itself by its family's label."""
+    hand = dt.row("antagonists.yaml#hand", R.foundation["move"]["hand"])
+    if hand["id"] == "hand_villain_itself":
+        return dt.row("antagonists.yaml#villain_family", R.threat["family"])["text"]["name"].lower(), "singular"
+    return hand["text"]["subject"].lower(), hand["number"]
+
+
 class ManySeeds(unittest.TestCase):
 
     @classmethod
@@ -91,15 +114,37 @@ class ManySeeds(unittest.TestCase):
             s = R.foundation["spine_sentence"]
             self.assertTrue(s and s[0].isupper() and s.endswith("."))
             self.assertIn("; now ", s)
-            self.assertIn(dt.row("antagonists.yaml#hand", R.foundation["move"]["hand"])["text"]["name"], s)
+            self.assertIn(subject_of(R)[0], s.lower())
             self.assertNotIn("lifeline", s)
+
+    def test_the_sentence_reads_as_d_and_d(self):
+        """Build item 18e-2: 300 sentences in active voice: the hand opens it (after "A generation ago," for a
+        generation-old move) and its verb agrees with its number; the sides and the prize by their short names."""
+        tenses = {r["id"]: r["tense"] for r in dt.rows("foundation.yaml#time")}
+        for d, R in self.runs[:300]:
+            f = R.foundation
+            s = f["spine_sentence"]
+            subject, number = subject_of(R)
+            lead = "a generation ago, " if f["break"]["time"] == "time_generation_ago" else ""
+            body = s.lower()
+            self.assertTrue(body.startswith(lead + subject + " "), "the hand is the subject")
+            rest = body[len(lead + subject) + 1:]
+            if tenses[f["break"]["time"]] != "past":
+                self.assertTrue(rest.startswith("are " if number == "plural" else "is "), "the verb agrees with the hand")
+            self.assertNotIn(", by ", s, "active voice: the hand is no agent phrase")
+            self.assertNotIn("{", s)
+            contest = dt.row("foundation.yaml#contest", f["contests"][0]["id"])
+            self.assertTrue(s.endswith(f"; now {fd.role_short(contest, 'a')} and {fd.role_short(contest, 'b')} fight over "
+                                       f"{fd.prize_phrase({**f, 'ruin': f['ruin_source']}, f['layout']['contests'][0])}."))
 
     def test_the_pin_and_the_mechanic(self):
         gods = 0
         for d, R in self.runs:
             pin = R.identity_secret["secret"]["pin"]
-            needs = (R.threat["family"] == "family_god" or R.threat["goal"]["id"] == "goal_patron_will"
-                     or R.identity_secret["secret"]["twist"] == "twist_greater_power")
+            power = R.identity_secret["secret"]["greater_power"]        # 18e-2: one rule for the twist and the patron
+            self.assertEqual(power is not None, R.identity_secret["secret"]["twist"] == "twist_greater_power"
+                             or R.threat["goal"]["id"] == "goal_patron_will")
+            needs = R.threat["family"] == "family_god" or bool(power and dt.row("secrets.yaml#greater_power", power).get("god"))
             self.assertEqual(pin["god"], needs)
             self.assertEqual(pin["event"], "the move")
             if needs:

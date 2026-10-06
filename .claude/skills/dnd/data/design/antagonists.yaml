@@ -138,37 +138,37 @@ tables:
 
   hand:
     own_hooks_only: true             # the file's hooks are the antagonists'; the hand is public and takes none of them
-    roll: {secret: false, avoid_used: false, row_wait: 3, labels: [P1.move.hand], note: "the visible hand: an organisation or a creature, never a whole people (a hand drawn from a people is a part of it, and another part stands elsewhere); `families` are the campaign's public creature families (finding D4); `moon`: a hand that trades with the moon or comes from it"}
+    roll: {secret: false, avoid_used: false, row_wait: 3, labels: [P1.move.hand], note: "the visible hand: an organisation or a creature, never a whole people (a hand drawn from a people is a part of it, and another part stands elsewhere); `families` are the campaign's public creature families (finding D4); `moon`: a hand that trades with the moon or comes from it; `number` and `text.subject` make the story sentence's subject (build item 18e-2; the villain itself is named by its family's public label)"}
     hooks_common:
       - {phase: P4, must: "the front's first step is the move, made by this hand; the hand is a faction or a creature group of P4"}
     rows:
-      - {id: hand_villain_itself, base: far_end, label: "The villain itself, openly", families: [villain], requires: {any_of: [vis_known_untouchable, vis_known_unknown_where]}, text: {name: "the villain itself, openly"}}
-      - {id: hand_war_band, base: far_end, label: "A war band (a part of the orcs, gnolls or hobgoblins)", families: [humanoid], text: {name: "a war band, a part of its people"}}
-      - {id: hand_sea_raiders, base: far_end, label: "Sea raiders, pirates", families: [humanoid], requires: {any_of: [land_coast, land_island]}, moon: true, text: {name: "sea raiders"}}
-      - {id: hand_cult, base: far_end, label: "A cult", families: [humanoid, served], text: {name: "a cult"}}
-      - {id: hand_thieves_guild, base: far_end, label: "A guild of thieves and assassins", families: [humanoid], moon: true, text: {name: "a guild of thieves and assassins"}}
-      - {id: hand_traitor, base: inside, label: "A traitor inside (a councillor, a general, a priest)", families: [humanoid], text: {name: "a traitor inside"}}
-      - {id: hand_deceived_side, base: inside, label: "A deceived side (a contest role, not knowing what it did)", families: [humanoid], text: {name: "a side that does not know what it did"}}
-      - {id: hand_hired_company, base: far_end, label: "A hired company", families: [humanoid], moon: true, text: {name: "a hired company"}}
-      - {id: hand_foreign_army, base: far_end, label: "A foreign army", families: [humanoid], text: {name: "a foreign army"}}
-      - {id: hand_dragon, base: far_end, label: "A dragon (with its kobolds and dragonborn servants)", families: [dragon], text: {name: "a dragon and its servants"}}
-      - {id: hand_risen_dead, base: far_end, label: "The risen dead", families: [undead], text: {name: "the risen dead"}}
-      - {id: hand_ruin_power, base: far_end, label: "The ruin's power, woken", families: [ruin], requires: {any_of: [ruin_dead_god, ruin_imprisoned_god, ruin_failed_apotheosis, ruin_golem_army, ruin_bound_elements, ruin_sundered_relic, ruin_dried_source, ruin_sleeper, ruin_deep_minds, ruin_planar_rift, ruin_demon_gate, ruin_devils_bargain, ruin_sleeping_realm, ruin_failed_experiment, ruin_great_curse, ruin_kingdom_of_the_dead]}, text: {name: "the ruin's power, woken"}}
-      - {id: hand_fiends, base: far_end, label: "Fiends (summoned or bargained with)", families: [fiend], text: {name: "fiends, summoned or bargained with"}}
-      - {id: hand_from_beyond, base: far_end, label: "Things from beyond (mind flayers, aberrations)", families: [aberration], moon: true, text: {name: "things from beyond"}}
-      - {id: hand_giants, base: far_end, label: "Giants", families: [giant], text: {name: "giants"}}
-      - {id: hand_monstrous_beast, base: far_end, label: "A monstrous beast (a hydra, a behir, a purple worm)", families: [monstrosity], text: {name: "a monstrous beast"}}
-      - {id: hand_fey_court, base: far_end, label: "A fey court's emissaries", families: [fey], text: {name: "a fey court's emissaries"}}
-      - {id: hand_bound_elemental, base: far_end, label: "A bound elemental", families: [elemental], text: {name: "a bound elemental"}}
-      - {id: hand_werewolves, base: far_end, label: "Werewolves, a cursed pack", families: [lycanthrope], text: {name: "a cursed pack"}}
-      - {id: hand_golem_army, base: far_end, label: "A golem army", families: [construct], requires: {dial: {magic: [medium, high]}}, text: {name: "a golem army"}}
-      - {id: hand_hag_coven, base: far_end, label: "A coven of hags", families: [fey], text: {name: "a coven of hags"}}
-      - {id: hand_brigands, base: far_end, label: "Brigands, outlaws", families: [humanoid], text: {name: "brigands"}}
-      - {id: hand_slavers, base: far_end, label: "Slavers", families: [humanoid], moon: true, text: {name: "slavers"}}
-      - {id: hand_zealous_order, base: far_end, label: "A zealous order (a church militant, a knightly order)", families: [humanoid], text: {name: "a zealous order"}}
-      - {id: hand_rival_band, base: far_end, label: "A rival band of adventurers", families: [humanoid], text: {name: "a rival band of adventurers"}}
-      - {id: hand_shapechangers, base: inside, label: "Shapechangers wearing trusted faces", families: [monstrosity], text: {name: "shapechangers wearing trusted faces"}}
-      - {id: hand_druid_circle, base: far_end, label: "A corrupted druid circle and its blights", families: [plant], text: {name: "a corrupted druid circle and its blights"}}
+      - {id: hand_villain_itself, number: singular, base: far_end, label: "The villain itself, openly", families: [villain], requires: {any_of: [vis_known_untouchable, vis_known_unknown_where]}, text: {name: "the villain itself, openly", subject: "the villain itself"}}
+      - {id: hand_war_band, number: singular, base: far_end, label: "A war band (a part of the orcs, gnolls or hobgoblins)", families: [humanoid], text: {name: "a war band, a part of its people", subject: "a war band"}}
+      - {id: hand_sea_raiders, number: plural, base: far_end, label: "Sea raiders, pirates", families: [humanoid], requires: {any_of: [land_coast, land_island]}, moon: true, text: {name: "sea raiders", subject: "sea raiders"}}
+      - {id: hand_cult, number: singular, base: far_end, label: "A cult", families: [humanoid, served], text: {name: "a cult", subject: "a cult"}}
+      - {id: hand_thieves_guild, number: singular, base: far_end, label: "A guild of thieves and assassins", families: [humanoid], moon: true, text: {name: "a guild of thieves and assassins", subject: "a guild of thieves and assassins"}}
+      - {id: hand_traitor, number: singular, base: inside, label: "A traitor inside (a councillor, a general, a priest)", families: [humanoid], text: {name: "a traitor inside", subject: "a traitor within"}}
+      - {id: hand_deceived_side, number: singular, base: inside, label: "A deceived side (a contest role, not knowing what it did)", families: [humanoid], text: {name: "a side that does not know what it did", subject: "an unwitting faction"}}
+      - {id: hand_hired_company, number: singular, base: far_end, label: "A hired company", families: [humanoid], moon: true, text: {name: "a hired company", subject: "a hired company"}}
+      - {id: hand_foreign_army, number: singular, base: far_end, label: "A foreign army", families: [humanoid], text: {name: "a foreign army", subject: "a foreign army"}}
+      - {id: hand_dragon, number: singular, base: far_end, label: "A dragon (with its kobolds and dragonborn servants)", families: [dragon], text: {name: "a dragon and its servants", subject: "a dragon"}}
+      - {id: hand_risen_dead, number: plural, base: far_end, label: "The risen dead", families: [undead], text: {name: "the risen dead", subject: "the risen dead"}}
+      - {id: hand_ruin_power, number: singular, base: far_end, label: "The ruin's power, woken", families: [ruin], requires: {any_of: [ruin_dead_god, ruin_imprisoned_god, ruin_failed_apotheosis, ruin_golem_army, ruin_bound_elements, ruin_sundered_relic, ruin_dried_source, ruin_sleeper, ruin_deep_minds, ruin_planar_rift, ruin_demon_gate, ruin_devils_bargain, ruin_sleeping_realm, ruin_failed_experiment, ruin_great_curse, ruin_kingdom_of_the_dead]}, text: {name: "the ruin's power, woken", subject: "the woken power of the ruin"}}
+      - {id: hand_fiends, number: plural, base: far_end, label: "Fiends (summoned or bargained with)", families: [fiend], text: {name: "fiends, summoned or bargained with", subject: "fiends"}}
+      - {id: hand_from_beyond, number: plural, base: far_end, label: "Things from beyond (mind flayers, aberrations)", families: [aberration], moon: true, text: {name: "things from beyond", subject: "things from beyond"}}
+      - {id: hand_giants, number: plural, base: far_end, label: "Giants", families: [giant], text: {name: "giants", subject: "giants"}}
+      - {id: hand_monstrous_beast, number: singular, base: far_end, label: "A monstrous beast (a hydra, a behir, a purple worm)", families: [monstrosity], text: {name: "a monstrous beast", subject: "a monstrous beast"}}
+      - {id: hand_fey_court, number: plural, base: far_end, label: "A fey court's emissaries", families: [fey], text: {name: "a fey court's emissaries", subject: "a fey court's emissaries"}}
+      - {id: hand_bound_elemental, number: singular, base: far_end, label: "A bound elemental", families: [elemental], text: {name: "a bound elemental", subject: "a bound elemental"}}
+      - {id: hand_werewolves, number: singular, base: far_end, label: "Werewolves, a cursed pack", families: [lycanthrope], text: {name: "a cursed pack", subject: "a cursed pack"}}
+      - {id: hand_golem_army, number: singular, base: far_end, label: "A golem army", families: [construct], requires: {dial: {magic: [medium, high]}}, text: {name: "a golem army", subject: "a golem army"}}
+      - {id: hand_hag_coven, number: singular, base: far_end, label: "A coven of hags", families: [fey], text: {name: "a coven of hags", subject: "a coven of hags"}}
+      - {id: hand_brigands, number: plural, base: far_end, label: "Brigands, outlaws", families: [humanoid], text: {name: "brigands", subject: "brigands"}}
+      - {id: hand_slavers, number: plural, base: far_end, label: "Slavers", families: [humanoid], moon: true, text: {name: "slavers", subject: "slavers"}}
+      - {id: hand_zealous_order, number: singular, base: far_end, label: "A zealous order (a church militant, a knightly order)", families: [humanoid], text: {name: "a zealous order", subject: "a zealous order"}}
+      - {id: hand_rival_band, number: singular, base: far_end, label: "A rival band of adventurers", families: [humanoid], text: {name: "a rival band of adventurers", subject: "a rival band of adventurers"}}
+      - {id: hand_shapechangers, number: plural, base: inside, label: "Shapechangers wearing trusted faces", families: [monstrosity], text: {name: "shapechangers wearing trusted faces", subject: "shapechangers"}}
+      - {id: hand_druid_circle, number: singular, base: far_end, label: "A corrupted druid circle and its blights", families: [plant], text: {name: "a corrupted druid circle and its blights", subject: "a corrupted druid circle"}}
 
   move_state:
     own_hooks_only: true
@@ -201,12 +201,12 @@ tables:
       - {id: family_from_beyond, label: A thing from beyond, creature_type: aberration, creatures: [cloaker, aboleth], reskin: [aboleth], weight_by: [{when: {any_of: [ruin_deep_minds]}, x: 2}, {when: {dial: {content_mix: [horror]}}, x: 2}], text: {name: "a mind from beyond"}}
       - {id: family_giant, label: A giant, creature_type: giant, creatures: [hill-giant, stone-giant, frost-giant, fire-giant, cloud-giant, storm-giant], reskin: [storm-giant], weight_by: [{when: {any_of: [ruin_giants_land, ruin_giants_and_dragons]}, x: 2}], text: {name: "a giant lord"}}
       - {id: family_hag_fey, label: A hag coven or a fey lord, creature_type: fey, creatures: [sea-hag, green-hag], reskin: [green-hag], weight_by: [{when: {any_of: [ruin_elven_withdrawal, ruin_sleeping_realm]}, x: 2}], text: {name: "a hag coven or a fey lord"}}
-      - {id: family_monstrous_mind, label: A monstrous mind (medusa, lamia, naga, sphinx), creature_type: monstrosity, creatures: [lamia, medusa, spirit-naga, guardian-naga, gynosphinx, androsphinx], reskin: [androsphinx], text: {name: "a monstrous mind"}}
+      - {id: family_monstrous_mind, label: "A monstrous mind (medusa, lamia, naga, sphinx)", creature_type: monstrosity, creatures: [lamia, medusa, spirit-naga, guardian-naga, gynosphinx, androsphinx], reskin: [androsphinx], text: {name: "a monstrous mind"}}
       - {id: family_genie_elemental, label: A genie or an elemental lord, creature_type: elemental, requires: {dial: {scale: [standard, epic]}}, creatures: [djinni, efreeti], reskin: [efreeti, djinni], weight_by: [{when: {any_of: [ruin_bound_elements]}, x: 2}], text: {name: "a genie or an elemental lord"}}
       - {id: family_lycanthrope, label: A lycanthrope, creature_type: humanoid, power_source: true, requires: {dial: {scale: [short, standard]}}, creatures: [wererat-hybrid, werewolf-hybrid, wereboar-hybrid, weretiger-hybrid, werebear-hybrid], reskin: [werebear-hybrid], weight_by: [{when: {any_of: [ruin_beast_blood]}, x: 2}], text: {name: "a lycanthrope"}}
       - {id: family_fallen_celestial, label: A fallen celestial, creature_type: celestial, requires: {dial: {scale: [standard, epic]}}, creatures: [deva, planetar, solar], reskin: [solar], weight_by: [{when: {any_of: [ruin_celestial_war]}, x: 2}], text: {name: "a fallen celestial"}}
       - {id: family_sea_titan, label: A sea titan, creature_type: monstrosity, requires: {dial: {scale: [epic]}}, creatures: [dragon-turtle, kraken], reskin: [kraken], weight_by: [{when: {any_of: [ruin_great_flood, ruin_water_kingdom]}, x: 2}], text: {name: "a sea titan"}}
-      - {id: family_god, label: A god (an avatar, a fallen or an imprisoned god), creature_type: god, requires: {dial: {scale: [standard, epic]}}, creatures: [], reskin: [deva, planetar, solar], avatar: true, weaknesses: [weak_source_cut, weak_rite_binds_again, weak_true_name, weak_sacred_relic, weak_prophecy, weak_vow_or_bargain, weak_place_bound], weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}], text: {name: "a god: an avatar, a fallen or an imprisoned god"}, forms: [imprisoned, forgotten_returning], hooks: [{phase: P2, must: "the god stands in the pantheon, imprisoned or forgotten and returning; its church is a hand or a faction"}]}
+      - {id: family_god, label: "A god (an avatar, a fallen or an imprisoned god)", creature_type: god, requires: {dial: {scale: [standard, epic]}}, creatures: [], reskin: [deva, planetar, solar], avatar: true, weaknesses: [weak_source_cut, weak_rite_binds_again, weak_true_name, weak_sacred_relic, weak_prophecy, weak_vow_or_bargain, weak_place_bound], weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}], text: {name: "a god: an avatar, a fallen or an imprisoned god"}, forms: [imprisoned, forgotten_returning], hooks: [{phase: P2, must: "the god stands in the pantheon, imprisoned or forgotten and returning; its church is a hand or a faction"}]}
 
   power_source:
     roll: {secret: true, avoid_used: false, labels: [P1.threat.power_source], note: "a humanoid family above short draws one; the weakness may bind to it"}

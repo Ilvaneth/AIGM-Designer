@@ -108,6 +108,18 @@ class ManySeeds(unittest.TestCase):
                 self.assertIsNone(m["join_by"])
                 self.assertIn(piece, fd.GOAL_TARGETS[g["piece"]])
 
+    def test_the_verb_fits_the_target_s_kind(self):
+        """Build item 18e-2: no verb strikes a kind it does not fit (a remnant's, the key place's, a role's), and the
+        sentence has the verb's phrase for that kind."""
+        for d, R, f, ident in self.runs:
+            out = {"target": f["break"]["target"], "ruin": f["ruin_source"], "spine": f["spine"], "contests": f["contests"],
+                   "target_role": f["break"]["target_role"]}
+            piece, kind = fd.target_kind(out)
+            v = ACTIONS[f["move"]["verb"]]
+            if piece in ("remnant", "key_place", "role"):
+                self.assertIn(kind, v["fits"][piece], f"{v['id']} on {piece}.{kind}")
+            self.assertIsNotNone(fd.verb_phrase(v, piece, kind))
+
     def test_the_time_the_state_and_the_timeline(self):
         for d, R, f, ident in self.runs:
             m = f["move"]

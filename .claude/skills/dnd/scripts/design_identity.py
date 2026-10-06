@@ -371,16 +371,21 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
     tone = dt.dial_row("tone", dials.get("tone")) or {}
     facts = secret_facts(threat, side)
     stages = secret_stages(foundation, threat, trail)
-    # W1 (build item 18e): the secret is pinned to a god only when the family is the god or the goal or the twist names
-    # a patron; the god's part is rolled. Otherwise the pin is a piece of the chain. The event is always the move
-    if threat["family"] == "family_god" or threat["goal"]["id"] == "goal_patron_will" or twist == "twist_greater_power":
+    # W1 (build items 18e, 18e-2): a power behind the villain (the twist "a greater power stands behind it", the goal "a
+    # patron's will") has its kind rolled once, from one table; the secret is pinned to a god only when the family is
+    # the god or that power is a god, and the god's part is rolled. Otherwise the pin is a piece of the chain. The
+    # event is always the move
+    power = None
+    if twist == "twist_greater_power" or threat["goal"]["id"] == "goal_patron_will":
+        power = R.table("secret_power", SECRETS + "greater_power", secret=True)["row_id"]
+    if threat["family"] == "family_god" or (power and (dt.row(SECRETS + "greater_power", power) or {}).get("god")):
         pin = {"god": True, "relation": R.table("secret_pin.relation", SECRETS + "god_relation", secret=True)["row_id"],
                "piece": None, "event": "the move"}
     else:
         thin = "land_thin_place" in list(foundation["palette"]) + list(foundation["palette_extra"])
         pin = {"god": False, "relation": None, "piece": "thin_place" if thin else "remnant", "event": "the move"}
     return {"secret": {"archetype": archetype, "chooser": chooser, "chooser_role": chooser_role, "twist": twist,
-                       "keeping": keeping, "trail": trail, "facts": facts, "stages": stages, "pin": pin},
+                       "greater_power": power, "keeping": keeping, "trail": trail, "facts": facts, "stages": stages, "pin": pin},
             "villain": {"visibility": visibility, "shape": shape, "origin": origin, "tie": tie,
                         "pole": {"question": identity["questions"][0]["id"], "contest": main["id"], "role": side},
                         "public_figure": {"contest": figure["contest"], "role": figure["role"]} if figure else None,

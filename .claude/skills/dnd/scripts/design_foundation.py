@@ -203,10 +203,21 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     actions = {r["id"]: r for r in dt.rows(ref("action"))}
     targets = {r["piece"]: r for r in dt.rows(ref("break_target"))}
 
+    def strikable_roles(act: dict) -> list[str]:
+        """The institution is never left homeless (owner, 2026-10-03): a verb that destroys a role never strikes the
+        last seated role of the main contest that carries an archetype hint and is no people's role."""
+        homes = institution_homes(main, main_roles)
+        protected = homes[0] if (len(homes) == 1 and "role" in (act.get("destroys") or [])) else None
+        return [k for k in main_roles if k != protected]
+
     def fits(act: dict, piece: str) -> bool:
+        """The verb strikes the piece, and the kind of what stands there (build item 18e-2: a remnant's kind, the key
+        place's kind, a role's kind among the roles it may strike)."""
         if piece not in act["targets"]:
             return False
         table = act.get("fits") or {}
+        if piece == "role":
+            return any(role_kind(main, k) in table.get("role", []) for k in strikable_roles(act))
         return {"remnant": remnant_kind in table.get("remnant", []),
                 "key_place": key_kind in table.get("key_place", [])}.get(piece, True)
 
@@ -235,13 +246,12 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     rec["used_keys"] = {PAIR_KEY: f"{piece}|{act_id}"}     # approve writes it; the pair never repeats
     role = None
     if piece == "role":
-        # the institution is never left homeless (owner, 2026-10-03): a verb that destroys a role never strikes the
-        # last seated role of the main contest that carries an archetype hint and is no people's role
-        homes = institution_homes(main, main_roles)
-        protected = homes[0] if (len(homes) == 1 and "role" in (act.get("destroys") or [])) else None
-        roles = [k for k in main_roles if k != protected]
+        # a role the verb may strike (the institution's last home is protected) and whose kind the verb fits
+        open_roles = strikable_roles(act)
+        roles = [k for k in open_roles if role_kind(main, k) in (act.get("fits") or {}).get("role", [])]
         role = roles[int(R.notation("foundation.break.role", f"d{len(roles)}")["raw"]) - 1]
         out["target_role"] = role
+        protected = next((k for k in main_roles if k not in open_roles), None)
         if protected:
             rec["protected_role"] = {"role": protected, "why": "the last seated role with an archetype hint that is no people's role"}
 
@@ -296,6 +306,9 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
                    "winner": out["winner"], "start": out["start"], "start_why": start_why, "start_kind": "a village or a small town",
                    "families": families}
     threat["families"] = {"public": families, "secret": [threat["creature_type"]]}      # finding D4; P6 weighs them
+    # the villain itself is named by its family's public label (it is the hand only when its visibility is known)
+    out["villain_label"] = (dt.row("antagonists.yaml#villain_family", threat["family"]) or {}).get("text", {}).get("name") \
+        if hand_id == "hand_villain_itself" else None
     out["spine_sentence"] = spine_sentence(out)
 
     # 7. the escalation
@@ -532,64 +545,122 @@ def _role_phrase(contest: dict, key: str) -> str:
     return contest["roles"][key]["text"]
 
 
+def role_short(contest: dict, key: str) -> str:
+    """A role's noun phrase in the story sentence (build item 18e-2): its `short`, else its text (five words at most)."""
+    role = contest["roles"][key]
+    return role.get("short") or role["text"]
+
+
+def role_kind(contest: dict, key: str) -> str:
+    """group (absent), person or creature: a role that is one being takes a verb's person or creature phrase."""
+    return (contest["roles"].get(key) or {}).get("kind") or "group"
+
+
+def _short(text: dict, field: str) -> str:
+    return text.get(f"{field}_short") or text[field]
+
+
+THIN_PLACE = "the thin place"
+
+
+def target_kind(out: dict) -> tuple[str, str]:
+    """The target's piece and kind (build item 18e-2): the heart a settlement, the key place by its spine's key kind,
+    the remnant by its ruin's remnant kind, a role by its kind, the thin place itself."""
+    piece = PIECE_OF_TARGET[out["target"]]
+    if piece == "remnant":
+        return piece, rows_by_id("ruin_source")[out["ruin"]]["remnant_kind"]
+    if piece == "key_place":
+        return piece, rows_by_id("spine")[out["spine"]]["key_kind"]
+    if piece == "role":
+        return piece, role_kind(rows_by_id("contest")[out["contests"][0]["id"]], out["target_role"])
+    return piece, {"heart": "settlement"}.get(piece, piece)
+
+
 def target_phrase(out: dict) -> str:
+    """The target's short name (build item 18e-2: a row's `*_short` where its text runs long)."""
     spine = rows_by_id("spine")[out["spine"]]
     piece = PIECE_OF_TARGET[out["target"]]
     if piece == "lifeline":
         return rows_by_id("lifeline")[out["lifeline"]]["text"]["name"]
     if piece == "remnant":
-        return rows_by_id("ruin_source")[out["ruin"]]["text"]["remnant"]
-    if piece == "key_place":
-        return spine["text"]["key_place"]
-    if piece == "heart":
-        return spine["text"]["heart"]
+        return _short(rows_by_id("ruin_source")[out["ruin"]]["text"], "remnant")
+    if piece in ("key_place", "heart"):
+        return _short(spine["text"], piece)
     if piece == "role":
-        return _role_phrase(rows_by_id("contest")[out["contests"][0]["id"]], out["target_role"])
-    return rows_by_id("palette")["land_thin_place"]["text"]["name"]
+        return role_short(rows_by_id("contest")[out["contests"][0]["id"]], out["target_role"])
+    return THIN_PLACE
 
 
 def prize_phrase(out: dict, seated: dict) -> str:
-    """The main contest's prize in words, from the rows' English fields."""
+    """The main contest's prize in words, from the rows' English fields (their short names; a new or seat prize by
+    the contest's own `text.prize` where it has one)."""
     spine = rows_by_id("spine")[out["spine"]]["text"]
     contest = rows_by_id("contest")[seated["contest"]]
     kind = seated["prize"]["kind"]
+    own = (contest.get("text") or {}).get("prize")
     if kind == "disputed_land":
         side = contest.get("prize_at")
-        return f"the land of {contest['roles'][side]['text']}" if side else "the land between them"
-    return {"heart": spine["heart"], "key_place": spine["key_place"], "remnant": rows_by_id("ruin_source")[out["ruin"]]["text"]["remnant"],
-            "seat": f"the seat of {contest['roles']['a']['text']}", "new": "a new thing both want",
-            "thin_place": rows_by_id("palette")["land_thin_place"]["text"]["name"]}.get(kind, "")
+        return f"the land of {role_short(contest, side)}" if side else "the land between them"
+    if kind in ("new", "seat") and own:
+        return own
+    return {"heart": _short(spine, "heart"), "key_place": _short(spine, "key_place"),
+            "remnant": _short(rows_by_id("ruin_source")[out["ruin"]]["text"], "remnant"),
+            "seat": f"the seat of {role_short(contest, 'a')}", "new": "a new thing both want",
+            "thin_place": THIN_PLACE}.get(kind, "")
+
+
+def verb_phrase(act: dict, piece: str, kind: str) -> dict | None:
+    """The verb's phrase for a target (build item 18e-2): the first entry for `piece.kind`, else for `piece`."""
+    entries = act.get("phrases") or []
+    return (next((e for e in entries if f"{piece}.{kind}" in e["for"]), None)
+            or next((e for e in entries if piece in e["for"]), None))
+
+
+def subject_of(out: dict) -> tuple[str, str]:
+    """The hand as the sentence's subject and its number; the villain itself by its family's public label."""
+    hand = dt.row("antagonists.yaml#hand", out["move"]["hand"]) or {}
+    if hand.get("id") == "hand_villain_itself" and out.get("villain_label"):
+        return out["villain_label"], "singular"
+    return (hand.get("text") or {}).get("subject") or (hand.get("text") or {}).get("name"), hand.get("number") or "singular"
+
+
+def move_clause(out: dict) -> str:
+    """The move in active voice: "<the hand> <phrase with the target>", its verb agreeing with the hand's number."""
+    act = rows_by_id("action")[out["action"]]
+    tense = rows_by_id("time")[out["time"]]["tense"]
+    piece, kind = target_kind(out)
+    phrase = verb_phrase(act, piece, kind)
+    subject, number = subject_of(out)
+    if not phrase or not subject:
+        raise SystemExit(f"design_foundation: {out['action']} has no phrase for {piece}.{kind} — a table fault")
+    return f"{subject} " + phrase[tense].format(be="are" if number == "plural" else "is", target=target_phrase(out))
 
 
 def spine_sentence(out: dict) -> str:
-    """The spine sentence (build item 18e; docs/p1-threat-first.md): one public sentence from the story pieces alone,
-    "<the target> <was struck>, by <the hand>; now <side a> and <side b> fight over <the prize>". A slot that would hold
-    texture or nothing is a table fault."""
-    move = out["move"]
-    hand = (dt.row("antagonists.yaml#hand", move["hand"]) or {}).get("text", {}).get("name")
-    act = rows_by_id("action")[out["action"]]
-    tense = rows_by_id("time")[out["time"]]["tense"]
+    """The spine sentence (build items 18e, 18e-2; docs/p1-threat-first.md): one public sentence from the story pieces
+    alone, "<the hand> <struck> <the target>; now <side a> and <side b> fight over <the prize>.", in active voice, a
+    generation-old move opening with "A generation ago,". A slot that would hold texture or nothing is a table fault."""
     main = out["layout"]["contests"][0]
     contest = rows_by_id("contest")[main["contest"]]
-    parts = {"the hand": hand, "the target": target_phrase(out), "the verb": act["forms"][tense],
-             "side a": contest["roles"]["a"]["text"], "side b": contest["roles"]["b"]["text"], "the prize": prize_phrase(out, main)}
+    parts = {"the move": move_clause(out), "side a": role_short(contest, "a"), "side b": role_short(contest, "b"),
+             "the prize": prize_phrase(out, main)}
     empty = [k for k, v in parts.items() if not v]
     if empty or PIECE_OF_TARGET[out["target"]] == "lifeline" or main["prize"]["kind"] == "lifeline":
         raise SystemExit(f"design_foundation: the spine sentence has no {', '.join(empty) or 'story piece'} — a table fault")
-    s = f"{parts['the target']} {parts['the verb']}, by {parts['the hand']}; now {parts['side a']} and {parts['side b']} fight over {parts['the prize']}."
+    lead = "A generation ago, " if out["time"] == "time_generation_ago" else ""
+    s = f"{lead}{parts['the move']}; now {parts['side a']} and {parts['side b']} fight over {parts['the prize']}."
     return s[0].upper() + s[1:]
 
 
 def rendering(out: dict) -> list[dict]:
     """The foundation in English, for the owner's eyes and the writer's: a labelled list built from the rows' own
-    English fields (build item 13a; the Turkish five-template sentence is gone). No sentence is assembled: every
-    line is `label: the rows' fragments`, and every rolled piece is named."""
+    English fields (build item 13a; the Turkish five-template sentence is gone). Every line is `label: the rows'
+    fragments`, and every rolled piece is named; the break's line carries the move's clause (build item 18e-2)."""
     spine = rows_by_id("spine")[out["spine"]]
     palette = rows_by_id("palette")
     ruin = rows_by_id("ruin_source")[out["ruin"]]
     life = rows_by_id("lifeline")[out["lifeline"]]
     contests = rows_by_id("contest")
-    act = rows_by_id("action")[out["action"]]
     time = rows_by_id("time")[out["time"]]
     st = spine["text"]
     ends = " / ".join(st["ends"]) if st.get("ends") else st["ends_both"]
@@ -608,7 +679,7 @@ def rendering(out: dict) -> list[dict]:
     scars = ", ".join(rows_by_id("scar")[s]["text"]["name"] for s in out["scars"])
     # a break still coming has left no wound yet: its scars are its first signs
     scar_word = "first signs" if time["id"] == "time_coming" else ("scars" if len(out["scars"]) > 1 else "scar")
-    lines.append({"label": "The break", "text": f"{time['text']['name']}: {target_phrase(out)} {act['forms'][time['tense']]}; "
+    lines.append({"label": "The break", "text": f"{time['text']['name']}: {move_clause(out)}; "
                                                 f"{scar_word}: {scars}; stronger for it: {_role_phrase(main, out['winner'])}"})
     return lines
 

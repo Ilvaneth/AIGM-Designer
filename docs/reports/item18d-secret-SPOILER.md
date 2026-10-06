@@ -171,3 +171,14 @@
 - `secret_artifact_is_seal`: requires {'any_of': ['prize:new', 'prize:remnant']}
 - `secret_artifact_is_alive`: requires {'any_of': ['goal_piece:remnant', 'goal_piece:new']}
 - `secret_monsters_were_made`: requires {'any_of': ['hand_family:monstrosity', 'hand_family:undead', 'hand_family:lycanthrope', 'hand_family:plant', 'hand_family:aberration', 'hand_family:construct']}
+
+## 18e-2 — the greater power's kinds (`secrets.yaml#greater_power`, secret; rolled only with the twist `twist_greater_power`)
+
+| Id | Label | Text | `god` | Hook |
+|---|---|---|---|---|
+| power_fiend_lord | A fiend lord | a fiend lord of the lower planes | | P2: the fiend lord has a domain among the planes and a true name the party can learn |
+| power_god | A god | a god | true | P2: the god stands in the pantheon; its part in the threat is the pin's rolled relation |
+| power_elder_mind | An elder mind | an elder mind from beyond the stars | | P2: the elder mind has a place in the cosmology, outside the planes the gods keep |
+| power_old_empire_ghost | An old empire's ghost | the ghost of an old empire | | P2: the old empire stands in the history; its ghost wants it back |
+
+The pin is a god only for `power_god` (or, as before, the god family or the goal of a patron's will); otherwise the pin is the chain's piece, as in 18e. The kind is recorded as `identity.secret.greater_power` in `dice-log.json` (null without that twist), and the writer's prompt points at it. The two family labels whose commas YAML read as keys (`family_monstrous_mind`, `family_god`) are quoted now: their `label` was cut at the first comma and the rest became empty keys.

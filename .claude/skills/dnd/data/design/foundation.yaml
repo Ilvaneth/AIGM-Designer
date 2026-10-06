@@ -17,6 +17,7 @@ plan: "item 25; errata 24.2 #20-25"
 phenomenon_rule_families: [magic_behaviour, body_blood, place_path, matter, time, word_sign, nature_creatures, born_of_break]
 key_kinds: [crossing, bridge, water, gate, descent, crossroad, network, landmark]
 remnant_kinds: [network, structure, city, body, wasteland, machine, object, source, rift]
+role_kinds: [group, settlement, person, creature]   # build item 18e-2: a contest role's `kind` (absent: group)
 # the palette kinds a key place of each kind can stand on (build item 6b); crossroad, network and landmark take any
 key_kind_lands:
   crossing: [land_river, land_lake, land_coast, land_island, land_mountain, land_highland, land_sky_river]
@@ -130,7 +131,7 @@ tables:
         parts: {heart: [land_highland], end_a: [land_underground, land_forest, land_river, land_marsh], end_b: [land_highland], key_place: [land_highland, land_mountain]}
         forces: [land_highland]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "a giant rift", "heart": "the bridge that joins the two sides", "ends": ["the floor of the rift", "the highlands on the rims"], "key_place": "the bridge or the stair that goes down to the floor", "travel": "along the rims and the descent below"}
+        text: {"name": "a giant rift", "heart": "the bridge that joins the two sides", "heart_short": "the bridge-town over the rift", "ends": ["the floor of the rift", "the highlands on the rims"], "key_place": "the bridge or the stair that goes down to the floor", "key_place_short": "the way down to the floor", "travel": "along the rims and the descent below"}
       - id: spine_mountain_passes
         breadth: wide
         label: Passes along a range
@@ -148,7 +149,7 @@ tables:
         parts: {heart: [land_coast], end_a: [land_cold, land_mountain], end_b: [land_coast], key_place: [land_coast, land_mountain]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
-        text: {"name": "a long coastline", "heart": "the great port", "ends": ["glacier fjords at one end", "warm bays at the other end"], "key_place": "the cape that splits the coast in two", "travel": "by ship along the coast; the mountains cut the land road"}
+        text: {"name": "a long coastline", "heart": "the great port", "ends": ["glacier fjords at one end", "warm bays at the other end"], "key_place": "the cape that splits the coast in two", "key_place_short": "the cape that splits the coast", "travel": "by ship along the coast; the mountains cut the land road"}
       - id: spine_barren_corridor
         breadth: wide
         label: A barren corridor
@@ -157,7 +158,7 @@ tables:
         parts: {heart: [land_desert, land_steppe], end_a: [land_plain, land_river, land_highland, land_forest], end_b: [land_plain, land_river, land_highland, land_forest], key_place: [land_desert, land_steppe]}
         forces_one_of: [land_desert, land_steppe]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "barren corridor", "heart": "the caravanserai-city in the middle of the corridor", "ends_both": "two civilisations at the two ends of the corridor", "key_place": "the only water source on the road", "travel": "from halt to halt, bound to water"}
+        text: {"name": "barren corridor", "heart": "the caravanserai-city in the middle of the corridor", "heart_short": "the caravanserai-city", "ends_both": "two civilisations at the two ends of the corridor", "key_place": "the only water source on the road", "key_place_short": "the road's only water source", "travel": "from halt to halt, bound to water"}
       # 2. centred
       - id: spine_lake_basin
         breadth: tight
@@ -167,7 +168,7 @@ tables:
         parts: {heart: [land_lake], end_a: [land_plain, land_lake, land_forest], end_b: [land_forest, land_steppe, land_cold, land_desert], key_place: [land_mountain]}
         forces: [land_mountain, land_lake]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a basin ringed by mountains, a lake at its centre", "heart": "the island-city in the lake", "ends": ["the fertile basin", "the unknown beyond the mountains"], "key_place": "the only pass out of the basin", "travel": "inward, over the lake and by the shore roads"}
+        text: {"name": "a basin ringed by mountains, a lake at its centre", "heart": "the island-city in the lake", "ends": ["the fertile basin", "the unknown beyond the mountains"], "key_place": "the only pass out of the basin", "key_place_short": "the basin's only pass", "travel": "inward, over the lake and by the shore roads"}
       - id: spine_lone_mountain
         breadth: tight
         label: One giant mountain
@@ -176,7 +177,7 @@ tables:
         parts: {heart: [land_mountain, land_highland], end_a: [land_mountain], end_b: [land_plain, land_forest, land_highland, land_steppe], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a single giant mountain", "heart": "the largest city on the slope", "ends": ["the summit", "the foot"], "key_place": "the road up to the summit or the mouth that goes down into the mountain", "travel": "up and down in rings"}
+        text: {"name": "a single giant mountain", "heart": "the largest city on the slope", "ends": ["the summit", "the foot"], "key_place": "the road up to the summit or the mouth that goes down into the mountain", "key_place_short": "the road into the mountain", "travel": "up and down in rings"}
       - id: spine_star_crater
         breadth: tight
         label: The crater of a fallen stone
@@ -188,7 +189,7 @@ tables:
         merges_with:                     # owner, 2026-09-28: one crater, the spine's heart
           ruin_fallen_star: "the ruin's crater and star stone are the spine's heart crater"
           ruin_celestial_war: "the war's impact crater is the spine's heart crater"
-        text: {"name": "the crater of a stone that fell from the sky", "heart": "the stone at the centre of the crater", "ends": ["the changed inside of the crater", "outside the crater"], "key_place": "the only road down from the rim", "travel": "from the rim to the centre"}
+        text: {"name": "the crater of a stone that fell from the sky", "heart": "the stone at the centre of the crater", "heart_short": "the town by the crater's stone", "ends": ["the changed inside of the crater", "outside the crater"], "key_place": "the only road down from the rim", "key_place_short": "the road down from the rim", "travel": "from the rim to the centre"}
         hooks:
           - {phase: P3, must: "the crater is a landmark and the heart's node"}
       - id: spine_oasis_ring
@@ -217,7 +218,7 @@ tables:
         parts: {heart: [land_island], end_a: [land_island], end_b: [land_volcanic, land_forest, land_mountain, land_coast], key_place: [land_coast]}
         forces: [land_island, land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
-        text: {"name": "an archipelago", "heart": "the largest island", "ends": ["the inner islands", "the far and wild outer islands"], "key_place": "the only safe strait that links the islands", "travel": "from island to island by ship, depending on the season"}
+        text: {"name": "an archipelago", "heart": "the largest island", "ends": ["the inner islands", "the far and wild outer islands"], "key_place": "the only safe strait that links the islands", "key_place_short": "the only safe strait", "travel": "from island to island by ship, depending on the season"}
       - id: spine_valley_maze
         breadth: tight
         label: A maze of valleys
@@ -226,7 +227,7 @@ tables:
         parts: {heart: [land_plain, land_river], end_a: [land_forest, land_plain, land_river, land_highland, land_lake], end_b: [land_forest, land_plain, land_river, land_highland, land_lake], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "a maze of valleys", "heart": "the widest valley", "ends_both": "valleys parted from one another by mountains, each the valley of a different people", "key_place": "the tunnels and passes that link the valleys", "travel": "through the passes; each valley is a world apart"}
+        text: {"name": "a maze of valleys", "heart": "the widest valley", "ends_both": "valleys parted from one another by mountains, each the valley of a different people", "key_place": "the tunnels and passes that link the valleys", "key_place_short": "the tunnels between the valleys", "travel": "through the passes; each valley is a world apart"}
       - id: spine_forest_clearings
         breadth: tight
         label: Clearings in an endless forest
@@ -244,7 +245,7 @@ tables:
         parts: {heart: [land_highland], end_a: [land_highland, land_mountain], end_b: [land_desert, land_river], key_place: [land_highland, land_mountain]}
         forces_one_of: [land_desert, land_highland]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a land of mesas", "heart": "the city on top of the largest mesa", "ends": ["the inhabited mesa tops", "the wild canyons between"], "key_place": "the bridges and ropeways that link the mesas", "travel": "from mesa to mesa, descents into the canyons"}
+        text: {"name": "a land of mesas", "heart": "the city on top of the largest mesa", "heart_short": "the city on the great mesa", "ends": ["the inhabited mesa tops", "the wild canyons between"], "key_place": "the bridges and ropeways that link the mesas", "key_place_short": "the bridges between the mesas", "travel": "from mesa to mesa, descents into the canyons"}
       - id: spine_lake_chain
         breadth: wide
         label: A chain of lakes
@@ -253,7 +254,7 @@ tables:
         parts: {heart: [land_lake], end_a: [land_lake], end_b: [land_marsh, land_river, land_forest, land_cold], key_place: [land_lake, land_river]}
         forces: [land_lake]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "a chain of lakes", "heart": "the city on the strait that joins two lakes", "ends_both": "the lakes at the two ends of the chain", "key_place": "the strait between the lakes", "travel": "from lake to lake, by water"}
+        text: {"name": "a chain of lakes", "heart": "the city on the strait that joins two lakes", "heart_short": "the city on the strait", "ends_both": "the lakes at the two ends of the chain", "key_place": "the strait between the lakes", "travel": "from lake to lake, by water"}
       # 4. layered
       - id: spine_three_depths
         breadth: tight
@@ -264,7 +265,7 @@ tables:
         parts: {heart: [land_underground], end_a: [land_plain, land_forest, land_highland, land_mountain], end_b: [land_underground], key_place: [land_underground]}
         forces: [land_underground]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "the surface, the middle depth and the deep", "heart": "the city in the middle layer", "ends": ["the surface", "the deepest layer"], "key_place": "the great shaft or lift that links the layers", "travel": "down and up"}
+        text: {"name": "the surface, the middle depth and the deep", "heart": "the city in the middle layer", "ends": ["the surface", "the deepest layer"], "key_place": "the great shaft or lift that links the layers", "key_place_short": "the great shaft", "travel": "down and up"}
       - id: spine_terraces
         breadth: tight
         label: Terraces
@@ -273,7 +274,7 @@ tables:
         parts: {heart: [land_highland, land_plain], end_a: [land_highland], end_b: [land_plain], key_place: [land_river, land_highland, land_mountain]}
         forces: [land_highland, land_plain]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "terraces", "heart": "the city on the middle terrace", "ends": ["the highland at the very top", "the plain at the very bottom"], "key_place": "the stairs and waterfalls between the terraces", "travel": "step by step"}
+        text: {"name": "terraces", "heart": "the city on the middle terrace", "ends": ["the highland at the very top", "the plain at the very bottom"], "key_place": "the stairs and waterfalls between the terraces", "key_place_short": "the stairs between the terraces", "travel": "step by step"}
       - id: spine_two_worlds
         breadth: wide
         label: Two worlds, one over the other
@@ -285,7 +286,7 @@ tables:
         merges_with:                     # owner, 2026-09-28: the rift is no separate place
           ruin_planar_rift: "the rift is the two worlds' crossing point, the key place"
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
-        text: {"name": "two worlds, one on top of the other", "heart": "the city where the two worlds overlap", "ends": ["our world", "the other plane"], "key_place": "the crossing points", "travel": "going back and forth between the two layers"}
+        text: {"name": "two worlds, one on top of the other", "heart": "the city where the two worlds overlap", "heart_short": "the city between the worlds", "ends": ["our world", "the other plane"], "key_place": "the crossing points", "travel": "going back and forth between the two layers"}
       - id: spine_mountain_within
         breadth: tight
         label: The mountain's inside and outside
@@ -304,7 +305,7 @@ tables:
         parts: {heart: [land_coast], end_a: [land_coast], end_b: [land_island, land_underground, land_marsh], key_place: [land_coast, land_underground]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
-        text: {"name": "above the sea and under the sea", "heart": "the coastal city or a reef", "ends": ["the coast people", "the undersea peoples"], "key_place": "the underwater caves", "travel": "diving and underwater ways"}
+        text: {"name": "above the sea and under the sea", "heart": "the coastal city or a reef", "heart_short": "the coastal city", "ends": ["the coast people", "the undersea peoples"], "key_place": "the underwater caves", "travel": "diving and underwater ways"}
       # 5. frontier
       - id: spine_peninsula
         breadth: wide
@@ -314,7 +315,7 @@ tables:
         parts: {heart: [land_coast, land_plain], end_a: [land_coast, land_highland, land_forest], end_b: [land_plain, land_mountain, land_forest, land_steppe], key_place: [land_coast]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a peninsula", "heart": "the city near the neck", "ends": ["the tip of the peninsula", "the mainland"], "key_place": "the neck, the only land crossing", "travel": "within the peninsula; out by the neck or by sea"}
+        text: {"name": "a peninsula", "heart": "the city near the neck", "ends": ["the tip of the peninsula", "the mainland"], "key_place": "the neck, the only land crossing", "key_place_short": "the neck of the peninsula", "travel": "within the peninsula; out by the neck or by sea"}
       - id: spine_strait_two_continents
         breadth: wide
         label: A strait and two continents
@@ -323,7 +324,7 @@ tables:
         parts: {heart: [land_coast], end_a: [land_plain, land_mountain, land_forest, land_desert, land_steppe, land_highland], end_b: [land_plain, land_mountain, land_forest, land_desert, land_steppe, land_highland], key_place: [land_coast]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "a strait and two continents", "heart": "the twin city on the two shores", "ends_both": "the two continents", "key_place": "the strait", "travel": "crossing the strait, going along the two shores"}
+        text: {"name": "a strait and two continents", "heart": "the twin city on the two shores", "heart_short": "the twin city", "ends_both": "the two continents", "key_place": "the strait", "travel": "crossing the strait, going along the two shores"}
       - id: spine_long_wall
         breadth: wide
         label: A border along a long wall
@@ -331,7 +332,7 @@ tables:
         key_kind: gate
         parts: {heart: [land_plain, land_steppe], end_a: [land_plain, land_river, land_forest], end_b: [land_steppe, land_desert, land_cold, land_forest, land_marsh], key_place: [land_mountain, land_highland, land_plain, land_steppe]}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "a border along a long wall", "heart": "the main gate of the wall", "ends": ["inside the wall", "outside it"], "key_place": "the gates", "travel": "along the wall and out through the gates"}
+        text: {"name": "a border along a long wall", "heart": "the main gate of the wall", "heart_short": "the town at the main gate", "ends": ["inside the wall", "outside it"], "key_place": "the gates", "key_place_short": "the gates of the wall", "travel": "along the wall and out through the gates"}
       - id: spine_climate_belt
         breadth: wide
         label: A climate belt
@@ -340,7 +341,7 @@ tables:
         parts: {heart: [land_plain, land_steppe, land_highland], end_a: [land_cold], end_b: [land_desert], key_place: [land_mountain, land_coast, land_highland]}
         forces: [land_cold, land_desert]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "a climate belt", "heart": "the city in the middle of the belt", "ends": ["the frozen north", "the scorching south"], "key_place": "the place where the belt narrows", "travel": "east-west along the belt, expeditions to the edges"}
+        text: {"name": "a climate belt", "heart": "the city in the middle of the belt", "heart_short": "the city at the belt's middle", "ends": ["the frozen north", "the scorching south"], "key_place": "the place where the belt narrows", "travel": "east-west along the belt, expeditions to the edges"}
       - id: spine_edge_of_civilisation
         breadth: wide
         label: The edge of civilisation
@@ -348,7 +349,7 @@ tables:
         key_kind: gate
         parts: {heart: [land_plain, land_river], end_a: [land_plain, land_river, land_highland], end_b: [land_forest, land_marsh, land_mountain, land_cold, land_desert], key_place: [land_river, land_mountain, land_highland]}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "the edge of civilisation", "heart": "the last great city", "ends": ["the known lands", "the unmapped wild"], "key_place": "the border fortress or the last bridge", "travel": "from the border out into the wild"}
+        text: {"name": "the edge of civilisation", "heart": "the last great city", "ends": ["the known lands", "the unmapped wild"], "key_place": "the border fortress or the last bridge", "key_place_short": "the border fortress", "travel": "from the border out into the wild"}
       # 6. fantastic
       - id: spine_titan_back
         breadth: tight
@@ -368,7 +369,7 @@ tables:
         forces: [land_floating_isles]
         requires: {dial: {magic: [high]}}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "a floating archipelago", "heart": "the largest floating island", "ends": ["the high islands", "the islands close to the ground"], "key_place": "the chains and wind roads that link the islands", "travel": "flying ships and bridges"}
+        text: {"name": "a floating archipelago", "heart": "the largest floating island", "ends": ["the high islands", "the islands close to the ground"], "key_place": "the chains and wind roads that link the islands", "key_place_short": "the chains and wind roads", "travel": "flying ships and bridges"}
       - id: spine_void_ring
         breadth: tight
         label: A ring around a bottomless void
@@ -377,7 +378,7 @@ tables:
         parts: {heart: [land_highland, land_mountain, land_plain], end_a: [], end_b: [], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
-        text: {"name": "a ring around a bottomless void", "heart": "the city that looks onto the void", "ends_both": "the two opposite sides of the ring", "key_place": "the only bridge over the void", "travel": "along the ring or by the bridge"}
+        text: {"name": "a ring around a bottomless void", "heart": "the city that looks onto the void", "heart_short": "the city above the void", "ends_both": "the two opposite sides of the ring", "key_place": "the only bridge over the void", "travel": "along the ring or by the bridge"}
       - id: spine_giant_tree
         breadth: tight
         label: One giant tree, mountain-tall
@@ -398,7 +399,7 @@ tables:
         parts: {heart: [land_mountain, land_highland], end_a: [land_plain, land_forest, land_steppe, land_highland], end_b: [land_mountain, land_highland, land_coast], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "the edge of the world", "heart": "the city at the edge of the cliff", "ends": ["the inner lands", "the sea of clouds beyond the cliff"], "key_place": "the only road down from the edge", "travel": "towards the edge and downward"}
+        text: {"name": "the edge of the world", "heart": "the city at the edge of the cliff", "heart_short": "the city at the cliff's edge", "ends": ["the inner lands", "the sea of clouds beyond the cliff"], "key_place": "the only road down from the edge", "key_place_short": "the road down from the edge", "travel": "towards the edge and downward"}
 
   # ── 3. the ruin source: what left the dangerous places (8 families, 40) ────────────────────
   ruin_source:
@@ -423,21 +424,21 @@ tables:
         remnant_kind: network
         sites: [site_stronghold, site_dungeon_ruin, site_dungeon_planned]
         olgu_families: [place_path, word_sign]
-        text: {"name": "the road-building kingdom", "what": "the kingdom that laced the land with stone roads and forts collapsed in civil war", "remnant": "the stone road network and the road forts", "sites": "road forts, bridge towers, buried treasure vaults", "strangeness": "the old roads still lead whoever walks them somewhere"}
+        text: {"name": "the road-building kingdom", "what": "the kingdom that laced the land with stone roads and forts collapsed in civil war", "remnant": "the stone road network and the road forts", "remnant_short": "the stone roads and their forts", "sites": "road forts, bridge towers, buried treasure vaults", "strangeness": "the old roads still lead whoever walks them somewhere"}
       - id: ruin_water_kingdom
         label: The water kingdom
         family: fallen_kingdoms
         remnant_kind: network
         sites: [site_dungeon_planned, site_dungeon_ruin]
         olgu_families: [matter, magic_behaviour, place_path]
-        text: {"name": "the water kingdom", "what": "the kingdom that built cisterns and aqueducts fell apart when it lost its water", "remnant": "aqueducts and cisterns", "sites": "cisterns, canals, sluice chambers", "strangeness": "the old magic that steers the water still works"}
+        text: {"name": "the water kingdom", "what": "the kingdom that built cisterns and aqueducts fell apart when it lost its water", "remnant": "aqueducts and cisterns", "remnant_short": "the old aqueducts and cisterns", "sites": "cisterns, canals, sluice chambers", "strangeness": "the old magic that steers the water still works"}
       - id: ruin_sorcerer_kings
         label: The sorcerer-king dynasty
         family: fallen_kingdoms
         remnant_kind: structure
         sites: [site_dungeon_planned, site_dungeon_ruin]
         olgu_families: [body_blood, word_sign]
-        text: {"name": "the dynasty of sorcerer-kings", "what": "the dynasty that ruled by magic was brought down by its own magic", "remnant": "palace-towers", "sites": "towers, experiment vaults, guardian golems", "strangeness": "the magic still recognises the dynasty's blood"}
+        text: {"name": "the dynasty of sorcerer-kings", "what": "the dynasty that ruled by magic was brought down by its own magic", "remnant": "palace-towers", "remnant_short": "the sorcerer kings' towers", "sites": "towers, experiment vaults, guardian golems", "strangeness": "the magic still recognises the dynasty's blood"}
       - id: ruin_city_states
         label: The city-states
         family: fallen_kingdoms
@@ -445,7 +446,7 @@ tables:
         adds_biome: biome_dead_city_lands
         sites: [site_urban, site_dungeon_ruin, site_dungeon_planned]
         olgu_families: [magic_behaviour, word_sign]
-        text: {"name": "the city-states", "what": "the cities turned on one another and finished one another off", "remnant": "walled, empty cities", "sites": "abandoned cities, merchant vaults, wall towers", "strangeness": "the cities' warding spells still drive the stranger away"}
+        text: {"name": "the city-states", "what": "the cities turned on one another and finished one another off", "remnant": "walled, empty cities", "remnant_short": "the empty walled cities", "sites": "abandoned cities, merchant vaults, wall towers", "strangeness": "the cities' warding spells still drive the stranger away"}
       - id: ruin_steppe_union
         label: The steppe union
         family: fallen_kingdoms
@@ -453,7 +454,7 @@ tables:
         requires: {any_of: [land_steppe]}
         sites: [site_dungeon_ruin, site_dungeon_tomb, site_stronghold]
         olgu_families: [place_path, word_sign]
-        text: {"name": "the steppe union", "what": "a giant nomad union broke apart", "remnant": "palace-cities and stone monuments", "sites": "abandoned palace-cities, khans' tombs, horse forts", "strangeness": "the monuments still mark the union's borders; whoever crosses the border feels it"}
+        text: {"name": "the steppe union", "what": "a giant nomad union broke apart", "remnant": "palace-cities and stone monuments", "remnant_short": "the steppe palace-cities", "sites": "abandoned palace-cities, khans' tombs, horse forts", "strangeness": "the monuments still mark the union's borders; whoever crosses the border feels it"}
         hooks:
           - {phase: validator, must: "the only tomb the foundation brings is the khans' tombs (owner-approved)"}
       # 2. wars
@@ -464,28 +465,28 @@ tables:
         adds_palette: land_glass_desert
         sites: [site_dungeon_ruin, site_wilderness, site_dungeon_lair]
         olgu_families: [matter, magic_behaviour]
-        text: {"name": "the mage war", "what": "the war of two schools of mages turned the land to glass", "remnant": "the glass desert and the war towers", "sites": "half-buried towers, spell traps, escaped war creatures", "strangeness": "the glass sand breaks and reflects magic"}
+        text: {"name": "the mage war", "what": "the war of two schools of mages turned the land to glass", "remnant": "the glass desert and the war towers", "remnant_short": "the glass desert", "sites": "half-buried towers, spell traps, escaped war creatures", "strangeness": "the glass sand breaks and reflects magic"}
       - id: ruin_giants_and_dragons
         label: Giants against dragons
         family: wars
         remnant_kind: body
         sites: [site_stronghold, site_dungeon_lair, site_wilderness]
         olgu_families: [magic_behaviour, matter]
-        text: {"name": "giants and dragons", "what": "there was war between two great lineages", "remnant": "dragon bones and giant strongholds", "sites": "giant strongholds, dragon lairs, battlefields", "strangeness": "near the bones fire burns in another way"}
+        text: {"name": "giants and dragons", "what": "there was war between two great lineages", "remnant": "dragon bones and giant strongholds", "remnant_short": "the dragon bones", "sites": "giant strongholds, dragon lairs, battlefields", "strangeness": "near the bones fire burns in another way"}
       - id: ruin_besieged_land
         label: The besieged land
         family: wars
         remnant_kind: structure
         sites: [site_stronghold, site_dungeon_planned, site_dungeon_ruin]
         olgu_families: [magic_behaviour, time]
-        text: {"name": "the besieged land", "what": "a land besieged for a hundred years fell at last", "remnant": "walls within walls and siege tunnels", "sites": "walls, sappers' tunnels, armouries", "strangeness": "the siege spells are still on watch"}
+        text: {"name": "the besieged land", "what": "a land besieged for a hundred years fell at last", "remnant": "walls within walls and siege tunnels", "remnant_short": "the old siege walls", "sites": "walls, sappers' tunnels, armouries", "strangeness": "the siege spells are still on watch"}
       - id: ruin_kin_war
         label: The kin war
         family: wars
         remnant_kind: structure
         sites: [site_stronghold, site_dungeon_planned]
         olgu_families: [body_blood, magic_behaviour]
-        text: {"name": "the kin war", "what": "the two branches of one people finished each other off", "remnant": "twin fortresses on the two banks", "sites": "twin fortresses, hidden shelters, a shared but forbidden temple", "strangeness": "something happens when the blood of the two branches touches"}
+        text: {"name": "the kin war", "what": "the two branches of one people finished each other off", "remnant": "twin fortresses on the two banks", "remnant_short": "the twin fortresses", "sites": "twin fortresses, hidden shelters, a shared but forbidden temple", "strangeness": "something happens when the blood of the two branches touches"}
       - id: ruin_celestial_war
         label: The celestial war
         family: wars
@@ -493,7 +494,7 @@ tables:
         landmark: crater
         sites: [site_planar, site_dungeon_ruin, site_wilderness]
         olgu_families: [magic_behaviour, nature_creatures]
-        text: {"name": "the celestial war", "what": "a war between the planes was fought out in this world", "remnant": "fallen war machines, scarred land", "sites": "impact craters, fallen sky fortresses, planar rifts", "strangeness": "on the battlefield good and evil become tangible"}
+        text: {"name": "the celestial war", "what": "a war between the planes was fought out in this world", "remnant": "fallen war machines, scarred land", "remnant_short": "the fallen war machines", "sites": "impact craters, fallen sky fortresses, planar rifts", "strangeness": "on the battlefield good and evil become tangible"}
       # 3. gods
         hooks:
           - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
@@ -504,21 +505,21 @@ tables:
         adds_palette: land_giant_bones
         sites: [site_dungeon_natural, site_urban, site_dungeon_planned]
         olgu_families: [word_sign, time, body_blood]
-        text: {"name": "a dead god", "what": "a god died and its body fell to the earth", "remnant": "a god's body the size of a mountain", "sites": "the caves inside the body, the temple-cities around it", "strangeness": "the god's last wish keeps trying to come true near the body"}
+        text: {"name": "a dead god", "what": "a god died and its body fell to the earth", "remnant": "a god's body the size of a mountain", "remnant_short": "the god's mountain-sized body", "sites": "the caves inside the body, the temple-cities around it", "strangeness": "the god's last wish keeps trying to come true near the body"}
       - id: ruin_gods_quarrel
         label: The gods' quarrel
         family: gods
         remnant_kind: object
         sites: [site_wilderness, site_stronghold]
         olgu_families: [place_path, magic_behaviour]
-        text: {"name": "the gods' quarrel", "what": "the gods' war tore through a land", "remnant": "gods' weapons stuck in the earth", "sites": "the rifts around the weapons, temple fortresses", "strangeness": "near a weapon that god's domain is strong"}
+        text: {"name": "the gods' quarrel", "what": "the gods' war tore through a land", "remnant": "gods' weapons stuck in the earth", "remnant_short": "the gods' fallen weapons", "sites": "the rifts around the weapons, temple fortresses", "strangeness": "near a weapon that god's domain is strong"}
       - id: ruin_departed_god
         label: The god who left
         family: gods
         remnant_kind: city
         sites: [site_dungeon_planned, site_dungeon_ruin]
         olgu_families: [word_sign, nature_creatures]
-        text: {"name": "the god who left", "what": "a god left its people and went away", "remnant": "empty temples and holy cities", "sites": "temple labyrinths, sacred treasures, guardian creatures", "strangeness": "the temples still wait for worship and listen to whoever prays"}
+        text: {"name": "the god who left", "what": "a god left its people and went away", "remnant": "empty temples and holy cities", "remnant_short": "the empty holy cities", "sites": "temple labyrinths, sacred treasures, guardian creatures", "strangeness": "the temples still wait for worship and listen to whoever prays"}
       - id: ruin_imprisoned_god
         label: The imprisoned god
         family: gods
@@ -542,7 +543,7 @@ tables:
         sites: [site_urban, site_dungeon_planned]
         olgu_families: [magic_behaviour, time]
         weight_by: [{when: {dial: {magic: [low]}}, x: 2}]
-        text: {"name": "the age of mages", "what": "the age when magic was plentiful ended in a single night", "remnant": "a city that ran on magic and now stands still", "sites": "stopped magic machines, academy vaults", "strangeness": "some spells still run by themselves"}
+        text: {"name": "the age of mages", "what": "the age when magic was plentiful ended in a single night", "remnant": "a city that ran on magic and now stands still", "remnant_short": "the stilled city of magic", "sites": "stopped magic machines, academy vaults", "strangeness": "some spells still run by themselves"}
       - id: ruin_failed_experiment
         label: The failed experiment
         family: magic
@@ -564,7 +565,7 @@ tables:
         remnant_kind: machine
         sites: [site_dungeon_planned, site_wilderness]
         olgu_families: [word_sign, matter]
-        text: {"name": "the golem army", "what": "the golems built for war stopped when no one was left to give orders", "remnant": "a waiting golem army", "sites": "foundries, the plains where the army waits", "strangeness": "the golems are waiting for the right word"}
+        text: {"name": "the golem army", "what": "the golems built for war stopped when no one was left to give orders", "remnant": "a waiting golem army", "remnant_short": "the dormant golem army", "sites": "foundries, the plains where the army waits", "strangeness": "the golems are waiting for the right word"}
       - id: ruin_dried_source
         label: The spring that ran dry
         family: magic
@@ -581,7 +582,7 @@ tables:
         sites: [site_dungeon_ruin, site_dungeon_natural]
         olgu_families: [matter, nature_creatures]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 3}]
-        text: {"name": "the great flood", "what": "the flood swallowed a plain", "remnant": "cities under the water", "sites": "sunken cities, towers rising out of the water, underwater vaults", "strangeness": "air pockets in the sunken cities; underwater peoples have settled there"}
+        text: {"name": "the great flood", "what": "the flood swallowed a plain", "remnant": "cities under the water", "remnant_short": "the drowned cities", "sites": "sunken cities, towers rising out of the water, underwater vaults", "strangeness": "air pockets in the sunken cities; underwater peoples have settled there"}
       - id: ruin_eruption
         label: The eruption
         family: catastrophe
@@ -589,7 +590,7 @@ tables:
         requires: {any_of: [land_volcanic]}
         sites: [site_dungeon_ruin, site_dungeon_natural, site_dungeon_lair]
         olgu_families: [nature_creatures, matter]
-        text: {"name": "the eruption", "what": "a volcano buried a land under lava", "remnant": "a city frozen by the lava", "sites": "the city under the lava, lava tubes, the lairs of fire creatures", "strangeness": "fire creatures still live in the lava tubes"}
+        text: {"name": "the eruption", "what": "a volcano buried a land under lava", "remnant": "a city frozen by the lava", "remnant_short": "the lava-frozen city", "sites": "the city under the lava, lava tubes, the lairs of fire creatures", "strangeness": "fire creatures still live in the lava tubes"}
       - id: ruin_ice_age
         label: The ice age
         family: catastrophe
@@ -605,7 +606,7 @@ tables:
         sites: [site_urban, site_dungeon_planned, site_wilderness]
         olgu_families: [body_blood, nature_creatures]
         weight_by: [{when: {dial: {content_mix: [horror]}}, x: 3}]
-        text: {"name": "the plague", "what": "a plague emptied a land", "remnant": "quarantine cities, hospital-fortresses", "sites": "empty cities, hospital dungeons, forbidden valleys", "strangeness": "the immunity the plague left behind turned into power in one people"}
+        text: {"name": "the plague", "what": "a plague emptied a land", "remnant": "quarantine cities, hospital-fortresses", "remnant_short": "the quarantine cities", "sites": "empty cities, hospital dungeons, forbidden valleys", "strangeness": "the immunity the plague left behind turned into power in one people"}
       - id: ruin_fallen_star
         label: The stone that fell from the sky
         family: catastrophe
@@ -613,7 +614,7 @@ tables:
         landmark: crater
         sites: [site_wilderness, site_dungeon_natural, site_urban]
         olgu_families: [body_blood, matter]
-        text: {"name": "the stone that fell from the sky", "what": "a piece of a star or of the moon fell", "remnant": "the crater and the sky stone", "sites": "the crater, the inside of the sky stone, the towns around it", "strangeness": "near the sky stone living things change"}
+        text: {"name": "the stone that fell from the sky", "what": "a piece of a star or of the moon fell", "remnant": "the crater and the sky stone", "remnant_short": "the sky stone", "sites": "the crater, the inside of the sky stone, the towns around it", "strangeness": "near the sky stone living things change"}
       # 6. toil and greed
       - id: ruin_mine_rush
         label: The mine rush
@@ -623,14 +624,14 @@ tables:
         sites: [site_dungeon_natural, site_dungeon_planned]
         olgu_families: [matter, place_path]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "the mine rush", "what": "the mountains were bored through for an ore, and when the ore ran out everyone left", "remnant": "an abandoned mining city", "sites": "galleries, foundries, shafts going down deep", "strangeness": "the miners had reached something in the deep"}
+        text: {"name": "the mine rush", "what": "the mountains were bored through for an ore, and when the ore ran out everyone left", "remnant": "an abandoned mining city", "remnant_short": "the abandoned mining city", "sites": "galleries, foundries, shafts going down deep", "strangeness": "the miners had reached something in the deep"}
       - id: ruin_endless_building
         label: The building that never ended
         family: toil
         remnant_kind: structure
         sites: [site_dungeon_planned, site_urban]
         olgu_families: [matter, time]
-        text: {"name": "the building that never ends", "what": "a ruler's giant building used up his people", "remnant": "a giant building left half finished", "sites": "the inside of the building, quarries, workers' villages", "strangeness": "the building goes on growing by itself"}
+        text: {"name": "the building that never ends", "what": "a ruler's giant building used up his people", "remnant": "a giant building left half finished", "remnant_short": "the half-finished giant building", "sites": "the inside of the building, quarries, workers' villages", "strangeness": "the building goes on growing by itself"}
       - id: ruin_merchant_hoards
         label: The merchant hoards
         family: toil
@@ -662,7 +663,7 @@ tables:
         sites: [site_dungeon_planned, site_dungeon_natural]
         olgu_families: [word_sign, matter]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "the abandoned dwarf city", "what": "the dwarves fled from something that came from the deep", "remnant": "the deep city and its great gate", "sites": "the underground city, foundries, the sealed deep gate", "strangeness": "the dwarven runes still work against strangers"}
+        text: {"name": "the abandoned dwarf city", "what": "the dwarves fled from something that came from the deep", "remnant": "the deep city and its great gate", "remnant_short": "the deep city", "sites": "the underground city, foundries, the sealed deep gate", "strangeness": "the dwarven runes still work against strangers"}
       - id: ruin_elven_withdrawal
         label: The forest the elves left
         family: old_peoples
@@ -670,7 +671,7 @@ tables:
         requires: {any_of: [land_forest]}
         sites: [site_dungeon_ruin, site_planar, site_wilderness]
         olgu_families: [time, place_path]
-        text: {"name": "the forest the elves withdrew from", "what": "the elves withdrew to another plane", "remnant": "empty tree-cities", "sites": "tree-palaces, fey crossings, guardian creatures", "strangeness": "in the forest time flows differently"}
+        text: {"name": "the forest the elves withdrew from", "what": "the elves withdrew to another plane", "remnant": "empty tree-cities", "remnant_short": "the empty tree-cities", "sites": "tree-palaces, fey crossings, guardian creatures", "strangeness": "in the forest time flows differently"}
         hooks:
           - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_giants_land
@@ -680,7 +681,7 @@ tables:
         sites: [site_stronghold, site_dungeon_ruin]
         olgu_families: [word_sign, matter]
         weight_by: [{when: {dial: {tone: [bright]}}, x: 3}]
-        text: {"name": "the land of the giants", "what": "giants ruled this land", "remnant": "buildings giant by human measure", "sites": "giant strongholds, giant stairs, giant hoards", "strangeness": "the giants' stones still obey their word"}
+        text: {"name": "the land of the giants", "what": "giants ruled this land", "remnant": "buildings giant by human measure", "remnant_short": "the giants' buildings", "sites": "giant strongholds, giant stairs, giant hoards", "strangeness": "the giants' stones still obey their word"}
       - id: ruin_age_of_dragons
         label: The age of dragons
         family: old_peoples
@@ -688,7 +689,7 @@ tables:
         sites: [site_dungeon_lair, site_dungeon_natural, site_dungeon_planned]
         olgu_families: [body_blood, nature_creatures]
         weight_by: [{when: {dial: {tone: [bright]}}, x: 3}]
-        text: {"name": "the age of dragons", "what": "dragons reigned, then destroyed one another", "remnant": "lairs and hoards", "sites": "lairs, hoard caves, dragon temples", "strangeness": "those descended from dragons still lay claim"}
+        text: {"name": "the age of dragons", "what": "dragons reigned, then destroyed one another", "remnant": "lairs and hoards", "remnant_short": "the old dragon lairs", "sites": "lairs, hoard caves, dragon temples", "strangeness": "those descended from dragons still lay claim"}
       - id: ruin_winged_mountains
         label: The winged people's mountains
         family: old_peoples
@@ -696,7 +697,7 @@ tables:
         requires: {any_of: [land_mountain, land_highland]}
         sites: [site_dungeon_ruin, site_wilderness]
         olgu_families: [place_path, nature_creatures]
-        text: {"name": "the mountains of the winged people", "what": "a winged people vanished", "remnant": "peak cities reached only by flying", "sites": "peak cities, nests, wind towers", "strangeness": "the wind still carries their roads"}
+        text: {"name": "the mountains of the winged people", "what": "a winged people vanished", "remnant": "peak cities reached only by flying", "remnant_short": "the peak cities", "sites": "peak cities, nests, wind towers", "strangeness": "the wind still carries their roads"}
       # 8. planes and sky
       - id: ruin_planar_rift
         label: The planar rift
@@ -714,7 +715,7 @@ tables:
         landmark: floating_fragments
         sites: [site_dungeon_ruin, site_dungeon_planned]
         olgu_families: [matter, place_path]
-        text: {"name": "the fallen sky city", "what": "a city that flew in the air fell", "remnant": "the pieces of the city", "sites": "shattered palaces, pieces still hanging in the air", "strangeness": "the pieces want to take to the air again"}
+        text: {"name": "the fallen sky city", "what": "a city that flew in the air fell", "remnant": "the pieces of the city", "remnant_short": "the fallen sky city", "sites": "shattered palaces, pieces still hanging in the air", "strangeness": "the pieces want to take to the air again"}
       - id: ruin_planar_invasion
         label: The planar invasion
         family: planes
@@ -730,7 +731,7 @@ tables:
         remnant_kind: city
         sites: [site_urban, site_planar]
         olgu_families: [time, place_path]
-        text: {"name": "the place where time broke", "what": "a spell broke time", "remnant": "a city whose time is frozen", "sites": "streets where time flows differently", "strangeness": "pieces of the past and of the future wander the city"}
+        text: {"name": "the place where time broke", "what": "a spell broke time", "remnant": "a city whose time is frozen", "remnant_short": "the time-frozen city", "sites": "streets where time flows differently", "strangeness": "pieces of the past and of the future wander the city"}
       - id: ruin_star_kingdom
         label: The kingdom that reached for the stars
         family: planes
@@ -756,7 +757,7 @@ tables:
         remnant_kind: structure
         sites: [site_planar, site_stronghold, site_urban]
         olgu_families: [word_sign, body_blood]
-        text: {"name": "the realm that bargained with devils", "what": "a kingdom bought its golden age from the Hells, and the devils took what was owed when the bargain came due", "remnant": "the gilded halls where the contracts were signed", "sites": "contract vaults, gilded palaces gone to ruin, the devils' embassies", "strangeness": "its contracts still bind whoever speaks their terms"}
+        text: {"name": "the realm that bargained with devils", "what": "a kingdom bought its golden age from the Hells, and the devils took what was owed when the bargain came due", "remnant": "the gilded halls where the contracts were signed", "remnant_short": "the gilded contract halls", "sites": "contract vaults, gilded palaces gone to ruin, the devils' embassies", "strangeness": "its contracts still bind whoever speaks their terms"}
         hooks:
           - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_demon_gate
@@ -766,7 +767,7 @@ tables:
         remnant_kind: rift
         sites: [site_planar, site_wilderness, site_dungeon_lair]
         olgu_families: [nature_creatures, matter]
-        text: {"name": "the demon gate", "what": "a gate to the Abyss stood open for a generation and the land around it was scoured", "remnant": "the closed gate and the scoured land around it", "sites": "the gate's ruin, the scoured waste, the lairs of what came through", "strangeness": "what came through was never all hunted down, and the land near the gate still warps what lives on it"}
+        text: {"name": "the demon gate", "what": "a gate to the Abyss stood open for a generation and the land around it was scoured", "remnant": "the closed gate and the scoured land around it", "remnant_short": "the closed demon gate", "sites": "the gate's ruin, the scoured waste, the lairs of what came through", "strangeness": "what came through was never all hunted down, and the land near the gate still warps what lives on it"}
         hooks:
           - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_deep_minds
@@ -777,7 +778,7 @@ tables:
         sites: [site_dungeon_natural, site_dungeon_planned, site_dungeon_lair]
         olgu_families: [body_blood, word_sign]
         requires: {any_of: ["land_coast", "land_island", "land_lake", "land_underground"]}
-        text: {"name": "the drowned dominion of the deep minds", "what": "before the peoples, aberrant minds ruled from sunken cities and kept thralls, until their dominion broke", "remnant": "the sunken cities of the deep minds", "sites": "drowned cities, thrall pens, the chambers where the minds thought together", "strangeness": "the cities still think, and those who stay too long hear them"}
+        text: {"name": "the drowned dominion of the deep minds", "what": "before the peoples, aberrant minds ruled from sunken cities and kept thralls, until their dominion broke", "remnant": "the sunken cities of the deep minds", "remnant_short": "the sunken cities", "sites": "drowned cities, thrall pens, the chambers where the minds thought together", "strangeness": "the cities still think, and those who stay too long hear them"}
       - id: ruin_bound_elements
         label: The bound elements
         family: magic
@@ -785,7 +786,7 @@ tables:
         remnant_kind: machine
         sites: [site_dungeon_planned, site_urban, site_wilderness]
         olgu_families: [matter, nature_creatures]
-        text: {"name": "the bound elements", "what": "a people chained elementals to turn their mills and warm their cities, and the bindings failed all at once", "remnant": "the binding works: mills, furnaces and channels with nothing left in them", "sites": "binding halls, stopped mills, the places where an elemental broke free", "strangeness": "some elementals never left, and the elements there still answer a binder's word"}
+        text: {"name": "the bound elements", "what": "a people chained elementals to turn their mills and warm their cities, and the bindings failed all at once", "remnant": "the binding works: mills, furnaces and channels with nothing left in them", "remnant_short": "the empty binding works", "sites": "binding halls, stopped mills, the places where an elemental broke free", "strangeness": "some elementals never left, and the elements there still answer a binder's word"}
       - id: ruin_sundered_relic
         label: The relic that was sundered
         family: magic
@@ -801,7 +802,7 @@ tables:
         remnant_kind: structure
         sites: [site_stronghold, site_dungeon_planned, site_dungeon_ruin]
         olgu_families: [body_blood, matter]
-        text: {"name": "the dark lord's fall", "what": "a conqueror ruled from a black fortress until an alliance threw him down", "remnant": "the black fortress, his captains' strongholds and his weapon", "sites": "the black fortress, the captains' strongholds, the field of the last alliance", "strangeness": "his weapon was never unmade, and what served him still knows its master's sign"}
+        text: {"name": "the dark lord's fall", "what": "a conqueror ruled from a black fortress until an alliance threw him down", "remnant": "the black fortress, his captains' strongholds and his weapon", "remnant_short": "the black fortress", "sites": "the black fortress, the captains' strongholds, the field of the last alliance", "strangeness": "his weapon was never unmade, and what served him still knows its master's sign"}
       - id: ruin_sleeper
         label: The sleeper under the land
         family: old_peoples
@@ -809,7 +810,7 @@ tables:
         remnant_kind: structure
         sites: [site_dungeon_planned, site_stronghold, site_dungeon_natural]
         olgu_families: [time, place_path]
-        text: {"name": "the sleeper under the land", "what": "something older than the gods was bound asleep, and the people that kept the watch is gone", "remnant": "the empty watch-posts over the sleeper", "sites": "watch-posts, the binding vault, the roads the watch walked", "strangeness": "the sleeper dreams, and near it the land does what it dreams"}
+        text: {"name": "the sleeper under the land", "what": "something older than the gods was bound asleep, and the people that kept the watch is gone", "remnant": "the empty watch-posts over the sleeper", "remnant_short": "the sleeper's watch-posts", "sites": "watch-posts, the binding vault, the roads the watch walked", "strangeness": "the sleeper dreams, and near it the land does what it dreams"}
       - id: ruin_empire
         label: The empire that ruled everything
         family: fallen_kingdoms
@@ -817,7 +818,7 @@ tables:
         remnant_kind: network
         sites: [site_stronghold, site_urban, site_dungeon_ruin]
         olgu_families: [word_sign, place_path]
-        text: {"name": "the empire that ruled everything", "what": "one throne held every land, and when it fell each province kept a piece of its law, its roads and its legions", "remnant": "the imperial roads, forts and milestones that still cross every border", "sites": "legion forts, provincial capitals, the fallen throne-city", "strangeness": "the empire's law still holds on its roads, whoever rules beside them"}
+        text: {"name": "the empire that ruled everything", "what": "one throne held every land, and when it fell each province kept a piece of its law, its roads and its legions", "remnant": "the imperial roads, forts and milestones that still cross every border", "remnant_short": "the imperial roads and forts", "sites": "legion forts, provincial capitals, the fallen throne-city", "strangeness": "the empire's law still holds on its roads, whoever rules beside them"}
       - id: ruin_great_curse
         label: The great curse
         family: catastrophe
@@ -833,7 +834,7 @@ tables:
         remnant_kind: structure
         sites: [site_wilderness, site_dungeon_lair, site_stronghold]
         olgu_families: [body_blood, nature_creatures]
-        text: {"name": "the beast-blood clans", "what": "clans that took the shapes of beasts held the wilds until they were hunted out", "remnant": "the clans' hill-forts and marked stones in the wilds", "sites": "hill-forts, marked stones, the dens of those who never changed back", "strangeness": "their blood still surfaces: a child of any family may take the shape"}
+        text: {"name": "the beast-blood clans", "what": "clans that took the shapes of beasts held the wilds until they were hunted out", "remnant": "the clans' hill-forts and marked stones in the wilds", "remnant_short": "the clans' hill-forts", "sites": "hill-forts, marked stones, the dens of those who never changed back", "strangeness": "their blood still surfaces: a child of any family may take the shape"}
       - id: ruin_sleeping_realm
         label: The realm that fell asleep
         family: planes
@@ -841,7 +842,7 @@ tables:
         remnant_kind: city
         sites: [site_planar, site_urban, site_dungeon_planned]
         olgu_families: [time, place_path]
-        text: {"name": "the realm that fell asleep", "what": "a whole realm fell into one dream and did not wake", "remnant": "the sleeping realm and its dreamers", "sites": "the sleeping city, the dream that can be entered, the border where waking ends", "strangeness": "the dream is still there, and whoever sleeps near it walks in it"}
+        text: {"name": "the realm that fell asleep", "what": "a whole realm fell into one dream and did not wake", "remnant": "the sleeping realm and its dreamers", "remnant_short": "the sleeping realm", "sites": "the sleeping city, the dream that can be entered, the border where waking ends", "strangeness": "the dream is still there, and whoever sleeps near it walks in it"}
         hooks:
           - {phase: P2, must: "this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count"}
       - id: ruin_fallen_order
@@ -1243,6 +1244,9 @@ tables:
         texture (build item 18a). Gates and weights come from the stage and the dials alone. A disputed land lies
         between the sides unless `prize_at` names the side whose own land it is; a key-place prize is drawn only
         on a spine whose key place is one of the row's `key_kinds`. The villain is no side by default.
+        A role's `short` is the noun phrase the story sentence uses where its text runs past five words or leans on
+        another phrase (it, its, the other); `kind` is person or creature for a role that is one being, settlement for a town, a realm or a
+        state (absent: a group); `text.prize` names a new or seat prize in the sentence (build item 18e-2).
     hooks_common:
       - {phase: P4, must: "each role is a faction of its hinted archetype; every other faction takes a stance on the contest"}
       - {phase: P4, must: "the escalation's steps are the factions' provocation rungs, first spark to the hardest form"}
@@ -1256,10 +1260,10 @@ tables:
         prize: heart
         seats: {"third": "heart"}
         roles:
-          a: {text: "the elder heir", hint: state}
-          b: {text: "the younger heir and their army", hint: martial}
-          third: {text: "the regent who holds the crown and the treasury", hint: state}
-          fourth: {text: "a foreign kingdom that wants the throne", hint: null}
+          a: {text: "the elder heir", kind: person, hint: state}
+          b: {text: "the younger heir and their army", short: "the younger heir", kind: person, hint: martial}
+          third: {text: "the regent who holds the crown and the treasury", short: "the regent", kind: person, hint: state}
+          fourth: {text: "a foreign kingdom that wants the throne", short: "a foreign kingdom", kind: settlement, hint: null}
         escalation: ["the coronation date", "civil war"]
         text: {"name": "two heirs", "name_note": "the regent at the heart"}
       - id: contest_one_harbour
@@ -1269,9 +1273,9 @@ tables:
         key_kinds: [crossing, landmark]   # the spine's key place must be a harbour, a strait or a cape (owner, 18a audit)
         seats: {"a": "beside_key_place", "b": "beside_key_place"}
         roles:
-          a: {text: "the old harbour city", hint: guild}
-          b: {text: "the newly founded rival city", hint: trade}
-          third: {text: "the smugglers who use the harbour", hint: criminal}
+          a: {text: "the old harbour city", kind: settlement, hint: guild}
+          b: {text: "the newly founded rival city", kind: settlement, hint: trade}
+          third: {text: "the smugglers who use the harbour", short: "the harbour smugglers", hint: criminal}
           fourth: {text: "the sailors' guild", hint: null}
         requires: {any_of: ["land_coast"]}                      # the gate: the stage (build item 18a)
         escalation: ["seizing of ships", "coastal war"]
@@ -1282,9 +1286,9 @@ tables:
         prize: disputed_land
         roles:
           a: {text: "the herd-owning highland clans", hint: martial}
-          b: {text: "the lowland villages widening their fields", hint: state}
-          third: {text: "the merchants selling horses and weapons to both sides", hint: trade}
-          fourth: {text: "the keepers of the holy place in the middle of the pasture", hint: religious}
+          b: {text: "the lowland villages widening their fields", short: "the lowland villages", kind: settlement, hint: state}
+          third: {text: "the merchants selling horses and weapons to both sides", short: "the horse and arms merchants", hint: trade}
+          fourth: {text: "the keepers of the holy place in the middle of the pasture", short: "the holy place's keepers", hint: religious}
         requires: {any_of: ["land_highland", "land_plain", "land_steppe"]}   # the gate: the stage (build item 18a)
         escalation: ["herd raids", "blood feud"]
         text: {"name": "two peoples, one pasture"}
@@ -1294,10 +1298,10 @@ tables:
         prize: remnant
         seats: {"prize": "key_place"}
         roles:
-          a: {text: "the old keepers of the holy place", hint: religious}
-          b: {text: "the new faith that counts the same place as its own god's", hint: religious}
-          third: {text: "the town that lives off the pilgrims", hint: guild}
-          fourth: {text: "the scholars who want to dig up the place", hint: scholarly}
+          a: {text: "the old keepers of the holy place", short: "the shrine's old keepers", hint: religious}
+          b: {text: "the new faith that counts the same place as its own god's", short: "the new faith", hint: religious}
+          third: {text: "the town that lives off the pilgrims", short: "the pilgrim town", kind: settlement, hint: guild}
+          fourth: {text: "the scholars who want to dig up the place", short: "the scholars", hint: scholarly}
         weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}]   # a ruin source of the gods
         escalation: ["the cutting of the pilgrims' road", "blood in the holy place"]
         text: {"name": "two faiths, one holy place", "name_note": "the holy place at the key place"}
@@ -1309,8 +1313,8 @@ tables:
         roles:
           a: {text: "those upstream", hint: state}
           b: {text: "those downstream", hint: state}
-          third: {text: "the weir masters who steer the water", hint: guild}
-          fourth: {text: "a people living in the river", hint: null, people_role: true}
+          third: {text: "the weir masters who steer the water", short: "the weir masters", hint: guild}
+          fourth: {text: "a people living in the river", short: "the river folk", hint: null, people_role: true}
         requires: {any_of: ["land_river"]}                      # the gate: the stage (build item 18a)
         escalation: ["cutting off the water", "tearing down the weir"]
         text: {"name": "one river, two banks"}
@@ -1320,10 +1324,10 @@ tables:
         prize: disputed_land
         seats: {"b": "end"}
         roles:
-          a: {text: "the old owners of the land", hint: state}
+          a: {text: "the old owners of the land", short: "the land's old owners", hint: state}
           b: {text: "the newcomers", hint: trade}
-          third: {text: "the merchants who profit from both", hint: trade}
-          fourth: {text: "someone organising the frightened people", hint: resistance}
+          third: {text: "the merchants who profit from both", short: "the profiteering merchants", hint: trade}
+          fourth: {text: "someone organising the frightened people", kind: person, hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["bans", "quarter fires"]
         text: {"name": "the settled and the newcomers", "name_note": "the newcomers at one end"}
@@ -1334,9 +1338,9 @@ tables:
         prize: heart
         roles:
           a: {text: "the old nobles", hint: state}
-          b: {text: "the young ruler or council that wants reform", hint: state}
-          third: {text: "the guilds that stand to gain from the reform", hint: guild}
-          fourth: {text: "the soldiers of the old order", hint: martial}
+          b: {text: "the young ruler or council that wants reform", short: "the reformers", hint: state}
+          third: {text: "the guilds that stand to gain from the reform", short: "the guilds", hint: guild}
+          fourth: {text: "the soldiers of the old order", short: "the old order's soldiers", hint: martial}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["new laws", "coup attempt"]
         text: {"name": "the old order and the reformers"}
@@ -1347,8 +1351,8 @@ tables:
         roles:
           a: {text: "the old temples", hint: religious}
           b: {text: "the fast-spreading new faith", hint: religious}
-          third: {text: "the ruler forced to choose a side", hint: state}
-          fourth: {text: "the mages who reject both faiths", hint: scholarly}
+          third: {text: "the ruler forced to choose a side", short: "the torn ruler", kind: person, hint: state}
+          fourth: {text: "the mages who reject both faiths", short: "the faithless mages", hint: scholarly}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["sermons", "temple burning"]
         text: {"name": "old gods, new faith"}
@@ -1357,10 +1361,10 @@ tables:
         family: old_new
         prize: heart
         roles:
-          a: {text: "the people driven out years ago and now returned", hint: martial}
-          b: {text: "those who have settled on their lands", hint: state}
-          third: {text: "a foreign power backing the return", hint: state}
-          fourth: {text: "the mixed families married from both sides", hint: null}
+          a: {text: "the people driven out years ago and now returned", short: "the returned exiles", hint: martial}
+          b: {text: "those who have settled on their lands", short: "those who stayed", hint: state}
+          third: {text: "a foreign power backing the return", short: "a foreign power", hint: state}
+          fourth: {text: "the mixed families married from both sides", short: "the mixed families", hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["knocking on the doors of the old homes", "armed return"]
         text: {"name": "those who return and those who stayed"}
@@ -1370,10 +1374,10 @@ tables:
         prize: heart
         seats: {"a": "heart"}
         roles:
-          a: {text: "the outside power holding the region", hint: martial}
+          a: {text: "the outside power holding the region", short: "the occupiers", hint: martial}
           b: {text: "the resistance in the mountains", hint: resistance}
           third: {text: "the collaborating local nobles", hint: state, claims: {nobility: exists}}
-          fourth: {text: "the smugglers who profit from both sides", hint: criminal}
+          fourth: {text: "the smugglers who profit from both sides", short: "the smugglers", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["taxes and soldiers", "uprising"]
         text: {"name": "the occupier and the resistance", "name_note": "the occupier at the heart"}
@@ -1385,10 +1389,10 @@ tables:
         prize_at: b                     # the disputed land is side b's own (owner, 18a audit)
         seats: {"a": "heart"}
         roles:
-          a: {text: "the capital", hint: state}
-          b: {text: "the march lords and rangers", hint: martial}
-          third: {text: "the people on the other side of the border", hint: null}
-          fourth: {text: "the mercenary company hiring out soldiers to both sides", hint: martial}
+          a: {text: "the capital", kind: settlement, hint: state}
+          b: {text: "the march lords and rangers", short: "the march lords", hint: martial}
+          third: {text: "the people on the other side of the border", short: "the people across the border", hint: null}
+          fourth: {text: "the mercenary company hiring out soldiers to both sides", short: "the mercenary company", hint: martial}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["the cutting of aid", "the marches breaking away"]
         text: {"name": "the capital and the marches", "name_note": "the capital at the heart"}
@@ -1400,7 +1404,7 @@ tables:
         roles:
           a: {text: "the landowning lords", hint: state}
           b: {text: "the peasants' union", hint: resistance}
-          third: {text: "a religious leader who is thinking of arming the peasants", hint: religious}
+          third: {text: "a religious leader who is thinking of arming the peasants", short: "a firebrand preacher", kind: person, hint: religious}
           fourth: {text: "the lords' hired guards", hint: martial}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["forced labour", "peasant uprising"]
@@ -1411,10 +1415,10 @@ tables:
         prize: key_place
         key_kinds: [descent, network]   # the spine's key place must be a mine, a shaft or a deep mouth (owner, 18a audit)
         roles:
-          a: {text: "the family that holds the mine", hint: guild}
+          a: {text: "the family that holds the mine", short: "the mine-owning family", hint: guild}
           b: {text: "the miners", hint: resistance}
-          third: {text: "the outside merchants who buy the ore", hint: trade}
-          fourth: {text: "a deep people angered by the mine's expansion", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
+          third: {text: "the outside merchants who buy the ore", short: "the ore merchants", hint: trade}
+          fourth: {text: "a deep people angered by the mine's expansion", short: "an angered deep people", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
         requires: {any_of: ["land_mountain", "land_highland", "land_underground"]}   # the gate: the stage (build item 18a)
         weight_by: [{when: {dial: {content_mix: [war]}}, x: 2}]
         escalation: ["strike", "raid on the mine"]
@@ -1424,10 +1428,10 @@ tables:
         family: strong_weak
         prize: heart
         roles:
-          a: {text: "a bloodline or institution that holds magic as its monopoly", hint: scholarly}
+          a: {text: "a bloodline or institution that holds magic as its monopoly", short: "the magic-holding bloodline", hint: scholarly}
           b: {text: "the casterless majority", hint: resistance}
-          third: {text: "the illicit masters who teach magic in secret", hint: criminal}
-          fourth: {text: "a faith that wants to ban magic altogether", hint: religious}
+          third: {text: "the illicit masters who teach magic in secret", short: "the secret magic teachers", hint: criminal}
+          fourth: {text: "a faith that wants to ban magic altogether", short: "a magic-banning faith", hint: religious}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         overrides: [{default: regulator_identity, to: "the contest's side a"}, {default: regulator_strictness, to: strict}]
         escalation: ["bans", "caster hunt"]
@@ -1438,10 +1442,10 @@ tables:
         prize: remnant
         seats: {"prize": "key_place"}
         roles:
-          a: {text: "those who want to open the remnant", hint: scholarly}
-          b: {text: "the keepers who want to keep it sealed", hint: religious}
-          third: {text: "the looters who take pieces out in secret", hint: criminal}
-          fourth: {text: "an outside power that gains if it is opened", hint: null}
+          a: {text: "those who want to open the remnant", short: "the would-be openers", hint: scholarly}
+          b: {text: "the keepers who want to keep it sealed", short: "the keepers of the seal", hint: religious}
+          third: {text: "the looters who take pieces out in secret", short: "the secret looters", hint: criminal}
+          fourth: {text: "an outside power that gains if it is opened", short: "an outside power", hint: null}
         weight_by: [{when: {any_of: [ruin_sleeper]}, x: 3}]
         escalation: ["requests for permission", "night digs", "clashes with the keepers"]
         text: {"name": "the sealed remnant", "name_note": "the remnant at the key place"}
@@ -1451,10 +1455,10 @@ tables:
         prize: key_place
         key_kinds: [crossing, bridge, water, gate, descent, crossroad, network, landmark]   # every key place is a road (owner, 18a audit)
         roles:
-          a: {text: "those who want to open the road to trade", hint: trade}
-          b: {text: "those who want to keep the stranger out", hint: state}
-          third: {text: "those who smuggle on the closed road", hint: criminal}
-          fourth: {text: "the country at the other end of the road", hint: null}
+          a: {text: "those who want to open the road to trade", short: "the open-road traders", hint: trade}
+          b: {text: "those who want to keep the stranger out", short: "the road-closers", hint: state}
+          third: {text: "those who smuggle on the closed road", short: "the road's smugglers", hint: criminal}
+          fourth: {text: "the country at the other end of the road", short: "the country beyond the road", kind: settlement, hint: null}
         escalation: ["caravan bans", "caravan burning"]
         text: {"name": "those who open the road and those who close it"}
       - id: contest_forbidden_lands
@@ -1462,10 +1466,10 @@ tables:
         family: open_close
         prize: remnant
         roles:
-          a: {text: "those who want to explore the forbidden lands", hint: scholarly}
-          b: {text: "those who bar the way in", hint: martial}
-          third: {text: "those who sell the things that come from there", hint: criminal}
-          fourth: {text: "those who live in the forbidden lands", hint: null, people_role: true}
+          a: {text: "those who want to explore the forbidden lands", short: "the would-be explorers", hint: scholarly}
+          b: {text: "those who bar the way in", short: "the wardens of the way", hint: martial}
+          third: {text: "those who sell the things that come from there", short: "the forbidden-goods traders", hint: criminal}
+          fourth: {text: "those who live in the forbidden lands", short: "the forbidden lands' folk", hint: null, people_role: true}
         escalation: ["patrols", "expeditions across the border"]
         text: {"name": "the forbidden lands"}
       - id: contest_share_keep_knowledge
@@ -1473,23 +1477,23 @@ tables:
         family: open_close
         prize: new
         roles:
-          a: {text: "those who want to open a craft or a magic to everyone", hint: scholarly}
-          b: {text: "the guild that keeps it secret", hint: guild}
-          third: {text: "the spies who steal the knowledge and sell it", hint: criminal}
-          fourth: {text: "a state that wants to turn the knowledge into a weapon", hint: null}
+          a: {text: "those who want to open a craft or a magic to everyone", short: "the sharers of the secret", hint: scholarly}
+          b: {text: "the guild that keeps it secret", short: "the secret-keeping guild", hint: guild}
+          third: {text: "the spies who steal the knowledge and sell it", short: "the knowledge thieves", hint: criminal}
+          fourth: {text: "a state that wants to turn the knowledge into a weapon", short: "a warlike state", kind: settlement, hint: null}
         requires: {dial: {magic: [medium, high]}}       # the gate: the magic dial (build item 18a)
         escalation: ["copying", "assassination"]
-        text: {"name": "those who spread knowledge and those who keep it"}
+        text: {"name": "those who spread knowledge and those who keep it", "prize": "the guarded knowledge"}
       - id: contest_open_close_gate
         label: "Those who open the gate and those who close it"
         family: open_close
         prize: thin_place
         seats: {"prize": "thin_place"}
         roles:
-          a: {text: "those who want to keep the planar gate open", hint: trade}
-          b: {text: "those who want to close it", hint: religious}
-          third: {text: "those who come from the other plane", hint: null}
-          fourth: {text: "the villages beside the gate", hint: null}
+          a: {text: "those who want to keep the planar gate open", short: "the gate-openers", hint: trade}
+          b: {text: "those who want to close it", short: "the gate-closers", hint: religious}
+          third: {text: "those who come from the other plane", short: "the visitors from beyond", hint: null}
+          fourth: {text: "the villages beside the gate", kind: settlement, hint: null}
         requires: {any_of: ["land_thin_place"]}
         escalation: ["rites", "war at the gate"]
         text: {"name": "those who open the gate and those who close it"}
@@ -1501,7 +1505,7 @@ tables:
         roles:
           a: {text: "the crown's official expedition", hint: state}
           b: {text: "a mercenary company", hint: martial}
-          third: {text: "the hunters of the native people", hint: null, people_role: true}
+          third: {text: "the hunters of the native people", short: "the native hunters", hint: null, people_role: true}
           fourth: {text: "a mage's secret expedition", hint: scholarly}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["the theft of the maps", "ambush on the road"]
@@ -1515,7 +1519,7 @@ tables:
           a: {text: "the strongest house", hint: state}
           b: {text: "the richest house", hint: trade}
           third: {text: "the oldest house", hint: religious}
-          fourth: {text: "an outsider the people love", hint: resistance}
+          fourth: {text: "an outsider the people love", kind: person, hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["marriage alliances", "poison", "open war"]
         text: {"name": "empty throne, three houses"}
@@ -1527,11 +1531,11 @@ tables:
         roles:
           a: {text: "a kingdom's settlers", hint: state}
           b: {text: "the free settlers", hint: resistance}
-          third: {text: "the native people of the land", hint: null, people_role: true}
+          third: {text: "the native people of the land", short: "the land's native people", hint: null, people_role: true}
           fourth: {text: "the swindlers who sell land", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["boundary stones", "settlement burning"]
-        text: {"name": "the first to settle the new land"}
+        text: {"name": "the first to settle the new land", "prize": "the new land"}
       - id: contest_monster_bounty
         label: "A bounty on a monster"
         family: race
@@ -1539,8 +1543,8 @@ tables:
         roles:
           a: {text: "a knightly order", hint: martial}
           b: {text: "the hunters' guild", hint: guild}
-          third: {text: "the villagers who protect the monster", hint: null}
-          fourth: {text: "the alchemists who want the monster's parts", hint: scholarly}
+          third: {text: "the villagers who protect the monster", short: "the monster's protectors", hint: null}
+          fourth: {text: "the alchemists who want the monster's parts", short: "the alchemists", hint: scholarly}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["traps", "feeding the rival to the monster"]
         text: {"name": "a bounty for the monster"}
@@ -1549,22 +1553,22 @@ tables:
         family: race
         prize: new
         roles:
-          a: {text: "the state", hint: state}
+          a: {text: "the state", kind: settlement, hint: state}
           b: {text: "the guilds", hint: guild}
-          third: {text: "the people living on top of the resource", hint: null, people_role: true}
+          third: {text: "the people living on top of the resource", short: "the people on the resource", hint: null, people_role: true}
           fourth: {text: "the smugglers", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["claims", "blood at the resource"]
-        text: {"name": "who will take the new resource first"}
+        text: {"name": "who will take the new resource first", "prize": "the new resource"}
       - id: contest_two_branches
         label: "Two branches of one people"
         family: kin
         prize: heart
         roles:
-          a: {text: "the branch that counts the old collapse a punishment", hint: religious}
-          b: {text: "the branch that counts it an opportunity", hint: trade}
-          third: {text: "the elders trying to unite the two branches", hint: null}
-          fourth: {text: "an outside power using one of the branches", hint: null}
+          a: {text: "the branch that counts the old collapse a punishment", short: "the penitent branch", hint: religious}
+          b: {text: "the branch that counts it an opportunity", short: "the ambitious branch", hint: trade}
+          third: {text: "the elders trying to unite the two branches", short: "the uniting elders", hint: null}
+          fourth: {text: "an outside power using one of the branches", short: "an outside power", hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["separate markets", "separate armies"]
         text: {"name": "two branches of one people"}
@@ -1574,9 +1578,9 @@ tables:
         prize: remnant
         roles:
           a: {text: "the old leadership", hint: religious}
-          b: {text: "the young branch that breaks away", hint: resistance}
-          third: {text: "the steward who holds the order's treasury", hint: guild}
-          fourth: {text: "a rival faith that gains from the split", hint: null}
+          b: {text: "the young branch that breaks away", short: "the breakaway branch", hint: resistance}
+          third: {text: "the steward who holds the order's treasury", short: "the order's steward", kind: person, hint: guild}
+          fourth: {text: "a rival faith that gains from the split", short: "a rival faith", hint: null}
         weight_by: [{when: {any_of: [ruin_fallen_order]}, x: 2}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["expulsion from the order", "brothers' blood"]
         text: {"name": "the splitting of an order"}
@@ -1586,10 +1590,10 @@ tables:
         prize: heart
         seats: {"a": "heart", "b": "heart"}
         roles:
-          a: {text: "one half of the city", hint: state}
-          b: {text: "the other half", hint: state}
-          third: {text: "the keepers of the gate that joins the two halves", hint: null}
-          fourth: {text: "the young who want to reunite", hint: resistance}
+          a: {text: "one half of the city", kind: settlement, hint: state}
+          b: {text: "the other half", kind: settlement, hint: state}
+          third: {text: "the keepers of the gate that joins the two halves", short: "the middle gate's keepers", hint: null}
+          fourth: {text: "the young who want to reunite", short: "the young reunifiers", hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["the closing of the gates", "clash on the bridge"]
         text: {"name": "a city split in two", "name_note": "the heart split in two"}
@@ -1599,10 +1603,10 @@ tables:
         family: kin
         prize: heart
         roles:
-          a: {text: "the elder sibling who rules half of the country", hint: state}
-          b: {text: "the younger sibling who rules the other half", hint: state}
-          third: {text: "the old ruler who still lives, their mother or father", hint: null}
-          fourth: {text: "the neighbouring kingdom that has given a daughter in marriage to both siblings", hint: null}
+          a: {text: "the elder sibling who rules half of the country", short: "the elder sibling", kind: person, hint: state}
+          b: {text: "the younger sibling who rules the other half", short: "the younger sibling", kind: person, hint: state}
+          third: {text: "the old ruler who still lives, their mother or father", short: "the old ruler", kind: person, hint: null}
+          fourth: {text: "the neighbouring kingdom that has given a daughter in marriage to both siblings", short: "the neighbouring kingdom", kind: settlement, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["border dispute", "war between siblings"]
         text: {"name": "sibling rulers"}
@@ -1612,10 +1616,10 @@ tables:
         family: nonhuman
         prize: disputed_land
         roles:
-          a: {text: "the kingdom spreading into the plain", hint: state}
-          b: {text: "the giant clans defending their old rights in the mountains", hint: null, people_role: true, lineage_forced: lineage_giant_kin}
-          third: {text: "those who trade with both sides", hint: trade}
-          fourth: {text: "the border villages that have learned to live with the giants", hint: null}
+          a: {text: "the kingdom spreading into the plain", short: "the spreading kingdom", kind: settlement, hint: state}
+          b: {text: "the giant clans defending their old rights in the mountains", short: "the giant clans", hint: null, people_role: true, lineage_forced: lineage_giant_kin}
+          third: {text: "those who trade with both sides", short: "the go-between traders", hint: trade}
+          fourth: {text: "the border villages that have learned to live with the giants", short: "the border villages", kind: settlement, hint: null}
         requires: {any_of: ["land_mountain"]}
         escalation: ["boundary stones", "giant raids", "war"]
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
@@ -1625,9 +1629,9 @@ tables:
         family: nonhuman
         prize: disputed_land
         roles:
-          a: {text: "the league of towns", hint: state}
-          b: {text: "the dragon that counts the region its home, and its servants", hint: null}
-          third: {text: "a faith that bows to the dragon and is protected", hint: religious}
+          a: {text: "the league of towns", kind: settlement, hint: state}
+          b: {text: "the dragon that counts the region its home, and its servants", short: "the dragon", kind: creature, hint: null}
+          third: {text: "a faith that bows to the dragon and is protected", short: "the dragon's faithful", hint: religious}
           fourth: {text: "the dragon hunters", hint: martial}
         escalation: ["herd losses", "dragon hunt"]
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
@@ -1638,10 +1642,10 @@ tables:
         prize: disputed_land
         prize_at: b                     # the disputed land is side b's own (owner, 18a audit)
         roles:
-          a: {text: "the villages clearing the forest", hint: state}
-          b: {text: "the fey owners of the forest", hint: null, people_role: true, lineage_forced: lineage_fey}
-          third: {text: "the druids who mediate between the two worlds", hint: religious}
-          fourth: {text: "a noble who bargains with the fey in secret", hint: null, claims: {nobility: exists}}
+          a: {text: "the villages clearing the forest", kind: settlement, hint: state}
+          b: {text: "the fey owners of the forest", short: "the forest fey", hint: null, people_role: true, lineage_forced: lineage_fey}
+          third: {text: "the druids who mediate between the two worlds", short: "the mediating druids", hint: religious}
+          fourth: {text: "a noble who bargains with the fey in secret", short: "a fey-dealing noble", kind: person, hint: null, claims: {nobility: exists}}
         requires: {any_of: ["land_forest"]}
         escalation: ["tree felling", "children who go missing", "forest war"]
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
@@ -1653,9 +1657,9 @@ tables:
         key_kinds: [descent, network]   # the spine's key place must be a mine, a shaft or a deep mouth (owner, 18a audit)
         roles:
           a: {text: "the miners on the surface", hint: guild}
-          b: {text: "the people living in the deeps", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
-          third: {text: "those who work as carriers between the two worlds", hint: trade}
-          fourth: {text: "those who fled the deep people and took refuge on the surface", hint: null}
+          b: {text: "the people living in the deeps", short: "the deep people", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
+          third: {text: "those who work as carriers between the two worlds", short: "the carriers between worlds", hint: trade}
+          fourth: {text: "those who fled the deep people and took refuge on the surface", short: "the refugees from below", hint: null}
         requires: {any_of: ["land_underground"]}
         weight_by: [{when: {dial: {era: ["underground"]}}, x: 3}]
         escalation: ["tunnel sealing", "tunnel war"]
@@ -1666,10 +1670,10 @@ tables:
         family: nonhuman
         prize: disputed_land
         roles:
-          a: {text: "the coastal cities", hint: state}
+          a: {text: "the coastal cities", kind: settlement, hint: state}
           b: {text: "the sea folk", text_note: "merfolk in SRD 5.1; fish peoples", hint: null, people_role: true, lineage_forced: lineage_merfolk}
-          third: {text: "the coastal families married from both peoples", hint: null}
-          fourth: {text: "the merchants who want to dig up the sea bed", hint: null}
+          third: {text: "the coastal families married from both peoples", short: "the mixed coastal families", hint: null}
+          fourth: {text: "the merchants who want to dig up the sea bed", short: "the sea-bed diggers", hint: null}
         requires: {any_of: ["land_coast"]}
         weight_by: [{when: {dial: {era: ["nautical"]}}, x: 3}]
         escalation: ["nets and spears", "coastal raids"]
@@ -1682,8 +1686,8 @@ tables:
         roles:
           a: {text: "one rival", hint: state}
           b: {text: "the other rival", hint: state}
-          third: {text: "the merchant house that gives weapons and money to both", hint: trade}
-          fourth: {text: "a fugitive who knows the truth", hint: null}
+          third: {text: "the merchant house that gives weapons and money to both", short: "the merchant house", hint: trade}
+          fourth: {text: "a fugitive who knows the truth", short: "a fugitive witness", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["small attacks", "great war; in the end the merchant takes both"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
@@ -1696,8 +1700,8 @@ tables:
         roles:
           a: {text: "a local power", hint: state}
           b: {text: "the other local power", hint: state}
-          third: {text: "the envoy of a distant kingdom who seems a friend to both", hint: state}
-          fourth: {text: "a spy ring that senses the envoy's plan", hint: criminal}
+          third: {text: "the envoy of a distant kingdom who seems a friend to both", short: "the foreign envoy", kind: person, hint: state}
+          fourth: {text: "a spy ring that senses the envoy's plan", short: "a wary spy ring", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["gifts", "assassinations", "pretext for invasion"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
@@ -1709,9 +1713,9 @@ tables:
         family: hidden_hand
         prize: disputed_land
         roles:
-          a: {text: "a country", hint: state}
-          b: {text: "its neighbour", hint: state}
-          third: {text: "the mercenary company that hires out to both sides and prolongs the war", hint: martial}
+          a: {text: "a country", kind: settlement, hint: state}
+          b: {text: "its neighbour", short: "the neighbouring country", kind: settlement, hint: state}
+          third: {text: "the mercenary company that hires out to both sides and prolongs the war", short: "the war-fed company", hint: martial}
           fourth: {text: "the merchants who want peace", hint: trade}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["border incidents", "war without end"]
@@ -1724,9 +1728,9 @@ tables:
         prize: heart
         roles:
           a: {text: "one of the new powers", hint: state}
-          b: {text: "the other", hint: state}
-          third: {text: "the old state's secret admirers, who want to found it again", hint: null}
-          fourth: {text: "someone who does not know they are the heir", hint: null}
+          b: {text: "the other", short: "the other new power", hint: state}
+          third: {text: "the old state's secret admirers, who want to found it again", short: "the old state's admirers", hint: null}
+          fourth: {text: "someone who does not know they are the heir", short: "an unknowing heir", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["old symbols", "coup"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
@@ -1737,15 +1741,15 @@ tables:
         family: hidden_hand
         prize: seat
         roles:
-          a: {text: "a village or family", hint: state}
-          b: {text: "the other", hint: state}
-          third: {text: "a creature or fey in another guise that sets the two sides at each other", hint: null}
-          fourth: {text: "a hunter who suspects it", hint: martial}
+          a: {text: "a village or family", short: "one household", hint: state}
+          b: {text: "the other", short: "the other household", hint: state}
+          third: {text: "a creature or fey in another guise that sets the two sides at each other", short: "a creature in disguise", kind: creature, hint: null}
+          fourth: {text: "a hunter who suspects it", short: "a suspicious hunter", kind: person, hint: martial}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["accusations", "blood feud"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
-        text: {"name": "the shapeshifter"}
+        text: {"name": "the shapeshifter", "prize": "an inheritance"}
 
   # ── 6. the break: built last, strikes one of the pieces (target · action · scars · time · winner) ─────
       # ── the general themes (build item 16b; owner-approved 2026-10-04; hints, prizes, seats and steps by the coding tab) ──
@@ -1755,9 +1759,9 @@ tables:
         prize: heart
         roles:
           a: {text: "the living realm's lords", hint: state}
-          b: {text: "the undying lord and its risen subjects", hint: null}
-          third: {text: "the priests who can lay the dead", hint: religious}
-          fourth: {text: "those who trade across the line", hint: trade}
+          b: {text: "the undying lord and its risen subjects", short: "the undying lord", kind: creature, hint: null}
+          third: {text: "the priests who can lay the dead", short: "the dead-laying priests", hint: religious}
+          fourth: {text: "those who trade across the line", short: "the traders across the line", hint: trade}
         weight_by: [{when: {dial: {content_mix: ["horror"]}}, x: 2}]
         escalation: ["the unburied walk", "the border forts fall", "the living city besieged"]
         text: {"name": "the living and the dead"}
@@ -1768,8 +1772,8 @@ tables:
         third_is_rumour: true
         roles:
           a: {text: "the house that signed", hint: state}
-          b: {text: "its rival", hint: state}
-          third: {text: "the fiend's envoy", hint: null}
+          b: {text: "its rival", short: "the rival house", hint: state}
+          third: {text: "the fiend's envoy", kind: creature, hint: null}
           fourth: {text: "the fiend hunters", hint: martial}
         weight_by: [{when: {dial: {content_mix: ["mystery"]}}, x: 2}]
         escalation: ["favours that come too easily", "the rival's ruin", "the pact comes due"]
@@ -1782,9 +1786,9 @@ tables:
         prize_at: a                     # the disputed land is side a's own (owner, 18a audit)
         roles:
           a: {text: "the settlers", hint: state}
-          b: {text: "the elemental lord whose domain they farm", hint: null}
-          third: {text: "those who serve it", hint: religious}
-          fourth: {text: "the binders who would chain it again", hint: scholarly}
+          b: {text: "the elemental lord whose domain they farm", short: "the elemental lord", kind: creature, hint: null}
+          third: {text: "those who serve it", short: "the elemental's servants", hint: religious}
+          fourth: {text: "the binders who would chain it again", short: "the would-be binders", hint: scholarly}
         escalation: ["offerings withheld", "flood and fire", "the binding attempted"]
         text: {"name": "mortals and the elemental lord"}
       - id: contest_relic_pieces
@@ -1793,32 +1797,32 @@ tables:
         prize: new
         prize_with: {ruin_sundered_relic: remnant}      # with that ruin the relic is its remnant; without it the relic is a new prize
         roles:
-          a: {text: "a house that holds one piece", hint: state}
-          b: {text: "a house that holds another", hint: state}
-          third: {text: "the order sworn to keep the pieces apart", hint: religious}
-          fourth: {text: "a finder with no banner", hint: null}
+          a: {text: "a house that holds one piece", short: "a house with one piece", hint: state}
+          b: {text: "a house that holds another", short: "a house with another", hint: state}
+          third: {text: "the order sworn to keep the pieces apart", short: "the sworn order", hint: religious}
+          fourth: {text: "a finder with no banner", kind: person, hint: null}
         weight_by: [{when: {any_of: [ruin_sundered_relic]}, x: 3}, {when: {dial: {content_mix: ["exploration"]}}, x: 2}]
         escalation: ["a piece changes hands", "open raids for the pieces", "two pieces joined"]
-        text: {"name": "the pieces of the relic"}
+        text: {"name": "the pieces of the relic", "prize": "the pieces of the relic"}
       - id: contest_prophecy
         label: "The prophecy's two readings"
         family: open_close
         prize: new
         roles:
-          a: {text: "those who work to fulfil it", hint: religious}
-          b: {text: "those who work to prevent it", hint: state}
+          a: {text: "those who work to fulfil it", short: "the prophecy's heralds", hint: religious}
+          b: {text: "those who work to prevent it", short: "the prophecy's foes", hint: state}
           third: {text: "the keepers of the prophecy", hint: scholarly}
-          fourth: {text: "the one it names", hint: null}
+          fourth: {text: "the one it names", short: "the one the prophecy names", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["mystery"]}}, x: 2}]
         escalation: ["signs argued over", "the named one hunted", "the foretold day"]
-        text: {"name": "the prophecy's two readings"}
+        text: {"name": "the prophecy's two readings", "prize": "the prophecy"}
       - id: contest_dark_lord
         label: "The dark lord and the free lands"
         family: strong_weak
         prize: heart
         roles:
-          a: {text: "the dark lord's dominion", hint: state}
-          b: {text: "the last free realm", hint: state}
+          a: {text: "the dark lord's dominion", kind: settlement, hint: state}
+          b: {text: "the last free realm", kind: settlement, hint: state}
           third: {text: "those who have made terms", hint: trade}
           fourth: {text: "the exiles", hint: resistance}
         weight_by: [{when: {any_of: [ruin_dark_lords_fall]}, x: 2}, {when: {dial: {content_mix: ["war"]}}, x: 2}]
@@ -1830,10 +1834,10 @@ tables:
         family: two_hands
         prize: heart
         roles:
-          a: {text: "one empire", hint: null}
-          b: {text: "its rival", hint: null}
-          third: {text: "the kingdom between them", hint: state}
-          fourth: {text: "that kingdom's exiles", hint: resistance}
+          a: {text: "one empire", kind: settlement, hint: null}
+          b: {text: "its rival", short: "the rival empire", kind: settlement, hint: null}
+          third: {text: "the kingdom between them", kind: settlement, hint: state}
+          fourth: {text: "that kingdom's exiles", short: "the border kingdom's exiles", hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["envoys and gifts", "garrisons by invitation", "war on the kingdom's soil"]
         text: {"name": "two empires, one border kingdom", "name_note": "both empires are foreign polities"}
@@ -1843,10 +1847,10 @@ tables:
         prize: disputed_land
         prize_at: a                     # the disputed land is side a's own (owner, 18a audit)
         roles:
-          a: {text: "the villages bound by it", hint: state}
-          b: {text: "those who would break it", hint: resistance}
+          a: {text: "the villages bound by it", short: "the bound villages", kind: settlement, hint: state}
+          b: {text: "those who would break it", short: "the bargain-breakers", hint: resistance}
           third: {text: "the coven", hint: null}
-          fourth: {text: "the child that was promised", hint: null}
+          fourth: {text: "the child that was promised", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["horror"]}}, x: 2}]
         escalation: ["a payment refused", "blight on the fields", "the coven comes to collect"]
         text: {"name": "the coven's bargain"}
@@ -1857,7 +1861,7 @@ tables:
         key_kinds: [crossing]   # the spine's key place must be the sea lanes (owner, 18a audit)
         roles:
           a: {text: "the council of pirate captains", hint: criminal}
-          b: {text: "the league of harbour towns", hint: trade}
+          b: {text: "the league of harbour towns", kind: settlement, hint: trade}
           third: {text: "a foreign navy", hint: martial}
           fourth: {text: "the smugglers who serve both", hint: criminal}
         requires: {any_of: ["land_coast", "land_island"]}
@@ -1870,22 +1874,22 @@ tables:
         prize: new
         roles:
           a: {text: "the slaver lords", hint: criminal}
-          b: {text: "the escaped and those who hide them", hint: resistance}
+          b: {text: "the escaped and those who hide them", short: "the escaped slaves", hint: resistance}
           third: {text: "those who buy", hint: trade}
           fourth: {text: "a people taken whole", hint: null, people_role: true}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["raids", "hunts for the escaped", "open revolt"]
-        text: {"name": "slavers and the chained"}
+        text: {"name": "slavers and the chained", "prize": "the people taken"}
       - id: contest_thieves_guild
         label: "The thieves' guild that owns the city"
         family: strong_weak
         prize: heart
         seats: {"a": "heart"}
         roles:
-          a: {text: "the guild that runs the streets", hint: criminal}
-          b: {text: "the city's rulers, most of them on its payroll", hint: state}
+          a: {text: "the guild that runs the streets", short: "the street guild", hint: criminal}
+          b: {text: "the city's rulers, most of them on its payroll", short: "the bought rulers", hint: state}
           third: {text: "a rival guild from outside", hint: criminal}
-          fourth: {text: "the watch captain no one can buy", hint: martial}
+          fourth: {text: "the watch captain no one can buy", short: "the honest watch captain", kind: person, hint: martial}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["a killing in daylight", "war in the alleys", "the guild names the next ruler"]
         text: {"name": "the thieves' guild that owns the city", "name_note": "the guild at the heart"}
@@ -1937,15 +1941,17 @@ tables:
       avoid_used: false
       row_wait: 3                       # grammar: a verb the last three births used waits; a target + action pair never repeats
       note: >-
-        `forms` are past (just now, a generation ago), present (unfolding) and imminent (coming), each a
-        self-standing predicate the foundation sentence places after the target's phrase with no suffix.
-        `leaves_ruins`: a heart this action destroys leaves ruins, where the campaign starts; otherwise it starts
-        at the end nearest the heart (end_a).
-        `fits` are the compatibility tables (review #8): remnant kinds and key-place kinds the action can
-        strike (build item 18a: the lifeline is no target); `by` names the hands that can make the move
-        (absent: every hand; build item 18c: an intrigue move belongs to a hand that can scheme); the heart, a role and the thin place need only the action's `targets`. `destroys`
-        names the pieces the action destroys (a destroyed role cannot be the winner; a destroyed heart moves
-        the start). The illustrations stay in docs/p1-foundation-rows.md only; examples anchor births.
+        `phrases` are the move's clause in active voice with the hand as its subject (build item 18e-2): each entry's
+        `for` names a target piece or a `piece.kind` (a kind's entry comes first), with the past (just now, a
+        generation ago), present (unfolding) and imminent (coming) forms; `{be}` takes the hand's number (is, are),
+        `{target}` the target's short name. `leaves_ruins`: a heart this action destroys leaves ruins, where the
+        campaign starts; otherwise it starts at the end nearest the heart (end_a).
+        `fits` are the compatibility tables (review #8; build item 18e-2): the remnant kinds, key-place kinds and role
+        kinds (group, settlement, person, creature) the verb strikes, each only where its phrase reads true (build item 18a: the
+        lifeline is no target); `by` names the hands that can make the move (absent: every hand; build item 18c: an
+        intrigue move belongs to a hand that can scheme); the heart and the thin place need only the action's
+        `targets`. `destroys` names the pieces the action destroys (a destroyed role cannot be the winner; a destroyed
+        heart moves the start). The illustrations stay in docs/p1-foundation-rows.md only; examples anchor births.
     hooks_common:
       - {phase: P2, must: "a dated event of the history is the break, told with this action"}
       - {phase: P8, must: "the day-0 news carries the break's latest sign"}
@@ -1953,132 +1959,185 @@ tables:
       - id: act_vanished
         label: Carried off
         targets: [remnant, role, heart]
-        fits: {remnant: [network, structure, city, body, wasteland, machine, object, source, rift]}
-        forms: {imminent: is about to be carried off, past: was carried off, present: is being carried off}
+        fits: {remnant: [object], role: [group, settlement, person]}
+        phrases:
+          - {for: [remnant], past: "carried off {target}", present: "{be} carrying off {target}", imminent: "{be} about to carry off {target}"}
+          - {for: [role.person], past: "carried off {target}", present: "{be} trying to carry off {target}", imminent: "{be} about to carry off {target}"}
+          - {for: [role], past: "carried off the leader of {target}", present: "{be} carrying off the leaders of {target}", imminent: "{be} about to carry off the leader of {target}"}
+          - {for: [heart], past: "carried off the ruler of {target}", present: "{be} carrying off the leaders of {target}", imminent: "{be} about to carry off the ruler of {target}"}
       - id: act_seized
         label: Seized
         targets: [heart, key_place, remnant, thin_place]
-        fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark], remnant: [network, structure, city, body, machine, object, source, rift]}
-        forms: {imminent: is about to be seized, past: was seized, present: is being seized}
+        fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark], remnant: [network, structure, city, body, wasteland, machine, object, source, rift]}
+        phrases:
+          - {for: [heart, key_place, remnant, thin_place], past: "seized {target}", present: "{be} seizing {target}", imminent: "{be} about to seize {target}"}
       - id: act_split
         label: Divided
         targets: [role, heart]
+        fits: {role: [group, settlement]}
         destroys: [role]
-        forms: {imminent: is about to be divided against itself, past: was divided against itself, present: is being divided against itself}
+        phrases:
+          - {for: [role], past: "split {target} in two", present: "{be} splitting {target} in two", imminent: "{be} about to split {target} in two"}
+          - {for: [heart], past: "divided {target} against itself", present: "{be} dividing {target} against itself", imminent: "{be} about to divide {target} against itself"}
         by: [hand_villain_itself, hand_traitor, hand_cult, hand_thieves_guild, hand_deceived_side, hand_zealous_order, hand_fey_court, hand_shapechangers, hand_fiends, hand_hag_coven]
       - id: act_corrupted
         leaves_ruins: true
         label: Corrupted
         targets: [remnant, key_place, heart]
         fits: {key_place: [crossing, water, gate, network, landmark], remnant: [network, structure, city, body, wasteland, source, rift]}
-        forms: {imminent: is about to be corrupted, past: was corrupted, present: is being corrupted}
+        phrases:
+          - {for: [remnant, key_place, heart], past: "corrupted {target}", present: "{be} corrupting {target}", imminent: "{be} about to corrupt {target}"}
         by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_druid_circle, hand_hag_coven, hand_risen_dead, hand_ruin_power, hand_dragon, hand_fey_court, hand_werewolves]
       - id: act_awakened
         label: Woke
         targets: [remnant, key_place]
         fits: {key_place: [bridge, gate, descent, landmark], remnant: [body, machine, structure, object, network]}
-        forms: {imminent: is about to be woken, past: was woken, present: is being woken}
+        phrases:
+          - {for: [remnant.body, remnant.machine, remnant.object], past: "woke {target}", present: "{be} waking {target}", imminent: "{be} about to wake {target}"}
+          - {for: [remnant], past: "woke what sleeps in {target}", present: "{be} waking what sleeps in {target}", imminent: "{be} about to wake what sleeps in {target}"}
+          - {for: [key_place], past: "woke what sleeps beneath {target}", present: "{be} waking what sleeps beneath {target}", imminent: "{be} about to wake what sleeps beneath {target}"}
         by: [hand_villain_itself, hand_cult, hand_ruin_power, hand_from_beyond, hand_fiends, hand_druid_circle, hand_bound_elemental, hand_risen_dead, hand_hag_coven, hand_zealous_order, hand_rival_band]
       - id: act_stopped
         label: Besieged / cut off
         targets: [key_place, heart]
         fits: {key_place: [crossing, water, crossroad, network]}
-        forms: {imminent: is about to be besieged and cut off, past: was besieged and cut off, present: is being besieged and cut off}
+        phrases:
+          - {for: [key_place], past: "cut off {target}", present: "{be} cutting off {target}", imminent: "{be} about to cut off {target}"}
+          - {for: [heart], past: "besieged {target}", present: "{be} besieging {target}", imminent: "{be} about to besiege {target}"}
       - id: act_opened
         label: Opened
         targets: [remnant, key_place, thin_place]
-        fits: {key_place: [gate, descent, network, landmark], remnant: [city, structure, body, object, source, rift]}
-        forms: {imminent: is about to open, past: opened, present: is opening}
+        fits: {key_place: [gate, descent, network], remnant: [city, structure, body, source, rift]}
+        phrases:
+          - {for: [remnant, key_place, thin_place], past: "opened {target}", present: "{be} opening {target}", imminent: "{be} about to open {target}"}
       - id: act_closed
         label: Sealed
         bars_scars_on_target: {thin_place: [scar_plane_thinned]}
         targets: [key_place, thin_place]
         fits: {key_place: [crossing, bridge, gate, descent, network]}
-        forms: {imminent: is about to be sealed, past: was sealed, present: is being sealed}
+        phrases:
+          - {for: [key_place, thin_place], past: "sealed {target}", present: "{be} sealing {target}", imminent: "{be} about to seal {target}"}
       - id: act_merged_with_plane
         label: Dragged into another plane
         targets: [heart, key_place, thin_place]
         fits: {key_place: [gate, descent, crossroad, network, landmark]}
-        forms: {imminent: is about to merge with a plane, past: merged with a plane, present: is merging with a plane}
+        phrases:
+          - {for: [thin_place], past: "dragged {target} into the plane beyond it", present: "{be} dragging {target} into the plane beyond it", imminent: "{be} about to drag {target} into the plane beyond it"}
+          - {for: [heart, key_place], past: "dragged {target} into another plane", present: "{be} dragging {target} into another plane", imminent: "{be} about to drag {target} into another plane"}
         hooks: [{must: this row's plane is chosen among the touched planes; the planes the foundation names are shared to fit the scale's count, phase: P2}]
         by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_fey_court, hand_ruin_power, hand_bound_elemental, hand_hag_coven]
       - id: act_migrated
         label: Drove out
         targets: [role, heart]
-        fits: {}
+        fits: {role: [group, settlement, person, creature]}
         destroys: [heart]
-        forms: {imminent: is about to be driven out, past: was driven out, present: is being driven out}
+        phrases:
+          - {for: [role], past: "drove {target} out", present: "{be} driving {target} out", imminent: "{be} about to drive {target} out"}
+          - {for: [heart, role.settlement], past: "drove the people out of {target}", present: "{be} driving the people out of {target}", imminent: "{be} about to drive the people out of {target}"}
       - id: act_burned
         leaves_ruins: true
         label: Burned
         targets: [key_place, heart]
-        fits: {key_place: [crossing, bridge, gate, crossroad, network, landmark]}
+        fits: {key_place: [bridge, crossroad]}
         destroys: [heart]
-        forms: {imminent: is about to burn, past: burned, present: is burning}
+        phrases:
+          - {for: [key_place, heart], past: "burned {target}", present: "{be} burning {target}", imminent: "{be} about to burn {target}"}
       - id: act_rose
         label: Raised in revolt
         winner_is_target_role: true
         targets: [role, heart]
-        forms: {imminent: is about to be raised in revolt, past: was raised in revolt, present: is being raised in revolt}
+        fits: {role: [group, settlement]}
+        phrases:
+          - {for: [role, heart], past: "raised {target} in revolt", present: "{be} raising {target} in revolt", imminent: "{be} about to raise {target} in revolt"}
         by: [hand_villain_itself, hand_cult, hand_traitor, hand_deceived_side, hand_zealous_order, hand_thieves_guild, hand_fiends, hand_shapechangers, hand_risen_dead, hand_druid_circle]
       - id: act_sank
         leaves_ruins: true
         label: Drowned
         targets: [remnant, key_place, heart]
-        fits: {key_place: [crossing, bridge, gate, crossroad, landmark], remnant: [network, structure, city, body, object]}
+        fits: {key_place: [gate, crossroad], remnant: [network, structure, city]}
         destroys: [heart]
-        forms: {imminent: is about to be drowned, past: was drowned, present: is being drowned}
+        phrases:
+          - {for: [remnant, key_place, heart], past: "drowned {target}", present: "{be} drowning {target}", imminent: "{be} about to drown {target}"}
         by: [hand_villain_itself, hand_sea_raiders, hand_bound_elemental, hand_monstrous_beast, hand_ruin_power, hand_from_beyond, hand_dragon, hand_giants, hand_fiends, hand_cult, hand_druid_circle]
       - id: act_killed
         label: Killed
         targets: [role, heart]
-        forms: {imminent: is about to lose its leader to murder, past: lost its leader to murder, present: is losing its leaders to murder}
+        fits: {role: [group, settlement, person, creature]}
+        phrases:
+          - {for: [role.person, role.creature], past: "killed {target}", present: "{be} hunting {target}", imminent: "{be} about to kill {target}"}
+          - {for: [role], past: "killed the leader of {target}", present: "{be} killing the leaders of {target}", imminent: "{be} about to kill the leader of {target}"}
+          - {for: [heart], past: "killed the ruler of {target}", present: "{be} killing the leaders of {target}", imminent: "{be} about to kill the ruler of {target}"}
       - id: act_poisoned
         label: Poisoned
         targets: [heart, role]
-        forms: {imminent: is about to be poisoned, past: was poisoned, present: is being poisoned}
+        fits: {role: [group, settlement, person, creature]}
+        phrases:
+          - {for: [role.person, role.creature], past: "poisoned {target}", present: "{be} slowly poisoning {target}", imminent: "{be} about to poison {target}"}
+          - {for: [role], past: "poisoned the leader of {target}", present: "{be} poisoning the leaders of {target}", imminent: "{be} about to poison the leader of {target}"}
+          - {for: [heart], past: "poisoned the wells of {target}", present: "{be} poisoning the wells of {target}", imminent: "{be} about to poison the wells of {target}"}
         by: [hand_villain_itself, hand_cult, hand_thieves_guild, hand_traitor, hand_druid_circle, hand_dragon, hand_hag_coven, hand_fiends, hand_shapechangers]
       - id: act_cursed
         label: Cursed
         targets: [heart, key_place, role]
-        fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark]}
-        forms: {imminent: is about to be cursed, past: was cursed, present: is being cursed}
+        fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark], role: [group, settlement, person, creature]}
+        phrases:
+          - {for: [heart, key_place, role], past: "cursed {target}", present: "{be} laying a curse on {target}", imminent: "{be} about to curse {target}"}
         by: [hand_villain_itself, hand_cult, hand_hag_coven, hand_fiends, hand_fey_court, hand_druid_circle, hand_risen_dead, hand_ruin_power, hand_werewolves, hand_from_beyond]
       - id: act_plundered
         label: Plundered
         targets: [remnant]
-        fits: {remnant: [structure, city, body, machine, object, source]}
-        forms: {imminent: is about to be plundered, past: was plundered, present: is being plundered}
+        fits: {remnant: [structure, city, body, machine, wasteland]}
+        phrases:
+          - {for: [remnant], past: "plundered {target}", present: "{be} plundering {target}", imminent: "{be} about to plunder {target}"}
       - id: act_summoned
         label: Summoned
         targets: [thin_place, heart, key_place]
         fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark]}
-        forms: {past: had something summoned into it, present: is having something summoned into it, imminent: is about to have something summoned into it}
+        phrases:
+          - {for: [thin_place], past: "summoned something terrible through {target}", present: "{be} summoning something terrible through {target}", imminent: "{be} about to summon something terrible through {target}"}
+          - {for: [heart, key_place], past: "summoned something terrible into {target}", present: "{be} summoning something terrible into {target}", imminent: "{be} about to summon something terrible into {target}"}
         by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_hag_coven, hand_druid_circle, hand_ruin_power, hand_bound_elemental, hand_fey_court]
       - id: act_plague
         label: Spread a plague
         targets: [heart, role]
-        forms: {imminent: is about to be struck by a plague, past: was struck by a plague, present: is being struck by a plague}
+        fits: {role: [group, settlement]}
+        phrases:
+          - {for: [role], past: "spread a plague among {target}", present: "{be} spreading a plague among {target}", imminent: "{be} about to loose a plague among {target}"}
+          - {for: [heart, role.settlement], past: "spread a plague through {target}", present: "{be} spreading a plague through {target}", imminent: "{be} about to loose a plague on {target}"}
         by: [hand_villain_itself, hand_risen_dead, hand_cult, hand_druid_circle, hand_fiends, hand_from_beyond, hand_hag_coven, hand_ruin_power, hand_werewolves]
       - id: act_replaced
         label: Replaced
         targets: [role, heart]
-        forms: {imminent: is about to have its leader replaced by an impostor, past: had its leader replaced by an impostor, present: is having its leaders replaced by impostors}
+        fits: {role: [group, settlement, person]}
+        phrases:
+          - {for: [role.person], past: "replaced {target} with an impostor", present: "{be} replacing {target} with an impostor", imminent: "{be} about to replace {target} with an impostor"}
+          - {for: [role], past: "replaced the leader of {target} with an impostor", present: "{be} replacing the leaders of {target} with impostors", imminent: "{be} about to replace the leader of {target} with an impostor"}
+          - {for: [heart], past: "replaced the ruler of {target} with an impostor", present: "{be} replacing the leaders of {target} with impostors", imminent: "{be} about to replace the ruler of {target} with an impostor"}
         by: [hand_villain_itself, hand_shapechangers, hand_fey_court, hand_hag_coven, hand_fiends, hand_cult, hand_traitor]
       - id: act_possessed
         label: Possessed
         targets: [role, heart]
-        forms: {imminent: is about to have its leader possessed, past: had its leader possessed, present: is having its leaders possessed}
+        fits: {role: [group, settlement, person, creature]}
+        phrases:
+          - {for: [role.person, role.creature], past: "possessed {target}", present: "{be} taking hold of {target}", imminent: "{be} about to possess {target}"}
+          - {for: [role], past: "possessed the leader of {target}", present: "{be} possessing the leaders of {target}", imminent: "{be} about to possess the leader of {target}"}
+          - {for: [heart], past: "possessed the ruler of {target}", present: "{be} possessing the leaders of {target}", imminent: "{be} about to possess the ruler of {target}"}
         by: [hand_villain_itself, hand_fiends, hand_from_beyond, hand_cult]
       - id: act_enslaved
         label: Enslaved / took hostage
         targets: [role]
-        forms: {imminent: is about to be enslaved or taken hostage, past: was enslaved or taken hostage, present: is being enslaved and taken hostage}
+        fits: {role: [group, settlement, person, creature]}
+        phrases:
+          - {for: [role.settlement], past: "enslaved the people of {target}", present: "{be} enslaving the people of {target}", imminent: "{be} about to enslave the people of {target}"}
+          - {for: [role.person], past: "took {target} hostage", present: "{be} holding {target} hostage", imminent: "{be} about to take {target} hostage"}
+          - {for: [role], past: "enslaved {target}", present: "{be} enslaving {target}", imminent: "{be} about to enslave {target}"}
         by: [hand_villain_itself, hand_slavers, hand_from_beyond, hand_fiends, hand_giants, hand_war_band, hand_dragon, hand_foreign_army, hand_sea_raiders, hand_fey_court, hand_hag_coven]
       - id: act_betrayed
         label: Betrayed
         targets: [role, heart]
-        forms: {imminent: is about to be betrayed, past: was betrayed, present: is being betrayed}
+        fits: {role: [group, settlement, person, creature]}
+        phrases:
+          - {for: [role, heart], past: "betrayed {target}", present: "{be} betraying {target}", imminent: "{be} about to betray {target}"}
         by: [hand_villain_itself, hand_traitor, hand_deceived_side, hand_cult, hand_thieves_guild, hand_hired_company, hand_zealous_order, hand_rival_band, hand_shapechangers]
     retired:                          # build item 18c: deleted verbs, readable by id for legacy births
       - id: act_reversed

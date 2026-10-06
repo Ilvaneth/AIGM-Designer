@@ -66,7 +66,7 @@ class Rows(unittest.TestCase):
             self.assertFalse(set(r["olgu_families"]) - set(DOC["phenomenon_rule_families"]), rid)
             self.assertNotIn("born_of_break", r["olgu_families"], rid)
             self.assertTrue(r["sites"] and all(s.startswith("site_") for s in r["sites"]), rid)
-            self.assertEqual(set(r["text"]), {"name", "what", "remnant", "sites", "strangeness"}, rid)
+            self.assertEqual(set(r["text"]) - {"remnant_short"}, {"name", "what", "remnant", "sites", "strangeness"}, rid)   # 18e-2: a short name
         self.assertEqual(RUIN["ruin_deep_minds"]["requires"], {"any_of": ["land_coast", "land_island", "land_lake", "land_underground"]})
         self.assertFalse([k for k in RUINS if RUIN[k].get("requires") and k != "ruin_deep_minds"])
         for rid in ("ruin_devils_bargain", "ruin_demon_gate", "ruin_sleeping_realm"):

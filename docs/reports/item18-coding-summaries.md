@@ -111,3 +111,53 @@ Summarised to the owner in the coding tab on 2026-10-05; the owner's two correct
 **The god relations (W1):** five rows of a secret table; per this tab's standing rule they are not written in a summary: they are at the end of `docs/reports/item18d-secret-SPOILER.md`.
 
 **The rendered prompt:** `P1.premise.md` is 8,217 characters before the common block and the Names and Promises paragraphs are rendered into it (it was about 7,600). The questions are in `docs/reports/item18-fits.md` (18e).
+
+## 18e-2 — the story sentence reads as D&D (the fourth coding tab)
+
+**Twenty sentences** (standard scale, mixed dials, fresh seeds `OWNER-18E2-0` … `-19`), for the owner:
+
+ 1. A generation ago, the risen dead killed a suspicious hunter; now one household and the other household fight over an inheritance.
+ 2. A bound elemental carried off the leader of the prophecy's heralds; now the prophecy's heralds and the prophecy's foes fight over the prophecy.
+ 3. A war band is driving the mercenary company out; now the capital and the march lords fight over the land of the march lords.
+ 4. A generation ago, a golem army killed the leader of the ambitious branch; now the penitent branch and the ambitious branch fight over the island-city in the lake.
+ 5. A hired company is about to betray the torn ruler; now the old temples and the fast-spreading new faith fight over the city inside the mountain.
+ 6. An unwitting faction is about to drive the people out of the capital; now the capital and the march lords fight over the land of the march lords.
+ 7. Things from beyond are possessing the leaders of the sworn order; now a house with one piece and a house with another fight over the pieces of the relic.
+ 8. Slavers are carrying off the leaders of the road-closers; now the open-road traders and the road-closers fight over the trails that link the clearings.
+ 9. A dragon opened the stairs between the terraces; now the strongest house and the richest house fight over the city on the middle terrace.
+10. A cursed pack cursed the other new power; now one of the new powers and the other new power fight over the island-city in the lake.
+11. Shapechangers seized the strait; now the bound villages and the bargain-breakers fight over the land of the bound villages.
+12. Slavers are plundering the old dragon lairs; now the prophecy's heralds and the prophecy's foes fight over the prophecy.
+13. Brigands are about to besiege the city on the strait; now a country and the neighbouring country fight over the land between them.
+14. A generation ago, the risen dead seized the glass desert; now the old leadership and the breakaway branch fight over the glass desert.
+15. A coven of hags is replacing the leaders of the would-be explorers with impostors; now the would-be explorers and the wardens of the way fight over the invaders' fortresses.
+16. A hired company is betraying the old order's soldiers; now the old nobles and the reformers fight over the bridge-town over the rift.
+17. A zealous order is seizing the gilded contract halls; now the bound villages and the bargain-breakers fight over the land of the bound villages.
+18. A generation ago, a coven of hags opened the giants' buildings; now the old leadership and the breakaway branch fight over the giants' buildings.
+19. Brigands killed the ruler of the crossroads city; now the magic-holding bloodline and the casterless majority fight over the crossroads city.
+20. A generation ago, a foreign army opened the tunnels between the valleys; now the would-be explorers and the wardens of the way fight over the clans' hill-forts.
+
+
+**Changed files.**
+- Tables: `foundation.yaml` (`#action`: the passive `forms` replaced by `phrases`, active with the hand as subject, one entry per target piece or `piece.kind`, three tenses, `{be}` and `{target}`; `fits` now name the role kinds too and were narrowed where a phrase read false; the header's note; `role_kinds: [group, settlement, person, creature]`; `#contest`: a `short` on 121 of the 196 roles and a `kind` on 52 (27 settlements, 20 persons, 5 creatures), `text.prize` on seven contests, the header's note; `#spine`: `heart_short` on 12 rows and `key_place_short` on 16; `#ruin_source`: `remnant_short` on 14), `antagonists.yaml` (`#hand`: `number` and `text.subject` on the 27 hands; two villain family labels quoted, see below), `secrets.yaml` (new secret sub-table `greater_power`, 4 rows, one a god; the header's label list), `reviewed.json` (restamped).
+- Scripts: `design_foundation.py` (`target_kind`, `role_kind`, `role_short`, `verb_phrase`, `subject_of`, `move_clause`; the verb's fit reads the role's kind among the roles it may strike, and the struck role is drawn among those; `spine_sentence` in active voice with "A generation ago," and the short names; `prize_phrase` by the short names and `text.prize`; the rendering's break line carries the move's clause; `out.villain_label` names the villain itself by its family's public label), `design_identity.py` (the greater power's kind rolled with its twist, `secret.greater_power`; a god pinned for it only when the kind is a god).
+- Prompt: `P1.premise.md` (two clauses: `greater_power` in the secret layer's list and in the twist's line).
+- Tests: `test_foundation_tables.py` (the phrases: every kind a verb fits has a phrase, `{be}`/`{target}`, active voice; the role kinds in the compatibility tables; three pinned fits), `test_foundation_roll.py` (the rendering's clause; the struck role's kind), `test_move.py` (no verb on a kind it does not fit, 3,000 seeds), `test_general_themes.py`, `test_identity_secret_roll.py`, `test_written_in_english.py` (the pinned values above), `test_p1_story.py` (the shorts at five words, the hands' subjects and numbers, the greater power's table; 300 sentences: the hand opens the sentence, its verb agrees with its number, no agent phrase, the sides and the prize by their short names; the pin by the power's kind).
+- Reports: `docs/reports/item18-fits.md` (18e-2: the verb × kind list, the phrases, the shorts and kinds, the prize names, the hands' subjects, five questions); `docs/reports/item18d-secret-SPOILER.md` (the greater power's four rows).
+
+**The suite:** 825 tests on the final product files (51.8 min, one process): red on four tests that pinned values the new fields change, no product fault: `test_foundation_tables` (two verbs' role kinds now hold `settlement`), `test_general_themes` (a ruin's text may hold `remnant_short`), `test_identity_secret_roll` (the dm-only secret holds `greater_power`), `test_written_in_english` (a spine's text may hold `heart_short` and `key_place_short`). Fixed in those test files alone; the four modules then: 84 tests, exit code 0. The full run that gates the commit was started at once; its count and exit code come with the commit. **The suite now takes about 50 minutes** (13 at build 11a): the many-seed tests of item 18; 18f takes the fix.
+
+**Over 3,000 seeds** (`test_move.py`; start levels 1, 4, 7, 10): no verb on a kind it does not fit; the targets unchanged from 18c-2 (role 36.7 %, key place 29.6, remnant 16.6, heart 14.6, thin place 2.5); all 27 hands and all 23 verbs reached (19-494 each: seized 494, carried off 293, killed 277, drove out 270, opened 222, sealed 212, cut off 193, plundered 115, cursed 110, enslaved 90, corrupted 90, raised in revolt 74, betrayed 68, drowned 61, woke 60, summoned 57, a plague 57, burned 56, divided 54, poisoned 51, replaced 46, dragged into a plane 31, possessed 19). The kinds struck: a group role 829, the heart 439, a crossing 268, a descent 203, a structure remnant 195, a city remnant 148, a settlement role 136, a road network 126, a gate 119, a person 112, the thin place 75, then landmark 53, water 51, bridge 44, object, machine and network remnants 29 each, a creature 24, rift 24, wasteland 23, crossroad 23, body 16, source 5.
+
+**Decisions a principle settled** (each listed with its rows in the fits file):
+1. **A verb fits a kind when its phrase reads true for every row of that kind**; the narrowed fits: carried off (an object remnant, never a place), opened, burned, drowned, plundered. Woke keeps its kinds through two phrases ("woke what sleeps in" a structure, "woke what sleeps beneath" a key place).
+2. **Role kinds, not numbers.** With the hand as the subject, the target is the object: no verb agrees with it. A role that is one being takes a person or creature phrase ("killed the elder heir", "possessed the dragon"); a settlement role (a city, villages, a realm, a state) takes the heart's phrase for drove out and a plague and "enslaved the people of". The specification's "a group with its number" is the first question.
+3. **Short names beyond the roles:** places whose text runs past six words, offers an alternative ("the border fortress or the last bridge") or names a structure as the heart carry a `*_short`; a role's short where its text leans on another phrase ("its rival" → "the rival house") as well as past five words.
+4. **The subject's phrase** is the hand's name cut to its subject on eight hands ("a traitor within", "an unwitting faction", "the woken power of the ruin", "fiends", "shapechangers", "a corrupted druid circle", "a war band", "a dragon").
+5. **The greater power** is rolled at the pin (after the stages); since the audit for the patron's goal too, label `P1.secret_power` (below).
+
+**A fault met on the way:** two villain family labels held a comma inside parentheses unquoted, so YAML cut the label at the first comma and read the rest as empty keys (stray `None` fields in the rows). Quoted; their rows' stamps changed with it.
+
+**Questions:** five, in `docs/reports/item18-fits.md` (18e-2).
+
+**The audit's corrections (2026-10-06), applied:** (1) a remnant short wherever the remnant text is no clean object in "<hand> <verb> <target>": 23 more ruins (37 of 53 now; listed in the fits file), so sentences 12 and 18 above read "plundering the old dragon lairs" and "opened the giants' buildings"; (2) one rule for a power behind the villain: the twist "a greater power stands behind the villain" and the goal "a patron's will" roll its kind once from `secrets.yaml#greater_power` (label `P1.secret_power`), and the secret is pinned to a god only when the family is the god or that kind is a god. The answers: the `settlement` role kind, the place shorts and the structure hearts as towns, `text.prize` and seized at 16.5 % stand.

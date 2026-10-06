@@ -411,20 +411,39 @@ class Break(unittest.TestCase):
 
     def test_twenty_three_actions_each_with_three_forms(self):
         """Item 25 step 1 #7: every action carries its past, present and imminent form; a missing one is caught. Build item
-        18c: 23 verbs (eight retired, ten new)."""
+        18c: 23 verbs (eight retired, ten new). Build item 18e-2: the forms are active phrases, the hand their subject,
+        one for every target kind the verb fits; `{be}` agrees with the hand, `{target}` is the target's short name."""
         self.assertEqual(len(ACTIONS), 23)
+        kinds = {"remnant": DOC["remnant_kinds"], "key_place": DOC["key_kinds"], "role": DOC["role_kinds"],
+                 "heart": ["settlement"], "thin_place": ["thin_place"]}
         for r in ACTIONS:
             with self.subTest(action=r["id"]):
-                self.assertEqual(set(r["forms"]), {"past", "present", "imminent"})
-                for f in r["forms"].values():
-                    self.assertTrue(f.strip())
-                    self.assertFalse(f[0].isupper(), "a predicate the sentence places after the target")
+                self.assertNotIn("forms", r, "the passive forms went (build item 18e-2)")
                 self.assertTrue(set(r["targets"]) <= set(PIECES))
+                for e in r["phrases"]:
+                    self.assertEqual(set(e), {"for", "past", "present", "imminent"})
+                    for key in e["for"]:
+                        piece, _, kind = key.partition(".")
+                        self.assertIn(piece, r["targets"], key)
+                        if kind:
+                            self.assertIn(kind, (r.get("fits") or {}).get(piece, []), f"{key}: a kind the verb fits")
+                    for tense in ("past", "present", "imminent"):
+                        f = e[tense]
+                        self.assertEqual(f.count("{target}"), 1, f)
+                        self.assertFalse(f[0].isupper(), "a predicate the sentence places after its subject")
+                        self.assertIsNone(re.search(r"\b(was|were|been|being|by)\b", f), "active voice")
+                        self.assertEqual(set(re.findall(r"\{(\w+)\}", f)), {"target"} if tense == "past" else {"be", "target"}, f)
+                    self.assertTrue(e["present"].startswith("{be} ") and e["imminent"].startswith("{be} about to "), e)
+                for piece in r["targets"]:
+                    allowed = (r.get("fits") or {}).get(piece) if piece in ("remnant", "key_place", "role") else kinds[piece]
+                    for kind in allowed:
+                        found = [e for e in r["phrases"] if f"{piece}.{kind}" in e["for"]] or [e for e in r["phrases"] if piece in e["for"]]
+                        self.assertTrue(found, f"{piece}.{kind}: no phrase")
 
     def test_the_compatibility_tables(self):
         """Review #8: per remnant kind and key-place kind (build item 18a: no lifeline family, the lifeline is no
         target); each listed exactly when the action can strike that piece, and every value from its closed list."""
-        closed = {"remnant": set(DOC["remnant_kinds"]), "key_place": set(DOC["key_kinds"])}
+        closed = {"remnant": set(DOC["remnant_kinds"]), "key_place": set(DOC["key_kinds"]), "role": set(DOC["role_kinds"])}   # 18e-2: role kinds
         for r in ACTIONS:
             with self.subTest(action=r["id"]):
                 fits = r.get("fits") or {}
@@ -451,9 +470,11 @@ class Break(unittest.TestCase):
         self.assertEqual({r["id"] for r in ACTIONS if r.get("leaves_ruins")}, {"act_sank", "act_burned", "act_corrupted"})
         for r in dt.rows("foundation.yaml#time"):
             self.assertEqual(set(r["text"]), {"name", "name_note"}, "the lead phrases went with the Turkish sentence (build item 13a)")
-        for r in ACTIONS:
-            self.assertEqual(set(r["forms"]), {"past", "present", "imminent"}, r["id"])
-            self.assertTrue(r["forms"]["present"].startswith(("is ", "are ")) and r["forms"]["imminent"].startswith("is about to "), r["id"])
+        by = {r["id"]: r for r in ACTIONS}
+        # build item 18e-2: carried off strikes an object, a leader or a ruler, never a place; plunder a place
+        self.assertEqual(by["act_vanished"]["fits"], {"remnant": ["object"], "role": ["group", "settlement", "person"]})
+        self.assertNotIn("object", by["act_plundered"]["fits"]["remnant"])
+        self.assertEqual(by["act_split"]["fits"]["role"], ["group", "settlement"])
 
     def test_actions_and_scars_are_grammar(self):
         """A used verb or scar waits three births; they are never exhausted."""
@@ -506,6 +527,10 @@ class CleanPhrases(unittest.TestCase):
                 for role in (r.get("roles") or {}).values():
                     phrases.append(("text", role["text"]))
                 phrases += [("form", f) for f in (r.get("forms") or {}).values()]
+                phrases += [("phrase", e[k]) for e in (r.get("phrases") or []) for k in ("past", "present", "imminent")]
+                for role in (r.get("roles") or {}).values():
+                    if role.get("short"):
+                        phrases.append(("short", role["short"]))
                 for key, t in phrases:
                     with self.subTest(row=r["id"], field=key):
                         self.assertNotIn("(", t)

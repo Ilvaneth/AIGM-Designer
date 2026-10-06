@@ -133,6 +133,7 @@ class ManySeeds(unittest.TestCase):
                 self.assertIn(b["winner"], roles)
                 if piece == "role":
                     self.assertIn(b["target_role"], roles)
+                    self.assertIn(fd.role_kind(CONTEST[f["contests"][0]["id"]], b["target_role"]), fits["role"])   # 18e-2
                     if "role" in (act.get("destroys") or []):
                         self.assertNotEqual(b["winner"], b["target_role"], "a destroyed role cannot win")
                     if act.get("winner_is_target_role"):
@@ -374,7 +375,7 @@ class ManySeeds(unittest.TestCase):
                 self.assertIsNone(turkish.search(s))
                 sp, ru, li = SPINE[f["spine"]]["text"], RUIN[f["ruin_source"]]["text"], LIFE[f["lifeline"]["id"]]["text"]
                 named = [sp["name"], sp["heart"], sp["key_place"], ru["what"], ru["remnant"], li["name"],
-                         ACTION[f["break"]["action"]]["forms"][TIME[f["break"]["time"]]["tense"]], TIME[f["break"]["time"]]["text"]["name"]]
+                         fd.move_clause(out), TIME[f["break"]["time"]]["text"]["name"]]      # build item 18e-2: the move's clause
                 named += [PALETTE[k]["text"]["name"] for k in f["palette"] + f["palette_extra"]]
                 named += [SCAR[x]["text"]["name"] for x in f["break"]["scars"]]
                 for c in f["contests"]:
@@ -387,8 +388,7 @@ class ManySeeds(unittest.TestCase):
                 if coming:
                     self.assertNotRegex(s, r"scars?: ", "a break still coming has left no wound")
                 t = TIME[f["break"]["time"]]
-                self.assertIn(ACTION[f["break"]["action"]]["forms"][t["tense"]], s)
-                self.assertIn(f"{t['text']['name']}: ", s, "the break's line opens with its time")
+                self.assertIn(f"{t['text']['name']}: {fd.move_clause(out)}", s, "the break's line opens with its time")
 
 
 class Rules(unittest.TestCase):
