@@ -372,10 +372,11 @@ def dnd_ticks(campaign: str, m: dict) -> list[tuple[str, bool]]:
     threat = log.get("threat") or {}
     stages = ((log.get("identity") or {}).get("secret") or {}).get("stages") or []
     removes = [b for b in (m.get("identity") or {}).get("trope_breaks") or [] if (dt.row("trope-breaks.yaml", b["id"]) or {}).get("removes")]
-    return [("villain", bool(threat.get("family") and threat.get("creature"))), ("hand", bool(move.get("hand"))),
+    hidden = threat.get("hand") or {}            # build item 19a: an unnoticed move's hand is in the threat's dm-only record
+    return [("villain", bool(threat.get("family") and threat.get("creature"))), ("hand", bool(move.get("hand") or hidden.get("id"))),
             ("goal", bool((threat.get("goal") or {}).get("id"))), ("weakness", bool(threat.get("weakness"))),
             ("lair", bool((threat.get("lair") or {}).get("form") and (threat.get("lair") or {}).get("where"))),
-            ("start", bool(f.get("start")) and f.get("start") != "heart"), ("families", bool(move.get("families"))),
+            ("start", bool(f.get("start")) and f.get("start") != "heart"), ("families", bool(move.get("families") or hidden.get("families"))),
             ("stages 3×3", len(stages) == 3 and all(len(s.get("clues") or []) == 3 for s in stages)),
             ("breaks bend", not removes)]
 PROMISE_VERDICTS = ("kept", "not_kept")
@@ -850,6 +851,15 @@ def write_card(campaign: str, phase: str, out: str | None) -> int:
 
 # ── the critique record ───────────────────────────────────────────────────────
 
+def return_kind(file: str, entity: str, phase: str) -> str:
+    """A critic return's kind, by the file it was saved as (birth 2: the skeleton critics returned entity_id "P4" and were
+    counted as phase verdicts, the wishes critic's pass overwrote the phase critic's fix on the card)."""
+    stem = Path(file).name.split(".critic", 1)[0]
+    kind = "skeleton" if stem == "skeleton" else "wishes" if stem == "wishes" else "phase" if stem == "phase" \
+        else "phase" if (entity == phase or entity.startswith("phase")) else "entity"
+    return "skeleton" if kind == "entity" and entity.startswith("skeleton") else kind
+
+
 def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
     try:
         ret = json.loads(Path(file).read_text(encoding="utf-8"))
@@ -889,6 +899,18 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
         findings.append({"rubric_id": rid, "entity_id": fid, "verdict": f["verdict"], "reason_code": code or None})
     if redacted:
         print(f"design_approval: {redacted} reason code(s) carried a secret term; recorded as `secret_term`")
+    # build item 19a (test birth P1-2): a critic judges its rubrics' questions only; a `fix` on a rubric it was not given is
+    # its own taste, refused here (a fault no rubric asks about is a `note`)
+    import design_prompts as dpm
+    kind = return_kind(file, entity, phase)
+    given = dpm.given_rubrics(phase, kind)
+    if given is not None:
+        stray = sorted({f["rubric_id"] for f in findings if f["verdict"] in ("fix", "rerun") and f["rubric_id"] not in given
+                        and not (kind == "skeleton" and f["rubric_id"].startswith("rubric_skeleton_"))})
+        if stray:
+            print(f"design_approval: a fix names a rubric this critic was not given ({', '.join(stray)}), refused: a critic judges "
+                  "its rubrics' questions only; a fault no rubric asks about is a `note`", file=sys.stderr)
+            return 1
     # build item 12b: one entry per promise the critic judged: an id, a verdict and a slug; never prose (the reasoning
     # stays in the critic's own file, a secret promise's under dm-only)
     promises = []
@@ -903,13 +925,7 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
     if ph is None:
         return 2
     crit = ph.setdefault("critique", {"phase_loops": 0, "verdicts": [], "entity_loops_total": 0})
-    # birth 2: the skeleton critics returned entity_id "P4" and were counted as phase verdicts, the wishes critic's
-    # pass overwrote the phase critic's fix on the card — the kind is the file the return was saved as
-    stem = Path(file).name.split(".critic", 1)[0]
-    kind = "skeleton" if stem == "skeleton" else "wishes" if stem == "wishes" else "phase" if stem == "phase" \
-        else "phase" if (entity == phase or entity.startswith("phase")) else "entity"
-    if kind == "entity" and entity.startswith("skeleton"):
-        kind = "skeleton"
+    stem = Path(file).name.split(".critic", 1)[0]       # the kind (return_kind, above) is the file the return was saved as
     loop = re.search(r"\.loop(\d+)\.json$", Path(file).name)
     crit.setdefault("records", []).append({"entity_id": entity if kind == "entity" else stem, "critic": critic, "verdict": verdict,
                                            "findings": findings, "kind": kind, "at": now_iso(),

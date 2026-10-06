@@ -29,15 +29,12 @@ mirror: design/dm-only/premise-secret.md
 ### The trope break(s)
 - **<the break as a native would state it>** — <explained through its recorded tie>. <a recorded merge, in one line>. <an override, as the fact it makes true here>
 
-### No people evil by birth — checked
-*<one line: which peoples the premise names, and that none of them is evil, cruel or monstrous by nature>*
-
 ### The languages
 - <the label the script gave> — <who speaks it>
 *(the record is `design/naming.json`)*
 
 ### The player pitch
-*Three sentences, no secret: a threat with a face, and something the party can do in the first session, where step 1 lands.*
+*Three sentences, no secret, three jobs: a threat with a face; the campaign's question, asked in this world's words and never answered; the first session's task, where step 1 lands.*
 
 <sentence one> <sentence two> <sentence three>
 

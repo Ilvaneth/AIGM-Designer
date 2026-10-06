@@ -45,7 +45,7 @@ def measures(runs: list) -> list[str]:
     out.append(f"- 1. texture in a story slot: {slot_bad} births; the lifeline as the move's target {pct(life_target, n)}, as a prize "
                f"{pct(life_prize, n)} (before item 18: 17.8 % and 43 %, one or both 52.6 %)")
     # finding 2: the story's heart was a faceless event; now a hand strikes a target on the way to a goal
-    hands = Counter(R.foundation["move"]["hand"] for d, R in runs)
+    hands = Counter(R.foundation["move"]["hand"] or R.threat["hand"]["id"] for d, R in runs)      # 19a: an unnoticed move's hand is secret
     joined = Counter(R.foundation["move"]["goal_join"] for d, R in runs)
     out.append(f"- 2. a move with a hand: {pct(sum(hands.values()), n)} ({len(hands)} of 27 hands); the goal joins the contest by "
                + ", ".join(f"{k} {pct(v, n)}" for k, v in joined.most_common()))

@@ -201,6 +201,36 @@ def bare(name: str) -> str:
     return re.sub(r"^[Tt]he ", "", str(name or "").strip())
 
 
+_PLANES: list | None = None
+
+
+def plane_names() -> list[str]:
+    """The planes' names a P1 text may not carry (build item 19a: the thin place's plane is chosen at P2): every
+    baseline plane's label of planes.yaml and its local name, but the Material Plane and the demiplanes."""
+    global _PLANES
+    if _PLANES is None:
+        out = []
+        for r in dt.rows("planes.yaml#baseline"):
+            if r["id"] in ("baseline_material", "baseline_demiplane"):
+                continue
+            m = re.match(r"^(?:The )?(.*?)(?: \((?:the )?(.*)\))?$", str(r.get("label") or ""))
+            out += [x for x in (m.group(1), m.group(2)) if x]
+        _PLANES = out
+    return _PLANES
+
+
+def planes_in(text: str) -> list[tuple[int, str]]:
+    """(line, name) of every plane's name in a text: a name with `Plane` in any case, every other as a name is written
+    (capitalised: "the grey country" and "what in the nine hells" are ordinary words)."""
+    found = []
+    for no, line in enumerate(str(text or "").split("\n"), 1):
+        for name in plane_names():
+            flags = re.IGNORECASE if "Plane" in name else 0
+            if re.search(r"(?<![\w])" + re.escape(name) + r"(?![\w])", line, flags):
+                found.append((no, name))
+    return found
+
+
 def later_floor(phase) -> bool:
     """A floor after P1 a signature's note may name: P2-P9, or `play` (build item 18f: the phenomenon's play hook,
     the test birth's P1-1 #4; a play promise closes no phase's gate, build item 12b)."""
@@ -469,12 +499,16 @@ class Door:
                             "noun in lower case, or take a name from the pools")
             errs += self.leak_errors(f"{uid}: {rel}", text)
             warns += self.never_warnings(f"{uid}: {rel}", text)
+            for no, name in planes_in(text)[:6]:
+                errs.append(f"{uid}: {rel} line {no}: names a plane ({name}); no plane is named at P1: the thin place's plane is chosen at P2")
         for eid, row in rows:
             if row.get("secrecy") == "secret":
                 continue
             for path, value in prose_strings(row):
                 for _, word in stray_capitals(value, self.known_public, self.common)[:4]:
                     errs.append(f"{eid}: field {path}: the capitalised word {word!r} is no pooled or registered name")
+                for _, name in planes_in(value)[:2]:
+                    errs.append(f"{eid}: field {path}: names a plane ({name}); no plane is named at P1: the thin place's plane is chosen at P2")
                 errs += self.leak_errors(f"{eid}: field {path}", value)
         mrel, mtext = file_of("dm_only_prose")
         if mtext is not None:
@@ -483,6 +517,11 @@ class Door:
                 self.hidden.append({"kind": "capitalised", "unit": uid, "file": mrel, "words": [{"line": no, "word": w} for no, w in stray]})
                 errs.append(f"{uid}: {len(stray)} capitalised word(s) in the dm-only prose are no pooled or registered name "
                             "(the words and their lines are in the dm-only door log)")
+            planes = planes_in(mtext)
+            if planes:          # build item 19a: the mirror names no plane either; the conductor sees a count
+                self.hidden.append({"kind": "plane", "unit": uid, "file": mrel, "words": [{"line": no, "word": w} for no, w in planes]})
+                errs.append(f"{uid}: the dm-only prose names {len(planes)} plane(s); no plane is named at P1: the thin place's "
+                            "plane is chosen at P2 (the names and their lines are in the dm-only door log)")
         return errs, warns
 
     def unit_errors(self, uid: str, frag: dict, rows: list[tuple[str, dict]]) -> tuple[list[str], list[str]]:

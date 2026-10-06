@@ -70,7 +70,7 @@ class Tables(unittest.TestCase):
         self.assertIn("not a people evil by birth", by["secret_monsters_were_made"]["cause"])
         self.assertIn("believes it is the master", by["twist_greater_power"]["statement"])
         self.assertEqual({r["id"] for r in dt.rows("antagonists.yaml#hand") if r["base"] == "inside"},
-                         {"hand_traitor", "hand_deceived_side", "hand_shapechangers"})
+                         {"hand_traitor", "hand_contest_side", "hand_shapechangers"})
 
     def test_the_words_of_the_chain(self):
         for ref in (S + "twist", S + "keeping", S + "trail"):
@@ -132,10 +132,10 @@ class ManySeeds(unittest.TestCase):
                 self.assertEqual([c["by"] for c in s["clues"]], ["chain", "P5", "P6"])
                 self.assertEqual(s["conclusion"], di.CONCLUSIONS[s["n"]])
             self.assertEqual(stages[1]["clues"][0]["at"], f["layout"]["break_at"], "stage 2 where the move struck")
-            hand = dt.row("antagonists.yaml#hand", f["move"]["hand"])
+            hand = dt.row("antagonists.yaml#hand", f["move"]["hand"] or R.threat["hand"]["id"])      # 19a: an unnoticed move's
             if hand["base"] == "far_end":
                 self.assertTrue(str(stages[0]["clues"][0]["at"]).startswith("end_"), "stage 1 at the hand's base, the far end")
-            elif hand["id"] != "hand_deceived_side":
+            elif hand["id"] != "hand_contest_side":
                 self.assertEqual(stages[0]["clues"][0]["at"], "heart", "a hand inside by nature: its base is the heart")
             self.assertEqual(stages[2]["reveals"], "how it is stopped")
             lo = [s["levels"][0] for s in stages]
@@ -166,7 +166,11 @@ class ManySeeds(unittest.TestCase):
             self.assertIn("P9", dues, "a hero bound to the threat")
             self.assertIn("P4", dues, "the goal's front")
             self.assertTrue([p for p in pub if p["source"] == "foundation" and "start is a village" in p["text"]])
-            self.assertTrue([p for p in pub if "creature families" in p["text"]])
+            if R.foundation["move"]["state"] != "move_unnoticed":
+                self.assertTrue([p for p in pub if "creature families" in p["text"]])
+            else:                       # build item 19a: an unnoticed move's hand and its families are secret
+                self.assertFalse([p for p in pub if "creature families" in p["text"]])
+                self.assertTrue([p for p in sec if "the hand nobody saw" in p["text"]])
             # the public ledger is the same whatever the secret holds, and names none of it
             pub0, _ = dp.build(d, R.public, [], R.foundation, R.identity, None)
             self.assertEqual([p["text"] for p in pub], [p["text"] for p in pub0])

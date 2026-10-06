@@ -148,7 +148,9 @@ tables:
       - {id: hand_cult, number: singular, base: far_end, label: "A cult", families: [humanoid, served], text: {name: "a cult", subject: "a cult"}}
       - {id: hand_thieves_guild, number: singular, base: far_end, label: "A guild of thieves and assassins", families: [humanoid], moon: true, text: {name: "a guild of thieves and assassins", subject: "a guild of thieves and assassins"}}
       - {id: hand_traitor, number: singular, base: inside, label: "A traitor inside (a councillor, a general, a priest)", families: [humanoid], text: {name: "a traitor inside", subject: "a traitor within"}}
-      - {id: hand_deceived_side, number: singular, base: inside, label: "A deceived side (a contest role, not knowing what it did)", families: [humanoid], text: {name: "a side that does not know what it did", subject: "an unwitting faction"}}
+      # build item 19a: the villain deceived this side, which only the secret layer says; its id, label and words name
+      # what the world sees, and the sentence names it by its role (`move.hand_role`); legacy id: hand_deceived_side
+      - {id: hand_contest_side, number: singular, base: inside, label: "A side of the contest (a contest role makes the move)", families: [humanoid], text: {name: "a side of the contest", subject: "a side of the contest"}}
       - {id: hand_hired_company, number: singular, base: far_end, label: "A hired company", families: [humanoid], moon: true, text: {name: "a hired company", subject: "a hired company"}}
       - {id: hand_foreign_army, number: singular, base: far_end, label: "A foreign army", families: [humanoid], text: {name: "a foreign army", subject: "a foreign army"}}
       - {id: hand_dragon, number: singular, base: far_end, label: "A dragon (with its kobolds and dragonborn servants)", families: [dragon], text: {name: "a dragon and its servants", subject: "a dragon"}}
@@ -159,7 +161,7 @@ tables:
       - {id: hand_giants, number: plural, base: far_end, label: "Giants", families: [giant], text: {name: "giants", subject: "giants"}}
       - {id: hand_monstrous_beast, number: singular, base: far_end, label: "A monstrous beast (a hydra, a behir, a purple worm)", families: [monstrosity], text: {name: "a monstrous beast", subject: "a monstrous beast"}}
       - {id: hand_fey_court, number: plural, base: far_end, label: "A fey court's emissaries", families: [fey], text: {name: "a fey court's emissaries", subject: "a fey court's emissaries"}}
-      - {id: hand_bound_elemental, number: singular, base: far_end, label: "A bound elemental", families: [elemental], text: {name: "a bound elemental", subject: "a bound elemental"}}
+      - {id: hand_bound_elemental, number: singular, base: far_end, label: "A bound elemental", families: [elemental], text: {name: "a bound elemental", subject: "an elemental"}}
       - {id: hand_werewolves, number: singular, base: far_end, label: "Werewolves, a cursed pack", families: [lycanthrope], text: {name: "a cursed pack", subject: "a cursed pack"}}
       - {id: hand_golem_army, number: singular, base: far_end, label: "A golem army", families: [construct], requires: {dial: {magic: [medium, high]}}, text: {name: "a golem army", subject: "a golem army"}}
       - {id: hand_hag_coven, number: singular, base: far_end, label: "A coven of hags", families: [fey], text: {name: "a coven of hags", subject: "a coven of hags"}}

@@ -86,7 +86,7 @@ class History(unittest.TestCase):
 
     def test_a_legacy_birth_with_the_old_id_loads(self):
         self.assertEqual(dt.row("history.yaml#age_template", "age_lanterns")["id"], "age_of_thing")
-        self.assertEqual(dt.ROW_ALIASES, {"age_lanterns": "age_of_thing"})
+        self.assertEqual(dt.ROW_ALIASES, {"age_lanterns": "age_of_thing", "hand_deceived_side": "hand_contest_side"})   # + build item 19a
         self.assertEqual(dd._resolve(["age_lanterns", "age_silence"], "history.yaml#age_template"), {"age_of_thing", "age_silence"},
                          "a row another campaign drew under the old id is still spent")
         guard = MarkerGuard().__enter__()

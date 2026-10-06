@@ -41,7 +41,8 @@ class Tables(unittest.TestCase):
         self.assertIn("prize", by["rubric_p1_question_concrete"]["question"])
         self.assertIn("goal", by["rubric_p1_question_concrete"]["question"])
         self.assertEqual(by["rubric_p1_legible"]["question"],
-                         "Does the player pitch show a threat with a face and something the party can do in the first session?")
+                         "Does the player pitch show a threat with a face, ask the campaign's question in this world's words without answering it, "
+                         "and give the party something to do in the first session?")      # build item 19a: the pitch carries the question
         self.assertFalse([r for r in by.values() if r["phase"] == "P1" and re.search(r"\bthe break\b|\bchooser\b", r["question"])])
 
     def test_the_small_tables(self):
@@ -89,8 +90,14 @@ def births(n):
 def subject_of(R):
     """The hand as the sentence's subject (lower case) and its number; the villain itself by its family's label."""
     hand = dt.row("antagonists.yaml#hand", R.foundation["move"]["hand"])
+    if R.foundation["move"].get("state") == "move_unnoticed":       # build item 19a: nobody ties it to anyone
+        return ("someone" if "humanoid" in R.threat["hand"]["families"] else "something"), "singular"
     if hand["id"] == "hand_villain_itself":
         return dt.row("antagonists.yaml#villain_family", R.threat["family"])["text"]["name"].lower(), "singular"
+    if hand["id"] == "hand_contest_side":            # build item 19a: the side of the contest by its role
+        contest = dt.row("foundation.yaml#contest", R.foundation["contests"][0]["id"])
+        role = R.foundation["move"]["hand_role"]
+        return fd.role_short(contest, role).lower(), fd.role_number(contest, role)
     return hand["text"]["subject"].lower(), hand["number"]
 
 

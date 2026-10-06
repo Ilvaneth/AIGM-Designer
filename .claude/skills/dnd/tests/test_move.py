@@ -31,6 +31,11 @@ CREATURE_HANDS = ("hand_dragon", "hand_risen_dead", "hand_ruin_power", "hand_gia
                   "hand_foreign_army", "hand_druid_circle")
 
 
+def hand_of(R, f) -> str:
+    """The move's hand: public, or (build item 19a) an unnoticed move's, in the threat's dm-only record."""
+    return f["move"]["hand"] or R.threat["hand"]["id"]
+
+
 class Tables(unittest.TestCase):
 
     def test_the_verbs(self):
@@ -75,8 +80,8 @@ class ManySeeds(unittest.TestCase):
         for d, R, f, ident in self.runs:
             m = f["move"]
             v = ACTIONS[m["verb"]]
-            self.assertTrue(not v.get("by") or m["hand"] in v["by"])
-            if m["hand"] == "hand_villain_itself":
+            self.assertTrue(not v.get("by") or hand_of(R, f) in v["by"])
+            if hand_of(R, f) == "hand_villain_itself":
                 self.assertIn(R.threat["visibility"], dth.PUBLIC_VISIBILITY)
             self.assertEqual(f["break"]["action"], m["verb"])
             self.assertEqual(f["break"]["target"], m["target"])
@@ -122,21 +127,22 @@ class ManySeeds(unittest.TestCase):
             self.assertNotIn(f["start"], ("heart_ruins",))
             self.assertEqual(f["move"]["start"], f["start"])
             if f["move"]["time"] == "time_coming":
-                base = fd.hand_base(f["layout"], f["move"]["hand"], f["break"]["winner"])
+                base = fd.hand_base(f["layout"], f["move"]["hand"], f["move"]["hand_role"])
                 self.assertEqual(f["start"], base if base != "heart" else "end_a")
 
     def test_the_creature_families(self):
         for d, R, f, ident in self.runs:
             fam = R.threat["families"]
             self.assertEqual(fam["public"], f["move"]["families"])
-            self.assertEqual(fam["secret"], [R.threat["creature_type"]])
-            hand = HANDS[f["move"]["hand"]]
+            hand = HANDS[hand_of(R, f)]
             want = [R.threat["creature_type"] if x == "villain" else x for x in hand["families"]]
-            self.assertEqual(fam["public"], want)
+            hidden = f["move"]["state"] == "move_unnoticed"        # build item 19a: an unnoticed move's families are secret
+            self.assertEqual(fam["secret"], [R.threat["creature_type"]] + (want if hidden else []))
+            self.assertEqual(fam["public"], [] if hidden else want)
 
     def test_every_verb_and_hand_is_reached_and_no_target_is_starved(self):
         verbs = Counter(f["move"]["verb"] for *_, f, _ in [(r[0], r[1], r[2], r[3]) for r in self.runs])
-        hands = Counter(f["move"]["hand"] for _, _, f, _ in self.runs)
+        hands = Counter(hand_of(R, f) for _, R, f, _ in self.runs)
         targets = Counter(f["move"]["target"] for _, _, f, _ in self.runs)
         self.assertEqual(set(verbs), set(ACTIONS))
         self.assertEqual(set(hands), set(HANDS))
@@ -166,7 +172,7 @@ def report() -> str:
     out = [f"{n} seeds"]
     out.append("targets: " + pct(Counter(f["move"]["target"][7:] for _, _, f, _ in runs)))
     out.append("joins: " + pct(Counter(f"{f['move']['goal_join']}/{f['move']['join_by']}" for _, _, f, _ in runs)))
-    hands = Counter(f["move"]["hand"] for _, _, f, _ in runs)
+    hands = Counter(hand_of(R, f) for _, R, f, _ in runs)
     verbs = Counter(f["move"]["verb"] for _, _, f, _ in runs)
     out.append(f"hands: {len(hands)} of 27, {min(hands.values())}-{max(hands.values())} each; verbs: {len(verbs)} of 23, {min(verbs.values())}-{max(verbs.values())} each")
     out.append("start: " + pct(Counter(f["start"].split(":")[0] for _, _, f, _ in runs)))

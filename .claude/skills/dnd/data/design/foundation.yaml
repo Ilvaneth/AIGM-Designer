@@ -1247,6 +1247,8 @@ tables:
         A role's `short` is the noun phrase the story sentence uses where its text runs past five words or leans on
         another phrase (it, its, the other); `kind` is person or creature for a role that is one being, settlement for a town, a realm or a
         state (absent: a group); `text.prize` names a new or seat prize in the sentence (build item 18e-2).
+        `number` (build item 19a) is the role's grammatical number where it differs from its kind's (a group plural,
+        every other kind singular): a role that is the hand's public face is the sentence's subject.
     hooks_common:
       - {phase: P4, must: "each role is a faction of its hinted archetype; every other faction takes a stance on the contest"}
       - {phase: P4, must: "the escalation's steps are the factions' provocation rungs, first spark to the hardest form"}
@@ -1276,7 +1278,7 @@ tables:
           a: {text: "the old harbour city", kind: settlement, hint: guild}
           b: {text: "the newly founded rival city", kind: settlement, hint: trade}
           third: {text: "the smugglers who use the harbour", short: "the harbour smugglers", hint: criminal}
-          fourth: {text: "the sailors' guild", hint: null}
+          fourth: {text: "the sailors' guild", number: singular, hint: null}
         requires: {any_of: ["land_coast"]}                      # the gate: the stage (build item 18a)
         escalation: ["seizing of ships", "coastal war"]
         text: {"name": "two cities that want the same harbour", "name_note": "on either side of the key place"}
@@ -1286,7 +1288,7 @@ tables:
         prize: disputed_land
         roles:
           a: {text: "the herd-owning highland clans", hint: martial}
-          b: {text: "the lowland villages widening their fields", short: "the lowland villages", kind: settlement, hint: state}
+          b: {text: "the lowland villages widening their fields", short: "the lowland villages", kind: settlement, number: plural, hint: state}
           third: {text: "the merchants selling horses and weapons to both sides", short: "the horse and arms merchants", hint: trade}
           fourth: {text: "the keepers of the holy place in the middle of the pasture", short: "the holy place's keepers", hint: religious}
         requires: {any_of: ["land_highland", "land_plain", "land_steppe"]}   # the gate: the stage (build item 18a)
@@ -1299,7 +1301,7 @@ tables:
         seats: {"prize": "key_place"}
         roles:
           a: {text: "the old keepers of the holy place", short: "the shrine's old keepers", hint: religious}
-          b: {text: "the new faith that counts the same place as its own god's", short: "the new faith", hint: religious}
+          b: {text: "the new faith that counts the same place as its own god's", short: "the new faith", number: singular, hint: religious}
           third: {text: "the town that lives off the pilgrims", short: "the pilgrim town", kind: settlement, hint: guild}
           fourth: {text: "the scholars who want to dig up the place", short: "the scholars", hint: scholarly}
         weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}]   # a ruin source of the gods
@@ -1350,7 +1352,7 @@ tables:
         prize: heart
         roles:
           a: {text: "the old temples", hint: religious}
-          b: {text: "the fast-spreading new faith", hint: religious}
+          b: {text: "the fast-spreading new faith", number: singular, hint: religious}
           third: {text: "the ruler forced to choose a side", short: "the torn ruler", kind: person, hint: state}
           fourth: {text: "the mages who reject both faiths", short: "the faithless mages", hint: scholarly}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1363,7 +1365,7 @@ tables:
         roles:
           a: {text: "the people driven out years ago and now returned", short: "the returned exiles", hint: martial}
           b: {text: "those who have settled on their lands", short: "those who stayed", hint: state}
-          third: {text: "a foreign power backing the return", short: "a foreign power", hint: state}
+          third: {text: "a foreign power backing the return", short: "a foreign power", number: singular, hint: state}
           fourth: {text: "the mixed families married from both sides", short: "the mixed families", hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["knocking on the doors of the old homes", "armed return"]
@@ -1375,7 +1377,7 @@ tables:
         seats: {"a": "heart"}
         roles:
           a: {text: "the outside power holding the region", short: "the occupiers", hint: martial}
-          b: {text: "the resistance in the mountains", hint: resistance}
+          b: {text: "the resistance in the mountains", number: singular, hint: resistance}
           third: {text: "the collaborating local nobles", hint: state, claims: {nobility: exists}}
           fourth: {text: "the smugglers who profit from both sides", short: "the smugglers", hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
@@ -1392,7 +1394,7 @@ tables:
           a: {text: "the capital", kind: settlement, hint: state}
           b: {text: "the march lords and rangers", short: "the march lords", hint: martial}
           third: {text: "the people on the other side of the border", short: "the people across the border", hint: null}
-          fourth: {text: "the mercenary company hiring out soldiers to both sides", short: "the mercenary company", hint: martial}
+          fourth: {text: "the mercenary company hiring out soldiers to both sides", short: "the mercenary company", number: singular, hint: martial}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["the cutting of aid", "the marches breaking away"]
         text: {"name": "the capital and the marches", "name_note": "the capital at the heart"}
@@ -1403,7 +1405,7 @@ tables:
         prize: heart
         roles:
           a: {text: "the landowning lords", hint: state}
-          b: {text: "the peasants' union", hint: resistance}
+          b: {text: "the peasants' union", number: singular, hint: resistance}
           third: {text: "a religious leader who is thinking of arming the peasants", short: "a firebrand preacher", kind: person, hint: religious}
           fourth: {text: "the lords' hired guards", hint: martial}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
@@ -1415,10 +1417,10 @@ tables:
         prize: key_place
         key_kinds: [descent, network]   # the spine's key place must be a mine, a shaft or a deep mouth (owner, 18a audit)
         roles:
-          a: {text: "the family that holds the mine", short: "the mine-owning family", hint: guild}
+          a: {text: "the family that holds the mine", short: "the mine-owning family", number: singular, hint: guild}
           b: {text: "the miners", hint: resistance}
           third: {text: "the outside merchants who buy the ore", short: "the ore merchants", hint: trade}
-          fourth: {text: "a deep people angered by the mine's expansion", short: "an angered deep people", hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
+          fourth: {text: "a deep people angered by the mine's expansion", short: "an angered deep people", number: singular, hint: null, people_role: true, lineage_weight: {lineage_dwarf: 3, lineage_gnome: 3, lineage_goblinoid: 3}}
         requires: {any_of: ["land_mountain", "land_highland", "land_underground"]}   # the gate: the stage (build item 18a)
         weight_by: [{when: {dial: {content_mix: [war]}}, x: 2}]
         escalation: ["strike", "raid on the mine"]
@@ -1428,10 +1430,10 @@ tables:
         family: strong_weak
         prize: heart
         roles:
-          a: {text: "a bloodline or institution that holds magic as its monopoly", short: "the magic-holding bloodline", hint: scholarly}
-          b: {text: "the casterless majority", hint: resistance}
+          a: {text: "a bloodline or institution that holds magic as its monopoly", short: "the magic-holding bloodline", number: singular, hint: scholarly}
+          b: {text: "the casterless majority", number: singular, hint: resistance}
           third: {text: "the illicit masters who teach magic in secret", short: "the secret magic teachers", hint: criminal}
-          fourth: {text: "a faith that wants to ban magic altogether", short: "a magic-banning faith", hint: religious}
+          fourth: {text: "a faith that wants to ban magic altogether", short: "a magic-banning faith", number: singular, hint: religious}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         overrides: [{default: regulator_identity, to: "the contest's side a"}, {default: regulator_strictness, to: strict}]
         escalation: ["bans", "caster hunt"]
@@ -1445,7 +1447,7 @@ tables:
           a: {text: "those who want to open the remnant", short: "the would-be openers", hint: scholarly}
           b: {text: "the keepers who want to keep it sealed", short: "the keepers of the seal", hint: religious}
           third: {text: "the looters who take pieces out in secret", short: "the secret looters", hint: criminal}
-          fourth: {text: "an outside power that gains if it is opened", short: "an outside power", hint: null}
+          fourth: {text: "an outside power that gains if it is opened", short: "an outside power", number: singular, hint: null}
         weight_by: [{when: {any_of: [ruin_sleeper]}, x: 3}]
         escalation: ["requests for permission", "night digs", "clashes with the keepers"]
         text: {"name": "the sealed remnant", "name_note": "the remnant at the key place"}
@@ -1478,7 +1480,7 @@ tables:
         prize: new
         roles:
           a: {text: "those who want to open a craft or a magic to everyone", short: "the sharers of the secret", hint: scholarly}
-          b: {text: "the guild that keeps it secret", short: "the secret-keeping guild", hint: guild}
+          b: {text: "the guild that keeps it secret", short: "the secret-keeping guild", number: singular, hint: guild}
           third: {text: "the spies who steal the knowledge and sell it", short: "the knowledge thieves", hint: criminal}
           fourth: {text: "a state that wants to turn the knowledge into a weapon", short: "a warlike state", kind: settlement, hint: null}
         requires: {dial: {magic: [medium, high]}}       # the gate: the magic dial (build item 18a)
@@ -1493,7 +1495,7 @@ tables:
           a: {text: "those who want to keep the planar gate open", short: "the gate-openers", hint: trade}
           b: {text: "those who want to close it", short: "the gate-closers", hint: religious}
           third: {text: "those who come from the other plane", short: "the visitors from beyond", hint: null}
-          fourth: {text: "the villages beside the gate", kind: settlement, hint: null}
+          fourth: {text: "the villages beside the gate", kind: settlement, number: plural, hint: null}
         requires: {any_of: ["land_thin_place"]}
         escalation: ["rites", "war at the gate"]
         text: {"name": "those who open the gate and those who close it"}
@@ -1503,10 +1505,10 @@ tables:
         family: race
         prize: remnant
         roles:
-          a: {text: "the crown's official expedition", hint: state}
-          b: {text: "a mercenary company", hint: martial}
+          a: {text: "the crown's official expedition", number: singular, hint: state}
+          b: {text: "a mercenary company", number: singular, hint: martial}
           third: {text: "the hunters of the native people", short: "the native hunters", hint: null, people_role: true}
-          fourth: {text: "a mage's secret expedition", hint: scholarly}
+          fourth: {text: "a mage's secret expedition", number: singular, hint: scholarly}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["the theft of the maps", "ambush on the road"]
         text: {"name": "groups racing for the treasure"}
@@ -1516,9 +1518,9 @@ tables:
         family: race
         prize: heart
         roles:
-          a: {text: "the strongest house", hint: state}
-          b: {text: "the richest house", hint: trade}
-          third: {text: "the oldest house", hint: religious}
+          a: {text: "the strongest house", number: singular, hint: state}
+          b: {text: "the richest house", number: singular, hint: trade}
+          third: {text: "the oldest house", number: singular, hint: religious}
           fourth: {text: "an outsider the people love", kind: person, hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["marriage alliances", "poison", "open war"]
@@ -1541,8 +1543,8 @@ tables:
         family: race
         prize: heart
         roles:
-          a: {text: "a knightly order", hint: martial}
-          b: {text: "the hunters' guild", hint: guild}
+          a: {text: "a knightly order", number: singular, hint: martial}
+          b: {text: "the hunters' guild", number: singular, hint: guild}
           third: {text: "the villagers who protect the monster", short: "the monster's protectors", hint: null}
           fourth: {text: "the alchemists who want the monster's parts", short: "the alchemists", hint: scholarly}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
@@ -1565,10 +1567,10 @@ tables:
         family: kin
         prize: heart
         roles:
-          a: {text: "the branch that counts the old collapse a punishment", short: "the penitent branch", hint: religious}
-          b: {text: "the branch that counts it an opportunity", short: "the ambitious branch", hint: trade}
+          a: {text: "the branch that counts the old collapse a punishment", short: "the penitent branch", number: singular, hint: religious}
+          b: {text: "the branch that counts it an opportunity", short: "the ambitious branch", number: singular, hint: trade}
           third: {text: "the elders trying to unite the two branches", short: "the uniting elders", hint: null}
-          fourth: {text: "an outside power using one of the branches", short: "an outside power", hint: null}
+          fourth: {text: "an outside power using one of the branches", short: "an outside power", number: singular, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["separate markets", "separate armies"]
         text: {"name": "two branches of one people"}
@@ -1577,10 +1579,10 @@ tables:
         family: kin
         prize: remnant
         roles:
-          a: {text: "the old leadership", hint: religious}
-          b: {text: "the young branch that breaks away", short: "the breakaway branch", hint: resistance}
+          a: {text: "the old leadership", number: singular, hint: religious}
+          b: {text: "the young branch that breaks away", short: "the breakaway branch", number: singular, hint: resistance}
           third: {text: "the steward who holds the order's treasury", short: "the order's steward", kind: person, hint: guild}
-          fourth: {text: "a rival faith that gains from the split", short: "a rival faith", hint: null}
+          fourth: {text: "a rival faith that gains from the split", short: "a rival faith", number: singular, hint: null}
         weight_by: [{when: {any_of: [ruin_fallen_order]}, x: 2}, {when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["expulsion from the order", "brothers' blood"]
         text: {"name": "the splitting of an order"}
@@ -1619,7 +1621,7 @@ tables:
           a: {text: "the kingdom spreading into the plain", short: "the spreading kingdom", kind: settlement, hint: state}
           b: {text: "the giant clans defending their old rights in the mountains", short: "the giant clans", hint: null, people_role: true, lineage_forced: lineage_giant_kin}
           third: {text: "those who trade with both sides", short: "the go-between traders", hint: trade}
-          fourth: {text: "the border villages that have learned to live with the giants", short: "the border villages", kind: settlement, hint: null}
+          fourth: {text: "the border villages that have learned to live with the giants", short: "the border villages", kind: settlement, number: plural, hint: null}
         requires: {any_of: ["land_mountain"]}
         escalation: ["boundary stones", "giant raids", "war"]
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
@@ -1642,7 +1644,7 @@ tables:
         prize: disputed_land
         prize_at: b                     # the disputed land is side b's own (owner, 18a audit)
         roles:
-          a: {text: "the villages clearing the forest", kind: settlement, hint: state}
+          a: {text: "the villages clearing the forest", kind: settlement, number: plural, hint: state}
           b: {text: "the fey owners of the forest", short: "the forest fey", hint: null, people_role: true, lineage_forced: lineage_fey}
           third: {text: "the druids who mediate between the two worlds", short: "the mediating druids", hint: religious}
           fourth: {text: "a noble who bargains with the fey in secret", short: "a fey-dealing noble", kind: person, hint: null, claims: {nobility: exists}}
@@ -1670,7 +1672,7 @@ tables:
         family: nonhuman
         prize: disputed_land
         roles:
-          a: {text: "the coastal cities", kind: settlement, hint: state}
+          a: {text: "the coastal cities", kind: settlement, number: plural, hint: state}
           b: {text: "the sea folk", text_note: "merfolk in SRD 5.1; fish peoples", hint: null, people_role: true, lineage_forced: lineage_merfolk}
           third: {text: "the coastal families married from both peoples", short: "the mixed coastal families", hint: null}
           fourth: {text: "the merchants who want to dig up the sea bed", short: "the sea-bed diggers", hint: null}
@@ -1684,9 +1686,9 @@ tables:
         family: hidden_hand
         prize: heart
         roles:
-          a: {text: "one rival", hint: state}
-          b: {text: "the other rival", hint: state}
-          third: {text: "the merchant house that gives weapons and money to both", short: "the merchant house", hint: trade}
+          a: {text: "one rival", number: singular, hint: state}
+          b: {text: "the other rival", number: singular, hint: state}
+          third: {text: "the merchant house that gives weapons and money to both", short: "the merchant house", number: singular, hint: trade}
           fourth: {text: "a fugitive who knows the truth", short: "a fugitive witness", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["small attacks", "great war; in the end the merchant takes both"]
@@ -1698,10 +1700,10 @@ tables:
         family: hidden_hand
         prize: heart
         roles:
-          a: {text: "a local power", hint: state}
-          b: {text: "the other local power", hint: state}
+          a: {text: "a local power", number: singular, hint: state}
+          b: {text: "the other local power", number: singular, hint: state}
           third: {text: "the envoy of a distant kingdom who seems a friend to both", short: "the foreign envoy", kind: person, hint: state}
-          fourth: {text: "a spy ring that senses the envoy's plan", short: "a wary spy ring", hint: criminal}
+          fourth: {text: "a spy ring that senses the envoy's plan", short: "a wary spy ring", number: singular, hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["gifts", "assassinations", "pretext for invasion"]
         third_is_rumour: true          # the third's game stays a rumour everyone knows, never proven
@@ -1715,7 +1717,7 @@ tables:
         roles:
           a: {text: "a country", kind: settlement, hint: state}
           b: {text: "its neighbour", short: "the neighbouring country", kind: settlement, hint: state}
-          third: {text: "the mercenary company that hires out to both sides and prolongs the war", short: "the war-fed company", hint: martial}
+          third: {text: "the mercenary company that hires out to both sides and prolongs the war", short: "the war-fed company", number: singular, hint: martial}
           fourth: {text: "the merchants who want peace", hint: trade}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["border incidents", "war without end"]
@@ -1727,8 +1729,8 @@ tables:
         family: hidden_hand
         prize: heart
         roles:
-          a: {text: "one of the new powers", hint: state}
-          b: {text: "the other", short: "the other new power", hint: state}
+          a: {text: "one of the new powers", number: singular, hint: state}
+          b: {text: "the other", short: "the other new power", number: singular, hint: state}
           third: {text: "the old state's secret admirers, who want to found it again", short: "the old state's admirers", hint: null}
           fourth: {text: "someone who does not know they are the heir", short: "an unknowing heir", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1741,8 +1743,8 @@ tables:
         family: hidden_hand
         prize: seat
         roles:
-          a: {text: "a village or family", short: "one household", hint: state}
-          b: {text: "the other", short: "the other household", hint: state}
+          a: {text: "a village or family", short: "one household", number: singular, hint: state}
+          b: {text: "the other", short: "the other household", number: singular, hint: state}
           third: {text: "a creature or fey in another guise that sets the two sides at each other", short: "a creature in disguise", kind: creature, hint: null}
           fourth: {text: "a hunter who suspects it", short: "a suspicious hunter", kind: person, hint: martial}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1771,8 +1773,8 @@ tables:
         prize: seat
         third_is_rumour: true
         roles:
-          a: {text: "the house that signed", hint: state}
-          b: {text: "its rival", short: "the rival house", hint: state}
+          a: {text: "the house that signed", number: singular, hint: state}
+          b: {text: "its rival", short: "the rival house", number: singular, hint: state}
           third: {text: "the fiend's envoy", kind: creature, hint: null}
           fourth: {text: "the fiend hunters", hint: martial}
         weight_by: [{when: {dial: {content_mix: ["mystery"]}}, x: 2}]
@@ -1797,9 +1799,9 @@ tables:
         prize: new
         prize_with: {ruin_sundered_relic: remnant}      # with that ruin the relic is its remnant; without it the relic is a new prize
         roles:
-          a: {text: "a house that holds one piece", short: "a house with one piece", hint: state}
-          b: {text: "a house that holds another", short: "a house with another", hint: state}
-          third: {text: "the order sworn to keep the pieces apart", short: "the sworn order", hint: religious}
+          a: {text: "a house that holds one piece", short: "a house with one piece", number: singular, hint: state}
+          b: {text: "a house that holds another", short: "a house with another", number: singular, hint: state}
+          third: {text: "the order sworn to keep the pieces apart", short: "the sworn order", number: singular, hint: religious}
           fourth: {text: "a finder with no banner", kind: person, hint: null}
         weight_by: [{when: {any_of: [ruin_sundered_relic]}, x: 3}, {when: {dial: {content_mix: ["exploration"]}}, x: 2}]
         escalation: ["a piece changes hands", "open raids for the pieces", "two pieces joined"]
@@ -1847,9 +1849,9 @@ tables:
         prize: disputed_land
         prize_at: a                     # the disputed land is side a's own (owner, 18a audit)
         roles:
-          a: {text: "the villages bound by it", short: "the bound villages", kind: settlement, hint: state}
+          a: {text: "the villages bound by it", short: "the bound villages", kind: settlement, number: plural, hint: state}
           b: {text: "those who would break it", short: "the bargain-breakers", hint: resistance}
-          third: {text: "the coven", hint: null}
+          third: {text: "the coven", number: singular, hint: null}
           fourth: {text: "the child that was promised", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["horror"]}}, x: 2}]
         escalation: ["a payment refused", "blight on the fields", "the coven comes to collect"]
@@ -1860,9 +1862,9 @@ tables:
         prize: key_place
         key_kinds: [crossing]   # the spine's key place must be the sea lanes (owner, 18a audit)
         roles:
-          a: {text: "the council of pirate captains", hint: criminal}
+          a: {text: "the council of pirate captains", number: singular, hint: criminal}
           b: {text: "the league of harbour towns", kind: settlement, hint: trade}
-          third: {text: "a foreign navy", hint: martial}
+          third: {text: "a foreign navy", number: singular, hint: martial}
           fourth: {text: "the smugglers who serve both", hint: criminal}
         requires: {any_of: ["land_coast", "land_island"]}
         weight_by: [{when: {dial: {era: ["nautical"]}}, x: 3}]
@@ -1876,7 +1878,7 @@ tables:
           a: {text: "the slaver lords", hint: criminal}
           b: {text: "the escaped and those who hide them", short: "the escaped slaves", hint: resistance}
           third: {text: "those who buy", hint: trade}
-          fourth: {text: "a people taken whole", hint: null, people_role: true}
+          fourth: {text: "a people taken whole", number: singular, hint: null, people_role: true}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
         escalation: ["raids", "hunts for the escaped", "open revolt"]
         text: {"name": "slavers and the chained", "prize": "the people taken"}
@@ -1886,9 +1888,9 @@ tables:
         prize: heart
         seats: {"a": "heart"}
         roles:
-          a: {text: "the guild that runs the streets", short: "the street guild", hint: criminal}
+          a: {text: "the guild that runs the streets", short: "the street guild", number: singular, hint: criminal}
           b: {text: "the city's rulers, most of them on its payroll", short: "the bought rulers", hint: state}
-          third: {text: "a rival guild from outside", hint: criminal}
+          third: {text: "a rival guild from outside", number: singular, hint: criminal}
           fourth: {text: "the watch captain no one can buy", short: "the honest watch captain", kind: person, hint: martial}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
         escalation: ["a killing in daylight", "war in the alleys", "the guild names the next ruler"]
@@ -1979,7 +1981,7 @@ tables:
         phrases:
           - {for: [role], past: "split {target} in two", present: "{be} splitting {target} in two", imminent: "{be} about to split {target} in two"}
           - {for: [heart], past: "divided {target} against itself", present: "{be} dividing {target} against itself", imminent: "{be} about to divide {target} against itself"}
-        by: [hand_villain_itself, hand_traitor, hand_cult, hand_thieves_guild, hand_deceived_side, hand_zealous_order, hand_fey_court, hand_shapechangers, hand_fiends, hand_hag_coven]
+        by: [hand_villain_itself, hand_traitor, hand_cult, hand_thieves_guild, hand_contest_side, hand_zealous_order, hand_fey_court, hand_shapechangers, hand_fiends, hand_hag_coven]
       - id: act_corrupted
         leaves_ruins: true
         label: Corrupted
@@ -2049,7 +2051,7 @@ tables:
         fits: {role: [group, settlement]}
         phrases:
           - {for: [role, heart], past: "raised {target} in revolt", present: "{be} raising {target} in revolt", imminent: "{be} about to raise {target} in revolt"}
-        by: [hand_villain_itself, hand_cult, hand_traitor, hand_deceived_side, hand_zealous_order, hand_thieves_guild, hand_fiends, hand_shapechangers, hand_risen_dead, hand_druid_circle]
+        by: [hand_villain_itself, hand_cult, hand_traitor, hand_contest_side, hand_zealous_order, hand_thieves_guild, hand_fiends, hand_shapechangers, hand_risen_dead, hand_druid_circle]
       - id: act_sank
         leaves_ruins: true
         label: Drowned
@@ -2138,7 +2140,7 @@ tables:
         fits: {role: [group, settlement, person, creature]}
         phrases:
           - {for: [role, heart], past: "betrayed {target}", present: "{be} betraying {target}", imminent: "{be} about to betray {target}"}
-        by: [hand_villain_itself, hand_traitor, hand_deceived_side, hand_cult, hand_thieves_guild, hand_hired_company, hand_zealous_order, hand_rival_band, hand_shapechangers]
+        by: [hand_villain_itself, hand_traitor, hand_contest_side, hand_cult, hand_thieves_guild, hand_hired_company, hand_zealous_order, hand_rival_band, hand_shapechangers]
     retired:                          # build item 18c: deleted verbs, readable by id for legacy births
       - id: act_reversed
         label: Turned backwards

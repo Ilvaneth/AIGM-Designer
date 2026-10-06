@@ -215,9 +215,16 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
                 "key_place": key_kind in table.get("key_place", [])}.get(piece, True)
 
     story = lay_out_story(R, spine, palette + out["palette_extra"], out["contests"], out)
-    hand_id = R.table("move.hand", "antagonists.yaml#hand", why="the hand")["row_id"]
+    # build item 19a (the audit): the time and the move's state come before the hand (neither reads it; a move still
+    # coming has no state); a move nobody noticed has a hand nobody knows: its roll, its tokens, its role and its
+    # creature families are secret, and every public record shows the move without it
+    out["time"] = R.table("foundation.break.time", ref("time"))["row_id"]
+    state = None if out["time"] == "time_coming" else R.table("move.state", "antagonists.yaml#move_state")["row_id"]
+    hidden = state == "move_unnoticed"
+    hand_id = R.table("move.hand", "antagonists.yaml#hand", why="the hand", secret=hidden)["row_id"]
     hand = dt.row("antagonists.yaml#hand", hand_id)
-    R.add_tokens("move.hand.tokens", [f"hand_family:{x}" for x in hand.get("families") or []], "the hand's creature families")
+    R.add_tokens("move.hand.tokens", [f"hand_family:{x}" for x in hand.get("families") or []], "the hand's creature families",
+                 secret=hidden)
     allowed = move_targets(threat["goal"], main, ruin_id, palette + out["palette_extra"], story)
     # the order is hand → target → verb (the 18c-2 answer): the goal decides what must be struck, the verb is how the
     # hand strikes it; the target among those the hand can strike with one of its verbs
@@ -257,9 +264,6 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
                           where=lambda r: is_capped(r), why="the scar's new kind (it counts toward the cap)")
             palette.append(rec["row_id"])
     out["scars"] = scars
-    out["time"] = R.table("foundation.break.time", ref("time"))["row_id"]
-    # the move's state (the old tie, re-read); a move still coming has none
-    state = None if out["time"] == "time_coming" else R.table("move.state", "antagonists.yaml#move_state")["row_id"]
 
     destroyed = role if (piece == "role" and "role" in (act.get("destroys") or [])) else None
     if act.get("winner_is_target_role") and piece == "role":
@@ -285,14 +289,21 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     R.add_tokens("foundation.layout.tokens", lay_tokens, "the layout")
 
     # the start (finding D3): a small settlement at a part that is not the heart, where step 1 lands; the timeline (G2)
-    out["start"], start_why = start_part(out["layout"], out["time"], hand_id, out["winner"])
+    # build item 19a: the deceived hand is a contest role (the side the move made stronger, never the one it strikes);
+    # the world sees that role act, never that it was deceived
+    hand_role = deceived_role(main_roles, out["winner"], out.get("target_role")) if hand_id == "hand_contest_side" else None
+    out["start"], start_why = start_part(out["layout"], out["time"], hand_id, hand_role)
     families = [threat["creature_type"] if f == "villain" else f for f in hand.get("families") or []]
-    out["move"] = {"hand": hand_id, "verb": act_id, "target": target_id, "target_role": out.get("target_role"),
-                   "time": out["time"], "state": state, "at": "end" if out["time"] == "time_coming" else "start",
-                   "join_by": join_by, "goal_join": threat["goal"]["join"],
+    out["move"] = {"hand": None if hidden else hand_id, "hand_role": None if hidden else hand_role, "verb": act_id, "target": target_id,
+                   "target_role": out.get("target_role"), "time": out["time"], "state": state,
+                   "at": "end" if out["time"] == "time_coming" else "start", "join_by": join_by, "goal_join": threat["goal"]["join"],
                    "winner": out["winner"], "start": out["start"], "start_why": start_why, "start_kind": "a village or a small town",
-                   "families": families}
-    threat["families"] = {"public": families, "secret": [threat["creature_type"]]}      # finding D4; P6 weighs them
+                   "families": [] if hidden else families}
+    # finding D4; P6 weighs them. An unnoticed move's hand lives in the threat's dm-only record (build item 19a)
+    threat["families"] = {"public": [] if hidden else families, "secret": [threat["creature_type"]] + (families if hidden else [])}
+    if hidden:
+        threat["hand"] = {"id": hand_id, "role": hand_role, "families": families}
+    out["hand_families"] = families          # the sentence's "someone" or "something"; never written to a record
     # the villain itself is named by its family's public label (it is the hand only when its visibility is known)
     out["villain_label"] = (dt.row("antagonists.yaml#villain_family", threat["family"]) or {}).get("text", {}).get("name") \
         if hand_id == "hand_villain_itself" else None
@@ -379,24 +390,32 @@ def move_targets(goal: dict, main_row: dict, ruin_id: str, kinds, story: dict) -
     return out
 
 
-def hand_base(layout: dict, hand_id: str | None, winner: str | None) -> str:
+def deceived_role(main_roles: list[str], winner: str | None, target_role: str | None) -> str | None:
+    """The contest role the deceived hand is (build item 19a): the side the move made stronger (the 18d answer), unless
+    the move strikes that very role; then the first other role of the main contest."""
+    if winner and winner != target_role:
+        return winner
+    return next((k for k in ("a", "b", "third", "fourth") if k in main_roles and k != target_role), None)
+
+
+def hand_base(layout: dict, hand_id: str | None, side: str | None) -> str:
     """The hand's base (the 18d answer): a hand from outside at the far end (end_b); a hand inside by nature in the heart,
-    or, for the deceived side, on the seat of the side the move made stronger."""
+    or, for the deceived side, on the seat of the role it is (`move.hand_role`; a legacy birth's: the stronger role)."""
     hand = dt.row("antagonists.yaml#hand", str(hand_id or "")) or {}
     if hand.get("base") != "inside":
         return "end_b"
-    if hand.get("id") == "hand_deceived_side" and winner:
-        seat = (layout["contests"][0]["seats"].get(winner) or "heart")
+    if hand.get("id") == "hand_contest_side" and side:
+        seat = (layout["contests"][0]["seats"].get(side) or "heart")
         return "heart" if seat == "along" else seat
     return "heart"
 
 
-def start_part(layout: dict, time_id: str, hand_id: str | None = None, winner: str | None = None) -> tuple[str, str]:
+def start_part(layout: dict, time_id: str, hand_id: str | None = None, side: str | None = None) -> tuple[str, str]:
     """The start (finding D3): never the heart. The part nearest the move's target (the target's own part when it is an
     end, the key place or a place along the spine; else the first end); a move still coming starts at the hand's base,
     and where that base is the heart, at the first end."""
     if time_id == "time_coming":
-        base = hand_base(layout, hand_id, winner)
+        base = hand_base(layout, hand_id, side)
         if base != "heart":
             return base, "the move is coming: the start is the hand's base"
         return "end_a", "the move is coming from the heart (a hand inside): the nearest end"
@@ -559,6 +578,13 @@ def role_short(contest: dict, key: str) -> str:
     return role.get("short") or role["text"]
 
 
+def role_number(contest: dict, key: str) -> str:
+    """A role's grammatical number (build item 19a): its own `number`, else a group's plural and every other kind's
+    singular."""
+    own = (contest["roles"].get(key) or {}).get("number")
+    return own or ("plural" if role_kind(contest, key) == "group" else "singular")
+
+
 def role_kind(contest: dict, key: str) -> str:
     """group (absent), person or creature: a role that is one being takes a verb's person or creature phrase."""
     return (contest["roles"].get(key) or {}).get("kind") or "group"
@@ -627,8 +653,16 @@ def verb_phrase(act: dict, piece: str, kind: str) -> dict | None:
 def subject_of(out: dict) -> tuple[str, str]:
     """The hand as the sentence's subject and its number; the villain itself by its family's public label."""
     hand = dt.row("antagonists.yaml#hand", out["move"]["hand"]) or {}
+    if out["move"].get("state") == "move_unnoticed":
+        # build item 19a (the audit): nobody ties an unnoticed move to anyone; the world names no hand ("someone" for a
+        # hand of people, "something" for a creature family that is none); its hand is in the threat's dm-only record
+        return ("someone" if "humanoid" in (out.get("hand_families") or []) else "something"), "singular"
     if hand.get("id") == "hand_villain_itself" and out.get("villain_label"):
         return out["villain_label"], "singular"
+    if hand.get("id") == "hand_contest_side" and out["move"].get("hand_role"):
+        # build item 19a: the world sees the role act; that it was deceived lives in dm-only alone
+        contest = rows_by_id("contest")[out["contests"][0]["id"]]
+        return role_short(contest, out["move"]["hand_role"]), role_number(contest, out["move"]["hand_role"])
     return (hand.get("text") or {}).get("subject") or (hand.get("text") or {}).get("name"), hand.get("number") or "singular"
 
 

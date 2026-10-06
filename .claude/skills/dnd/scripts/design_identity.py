@@ -405,7 +405,9 @@ def secret_facts(threat: dict, pole: str) -> dict:
     return {"who": {"family": threat["family"], "creature": threat["creature"], "shape": threat["shape"], "public": known},
             "what_and_why": {"goal": threat["goal"]["id"], "piece": threat["goal"]["piece"], "pole": pole},
             "where": dict(threat["lair"]), "how_stopped": {"weakness": threat["weakness"]},
-            "creature_types": {"public": list((threat.get("families") or {}).get("public") or []), "secret": [threat["creature_type"]]},
+            "creature_types": dict({"public": list((threat.get("families") or {}).get("public") or []), "secret": [threat["creature_type"]]},
+                                   # build item 19a: an unnoticed move's hand is secret, and so are its creature families
+                                   **({"hand": list((threat.get("hand") or {}).get("families") or [])} if threat.get("hand") else {})),
             "hidden": 3 if known else 4}
 
 
@@ -430,8 +432,10 @@ def secret_stages(foundation: dict, threat: dict, trail_id: str) -> list[dict]:
     levels = dpr.clue_levels(band, [max(int(band[0]), int(top[0])), min(int(band[1]), int(top[1]))])
     coming = foundation["break"]["time"] == "time_coming"
     far = "end_a" if start == "end_b" else "end_b"
-    hand_id = (foundation.get("move") or {}).get("hand")
-    base = fd.hand_base(lay, hand_id, foundation["break"]["winner"])       # the 18d answer: inside by nature, else the far end
+    hidden = threat.get("hand") or {}            # 19a: an unnoticed move's hand is in the threat's dm-only record
+    hand_id = (foundation.get("move") or {}).get("hand") or hidden.get("id")
+    side = (foundation.get("move") or {}).get("hand_role") or hidden.get("role") or foundation["break"]["winner"]      # the deceived side's role
+    base = fd.hand_base(lay, hand_id, side)       # the 18d answer: inside by nature, else the far end
     if base == "end_b" and start == "end_b" and not coming:
         base = "end_a"                  # the move struck the far end and the party starts there: the hand sits at the other
     lair_at = {"lairat_remnant": lay["remnant"], "lairat_thin_place": fd.thin_part(lay["parts"]), "lairat_heart": "heart",

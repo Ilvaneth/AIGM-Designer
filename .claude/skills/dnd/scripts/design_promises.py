@@ -281,6 +281,11 @@ def build(dials: dict, public: list[dict], secret: list[dict], foundation: dict,
     if facts:
         add("foundation", "threat.families", "P1", "P6", "the villain's own creatures (" + ", ".join(facts["creature_types"]["secret"])
             + ") stand among the occupants of its sites and its lair", "The villain's creatures", hidden=True)
+        if facts["creature_types"].get("hand"):
+            # build item 19a: the hand of a move nobody noticed is secret; its creature families weigh P6 from the secret ledger
+            add("foundation", "threat.hand_families", "P1", "P6", "the occupants of the sites and the travel encounters weigh the "
+                f"creature families of the hand nobody saw: {', '.join(facts['creature_types']['hand'])}", "The hidden hand's creatures",
+                hidden=True)
 
     # 6. the secret's clues (secret). Build item 18d: three stages, three clues each: the chain's own (`clue_stage`, its
     #    levels the validator reads) and the two promised to P5 and P6 (`clue`); a legacy birth keeps its archetype's three
@@ -659,6 +664,11 @@ def judge(campaign: str, phase: str, entries: list[dict], by: str = "critic") ->
         p = index.get(e.get("id"))
         if p is None or p["check"] != "critic" or p["due"] != phase or p["status"] == "waived" or e.get("verdict") not in ("kept", "not_kept"):
             continue
+        if p["status"] == "not_kept" and e["verdict"] == "kept":
+            # build item 19a (test birth P1-2, #8): judged not kept, then kept after the phase's fix N (its phase critic's
+            # `fix` verdicts so far); the report says so
+            loops = int(((m["phases"].get(phase) or {}).get("critique") or {}).get("phase_loops") or 0)
+            p["flipped"] = {"from": "not_kept", "after_fix": loops, "attempt": _attempt(m, phase)}
         p.update({"status": e["verdict"], "verdict": {"phase": phase, "attempt": _attempt(m, phase), "by": by}})
         stored += 1
     if stored:
@@ -738,9 +748,19 @@ def report_line(campaign: str, phase: str) -> str | None:
     c = counts(m[KEY], load_secret(campaign), phase)
     d, s = c["due"], c["secret"]
     broken = [p["id"] for p in m[KEY] if p["status"] == "not_kept"]
-    return (f"- promises: due here {d['total']} (kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}, open {d['open']})"
+    line = (f"- promises: due here {d['total']} (kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}, open {d['open']})"
             f" · judged not kept {len(broken)}{' [' + ', '.join(broken[:12]) + ']' if broken else ''}"
             f" · secret {s['open']} open, {s['kept']} kept, {s['not_kept']} not kept")
+    # build item 19a (test birth P1-2, #8): a promise judged not kept and later kept, in one line (a secret one by count)
+    flips: dict = {}
+    for p in m[KEY]:
+        if p["status"] == "kept" and p.get("flipped") and p["due"] == phase:
+            flips.setdefault(int(p["flipped"].get("after_fix") or 0), []).append(p["id"])
+    hidden = sum(1 for p in load_secret(campaign) if p["status"] == "kept" and p.get("flipped") and p["due"] == phase)
+    if flips or hidden:
+        line += "\n- " + "; ".join(f"judged not kept, then kept after fix {n}: {', '.join(ids)}" for n, ids in sorted(flips.items())) \
+                + (("; " if flips else "") + f"{hidden} secret promise(s) judged not kept, then kept" if hidden else "")
+    return line
 
 
 def list_command(campaign: str, phase: str) -> str:

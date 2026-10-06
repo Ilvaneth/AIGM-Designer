@@ -1359,8 +1359,14 @@ def phase_report(campaign: str, phase: str) -> int:
     chains, phase_v, phase_lines, wishes_v, sk_v = da.critique_chains(dict(ph, id=phase))
     recs = (ph.get("critique") or {}).get("records") or []
     entity_recs = [r for r in recs if r.get("kind") == "entity"]
-    reasons = Counter(f"{f['rubric_id']}/{f.get('reason_code') or '-'}" for r in recs for f in r.get("findings") or []
-                      if f.get("verdict") in ("fix", "rerun"))
+    # build item 19a (test birth P1-2, #7): the fix reasons grouped by the critic that gave them, entity critics first
+    kinds = ("entity", "skeleton", "phase", "wishes")
+    who = lambda r: f"entity critic {r.get('critic') or 1}" if r.get("kind") == "entity" else f"{r.get('kind')} critic"
+    reasons: dict = {}
+    for r in sorted(recs, key=lambda r: (kinds.index(r["kind"]) if r.get("kind") in kinds else len(kinds), int(r.get("critic") or 1))):
+        for f in r.get("findings") or []:
+            if f.get("verdict") in ("fix", "rerun"):
+                reasons.setdefault(who(r), Counter())[f"{f['rubric_id']}/{f.get('reason_code') or '-'}"] += 1
     ended_fix = sorted(e for e, ch in chains.items() if ch and ch[-1].split(":")[-1] in ("fix", "rerun"))
     val = ph.get("validator") or {}
     cost = (ph.get("cost") or {}).get("totals") or {}
@@ -1371,7 +1377,7 @@ def phase_report(campaign: str, phase: str) -> int:
              f"- critics: entity returns {len(entity_recs)}, fix {sum(1 for r in entity_recs if r['verdict'] == 'fix')}"
              f"{', chains ending fix: ' + ', '.join(ended_fix) if ended_fix else ''} · phase {phase_v} · wishes {wishes_v}"
              f" · skeleton {' → '.join(sk_v) if sk_v else '—'}",
-             "- fix reasons: " + (", ".join(f"{k} ×{v}" for k, v in reasons.most_common(8)) or "—"),
+             "- fix reasons: " + ("; ".join(f"{g}: " + ", ".join(f"{k} ×{v}" for k, v in c.most_common(6)) for g, c in reasons.items()) or "—"),
              f"- validator: {val.get('errors', '—')} errors, {val.get('warnings', '—')} warnings",
              "- band: " + (" · ".join(da.band_lines_of(campaign, phase)) or "—")]
     pool = None

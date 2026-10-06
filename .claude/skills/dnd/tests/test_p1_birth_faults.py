@@ -136,7 +136,8 @@ class Faults(Base):
         path = w.staging / "phase.critic1.json"
         ret = json.loads(path.read_text(encoding="utf-8"))
         ret["verdict"] = "fix"
-        ret["findings"][0].update({"entity_id": sig, "verdict": "fix", "reason_code": "play_floor_unrepresentable"})
+        ret["findings"][0].update({"rubric_id": "rubric_p1_legible", "entity_id": sig, "verdict": "fix",
+                                    "reason_code": "play_floor_unrepresentable"})      # 19a: a rubric the phase critic is given
         path.write_text(json.dumps(ret), encoding="utf-8")
         rubric = ret["findings"][0]["rubric_id"]
         w.d("phase", "P1", "merge")

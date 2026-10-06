@@ -162,11 +162,32 @@ def rolls_for(manifest: dict, phase: str, entity_id: str | None) -> tuple[str, s
     return "\n".join(mine) or "- (no rolls assigned to this entity)", "\n".join(line(r) for r in phase_recs) or "- (none)"
 
 
-def rubric_lines(phase: str, scope: str | None, order: int) -> str:
+def rubric_rows(phase: str, scope: str | None) -> list[dict]:
+    """The rubric rows a critic's prompt gives it: the phase's rows of its scope (all of them when none has that
+    scope), and the two special rows."""
     rows = [r for r in dt.rows("rubrics.yaml#phase_rubric") if r["phase"] == phase]
     if scope:
         rows = [r for r in rows if r["scope"] == scope] or rows
-    rows += [r for r in dt.rows("rubrics.yaml#special") if r["id"] in ("rubric_english_names", "rubric_leak")]
+    return rows + [r for r in dt.rows("rubrics.yaml#special") if r["id"] in ("rubric_english_names", "rubric_leak")]
+
+
+# the prompt each kind of critic return is written by (the file it is saved as says the kind: design_approval.return_kind)
+CRITIC_PROMPTS = {"entity": "critic", "phase": "phase_critic", "skeleton": "skeleton_critic"}
+
+
+def given_rubrics(phase: str, kind: str) -> set | None:
+    """Build item 19a: the rubric ids a critic of this kind was given at this phase, or None where no rubric list is
+    rendered (a detail critique, the wishes critic). The skeleton critic's bullets are `rubric_skeleton_<bullet>`."""
+    if phase not in dm.PHASES or kind not in CRITIC_PROMPTS:
+        return None
+    fm, _ = load(CRITIC_PROMPTS[kind])
+    given = {r["id"] for r in rubric_rows(phase, str(fm.get("rubric_scope") or "") or None)}
+    # the wishes critic's own rubric: a wishes return saved under another name than `wishes.critic*` reads as a phase return
+    return given | ({"rubric_wishes"} if kind == "phase" else set())
+
+
+def rubric_lines(phase: str, scope: str | None, order: int) -> str:
+    rows = rubric_rows(phase, scope)
     if order == 2:
         rows = list(reversed(rows))
     out = []

@@ -112,7 +112,8 @@ def all_row_lists(doc: dict) -> dict[str, list[dict]]:
 
 # a row id that was renamed: a legacy birth that holds the old id still loads (build item 15: the age named for what
 # was built in it lost the one built thing its id named)
-ROW_ALIASES = {"age_lanterns": "age_of_thing"}
+ROW_ALIASES = {"age_lanterns": "age_of_thing",
+               "hand_deceived_side": "hand_contest_side"}     # build item 19a: the hand's id names what the world sees
 
 
 def _node(ref: str):
