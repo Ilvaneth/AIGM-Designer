@@ -34,3 +34,12 @@ The second birth's villain is a marilith with the visibility "a mystery among ca
 Changed files; the suite's count, exit code and time; for 19a the list of hand subjects read and changed, and two fresh births' story sentences and pitches; for 19b the creatures that pass as people by the SRD, the mask rows, and how often a mask is rolled.
 
 *Also from this birth, for the protocol (the design tab's own): the test birth's conductor no longer runs `designer.py commit` (a test campaign is git-ignored, the command says "nothing to commit", and the permission classifier refused it once).*
+
+## Added from the birth's report (2026-10-06; part of 19a)
+
+`docs/reports/p1-test-birth-2.md` section 6 adds four small faults:
+
+6. **Agents and Bash.** Two critics listed the dm-only directory with Bash and the phase critic wrote its staging critique with a Bash heredoc (the classifier refused the one, the quoting broke the other); the writer wrote a helper script into the conductor's scratchpad. The writer's and the critics' prompts say: list files with Glob, read with Read, write with Write; never Bash on a design path; write no helper scripts.
+7. **The report says who asked a fix.** `phase P1 report`'s `fix reasons` line groups its reasons by the critic that gave them (entity critic n, phase critic, wishes).
+8. **A promise that flipped is shown.** When a critic judged a promise not kept and a later return kept it, the report says so in one line (`judged not kept, then kept after fix N: <id>`).
+9. **The protocol's channel** (the design tab's own): the next protocol says that the review answer comes from the design tab by SendMessage and carries the owner's word.
