@@ -155,6 +155,7 @@ class Roller:
         self.foundation: dict | None = None
         self.identity: dict | None = None
         self.identity_secret: dict | None = None      # the secret and the villain: dm-only alone
+        self.threat: dict | None = None               # the threat (build item 18c): dm-only alone
         self.naming: dict | None = None               # the languages and the calendar's roots (design/naming.json)
         self.exempt: set = set()                      # conflict pairs a forced roll was allowed to stand in
         self.pools: dict[str, int] = {}               # table → its smallest pool after the constraints (the floor)
@@ -169,6 +170,7 @@ class Roller:
         R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
         R.ctx = arb.Context(dials=dict(dials))
         R.foundation, R.identity, R.identity_secret, R.naming, R.exempt = None, None, None, None, set()
+        R.threat = None
         R.pools, R.pool_of = {}, {}
         return R
 
@@ -290,6 +292,8 @@ class Roller:
             log["rolls"].extend(self.secret)
             if self.identity_secret is not None:
                 log["identity"] = self.identity_secret       # the secret and the villain as P1 rolled them
+            if self.threat is not None:
+                log["threat"] = self.threat                  # the threat as P1 rolled it (build item 18c)
             stamp_meta(log, self.campaign, "designer.py preroll (secret)")
             write_json_atomic(path, log)
             dls = data["dice_log_secret"]
@@ -341,7 +345,6 @@ def preroll_p1(R: Roller, m: dict) -> None:
     ident = di.roll(R, dials_of(m), R.foundation)
     R.identity = di.build(ident, [r["row_id"] for r in R.public if r.get("row_id")])
     R.identity_secret = di.roll_secret(R, dials_of(m), R.foundation, R.identity)     # every roll secret; dm-only alone
-    R.identity_secret["world_states"] = ident["world_state_secret"]     # a world state's join to the threat (18b)
     chance = int(sc["signature_mechanic_chance"])
     if chance <= 0:
         R.forced("mechanic", "dice", "no", "scale never rolls the signature mechanic")

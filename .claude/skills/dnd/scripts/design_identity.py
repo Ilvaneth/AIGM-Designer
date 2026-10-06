@@ -86,8 +86,9 @@ def is_world_state(row: dict) -> bool:
 
 def joins_of(row: dict, foundation: dict, scale: str, threat: dict | None = None) -> list[dict]:
     """The joins of a world state that hold on what is rolled, in the row's order: each `{piece, how, ...}` with the
-    piece's id where one is rolled. A join to the threat holds as `pending` (the requirement) while no threat is
-    rolled; build item 18c's roll passes `threat` and honours it."""
+    piece's id where one is rolled. Every join is to a public piece (the 18c-1 audit): a join to the threat holds only
+    when the villain itself is public (its visibility known) and the rolled threat meets the requirement; with no
+    threat (a legacy roll) it does not hold. A join to a hand waits for the move's public hand (18c-2)."""
     contests = foundation["contests"]
     prizes = foundation["layout"]["contests"]
     kinds = set(foundation["palette"]) | set(foundation["palette_extra"])
@@ -121,10 +122,21 @@ def joins_of(row: dict, foundation: dict, scale: str, threat: dict | None = None
             if ruin["family"] in families:
                 out.append(dict(base, ruin_source=ruin["id"]))
         elif j.get("threat"):
-            if threat is None:
-                out.append(dict(base, pending=dict(j["threat"])))
-            # build item 18c judges a rolled threat against the requirement here
+            import design_threat as dth
+            if threat is not None and threat["visibility"] in dth.PUBLIC_VISIBILITY and threat_holds(j["threat"], threat):
+                out.append(dict(base, threat=dict(j["threat"])))
     return out
+
+
+def threat_holds(req: dict, threat: dict) -> bool:
+    """A world state's requirement on the threat, judged on the rolled threat."""
+    if req.get("villain"):
+        return True
+    if req.get("family"):
+        return threat["family"] == f"family_{req['family']}"
+    if req.get("creature"):
+        return threat["creature_type"] == req["creature"]
+    return False            # a hand: the move's hand comes with 18c-2
 
 
 def destroyed_role(foundation: dict) -> str | None:
@@ -186,8 +198,8 @@ def roll(R, dials: dict, foundation: dict) -> dict:
     taboo = "scar_new_taboo" in scars
     hints = {c["id"]: {k: (contest_rows[c["id"]]["roles"].get(k) or {}).get("hint") for k in c["roles"]} for c in contests}
     breaks: list[dict] = []
-    secret_joins: list[dict] = []
-    joinable = lambda r: not is_world_state(r) or bool(joins_of(r, foundation, scale))
+    threat = getattr(R, "threat", None)
+    joinable = lambda r: not is_world_state(r) or bool(joins_of(r, foundation, scale, threat))
     for n in range(1, int(sc["trope_breaks"]) + 1):
         drawn = {b["id"] for b in breaks}
         if n == 1 and taboo:
@@ -207,18 +219,12 @@ def roll(R, dials: dict, foundation: dict) -> dict:
         row = break_rows[rid]
         join = None
         if is_world_state(row):
-            options = joins_of(row, foundation, scale)
-            concrete = [j for j in options if "pending" not in j]
-            join = (concrete or options)[0]           # a rolled piece first, in the row's order; else the threat's requirement
+            join = joins_of(row, foundation, scale, threat)[0]       # the first that holds, in the row's order
             ties = {t["id"]: t for t in dt.rows(TIES)}
             errs = arb.slot_errors([("world_state_tie", ties[tie]["piece"]), ("world_state_tie", join["piece"])])
             if errs:
                 raise SystemExit(f"design_identity: {rid}: " + "; ".join(errs) + " — a table fault")
-            if join["piece"] in ("threat",) or "pending" in join:
-                # the threat is secret: the join lives in dm-only alone; the public record holds the world state and no
-                # join (the development tab, the 18b audit: a waiting join must not hint at the villain)
-                secret_joins.append({"break": rid, "join": join})
-                join = None
+            # every join is public (the 18c-1 audit): a join to the villain holds only when the villain is known
         merged = [{"with": other, "note": note} for other, note in (row.get("merges_with") or {}).items() if R.ctx.has(other)]
         for cid, change in (row.get("merge_role_hints") or {}).items():
             if cid in hints:
@@ -228,7 +234,7 @@ def roll(R, dials: dict, foundation: dict) -> dict:
             rec["join"] = join
         breaks.append(rec)
     out["trope_breaks"] = breaks
-    out["world_state_secret"] = secret_joins          # preroll_p1 hands it to the dm-only identity
+
     out["role_hints"] = hints
     break_ids = {b["id"] for b in breaks}
 
@@ -322,43 +328,18 @@ def roll_secret(R, dials: dict, foundation: dict, identity: dict, used_pairs: se
         used_pairs = dd.used_values(R.campaign, VILLAIN_PAIR_KEY) if R.campaign else set()
     main = foundation["contests"][0]
 
-    # 6. the secret
+    # 6. the secret (build item 18c: the chooser is no longer rolled; the villain always chose)
     archetype = R.table("secret_archetype", SECRETS + "archetype", secret=True)["row_id"]
-    chooser = R.table("secret_chooser", SECRETS + "chooser", secret=True)["row_id"]
-    chooser_role = None
-    if chooser == "chooser_contest_role":
-        seated = list(main["roles"])
-        chooser_role = seated[int(R.notation("secret_chooser.role", f"d{len(seated)}", secret=True)["raw"]) - 1]
+    chooser, chooser_role = "chooser_the_villain", None
     twist = R.table("secret_twist", SECRETS + "twist", secret=True)["row_id"]
     trail = R.table("secret_trail", SECRETS + "trail", secret=True)["row_id"]
 
-    # 7. the villain
-    visibility = R.table("bbeg_visibility", VILLAIN + "visibility", secret=True)["row_id"]
-    # a shape that is a public row's figure (the dark lord of the contest): the same figure exactly when the visibility
-    # is the one its row gives; then the shape is not rolled and the pole is that role's
-    rolled_public = {c["id"]: n for n, c in enumerate(foundation["contests"])}
-    figure, barred = None, set()
-    for row in dt.rows(VILLAIN + "villain_shape"):
-        for public_id, rule in (row.get("same_figure_with") or {}).items():
-            if public_id not in rolled_public:
-                continue
-            if visibility == rule["visibility"]:
-                figure = {"shape": row["id"], "contest": public_id, "role": rule["role"], "main": rolled_public[public_id] == 0}
-            else:
-                barred.add(row["id"])
-    if figure:
-        shape = R.forced("bbeg_shape", VILLAIN + "villain_shape", figure["shape"],
-                         "the villain is the public figure of a rolled contest", secret=True)["row_id"]
-    else:
-        shape = R.table("bbeg_shape", VILLAIN + "villain_shape", secret=True, exclude=barred)["row_id"]
-    spent = {o["id"] for o in dt.rows(VILLAIN + "origin") if dd.hashed(f"{shape}|{o['id']}") in used_pairs}
-    rec = R.table("bbeg_origin", VILLAIN + "origin", secret=True, also_used=spent)
-    origin = rec["row_id"]
-    rec["used_keys"] = {VILLAIN_PAIR_KEY: f"{shape}|{origin}"}       # approve writes it hashed; the pair never repeats
-    if chooser == "chooser_the_villain":
-        tie = R.forced("bbeg_tie", VILLAIN + "break_tie", "bond_caused_it", "the chooser is the villain", secret=True)["row_id"]
-    else:
-        tie = R.table("bbeg_tie", VILLAIN + "break_tie", secret=True)["row_id"]    # `bond_caused_it` requires that chooser
+    # 7. the villain: its visibility, shape and origin come from the threat (design_threat.py, rolled before the move);
+    #    the tie to the break is retired (the move is always the villain's; 18c-2 rolls the move's state)
+    threat = R.threat
+    visibility, shape, origin = threat["visibility"], threat["shape"], threat["origin"]
+    figure = threat.get("public_figure")
+    tie = None
     if figure and figure["main"]:            # the public figure carries its own role's pole
         side = figure["role"]
         rec = R._record("bbeg_pole", None)

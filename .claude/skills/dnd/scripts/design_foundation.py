@@ -13,7 +13,10 @@ docs/p1-foundation-rows.md §1-6 and §18; the owner's rulings on items 3-5 of t
    is the only exempt one;
 4. the contest (epic: a second one from another family, three roles, on another part of the spine); its prize fills a
    story slot (build item 18a: never the lifeline);
-5. the break: target (a role target names the role; the target fills a story slot), action (it must strike that
+   then the threat (build item 18c; `design_threat.roll`, every roll secret, dm-only): family, creature, power
+   source, visibility, shape, origin, goal, weakness, lair;
+5. the break: target (a role target names the role; the target fills a story slot; the goal's join, "the move
+   strikes a contest role", is recorded for the move of 18c-2 to honour), action (it must strike that
    target and fit its kind;
    a target + action pair another birth used waits as usage; an action that destroys a role never strikes the last
    seated role that can house the institution), scars (the new-land scar needs room in the cap and adds
@@ -79,7 +82,7 @@ def tiers_touched(level_band) -> list[str]:
     return [t["id"] for t in dt.rows(ref("escalation_tier")) if t["levels"][0] <= hi and t["levels"][1] >= lo]
 
 
-def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
+def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | None = None) -> dict:
     """Every step-1 draw through the Roller; returns the ids the build needs (the records are on R)."""
     palette_rows = rows_by_id("palette")
     scale, magic, era = dials["scale"], dials["magic"], dials.get("era")
@@ -185,6 +188,11 @@ def roll(R, dials: dict, used_pairs: set | None = None) -> dict:
         seat_claims(2, c2, roles2)
     main = rows_by_id("contest")[c1]
     main_roles = out["contests"][0]["roles"]
+
+    # 4b. the threat (G4: after the contest, before the move); secret, kept on R for dm-only
+    import design_threat as dth
+    threat = dth.roll(R, dials, spine, palette + out["palette_extra"], ruin_id, out["contests"], villain_pairs)
+    R.threat = threat
 
     # 5. the break
     remnant_kind = ruin["remnant_kind"]

@@ -335,6 +335,9 @@ REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.
                    "secrets.yaml#archetype", "secrets.yaml#chooser", "secrets.yaml#twist", "secrets.yaml#trail",
                    "antagonists.yaml#visibility", "antagonists.yaml#villain_shape", "antagonists.yaml#origin",
                    "antagonists.yaml#break_tie",
+                   # build item 18c: the threat
+                   "antagonists.yaml#villain_family", "antagonists.yaml#power_source", "antagonists.yaml#goal",
+                   "antagonists.yaml#weakness", "antagonists.yaml#lair_form", "antagonists.yaml#lair_where",
                    # build item 11: the part bags; the lexicon, the patterns and the word lists are stamped by naming_stamps()
                    "naming.yaml#family")
 

@@ -68,3 +68,7 @@ A world state is drawn only where one of its joins holds; the first join that ho
 
 - Q1, Q2: the readings stand. Q3: the enemy won also joins a ruin of the `fallen_kingdoms` family. Q4: in 18c the trading hands (the hired company, sea raiders and pirates, slavers, the guild of thieves and assassins) carry a moon fit, and things from beyond come from it. Q5: G4's order holds; the threat is rolled before the trope breaks and a join to it is judged on the rolled threat. Q6: a join to the threat leaves the public record entirely.
 - List 2: maps are forbidden, dreams are a place and the gods among mortals take the hook; night, the border, magic sold and the chosen are many (P9's) do not.
+
+## 18c-1 — the threat's fit lists
+
+The villain tables are secret: the threat's fit lists (family → creatures and reskin bases, the family weights, weakness → families, lair form → families, the lair's where, the goal's join) and their seven questions are in `docs/reports/item18c-fits-SPOILER.md`. The shape rows read for Part 18c section 5 are in `docs/reports/item18c-shapes-SPOILER.md`.

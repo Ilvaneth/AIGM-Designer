@@ -59,6 +59,12 @@ tables:
         conflicts_with: [break_no_direct_lies]
         hooks:
           - {phase: P5, must: "each candidate is an NPC with a secret that is not the one; the clue trail eliminates them in act order"}
+      - id: vis_known_unknown_where                # build item 18c
+        label: Known, but no one knows where
+        rule: "everyone knows who; nobody knows where it lies; the hunt for the hidden lair is the campaign"
+        hooks:
+          - {phase: P6, must: "the lair's site is hidden; the trail to it runs through the campaign"}
+    retired:                          # build item 18c: deleted, readable by id for legacy births, never rolled (faceless)
       - id: vis_process_or_institution
         label: A body or a working, not a face
         rule: "the antagonist acts as an institution or as a working someone set going (a rite, a market, a migration, a sickness); the one who set it going still steers it, and its officers are the faces"
@@ -74,14 +80,12 @@ tables:
       - {id: shape_collector, value: collector, label: The collector, rule: "gathers what was scattered (relics, lands, oaths, people) because the whole, once together again, would mend a harm everyone has learned to live with; will not stop one short", hooks: [{phase: P7, must: "the metric is the collection; portents are acquisitions"}]}
       - {id: shape_heir, value: heir, label: The heir, rule: "owed something by the history and taking it", hooks: [{phase: P2, must: "the inheritance is an event's divergence"}]}
       - {id: shape_peacemaker, value: peacemaker, label: The peacemaker, rule: "keeps a peace that buries a crime and will bury anyone who digs", hooks: [{phase: P2, must: "the treaty event's as-happened layer"}]}
-      - {id: shape_institution, value: institution, label: The institution, rule: "a body with officers, steered by the one who founded or captured it; it outlives any officer the party removes", conflicts_with: [vis_mystery_among_candidates, origin_taken_by_phenomenon], hooks: [{phase: P4, must: "the faction is the BBEG; the steering person is in dm-only"}]}
       - {id: shape_rival, value: rival, label: The rival, rule: "wants what the party wants, for reasons as good", hooks: [{phase: P9, must: "one PC's mission collides with it"}]}
       - {id: shape_parent, value: parent, label: The parent or teacher, rule: "made someone in the party or the world, and wants it back", hooks: [{phase: P9, must: "a socket binds a PC to them"}]}
       - {id: shape_convert, value: convert, label: The convert, rule: "was on the world's side once and saw something", hooks: [{phase: P5, must: "a former ally in the roster remembers them kindly"}]}
       - {id: shape_survivor, value: survivor, label: The survivor, rule: "lived through the disaster and will not let it happen again, at any price", hooks: [{phase: P2, must: "the disaster is a dated event with a witness list that includes them"}]}
-      - {id: shape_process, value: process, label: The tender, rule: "set a working going (a rite, a market, a migration, a sickness) and keeps feeding it, because stopping it now would cost more than finishing", hooks: [{phase: P4, must: "the working is a faction operation or a signature_; the tender is a person with a dossier"}]}
       - {id: shape_beloved, value: beloved, label: The beloved, rule: "loved by the people; moving against them costs the party the people", conflicts_with: [vis_behind_visible_front], hooks: [{phase: P8, must: "the primer speaks of them warmly"}]}
-      - {id: shape_stranger, value: stranger, label: The stranger from outside, rule: "from beyond the map, come for what their own land lost here, was promised here or is owed from here; at home they are in the right", conflicts_with: [vis_known_untouchable, origin_made_by_institution, origin_ambition_for_a_seat], hooks: [{phase: P3, must: "an inset region or the edge of the map is theirs"}]}
+      - {id: shape_stranger, value: stranger, label: The stranger from outside, rule: "from beyond the map, come for what their own land lost here, was promised here or is owed from here; at home they are in the right", conflicts_with: [vis_known_untouchable, origin_ambition_for_a_seat], hooks: [{phase: P3, must: "an inset region or the edge of the map is theirs"}]}
       - {id: shape_warden, value: warden, label: The warden, rule: "guards the land against something real and has decided the land may be trusted neither with the truth nor with its freedom", hooks: [{phase: P4, must: "the BBEG's faction gives a real protection the party will miss when it is gone"}]}
       - {id: shape_champion, value: champion, label: The champion, rule: "fights for a people or a cause that was truly wronged and has stopped counting what the fight costs anyone else", hooks: [{phase: P5, must: "the wronged are in the demographic table; one of them disowns the champion"}]}
       - {id: shape_builder, value: builder, label: The builder, rule: "is making something meant to outlast everyone (a wall, a city, a line, a peace) and spends lives on it as material", hooks: [{phase: P3, must: "the work is a landmark that grows with the front's steps"}]}
@@ -91,6 +95,9 @@ tables:
       - {id: shape_secretly_evil_ruler, value: secretly_evil_ruler, label: The ruler with a hidden purpose, rule: "holds the seat openly and keeps what it is for hidden; believes the realm must be spent for something greater, and rules well until the day it is", conflicts_with: [vis_known_untouchable], hooks: [{phase: P4, must: "the ruler's faction is the leading faction; its public operations are sound, its hidden one is the front"}]}
       - {id: shape_outlaw_lord, value: outlaw_lord, label: The lord of the lawless, rule: "rules what the realm abandoned (a sea, a quarter, a road, a people nobody would defend); built the only order those people have, and will burn the realm before handing it back", hooks: [{phase: P4, must: "the BBEG's faction gives its own people a real order the realm never did; one NPC owes it their life"}]}
       - {id: shape_bargainer, value: bargainer, label: The bargainer, rule: "gives people what they ask for at a cost they agreed to; holds that no one is wronged who chose, and collects without mercy", hooks: [{phase: P5, must: "three NPCs have struck a bargain with them: one glad of it, one ruined, one about to be collected from"}]}
+    retired:                          # build item 18c: deleted, readable by id for legacy births, never rolled (an institution is a hand, a working a verb)
+      - {id: shape_institution, value: institution, label: The institution, rule: "a body with officers, steered by the one who founded or captured it; it outlives any officer the party removes", conflicts_with: [vis_mystery_among_candidates], hooks: [{phase: P4, must: "the faction is the BBEG; the steering person is in dm-only"}]}
+      - {id: shape_process, value: process, label: The tender, rule: "set a working going (a rite, a market, a migration, a sickness) and keeps feeding it, because stopping it now would cost more than finishing", hooks: [{phase: P4, must: "the working is a faction operation or a signature_; the tender is a person with a dossier"}]}
 
   origin:
     roll: {avoid_used: false}
@@ -100,27 +107,145 @@ tables:
       - {id: origin_bargain, value: bargain, label: A bargain with a power, hooks: [{phase: P2, must: "the power is a rank_power god or a plane's keeper"}]}
       - {id: origin_loss, value: loss, label: A loss at a dated event, hooks: [{phase: P2, must: "the loss is on the witness list"}]}
       - {id: origin_inheritance, value: inheritance, label: An inheritance, hooks: [{phase: P4, must: "the inherited thing is an asset"}]}
-      - {id: origin_taken_by_phenomenon, value: taken_by_phenomenon, label: The phenomenon took them, hooks: [{phase: P1, must: "the signature phenomenon's rule is what took them: its sign is on them and its limit is their weakness"}]}
       - {id: origin_conversion, value: conversion, label: A conversion, hooks: [{phase: P2, must: "the converting god or doctrine is in the pantheon or a cult"}]}
       - {id: origin_ambition_for_a_seat, value: ambition_for_a_seat, label: An ambition for a seat, conflicts_with: [break_rule_by_lottery], hooks: [{phase: P4, must: "the seat belongs to the leading faction; its access chain is the way they climbed"}]}
       - {id: origin_wrong_done, value: wrong_done, label: A wrong done to them, hooks: [{phase: P5, must: "the wrongdoer is in the roster or the history"}]}
-      - {id: origin_made_by_institution, value: made_by_institution, label: Made by the institution, hooks: [{phase: P1, must: "the signature institution raised or shaped them"}]}
-      - {id: origin_awakened_ancient, value: awakened_ancient, label: Awakened from an older age, conflicts_with: [bond_product_of_it], hooks: [{phase: P2, must: "what they were is an event of the history's deep layer; what woke them is a dated act within living memory, done by someone alive"}]}
-      - {id: origin_refused_death, value: refused_death, label: They would not die, conflicts_with: [shape_institution], hooks: [{phase: P2, must: "the day they should have died is a dated event; what keeps them is named, with what it costs others"}]}
+      - {id: origin_awakened_ancient, value: awakened_ancient, label: Awakened from an older age, hooks: [{phase: P2, must: "what they were is an event of the history's deep layer; what woke them is a dated act within living memory, done by someone alive"}]}
+      - {id: origin_refused_death, value: refused_death, label: They would not die, hooks: [{phase: P2, must: "the day they should have died is a dated event; what keeps them is named, with what it costs others"}]}
       - {id: origin_cursed, value: cursed, label: A curse was laid on them, hooks: [{phase: P2, must: "who laid the curse, for what wrong, and what would lift it are written; the one who laid it is in the history or the roster"}]}
-      - {id: origin_changed_from_outside, value: changed_from_outside, label: Something from outside changed them, conflicts_with: [shape_institution], hooks: [{phase: P6, must: "they went to it, or someone brought them to it: a dated act by a person in the history or the roster; the place where it happened is a site, and what changed them left more than one mark there"}]}
+      - {id: origin_changed_from_outside, value: changed_from_outside, label: Something from outside changed them, hooks: [{phase: P6, must: "they went to it, or someone brought them to it: a dated act by a person in the history or the roster; the place where it happened is a site, and what changed them left more than one mark there"}]}
+      - {id: origin_forbidden_knowledge, value: forbidden_knowledge, label: Forbidden knowledge, hooks: [{phase: P2, must: "the knowledge it learned has a source in the history: a book, a ruin, a voice"}]}   # build item 18c
+    retired:                          # build item 18c: deleted, readable by id for legacy births, never rolled (texture made the villain)
+      - {id: origin_taken_by_phenomenon, value: taken_by_phenomenon, label: The phenomenon took them, hooks: [{phase: P1, must: "the signature phenomenon's rule is what took them: its sign is on them and its limit is their weakness"}]}
+      - {id: origin_made_by_institution, value: made_by_institution, label: Made by the institution, hooks: [{phase: P1, must: "the signature institution raised or shaped them"}]}
 
   break_tie:
     roll: {avoid_used: false}
     notation: d6
     note: "the villain's tie to the break (plan item 25 step 2 #7; rolled secretly in P1 from build item 10 on). The list is public, the roll is secret. `bond_caused_it` stands exactly when the secret's chooser is the villain (secrets.yaml#chooser): it requires that chooser, and that chooser bars the other five. A tie that needs the break to have happened cannot stand with a break still coming."
     rows:
+    retired:                          # build item 18c: deleted, readable by id for legacy births, never rolled (the move is always the villain's; 18c-2 rolls its state)
       - {id: bond_caused_it, label: Caused it, rule: "the villain chose the break and did it", requires: {any_of: [chooser_the_villain]}, hooks: [{phase: P7, must: "the confrontation turns on why they did it; the win ending answers that reason"}]}
       - {id: bond_exploits_it, label: Exploits it, rule: "the villain did not cause the break and grows on it; every day it lasts is worth more to them", hooks: [{phase: P4, must: "one front step is a gain that exists only because of the break"}]}
       - {id: bond_wants_to_complete, label: Wants to complete it, rule: "the break stopped short; the villain means to carry it to its end", hooks: [{phase: P7, must: "the doom is the break completed"}]}
       - {id: bond_wants_to_reverse, label: Wants to reverse it at a terrible cost, rule: "the villain will undo the break and has accepted what the undoing takes from others", conflicts_with: [time_coming], hooks: [{phase: P7, must: "the doom is the undoing; its cost falls on people the party knows"}]}
       - {id: bond_failed_to_stop, label: Tried to stop it and failed, rule: "the villain fought the break, lost, and now turns on those who stood by", conflicts_with: [time_coming], hooks: [{phase: P5, must: "one NPC stood by on the day and knows it"}]}
-      - {id: bond_product_of_it, label: Is its product, rule: "the break made the villain what they are; they were born with it", conflicts_with: [time_coming, origin_inheritance, origin_ambition_for_a_seat, origin_made_by_institution], hooks: [{phase: P2, must: "the villain's first day is the break's dated event"}]}
+      - {id: bond_product_of_it, label: Is its product, rule: "the break made the villain what they are; they were born with it", conflicts_with: [time_coming, origin_inheritance, origin_ambition_for_a_seat], hooks: [{phase: P2, must: "the villain's first day is the break's dated event"}]}
+
+
+  # ── the threat (build item 18c; docs/p1-build-18-rows.md sections 4 and 8; docs/p1-threat-first.md G1, G4, G8) ──
+  # Every roll secret, in design_threat.py's order: family, creature, power source, visibility, shape, origin, goal,
+  # weakness, the lair's form and where. The rows' hooks come with build item 18d.
+
+  villain_family:
+    roll: {secret: true, avoid_used: false, row_wait: 3, labels: [P1.threat.family], note: "a family the last three births drew waits (never the same twice in a row); `creatures` are SRD indexes, `reskin` the bases where none fits the band (sites.yaml's reskin rule); `power_source` above short; the two dragon families carry no weight, so they never pass their share"}
+    rows:
+      - {id: family_mage, label: A mage, creature_type: humanoid, power_source: true, creatures: [mage, archmage], reskin: [archmage], weight_by: [{when: {any_of: [ruin_age_of_mages, ruin_sorcerer_kings, ruin_mage_war, ruin_failed_experiment]}, x: 2}], text: {name: "a mage"}}
+      - {id: family_ruler, label: A ruler or warlord, creature_type: humanoid, power_source: true, creatures: [knight, veteran, gladiator], reskin: [knight], weight_by: [{when: {any_of: [ruin_empire, ruin_dark_lords_fall]}, x: 2}], text: {name: "a ruler or a warlord"}}
+      - {id: family_shadow, label: A shadow (spymaster or guild master), creature_type: humanoid, power_source: true, creatures: [assassin, spy, bandit-captain], reskin: [assassin], text: {name: "a spymaster or a guild master"}}
+      - {id: family_dark_priest, label: A dark priest or corrupted druid, creature_type: humanoid, power_source: true, creatures: [priest, druid, cult-fanatic], reskin: [priest], text: {name: "a dark priest or a corrupted druid"}}
+      - {id: family_undead, label: The undead, creature_type: undead, creatures: [wight, ghost, mummy, wraith, vampire-spawn, vampire-vampire, mummy-lord, lich], reskin: [lich], weight_by: [{when: {any_of: [ruin_kingdom_of_the_dead, ruin_plague]}, x: 2}, {when: {dial: {content_mix: [horror]}}, x: 2}], text: {name: "an undead lord"}}
+      - {id: family_chromatic_dragon, label: A chromatic dragon, creature_type: dragon, creatures: [young-black-dragon, young-blue-dragon, young-green-dragon, young-red-dragon, young-white-dragon, adult-black-dragon, adult-blue-dragon, adult-green-dragon, adult-red-dragon, adult-white-dragon, ancient-black-dragon, ancient-blue-dragon, ancient-green-dragon, ancient-red-dragon, ancient-white-dragon], text: {name: "a chromatic dragon"}}
+      - {id: family_metallic_dragon, label: A metallic dragon gone wrong, creature_type: dragon, creatures: [young-brass-dragon, young-bronze-dragon, young-copper-dragon, young-gold-dragon, young-silver-dragon, adult-brass-dragon, adult-bronze-dragon, adult-copper-dragon, adult-gold-dragon, adult-silver-dragon, ancient-brass-dragon, ancient-bronze-dragon, ancient-copper-dragon, ancient-gold-dragon, ancient-silver-dragon], text: {name: "a metallic dragon gone wrong"}}
+      - {id: family_devil, label: A devil (contracts and order), creature_type: fiend, creatures: [bearded-devil, barbed-devil, chain-devil, bone-devil, erinyes, horned-devil, ice-devil, pit-fiend], reskin: [pit-fiend], weight_by: [{when: {any_of: [ruin_devils_bargain]}, x: 2}, {when: {dial: {content_mix: [horror]}}, x: 2}], text: {name: "a devil"}}
+      - {id: family_demon, label: A demon (chaos), creature_type: fiend, creatures: [vrock, hezrou, glabrezu, nalfeshnee, marilith, balor], reskin: [balor], weight_by: [{when: {any_of: [ruin_demon_gate]}, x: 2}, {when: {dial: {content_mix: [horror]}}, x: 2}], text: {name: "a demon"}}
+      - {id: family_deceiver_fiend, label: A deceiver fiend, creature_type: fiend, creatures: [succubus-incubus, night-hag, rakshasa], reskin: [rakshasa], weight_by: [{when: {dial: {content_mix: [horror]}}, x: 2}], text: {name: "a deceiver fiend"}}
+      - {id: family_from_beyond, label: A thing from beyond, creature_type: aberration, creatures: [cloaker, aboleth], reskin: [aboleth], weight_by: [{when: {any_of: [ruin_deep_minds]}, x: 2}, {when: {dial: {content_mix: [horror]}}, x: 2}], text: {name: "a mind from beyond"}}
+      - {id: family_giant, label: A giant, creature_type: giant, creatures: [hill-giant, stone-giant, frost-giant, fire-giant, cloud-giant, storm-giant], reskin: [storm-giant], weight_by: [{when: {any_of: [ruin_giants_land, ruin_giants_and_dragons]}, x: 2}], text: {name: "a giant lord"}}
+      - {id: family_hag_fey, label: A hag coven or a fey lord, creature_type: fey, creatures: [sea-hag, green-hag], reskin: [green-hag], weight_by: [{when: {any_of: [ruin_elven_withdrawal, ruin_sleeping_realm]}, x: 2}], text: {name: "a hag coven or a fey lord"}}
+      - {id: family_monstrous_mind, label: A monstrous mind (medusa, lamia, naga, sphinx), creature_type: monstrosity, creatures: [lamia, medusa, spirit-naga, guardian-naga, gynosphinx, androsphinx], reskin: [androsphinx], text: {name: "a monstrous mind"}}
+      - {id: family_genie_elemental, label: A genie or an elemental lord, creature_type: elemental, requires: {dial: {scale: [standard, epic]}}, creatures: [djinni, efreeti], reskin: [efreeti, djinni], weight_by: [{when: {any_of: [ruin_bound_elements]}, x: 2}], text: {name: "a genie or an elemental lord"}}
+      - {id: family_lycanthrope, label: A lycanthrope, creature_type: humanoid, power_source: true, requires: {dial: {scale: [short, standard]}}, creatures: [wererat-hybrid, werewolf-hybrid, wereboar-hybrid, weretiger-hybrid, werebear-hybrid], reskin: [werebear-hybrid], weight_by: [{when: {any_of: [ruin_beast_blood]}, x: 2}], text: {name: "a lycanthrope"}}
+      - {id: family_fallen_celestial, label: A fallen celestial, creature_type: celestial, requires: {dial: {scale: [standard, epic]}}, creatures: [deva, planetar, solar], reskin: [solar], weight_by: [{when: {any_of: [ruin_celestial_war]}, x: 2}], text: {name: "a fallen celestial"}}
+      - {id: family_sea_titan, label: A sea titan, creature_type: monstrosity, requires: {dial: {scale: [epic]}}, creatures: [dragon-turtle, kraken], reskin: [kraken], weight_by: [{when: {any_of: [ruin_great_flood, ruin_water_kingdom]}, x: 2}], text: {name: "a sea titan"}}
+      - {id: family_god, label: A god (an avatar, a fallen or an imprisoned god), creature_type: god, requires: {dial: {scale: [standard, epic]}}, creatures: [], reskin: [deva, planetar, solar], avatar: true, weaknesses: [weak_source_cut, weak_rite_binds_again, weak_true_name, weak_sacred_relic, weak_prophecy, weak_vow_or_bargain, weak_place_bound], weight_by: [{when: {any_of: [ruin_dead_god, ruin_gods_quarrel, ruin_departed_god, ruin_imprisoned_god, ruin_failed_apotheosis]}, x: 2}], text: {name: "a god: an avatar, a fallen or an imprisoned god"}}
+
+  power_source:
+    roll: {secret: true, avoid_used: false, labels: [P1.threat.power_source], note: "a humanoid family above short draws one; the weakness may bind to it"}
+    rows:
+      - {id: power_artifact, label: An artifact, text: {name: "an artifact it carries or wields"}}
+      - {id: power_pact, label: A pact with a power, text: {name: "a pact with a power"}}
+      - {id: power_curse, label: A curse it bears, text: {name: "a curse it bears and draws strength from"}}
+      - {id: power_serves, label: What it serves (a god, a fiend, a patron), text: {name: "what it serves: a god, a fiend or a patron"}}
+      - {id: power_stolen_essence, label: A stolen essence, text: {name: "an essence it stole"}}
+
+  goal:
+    roll: {secret: true, avoid_used: true, labels: [P1.threat.goal], note: "the DMG's eight objectives, each bound to a story piece (`pieces`); a goal whose pieces hold the main contest's prize weighs x2; the threat joins the contest by the prize, by a role goal (`role_goal`), or through the move (18c-2)"}
+    rows:
+      - {id: goal_take_throne, label: Take the throne, drive: power, pieces: [heart], text: {name: "to take the throne"}}
+      - {id: goal_power_behind_throne, label: Become the power behind the throne, drive: power, pieces: [heart], text: {name: "to become the power behind the throne"}}
+      - {id: goal_conquer_land, label: Conquer the land, drive: power, pieces: [disputed_land], text: {name: "to conquer the land"}}
+      - {id: goal_side_as_weapon, label: Turn a side into its weapon, drive: power, pieces: [role], role_goal: true, text: {name: "to turn a side into its weapon"}}
+      - {id: goal_control_key_place, label: Control the key place and all that passes, drive: wealth, pieces: [key_place], text: {name: "to control the key place and all that passes"}}
+      - {id: goal_plunder_ruin, label: "Plunder the ruin's treasure", drive: wealth, pieces: [remnant], text: {name: "to plunder the ruin's treasure"}}
+      - {id: goal_take_artifact, label: "Take the remnant's artifact", drive: magic, pieces: [remnant], text: {name: "to take the remnant's artifact"}}
+      - {id: goal_open_gate, label: Open the gate at the thin place, drive: magic, pieces: [thin_place], text: {name: "to open the gate at the thin place"}}
+      - {id: goal_build_device, label: Build a great device or construct, drive: magic, pieces: [new], text: {name: "to build a great device or construct"}}
+      - {id: goal_patron_will, label: "Carry out a patron's will", drive: magic, pieces: [thin_place, new], text: {name: "to carry out a patron's will"}}
+      - {id: goal_live_forever, label: Live forever through the remnant, drive: immortality, pieces: [remnant], text: {name: "to live forever through the remnant"}}
+      - {id: goal_ascend, label: Ascend to godhood, drive: immortality, pieces: [thin_place, remnant], text: {name: "to ascend to godhood"}}
+      - {id: goal_destroy_bloodline, label: Destroy a bloodline or a side, drive: mayhem, pieces: [role], role_goal: true, text: {name: "to destroy a bloodline or a side"}}
+      - {id: goal_overthrow_order, label: Overthrow the order and let it burn, drive: mayhem, pieces: [heart], text: {name: "to overthrow the order and let it burn"}}
+      - {id: goal_curse_land, label: Lay a curse or a plague on the land, drive: mayhem, pieces: [heart, disputed_land], text: {name: "to lay a curse or a plague on the land"}}
+      - {id: goal_prophecy, label: Fulfil an apocalyptic prophecy, drive: mayhem, pieces: [new], text: {name: "to fulfil an apocalyptic prophecy"}}
+      - {id: goal_bring_back_loved, label: Bring back a dead loved one, drive: passion, pieces: [new, thin_place], text: {name: "to bring back a dead loved one"}}
+      - {id: goal_keep_loved_alive, label: Keep a dying loved one alive, drive: passion, pieces: [new], text: {name: "to keep a dying loved one alive"}}
+      - {id: goal_avenge_wrong, label: Avenge an old wrong on a side, drive: revenge, pieces: [role], role_goal: true, text: {name: "to avenge an old wrong on a side"}}
+      - {id: goal_take_back_stolen, label: Take back what was stolen and punish the thief, drive: revenge, pieces: [remnant, role], text: {name: "to take back what was stolen and punish the thief"}}
+
+  weakness:
+    roll: {secret: true, avoid_used: true, labels: [P1.threat.weakness], note: "`fits` names the families a row fits (absent: every family but one whose own `weaknesses` list leaves it out); the third clue stage reveals it"}
+    rows:
+      - {id: weak_hidden_object, label: A hidden object holds its life, text: {name: "a hidden object holds its life"}}
+      - {id: weak_weapon_or_metal, label: A weapon or a metal it cannot bear, text: {name: "a weapon or a metal it cannot bear"}}
+      - {id: weak_true_name, label: Its true name, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_god], text: {name: "its true name"}}
+      - {id: weak_loved_person, label: A person it loves, text: {name: "a person it loves"}}
+      - {id: weak_vow_or_bargain, label: A vow or a bargain it must keep, text: {name: "a vow or a bargain it must keep"}}
+      - {id: weak_place_bound, label: A place it cannot leave or must return to, text: {name: "a place it cannot leave or must return to"}}
+      - {id: weak_vulnerable_time, label: A time it is vulnerable, text: {name: "a time it is vulnerable: a night, an eclipse, a season"}}
+      - {id: weak_old_rival, label: An old rival who knows how, text: {name: "an old rival who knows how"}}
+      - {id: weak_plan_flaw, label: A flaw in its plan, text: {name: "a flaw in its plan: the device's or the rite's missing piece"}}
+      - {id: weak_prophecy, label: A prophecy or riddle that names its end, text: {name: "a prophecy or a riddle that names its end"}}
+      - {id: weak_enemy_forgiveness, label: "An ancient enemy's forgiveness", text: {name: "an ancient enemy's forgiveness"}}
+      - {id: weak_source_cut, label: Its source can be cut, text: {name: "its source can be cut: its hand, its cult, its thin place"}}
+      - {id: weak_cannot_refuse_challenge, label: It cannot refuse a challenge, text: {name: "it cannot refuse a challenge"}}
+      - {id: weak_secret_turns_followers, label: Its secret turns its own followers, text: {name: "its secret, made public, turns its own followers"}}
+      - {id: weak_law_of_nature, label: A law of its nature, fits: [family_undead, family_hag_fey], text: {name: "a law of its nature: sunlight, running water, an unfinished business, hospitality, an invitation, a given word"}}
+      - {id: weak_sacred_relic, label: A sacred relic or hallowed ground weakens it, fits: [family_undead, family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_fallen_celestial, family_god], text: {name: "a sacred relic or hallowed ground weakens it"}}
+      - {id: weak_drawn_from_lair, label: Drawn from its lair it is weaker, fits: [family_chromatic_dragon, family_metallic_dragon, family_undead, family_from_beyond, family_monstrous_mind, family_sea_titan, family_fallen_celestial, family_god], text: {name: "drawn from its lair it is weaker"}}
+      - {id: weak_rite_binds_again, label: The rite that bound it once can bind it again, fits: [family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_from_beyond, family_sea_titan, family_god], text: {name: "the rite that bound it once can bind it again"}}
+      - {id: weak_army_by_compulsion, label: Its army serves by compulsion, text: {name: "its army serves by compulsion and leaves when the compulsion breaks"}}
+
+  lair_form:
+    roll: {secret: true, avoid_used: false, labels: [P1.threat.lair_form], note: "`fits` names the families (every family at least five); `built`: a place the threat can have built; `mobile`: a lair on the move (and only those are); `dragon_colours`: a dragon of that colour weighs the form x3"}
+    rows:
+      - {id: lair_castle, label: A castle or palace, fits: [family_ruler, family_undead, family_devil, family_mage, family_metallic_dragon, family_shadow, family_deceiver_fiend, family_hag_fey, family_genie_elemental, family_god], dragon_colours: [gold, silver], built: true, text: {name: "a castle or a palace"}}
+      - {id: lair_tower, label: A tower, fits: [family_mage, family_undead, family_fallen_celestial, family_ruler, family_devil], built: true, text: {name: "a tower"}}
+      - {id: lair_tomb, label: A tomb or crypt, fits: [family_undead, family_god, family_monstrous_mind, family_dark_priest], text: {name: "a tomb or a crypt"}}
+      - {id: lair_temple, label: A temple, fits: [family_dark_priest, family_god, family_demon, family_monstrous_mind, family_fallen_celestial, family_devil, family_deceiver_fiend, family_sea_titan], built: true, text: {name: "a temple"}}
+      - {id: lair_cavern, label: A cavern or underground hall, fits: [family_chromatic_dragon, family_metallic_dragon, family_giant, family_from_beyond, family_monstrous_mind, family_lycanthrope, family_demon, family_hag_fey, family_sea_titan], dragon_colours: [red, white, black, green, blue, bronze, brass, copper], text: {name: "a cavern or an underground hall"}}
+      - {id: lair_ruined_fortress, label: A ruined fortress, fits: [family_ruler, family_undead, family_giant, family_lycanthrope, family_fallen_celestial, family_monstrous_mind, family_chromatic_dragon, family_metallic_dragon, family_shadow, family_demon, family_sea_titan], dragon_colours: [red, green, blue, brass, copper], text: {name: "a ruined fortress"}}
+      - {id: lair_sunken_temple, label: A sunken temple, fits: [family_from_beyond, family_sea_titan, family_monstrous_mind, family_chromatic_dragon, family_metallic_dragon, family_dark_priest, family_genie_elemental], dragon_colours: [black, bronze], built: true, text: {name: "a sunken temple under the water"}}
+      - {id: lair_volcano, label: A volcano or fire pit, fits: [family_chromatic_dragon, family_genie_elemental, family_giant, family_demon], dragon_colours: [red], text: {name: "a volcano or a fire pit"}}
+      - {id: lair_ice_fortress, label: An ice fortress or glacier cave, fits: [family_chromatic_dragon, family_giant], dragon_colours: [white], built: true, text: {name: "an ice fortress or a glacier cave"}}
+      - {id: lair_swamp, label: A swamp lair, fits: [family_chromatic_dragon, family_hag_fey, family_lycanthrope, family_dark_priest, family_deceiver_fiend], dragon_colours: [black], text: {name: "a swamp lair"}}
+      - {id: lair_grove, label: A grove or living wood, fits: [family_hag_fey, family_dark_priest, family_chromatic_dragon, family_lycanthrope], dragon_colours: [green], text: {name: "a grove or a living wood"}}
+      - {id: lair_hidden_quarter, label: A hidden quarter or guildhall in a city, fits: [family_shadow, family_deceiver_fiend, family_lycanthrope, family_mage, family_devil, family_from_beyond], built: true, text: {name: "a hidden quarter or a guildhall in a city"}}
+      - {id: lair_demiplane, label: A demiplane or planar pocket, fits: [family_undead, family_devil, family_demon, family_deceiver_fiend, family_hag_fey, family_fallen_celestial, family_god, family_mage, family_from_beyond, family_genie_elemental], text: {name: "a demiplane or a planar pocket"}}
+      - {id: lair_flying_citadel, label: A flying citadel or cloud castle, fits: [family_giant, family_genie_elemental, family_chromatic_dragon, family_fallen_celestial, family_metallic_dragon, family_god], dragon_colours: [blue, gold, silver], mobile: true, built: true, text: {name: "a flying citadel or a cloud castle"}}
+      - {id: lair_ship, label: A ship or a fleet, fits: [family_ruler, family_sea_titan, family_shadow], mobile: true, text: {name: "a ship or a fleet"}}
+      - {id: lair_mines, label: Mines or deep workings, fits: [family_giant, family_from_beyond, family_mage, family_ruler, family_shadow], built: true, text: {name: "mines or deep workings"}}
+
+  lair_where:
+    roll: {secret: true, avoid_used: false, labels: [P1.threat.lair_where], note: "bound to the chain: the thin place only where one exists; on the move only with a mobile form, a place it built only with a form it can build"}
+    rows:
+      - {id: lairat_remnant, label: In the remnant, piece: remnant, text: {name: "in the ruin's remnant"}}
+      - {id: lairat_thin_place, label: At the thin place, piece: thin_place, requires: {any_of: [land_thin_place]}, text: {name: "at the thin place"}}
+      - {id: lairat_heart, label: Hidden under or inside the heart, piece: heart, text: {name: "hidden under or inside the heart"}}
+      - {id: lairat_key_place, label: At the key place, piece: key_place, text: {name: "at the key place"}}
+      - {id: lairat_far_end, label: At a far end, piece: end, text: {name: "at a far end"}}
+      - {id: lairat_built, label: A place it built, piece: new, text: {name: "a place it built"}}
+      - {id: lairat_on_the_move, label: On the move, piece: moving, text: {name: "on the move"}}
 
   bbeg_faction_archetype:
     note: "which archetype the BBEG's faction may have; none is barred (build item 16a)"

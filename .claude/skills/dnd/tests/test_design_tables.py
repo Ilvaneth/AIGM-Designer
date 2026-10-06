@@ -517,9 +517,9 @@ class Floors(unittest.TestCase):
         shapes = dt.rows("antagonists.yaml#villain_shape")
         self.assertGreaterEqual(len([s for s in shapes if not s.get("forbidden")]), 14)
         origins = dt.rows("antagonists.yaml#origin")
-        self.assertEqual(len(origins), 13)
+        self.assertEqual(len(origins), 12, "build item 18c: two retired, one added")
         self.assertFalse(any(r.get("forbidden") for r in shapes + origins), "build item 16a: every shape and origin can be drawn")
-        self.assertEqual(len(dt.rows("antagonists.yaml#break_tie")), 6)
+        self.assertEqual(len(dt.rows("antagonists.yaml#break_tie")), 0, "build item 18c: retired")
         bfa = {r["value"]: r for r in dt.rows("antagonists.yaml#bbeg_faction_archetype")}
         self.assertEqual(set(bfa), {a["value"] for a in dt.rows("factions.yaml#archetype")})
         self.assertFalse(any(r.get("forbidden") or r.get("allowed_via") for r in bfa.values()), "the religious villain faction is an ordinary row")

@@ -114,19 +114,18 @@ class ManySeeds(unittest.TestCase):
 
     def test_no_world_state_without_a_join(self):
         drawn = Counter()
+        import design_threat as dth
         for d, R, out, f, ident in self.runs:
-            secret = {s["break"]: s["join"] for s in ident["world_state_secret"]}
+            self.assertNotIn("world_state_secret", ident)
             for b in ident["trope_breaks"]:
                 if b["id"] not in WORLD:
                     self.assertNotIn("join", b)
                     continue
                 drawn[b["id"]] += 1
                 self.assertNotEqual(b["tie"], "tie_lifeline", "a world state is never tied to the lifeline")
-                # exactly one join: public on a rolled piece, or (to the threat) in dm-only alone, with no public trace
-                self.assertNotEqual("join" in b, b["id"] in secret)
-                if b["id"] in secret:
-                    self.assertIn("pending", secret[b["id"]], "the threat's requirement is kept in dm-only")
-                    continue
+                self.assertIn("join", b, "every world state's join is public (the 18c-1 audit)")
+                if b["join"]["piece"] == "threat":
+                    self.assertIn(R.threat["visibility"], dth.PUBLIC_VISIBILITY, "the villain itself is public")
                 self.assertTrue(arb.slot_accepts("world_state_tie", b["join"]["piece"]))
                 if b["id"] == "break_gods_among_mortals" and d["scale"] == "short":
                     self.assertEqual(b["join"]["piece"], "contest", "at short only a side at the gods' level")
@@ -134,6 +133,14 @@ class ManySeeds(unittest.TestCase):
                     self.assertIn(b["join"]["piece"], ("disputed_land", "role"))
         self.assertEqual(set(drawn), WORLD, "every world state is still drawn")
         type(self).drawn = drawn
+
+    @classmethod
+    def report(cls) -> str:
+        cls.setUpClass()
+        drawn = Counter(b["id"] for *_, ident in cls.runs for b in ident["trope_breaks"] if b["id"] in WORLD)
+        pieces = Counter((b["id"], b["join"]["piece"]) for *_, ident in cls.runs for b in ident["trope_breaks"] if b["id"] in WORLD)
+        return "\n".join([f"{SEEDS} seeds; births with a world state: {sum(1 for *_, i in cls.runs if any(b['id'] in WORLD for b in i['trope_breaks']))}"]
+                         + [f"  {k}: {v} ({', '.join(f'{p} {n}' for (r, p), n in sorted(pieces.items()) if r == k)})" for k, v in sorted(drawn.items())])
 
     def test_the_palette_counts_by_spine_at_every_scale(self):
         head = dt.roll_header("foundation.yaml#palette")["count_by_spine"]
@@ -186,14 +193,14 @@ class Births(unittest.TestCase):
             USED.unlink()
         self.guard.__exit__(None, None, None)
 
-    def test_the_dm_only_identity_holds_the_threat_joins(self):
+    def test_no_join_lives_in_dm_only(self):
+        """The 18c-1 audit: every world state's join is public; dm-only holds none."""
         log = json.loads((CAMPAIGNS / self.name / "design/dm-only/dice-log.json").read_text(encoding="utf-8"))
-        self.assertIn("world_states", log["identity"])
+        self.assertNotIn("world_states", log["identity"])
         public = dm.load(self.name)["identity"]
         self.assertNotIn("world_state_secret", public)
         self.assertNotIn("pending", json.dumps(public))
-        self.assertFalse([b for b in public["trope_breaks"] if (b.get("join") or {}).get("piece") in ("hidden", "threat")],
-                         "no trace of a join to the threat (the 18b audit)")
+        self.assertFalse([b for b in public["trope_breaks"] if (b.get("join") or {}).get("piece") == "hidden"])
 
     def test_a_legacy_birth_s_palette_loads(self):
         """A birth rolled before 18b drew 9 to 12 kinds at epic: it loads, its prompt and its card render."""
@@ -210,4 +217,7 @@ class Births(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    if "--report" in sys.argv:
+        print(ManySeeds.report())
+    else:
+        unittest.main()

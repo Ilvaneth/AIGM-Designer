@@ -114,8 +114,8 @@ class Counts(unittest.TestCase):
         self.assertGreaterEqual(len(rows("secrets.yaml#archetype")), 22)
         self.assertEqual(len(rows("secrets.yaml#twist")), 15)
         self.assertIn(len(rows("secrets.yaml#trail")), (9, 10, 11))
-        self.assertEqual(len(rows("secrets.yaml#chooser")), 6)
-        self.assertEqual(len(rows("antagonists.yaml#break_tie")), 6)
+        self.assertEqual(len(rows("secrets.yaml#chooser")), 0, "build item 18c: retired, the villain always chose")
+        self.assertEqual(len(rows("antagonists.yaml#break_tie")), 0, "build item 18c: retired, the move is the villain's")
         self.assertEqual(len(rows("antagonists.yaml#visibility")), 5)
         self.assertGreaterEqual(len(usable("antagonists.yaml#villain_shape")), 14)
         self.assertEqual(len(rows("antagonists.yaml#villain_shape")), len(usable("antagonists.yaml#villain_shape")), "no shape is barred (16a)")
@@ -218,30 +218,11 @@ class References(unittest.TestCase):
 
 class OneVillain(unittest.TestCase):
 
-    def test_the_tie_and_the_breaks_time(self):
-        """A tie that needs the break to have happened cannot stand with a break still coming."""
-        ties = {r["id"]: r for r in rows("antagonists.yaml#break_tie")}
-        need = {"bond_wants_to_reverse", "bond_failed_to_stop", "bond_product_of_it"}
-        self.assertEqual({k for k, r in ties.items() if "time_coming" in (r.get("conflicts_with") or [])}, need)
-        coming = arb.Context(rolled={"time_coming": False, "chooser_bargainer": True})
-        pool = {r["id"] for r in arb.arbitrate("antagonists.yaml#break_tie", rows("antagonists.yaml#break_tie"), coming, secret=True)["pool"]}
-        self.assertEqual(pool, {"bond_exploits_it", "bond_wants_to_complete"})
-
-    def test_the_chooser_is_the_villain_exactly_when_the_tie_is_caused_it(self):
-        """Written as data here; the roll is build item 10's."""
-        ref = "antagonists.yaml#break_tie"
-        for chooser in (r["id"] for r in rows("secrets.yaml#chooser")):
-            ctx = arb.Context(rolled={chooser: True, "time_just_now": False})
-            pool = {r["id"] for r in arb.arbitrate(ref, rows(ref), ctx, secret=True)["pool"]}
-            if chooser == "chooser_the_villain":
-                self.assertEqual(pool, {"bond_caused_it"})
-            else:
-                self.assertEqual(len(pool), 5)
-                self.assertNotIn("bond_caused_it", pool)
-        for tie in (r["id"] for r in rows(ref)):                       # and the other way round
-            ctx = arb.Context(rolled={tie: True})
-            pool = {r["id"] for r in arb.arbitrate("secrets.yaml#chooser", rows("secrets.yaml#chooser"), ctx, secret=True)["pool"]}
-            self.assertEqual("chooser_the_villain" in pool, tie == "bond_caused_it")
+    def test_the_tie_and_the_chooser_are_retired_and_readable(self):
+        """Build item 18c: the tie and the chooser leave the roll; their rows stay readable for legacy births."""
+        self.assertEqual(len(dt.retired("antagonists.yaml#break_tie")), 6)
+        self.assertEqual(len(dt.retired("secrets.yaml#chooser")), 6)
+        self.assertIsNotNone(dt.row("secrets.yaml#chooser", "chooser_the_villain"))
 
     def test_every_visibility_and_origin_leaves_shapes_to_draw(self):
         shapes = rows("antagonists.yaml#villain_shape")
@@ -257,7 +238,6 @@ class OneVillain(unittest.TestCase):
     def test_the_conflict_kinds_are_all_present(self):
         inside = pairs_between(VILLAIN, lambda o: TABLE_OF.get(o) in VILLAIN)
         self.assertTrue(inside and pairs_between(VILLAIN, is_public) and pairs_between(SECRET, is_public))
-        self.assertEqual(len(pairs_between(("antagonists.yaml#break_tie",), lambda o: o == "time_coming")), 3)
 
 
 class ManySeeds(unittest.TestCase):
@@ -329,8 +309,8 @@ class ManySeeds(unittest.TestCase):
 
     def test_every_secret_piece_is_rolled_secretly(self):
         for p1, p4 in self.runs[:45]:
-            for label in ("secret_archetype", "secret_chooser", "secret_twist", "secret_trail",
-                          "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_tie", "bbeg_pole"):
+            for label in ("secret_archetype", "secret_twist", "secret_trail",          # build item 18c: no chooser, no tie
+                          "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_pole"):
                 self.assertIn(p1.by_label[label], p1.secret)
                 self.assertNotIn(label, p4.by_label, "P4 no longer rolls what P1 rolled")
 

@@ -26,8 +26,9 @@ import designer  # noqa: E402
 
 A, V = "secrets.yaml#", "antagonists.yaml#"
 SEEDS = 1800
-P1_SECRET = ("secret_archetype", "secret_chooser", "secret_twist", "secret_trail",
-             "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_tie", "bbeg_pole")
+# build item 18c: the chooser and the tie are no longer rolled; the threat's rolls are secret too
+P1_SECRET = ("secret_archetype", "secret_twist", "secret_trail", "bbeg_visibility", "bbeg_shape", "bbeg_origin", "bbeg_pole",
+             "threat.family", "threat.goal", "threat.weakness", "threat.lair_form", "threat.lair_where")
 MOVED = ("bbeg_visibility", "bbeg_shape", "bbeg_origin")
 SECRET_IDS = dt.secret_row_ids()
 
@@ -72,31 +73,12 @@ class ManySeeds(unittest.TestCase):
         self.assertEqual(bad, 0, f"{bad} seed(s) rolled a conflicting set")
 
     def test_the_chooser_and_the_tie(self):
-        """The chooser is the villain exactly when the tie is `bond_caused_it`, in every birth; forced, not rolled."""
-        wrong = villain = role_wrong = with_role = 0
+        """Build item 18c: the villain always chose; neither the chooser nor the tie is rolled."""
         for d, p1, _ in self.runs:
             s, v = p1.identity_secret["secret"], p1.identity_secret["villain"]
-            is_villain = s["chooser"] == "chooser_the_villain"
-            villain += is_villain
-            wrong += is_villain != (v["tie"] == "bond_caused_it")
-            wrong += is_villain != (p1.by_label["bbeg_tie"]["notation"] == "forced")
-            has_role = "secret_chooser.role" in p1.by_label
-            with_role += has_role
-            role_wrong += has_role != (s["chooser"] == "chooser_contest_role")
-            role_wrong += (s["chooser_role"] is not None) != has_role
-            role_wrong += s["chooser_role"] is not None and s["chooser_role"] not in p1.foundation["contests"][0]["roles"]
-        self.assertEqual(wrong, 0, f"{wrong} breach(es) of the chooser and tie equivalence")
-        self.assertEqual(role_wrong, 0)
-        self.assertGreater(villain, 100)
-        self.assertGreater(with_role, 100)
-
-    def test_the_tie_and_the_breaks_time(self):
-        need = {"bond_wants_to_reverse", "bond_failed_to_stop", "bond_product_of_it"}
-        coming = sum(1 for d, p1, _ in self.runs if p1.foundation["break"]["time"] == "time_coming")
-        bad = sum(1 for d, p1, _ in self.runs
-                  if p1.foundation["break"]["time"] == "time_coming" and p1.identity_secret["villain"]["tie"] in need)
-        self.assertGreater(coming, 100)
-        self.assertEqual(bad, 0)
+            self.assertEqual((s["chooser"], s["chooser_role"], v["tie"]), ("chooser_the_villain", None, None))
+            self.assertFalse({"secret_chooser", "secret_chooser.role", "bbeg_tie"} & set(p1.by_label))
+            self.assertEqual((v["visibility"], v["shape"], v["origin"]), (p1.threat["visibility"], p1.threat["shape"], p1.threat["origin"]))
 
     def test_every_shape_and_origin_is_drawn(self):
         """Build item 16a: no shape or origin is barred; over the seeds every row of the two tables comes up."""
@@ -109,7 +91,7 @@ class ManySeeds(unittest.TestCase):
         """The secret's non-repeating tables keep five rows after the constraints; the villain's shape and origin
         may repeat (the pair is what never does) and are reported only."""
         low = {ref: min(p1.pools[ref] for _, p1, _ in self.runs if ref in p1.pools)      # a forced tie has no pool
-               for ref in (A + "archetype", A + "twist", A + "trail", V + "villain_shape", V + "origin", V + "break_tie")}
+               for ref in (A + "archetype", A + "twist", A + "trail", V + "villain_shape", V + "origin")}
         type(self).floors = low
         for ref in (A + "archetype", A + "twist", A + "trail"):
             self.assertGreaterEqual(low[ref], 5, f"{ref}: the smallest pool is {low[ref]}")
@@ -203,15 +185,16 @@ class ThePair(unittest.TestCase):
          "content_mix": ["war", "mystery", "horror"], "party_size": 2, "level_band": [1, 12]}
 
     def p1(self, used_pairs=None):
-        real = di.roll_secret
+        import design_threat as dth                    # build item 18c: the shape and the origin are the threat's
+        real = dth.roll
         if used_pairs is not None:
-            di.roll_secret = lambda R, dials, f, idn: real(R, dials, f, idn, used_pairs=used_pairs)
+            dth.roll = lambda *a, **k: real(*a[:6], used_pairs=used_pairs)
         try:
             R = designer.Roller.in_memory("PAIR-1", self.D)
             designer.preroll_p1(R, {"dials": self.D})
             return R
         finally:
-            di.roll_secret = real
+            dth.roll = real
 
     def test_a_pair_another_campaign_drew_is_not_drawn_again(self):
         first = self.p1()
@@ -253,7 +236,8 @@ class RealBirth(unittest.TestCase):
         manifest = json.loads(public_text)
         log = json.loads((design / "dm-only" / "dice-log.json").read_text(encoding="utf-8"))
         ident = log["identity"]
-        self.assertEqual(set(ident), {"secret", "villain", "world_states"}, "build item 18b: a world state's join to the threat")
+        self.assertEqual(set(ident), {"secret", "villain"}, "the 18c-1 audit: no world state's join lives in dm-only")
+        self.assertIn("threat", log, "build item 18c: the threat's record, dm-only")
         self.assertEqual(set(ident["secret"]), {"archetype", "chooser", "chooser_role", "twist", "trail"})
         self.assertEqual(set(ident["villain"]), {"visibility", "shape", "origin", "tie", "pole", "public_figure", "majority_pole"})
         by_label = {r["label"]: r for r in log["rolls"] if r["phase"] == "P1"}
