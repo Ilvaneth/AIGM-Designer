@@ -5,7 +5,7 @@ every roll secret; P4 reads the moved rolls.
 The owner is also the player: no assertion here prints a secret row. A failure gives a count or a seed, never an id.
 """
 
-import itertools
+import copy
 import json
 import os
 import shutil
@@ -23,6 +23,7 @@ import design_dice as dd  # noqa: E402
 import design_identity as di  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 A, V = "secrets.yaml#", "antagonists.yaml#"
 SEEDS = 1800
@@ -33,15 +34,9 @@ MOVED = ("bbeg_visibility", "bbeg_shape", "bbeg_origin")
 SECRET_IDS = dt.secret_row_ids()
 
 
-def dials_of(i, combos, mixes):
-    scale, magic, era, tone = combos[i % len(combos)]
-    return {"scale": scale, "magic": magic, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]),
-            "party_size": 2, "level_band": [1, 1 + _floor.SPAN[scale]]}
-
-
 def p4_on(p1, dials, tag):
     p4 = designer.Roller.in_memory(tag, dials, phase="P4")
-    p4.ctx = p1.ctx                                  # P4 stands on what P1 rolled, the secret rows too
+    p4.ctx = copy.deepcopy(p1.ctx)                   # P4 stands on what P1 rolled, the secret rows too (a copy: P1's is shared)
     designer.preroll_p4(p4, {"dials": dials})
     return p4
 
@@ -50,17 +45,9 @@ class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        combos = _floor.dial_sets()
-        mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-        cls.runs, cls.empty = [], 0
-        for i in range(SEEDS):
-            d = dials_of(i, combos, mixes)
-            try:
-                p1 = designer.Roller.in_memory(f"SECRET-{i}", d)
-                designer.preroll_p1(p1, {"dials": d})
-                cls.runs.append((d, p1, p4_on(p1, d, f"SECRET-{i}")))
-            except SystemExit:
-                cls.empty += 1
+        # the shared corpus (build item 18f-1); P4 is rolled here on each, under the P1 birth's own seed
+        cls.runs = [(d, p1, p4_on(p1, d, p1.master)) for d, p1 in _corpus.births(SEEDS)]
+        cls.empty = len(_corpus.errors(SEEDS))
 
     def test_no_pool_is_empty(self):
         self.assertEqual(self.empty, 0, f"{self.empty} seed(s) stopped on an empty pool")

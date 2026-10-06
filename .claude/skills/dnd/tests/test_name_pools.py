@@ -29,6 +29,7 @@ sys.path.insert(0, str(SCRIPTS))
 import design_names as dn  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 SEEDS = 2400          # the rolls
 POOL_SEEDS = 480      # the candidates and the compound stocks
@@ -41,20 +42,13 @@ _BIRTHS: dict = {}
 
 def births(n: int, tag: str = "NAMES") -> list[dict]:
     """n in-memory P1 prerolls, the dials going round every scale, magic, era and tone."""
-    if (n, tag) not in _BIRTHS:
-        combos = dial_sets()
-        mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-        out = []
-        for i in range(n):
-            scale, magic, era, tone = combos[i % len(combos)]
-            dials = {"scale": scale, "magic": magic, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]),
-                     "party_size": 2, "level_band": [1, 1 + SPAN[scale]]}
-            R = designer.Roller.in_memory(f"{tag}-{i}", dials)
-            designer.preroll_p1(R, {"dials": dials})
-            out.append({"master": R.master, "dials": dials, "foundation": R.foundation, "identity": R.identity,
-                        "naming": R.naming, "public": R.public, "secret": R.secret})
-        _BIRTHS[(n, tag)] = out
-    return _BIRTHS[(n, tag)]
+    # the shared corpus (build item 18f-1); one record per birth, kept here (the pools a test builds stay on it)
+    corpus = _corpus.births(n)
+    while len(_BIRTHS.setdefault(tag, [])) < len(corpus):
+        dials, R = corpus[len(_BIRTHS[tag])]
+        _BIRTHS[tag].append({"master": R.master, "dials": dials, "foundation": R.foundation, "identity": R.identity,
+                             "naming": R.naming, "public": R.public, "secret": R.secret})
+    return _BIRTHS[tag][:len(corpus)]
 
 
 def kinds_of(b: dict) -> set:

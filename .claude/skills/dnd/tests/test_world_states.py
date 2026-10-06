@@ -5,7 +5,6 @@ a join to the threat kept in dm-only); the two bent rows; the P8 hook on the row
 count by the spine's breadth at every scale; a legacy birth's palette loads.
 """
 
-import itertools
 import json
 import os
 import shutil
@@ -24,6 +23,7 @@ import design_identity as di  # noqa: E402
 import design_manifest as dm  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 SEEDS = 3000
 SPAN = {"short": 4, "standard": 11, "epic": 19}
@@ -101,18 +101,8 @@ class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        combos = list(itertools.product(dt.dial_values("scale"), dt.dial_values("magic"), dt.dial_values("era"), dt.dial_values("tone")))
-        mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-        cls.runs = []
-        for i in range(SEEDS):
-            scale, magic, era, tone = combos[i % len(combos)]
-            d = {"scale": scale, "magic": magic, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]),
-                 "party_size": 2, "level_band": [1, 1 + SPAN[scale]]}
-            R = designer.Roller.in_memory(f"WORLD-{i}", d)
-            out = fd.roll(R, d)
-            f = fd.build(out, d["level_band"])
-            ident = di.roll(R, d, f)
-            cls.runs.append((d, R, out, f, ident))
+        # the shared corpus (build item 18f-1); the roll's raw output is no longer kept, and no test here reads it
+        cls.runs = [(d, R, None, R.foundation, R.identity) for d, R in _corpus.births(SEEDS)]
 
     def test_no_world_state_without_a_join(self):
         drawn = Counter()

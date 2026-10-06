@@ -22,17 +22,12 @@ def dial_sets():
     return list(itertools.product(dt.dial_values("scale"), dt.dial_values("magic"), eras, dt.dial_values("tone")))
 
 
-def smallest_pools(seeds: int = 900, tag: str = "FLOOR") -> dict:
-    """{table ref: the smallest pool any draw of it saw after the constraints} over `seeds` in-memory P1 prerolls."""
-    combos = dial_sets()
-    mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
+def smallest_pools(seeds: int = 900) -> dict:
+    """{table ref: the smallest pool any draw of it saw after the constraints} over the first `seeds` births of the
+    shared corpus (build item 18f-1)."""
+    import _corpus
     out: dict = {}
-    for i in range(seeds):
-        scale, magic, era, tone = combos[i % len(combos)]
-        dials = {"scale": scale, "magic": magic, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]),
-                 "party_size": 2, "level_band": [1, 1 + SPAN[scale]]}
-        R = designer.Roller.in_memory(f"{tag}-{i}", dials)
-        designer.preroll_p1(R, {"dials": dials})
+    for dials, R in _corpus.births(seeds):
         for ref, n in R.pools.items():
             out[ref] = min(out.get(ref, n), n)
     return out

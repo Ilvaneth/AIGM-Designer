@@ -203,13 +203,6 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     actions = {r["id"]: r for r in dt.rows(ref("action"))}
     targets = {r["piece"]: r for r in dt.rows(ref("break_target"))}
 
-    def strikable_roles(act: dict) -> list[str]:
-        """The institution is never left homeless (owner, 2026-10-03): a verb that destroys a role never strikes the
-        last seated role of the main contest that carries an archetype hint and is no people's role."""
-        homes = institution_homes(main, main_roles)
-        protected = homes[0] if (len(homes) == 1 and "role" in (act.get("destroys") or [])) else None
-        return [k for k in main_roles if k != protected]
-
     def fits(act: dict, piece: str) -> bool:
         """The verb strikes the piece, and the kind of what stands there (build item 18e-2: a remnant's kind, the key
         place's kind, a role's kind among the roles it may strike)."""
@@ -217,7 +210,7 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
             return False
         table = act.get("fits") or {}
         if piece == "role":
-            return any(role_kind(main, k) in table.get("role", []) for k in strikable_roles(act))
+            return any(role_kind(main, k) in table.get("role", []) for k in strikable_roles(main, main_roles, act))
         return {"remnant": remnant_kind in table.get("remnant", []),
                 "key_place": key_kind in table.get("key_place", [])}.get(piece, True)
 
@@ -246,14 +239,8 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
     rec["used_keys"] = {PAIR_KEY: f"{piece}|{act_id}"}     # approve writes it; the pair never repeats
     role = None
     if piece == "role":
-        # a role the verb may strike (the institution's last home is protected) and whose kind the verb fits
-        open_roles = strikable_roles(act)
-        roles = [k for k in open_roles if role_kind(main, k) in (act.get("fits") or {}).get("role", [])]
-        role = roles[int(R.notation("foundation.break.role", f"d{len(roles)}")["raw"]) - 1]
+        role = strike_role(R, main, main_roles, act, rec)
         out["target_role"] = role
-        protected = next((k for k in main_roles if k not in open_roles), None)
-        if protected:
-            rec["protected_role"] = {"role": protected, "why": "the last seated role with an archetype hint that is no people's role"}
 
     barred = set((act.get("bars_scars_on_target") or {}).get(piece, []))
     scars: list[str] = []
@@ -325,6 +312,27 @@ def roll(R, dials: dict, used_pairs: set | None = None, villain_pairs: set | Non
 
 
 # ── the move's targets and the start (build item 18c) ───────────────────────────────────────────────────────────
+
+def strikable_roles(main_row: dict, main_roles: list[str], act: dict) -> list[str]:
+    """The roles of the main contest a verb may strike. The institution is never left homeless (owner, 2026-10-03): a
+    verb that destroys a role never strikes the last seated role of the main contest that carries an archetype hint
+    and is no people's role."""
+    homes = institution_homes(main_row, main_roles)
+    protected = homes[0] if (len(homes) == 1 and "role" in (act.get("destroys") or [])) else None
+    return [k for k in main_roles if k != protected]
+
+
+def strike_role(R, main_row: dict, main_roles: list[str], act: dict, rec: dict) -> str:
+    """The role the move strikes: drawn among those the verb may strike and whose kind it fits (build item 18e-2); a
+    role left out to keep the institution's last home goes on the verb's record (`protected_role`)."""
+    open_roles = strikable_roles(main_row, main_roles, act)
+    roles = [k for k in open_roles if role_kind(main_row, k) in (act.get("fits") or {}).get("role", [])]
+    role = roles[int(R.notation("foundation.break.role", f"d{len(roles)}")["raw"]) - 1]
+    protected = next((k for k in main_roles if k not in open_roles), None)
+    if protected:
+        rec["protected_role"] = {"role": protected, "why": "the last seated role with an archetype hint that is no people's role"}
+    return role
+
 
 # the goal's piece → the targets on the way to it: the piece itself, a piece that guards it, a contest role; the
 # guards of the 18c-2 answer: the thin place guards the remnant and the heart, the remnant the heart, the key place the

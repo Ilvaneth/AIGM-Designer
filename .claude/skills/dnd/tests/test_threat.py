@@ -21,6 +21,7 @@ sys.path.insert(0, str(SCRIPTS))
 import design_tables as dt  # noqa: E402
 import design_threat as dth  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 V = "antagonists.yaml#"
 SEEDS = 3000
@@ -126,7 +127,7 @@ class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.runs = births(SEEDS, "THREAT")
+        cls.runs = _corpus.births(SEEDS)      # the shared corpus (build item 18f-1)
 
     def test_the_order(self):
         for d, R in self.runs:

@@ -12,7 +12,6 @@ No failure message prints a secret row: they give counts and positions.
   py test_promises.py --report     promises per birth by scale, by source and by due phase
 """
 
-import itertools
 import json
 import os
 import re
@@ -36,6 +35,7 @@ import design_manifest as dm  # noqa: E402
 import design_promises as dp  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 SEEDS = 2400
 _BIRTHS: dict = {}
@@ -44,24 +44,15 @@ _BIRTHS: dict = {}
 def births(n: int, tag: str = "PROMISE") -> list[dict]:
     """n in-memory P1 prerolls with their ledgers; the dials go round every scale, magic, era and tone, and the
     starting level round every level band the scale's span allows."""
-    if (n, tag) not in _BIRTHS:
-        combos = dial_sets()
-        mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-        dangers = dt.dial_values("danger")
-        out = []
-        for i in range(n):
-            scale, magic, era, tone = combos[i % len(combos)]
-            start = 1 + (i // len(combos)) % (20 - SPAN[scale])
-            dials = {"scale": scale, "magic": magic, "era": era, "tone": tone, "danger": dangers[i % len(dangers)],
-                     "content_mix": list(mixes[i % len(mixes)]), "party_size": 2, "level_band": [start, start + SPAN[scale]]}
-            R = designer.Roller.in_memory(f"{tag}-{i}", dials)
-            designer.preroll_p1(R, {"dials": dials})
-            public, secret = dp.build(dials, R.public, R.secret, R.foundation, R.identity, R.identity_secret)
-            out.append({"master": R.master, "dials": dials, "foundation": R.foundation, "identity": R.identity, "naming": R.naming,
-                        "rolls": R.public, "rolls_secret": R.secret, "identity_secret": R.identity_secret,
-                        "public": public, "secret": secret})
-        _BIRTHS[(n, tag)] = out
-    return _BIRTHS[(n, tag)]
+    # the shared corpus (build item 18f-1: the same dials as before, its own seeds); the ledgers are built here, once
+    corpus = _corpus.births(n)
+    while len(_BIRTHS.setdefault(tag, [])) < len(corpus):
+        dials, R = corpus[len(_BIRTHS[tag])]
+        public, secret = dp.build(dials, R.public, R.secret, R.foundation, R.identity, R.identity_secret)
+        _BIRTHS[tag].append({"master": R.master, "dials": dials, "foundation": R.foundation, "identity": R.identity, "naming": R.naming,
+                             "rolls": R.public, "rolls_secret": R.secret, "identity_secret": R.identity_secret,
+                             "public": public, "secret": secret})
+    return _BIRTHS[tag][:len(corpus)]
 
 
 def sources(p: dict) -> list[dict]:

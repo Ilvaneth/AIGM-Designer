@@ -6,7 +6,6 @@ D&D line and the gate `dnd_incomplete`; the god pin and the mechanic's shape rol
 require it. Failure messages give counts and positions only.
 """
 
-import itertools
 import json
 import os
 import re
@@ -27,6 +26,7 @@ import design_manifest as dm  # noqa: E402
 import design_prompts as dpm  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 PROMPT = (SCRIPTS.parent / "prompts" / "design" / "P1.premise.md").read_text(encoding="utf-8")
 SPAN = {"short": 4, "standard": 11, "epic": 19}
@@ -81,18 +81,9 @@ class Tables(unittest.TestCase):
         self.assertEqual(len(door.story_field_errors("premise_x", row)), 2)
 
 
-def births(n, tag):
-    combos = list(itertools.product(dt.dial_values("scale"), dt.dial_values("magic"), dt.dial_values("era"), dt.dial_values("tone")))
-    mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-    out = []
-    for i in range(n):
-        sc, mg, era, tone = combos[i % len(combos)]
-        d = {"scale": sc, "magic": mg, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]), "party_size": 2,
-             "level_band": [1, 1 + SPAN[sc]]}
-        R = designer.Roller.in_memory(f"{tag}-{i}", d)
-        designer.preroll_p1(R, {"dials": d})
-        out.append((d, R))
-    return out
+def births(n):
+    """The first n births of the shared corpus (build item 18f-1), as (dials, R)."""
+    return _corpus.births(n)
 
 
 def subject_of(R):
@@ -107,7 +98,7 @@ class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.runs = births(1500, "STORY18E")
+        cls.runs = births(1500)
 
     def test_the_spine_sentence(self):
         for d, R in self.runs:

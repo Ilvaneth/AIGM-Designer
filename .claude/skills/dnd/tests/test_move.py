@@ -7,7 +7,6 @@ world states' public joins through the hand and the ruins; 3,000 seeds with no d
   py test_move.py --report     the move's shares over 3,000 seeds
 """
 
-import itertools
 import sys
 import unittest
 from collections import Counter
@@ -20,6 +19,7 @@ import design_identity as di  # noqa: E402
 import design_tables as dt  # noqa: E402
 import design_threat as dth  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 SEEDS = 3000
 SPAN = {"short": 4, "standard": 11, "epic": 19}
@@ -60,27 +60,16 @@ class Tables(unittest.TestCase):
             self.assertFalse(set(ACTIONS[v]["by"]) & set(CREATURE_HANDS), v)
 
 
-def births(n: int, tag: str):
-    combos = list(itertools.product(dt.dial_values("scale"), dt.dial_values("magic"), dt.dial_values("era"), dt.dial_values("tone")))
-    mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-    out = []
-    for i in range(n):
-        sc, mg, era, tone = combos[i % len(combos)]
-        lo = (1, 4, 7, 10)[(i // len(combos)) % 4]
-        d = {"scale": sc, "magic": mg, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]), "party_size": 2,
-             "level_band": [lo, min(20, lo + SPAN[sc])]}
-        R = designer.Roller.in_memory(f"{tag}-{i}", d)
-        f = fd.build(fd.roll(R, d), d["level_band"])
-        ident = di.roll(R, d, f)
-        out.append((d, R, f, ident))
-    return out
+def births(n: int):
+    """The first n births of the shared corpus (build item 18f-1), as (dials, R, foundation, identity)."""
+    return [(d, R, R.foundation, R.identity) for d, R in _corpus.births(n)]
 
 
 class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.runs = births(SEEDS, "MOVE")
+        cls.runs = births(SEEDS)
 
     def test_the_hand_makes_the_move_it_can(self):
         for d, R, f, ident in self.runs:
@@ -171,7 +160,7 @@ class ManySeeds(unittest.TestCase):
 
 
 def report() -> str:
-    runs = births(SEEDS, "MOVE")
+    runs = births(SEEDS)
     n = len(runs)
     pct = lambda c: ", ".join(f"{k} {100 * v / n:.1f} %" for k, v in sorted(c.items(), key=lambda kv: -kv[1]))
     out = [f"{n} seeds"]

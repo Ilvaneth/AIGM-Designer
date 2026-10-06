@@ -6,7 +6,6 @@ texture piece in a story slot and empty no pool; the lifeline is no target and n
 birth with the old target and a retired contest loads and renders.
 """
 
-import itertools
 import json
 import os
 import shutil
@@ -24,6 +23,7 @@ import design_foundation as fd  # noqa: E402
 import design_manifest as dm  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 SEEDS = 3000
 SPAN = {"short": 4, "standard": 11, "epic": 19}
@@ -127,16 +127,9 @@ class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        combos = list(itertools.product(dt.dial_values("scale"), dt.dial_values("magic"), dt.dial_values("era"), dt.dial_values("tone")))
-        mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
         cls.found, cls.pools, cls.kinds, cls.targets = [], {}, {}, {}
-        for i in range(SEEDS):
-            scale, magic, era, tone = combos[i % len(combos)]
-            d = {"scale": scale, "magic": magic, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]),
-                 "level_band": [1, 1 + SPAN[scale]]}
-            R = designer.Roller.in_memory(f"LAYERS-{i}", d)
-            out = fd.roll(R, d)
-            f = fd.build(out, d["level_band"])
+        for d, R in _corpus.births(SEEDS):           # the shared corpus (build item 18f-1)
+            f = R.foundation
             labels = [r["label"] for r in R.public]
             cls.found.append((d, f, labels))
             for ref, n in R.pools.items():

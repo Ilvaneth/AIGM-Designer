@@ -7,7 +7,6 @@ new row's promise reaches the ledger; the public ledger unchanged by the secret 
 Failure messages give counts and positions only: no row of a secret table is printed.
 """
 
-import itertools
 import json
 import os
 import re
@@ -27,6 +26,7 @@ import design_promises as dp  # noqa: E402
 import design_tables as dt  # noqa: E402
 import design_threat as dth  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 S = "secrets.yaml#"
 SEEDS = 3000
@@ -102,26 +102,16 @@ class Tables(unittest.TestCase):
         self.assertEqual(doc["hand"]["hooks_common"][0]["phase"], "P4")
 
 
-def births(n, tag):
-    combos = list(itertools.product(dt.dial_values("scale"), dt.dial_values("magic"), dt.dial_values("era"), dt.dial_values("tone")))
-    mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-    out = []
-    for i in range(n):
-        sc, mg, era, tone = combos[i % len(combos)]
-        lo = (1, 4, 7, 10)[(i // len(combos)) % 4]
-        d = {"scale": sc, "magic": mg, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]), "party_size": 2,
-             "level_band": [lo, min(20, lo + SPAN[sc])]}
-        R = designer.Roller.in_memory(f"{tag}-{i}", d)
-        designer.preroll_p1(R, {"dials": d})
-        out.append((d, R))
-    return out
+def births(n):
+    """The first n births of the shared corpus (build item 18f-1), as (dials, R)."""
+    return _corpus.births(n)
 
 
 class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.runs = births(SEEDS, "SECRET18D")
+        cls.runs = births(SEEDS)
 
     def test_the_four_facts(self):
         for d, R in self.runs:

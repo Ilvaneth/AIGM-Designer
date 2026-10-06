@@ -5,7 +5,6 @@ lineage agree, the institution sits under its role's archetype, the user follows
 of its contest's family, the trope breaks' ties follow their rules, and the public log names no secret row.
 """
 
-import itertools
 import json
 import sys
 import unittest
@@ -20,6 +19,7 @@ import design_foundation as fd  # noqa: E402
 import design_identity as di  # noqa: E402
 import design_tables as dt  # noqa: E402
 import designer  # noqa: E402
+import _corpus  # noqa: E402  (build item 18f-1: the shared many-seed corpus)
 
 S = "signatures.yaml#"
 SEEDS = 2700
@@ -38,27 +38,11 @@ UNIQUE_DRAWS = ("break.1", "break.2", "people.trait.visible", "people.trait.beha
                 "phenomenon.rule", "tension.1", "tension.2")
 
 
-def run(i, combos, mixes, tag="IDENT"):
-    scale, magic, era, tone = combos[i % len(combos)]
-    dials = {"scale": scale, "magic": magic, "era": era, "tone": tone, "content_mix": list(mixes[i % len(mixes)]),
-             "party_size": 2, "level_band": [1, 1 + _floor.SPAN[scale]]}
-    R = designer.Roller.in_memory(f"{tag}-{i}", dials)
-    designer.preroll_p1(R, {"dials": dials})
-    return dials, R
-
-
 class ManySeeds(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        combos = _floor.dial_sets()
-        mixes = list(itertools.permutations(dt.dial_values("content_mix"), 3))
-        cls.runs, cls.empty = [], []
-        for i in range(SEEDS):
-            try:
-                cls.runs.append(run(i, combos, mixes))
-            except SystemExit as exc:
-                cls.empty.append(str(exc))
+        cls.runs, cls.empty = _corpus.births(SEEDS), _corpus.errors(SEEDS)      # the shared corpus (build item 18f-1)
 
     def test_no_pool_is_empty(self):
         self.assertEqual(self.empty, [])
@@ -264,9 +248,32 @@ class ManySeeds(unittest.TestCase):
                 self.assertNotEqual(f["break"]["target_role"], last, R.master)
             if len(homes) == 1:
                 self.assertNotEqual(di.destroyed_role(f), homes[0], R.master)
-        self.assertGreater(struck_last, 0, "the case was exercised")
-        self.assertEqual(protected, struck_last, "the excluded actions carry the reason")
+        # build item 18f-1: the case is rare on the dice (none in the corpus's 3,000 births); the protection itself is
+        # proved without dice in test_the_last_home_is_protected_without_dice, which replaces the "exercised" count
         type(self).protection = {"last_home_struck": struck_last}
+
+    def test_the_last_home_is_protected_without_dice(self):
+        """Build item 18f-1: a one-home contest and the Divided verb (it destroys a role): the home is never among the
+        roles the verb may strike, the struck role is another, and the home is on the verb's record."""
+        divided = fd.rows_by_id("action")["act_split"]
+        self.assertIn("role", divided["destroys"])
+        scales = dt.load("foundation.yaml")["tables"]["contest"]["roll"]["roles_by_scale"]
+        cases = [(row, list(scales[sc])) for row in dt.rows("foundation.yaml#contest") for sc in scales
+                 if len(fd.institution_homes(row, list(scales[sc]))) == 1
+                 and any(fd.role_kind(row, k) in divided["fits"]["role"] for k in scales[sc]
+                         if k != fd.institution_homes(row, list(scales[sc]))[0])]
+        self.assertTrue(cases, "some contest seats a single institution home")
+        for n, (row, roles) in enumerate(cases):
+            home = fd.institution_homes(row, roles)[0]
+            self.assertNotIn(home, fd.strikable_roles(row, roles, divided), row["id"])
+            self.assertIn(home, fd.strikable_roles(row, roles, fd.rows_by_id("action")["act_killed"]), "a verb that destroys no role")
+            for seed in range(6):
+                R = designer.Roller.in_memory(f"HOME-{n}-{seed}", {"scale": "standard", "magic": "medium", "era": "medieval"})
+                rec: dict = {}
+                struck = fd.strike_role(R, row, roles, divided, rec)
+                self.assertNotEqual(struck, home, row["id"])
+                self.assertIn(fd.role_kind(row, struck), divided["fits"]["role"])
+                self.assertEqual(rec["protected_role"]["role"], home, row["id"])
 
     # ── the phenomenon ──
 

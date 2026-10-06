@@ -161,3 +161,33 @@ Summarised to the owner in the coding tab on 2026-10-05; the owner's two correct
 **Questions:** five, in `docs/reports/item18-fits.md` (18e-2).
 
 **The audit's corrections (2026-10-06), applied:** (1) a remnant short wherever the remnant text is no clean object in "<hand> <verb> <target>": 23 more ruins (37 of 53 now; listed in the fits file), so sentences 12 and 18 above read "plundering the old dragon lairs" and "opened the giants' buildings"; (2) one rule for a power behind the villain: the twist "a greater power stands behind the villain" and the goal "a patron's will" roll its kind once from `secrets.yaml#greater_power` (label `P1.secret_power`), and the secret is pinned to a god only when the family is the god or that kind is a god. The answers: the `settlement` role kind, the place shorts and the structure hearts as towns, `text.prize` and seized at 16.5 % stand.
+
+## 18f-1 — the shared many-seed corpus (the fourth coding tab)
+
+**The suite's time:** before (77d5339, 825 tests): 3,080 s, 51.3 min. After (825 tests, the same tree but for the replaced assertion below): 1,702 s, 28.4 min, 45 % less. The corpus is rolled once (3,000 prerolls, about 5 min of it); what remains is mostly the tests that keep their own seeds (about 17,000 foundation-only or P0/P4 rolls) and the campaign-making tests (the dry walk, the real births).
+
+**What changed.** A new `tests/_corpus.py`: in-memory P1 prerolls (`designer.preroll_p1`), rolled once per test process and read by every many-seed test whose dials it holds; the i-th birth depends on i alone (seed `CORPUS-<i>`), so a test that asks for n births reads the first n, whoever asked first; it grows on demand to 3,000 and is never cached on disk (every birth is rolled from the tables and the code under test). The dials go round every scale × magic × era × tone (135), every content mix of three (60) and every danger; the start level goes round every band the scale's span allows (start = 1 + (i // 135) % (20 − span), the band [start, start + span]); a birth that stops on an empty pool is kept as an error (`_corpus.errors`), never skipped silently. The births are shared and read-only: each read checks a digest of every birth's records (foundation, identity, secret, threat, names, roll logs, pools, the arbiter's context) taken when it was rolled, and fails if an earlier reader changed one.
+
+**The moved tests** (every assertion as it was, only the births' source changed; the corpus's dials are test_promises' scheme):
+
+| Test (births) | Its dials before | Against the corpus |
+|---|---|---|
+| `test_promises` (2,400; ledgers built per birth, once) | every scale × magic × era × tone, content mix, danger, every start band | **the same dials**; its own seeds gone |
+| `test_move` (3,000) and its `--report` | start levels 1, 4, 7, 10 (top capped at 20), no danger; foundation and identity only | wider: every band, the dangers; the full preroll |
+| `test_threat` ManySeeds (3,000) | start levels 1, 4, 7, 10, capped | wider |
+| `test_secret_layer` (3,000) | start levels 1, 4, 7, 10, capped | wider |
+| `test_world_states` (3,000) | start level 1, no danger; foundation and identity only | wider; the full preroll (the roll's raw output, unread, is no longer kept) |
+| `test_layers` ManySeeds (3,000) | start level 1, no party size, no danger; the foundation only | wider; the full preroll (its pools now hold every P1 table, all above 0) |
+| `test_identity_roll` ManySeeds (2,700) | start level 1, no danger | wider |
+| `test_identity_secret_roll` ManySeeds (1,800; P4 rolled on each) | start level 1, no danger | wider; P4 now stands on a copy of P1's context (it used to write its rolls into P1's, which the corpus shares) and is seeded with the P1 birth's own seed |
+| `test_name_pools` (2,400, 600, 480, 120, 40) and `test_door` (480, through it) | start level 1, no danger | wider; one record per birth, shared by all sizes |
+| `test_p1_story` ManySeeds (1,500) | start level 1, no danger | wider |
+| `_floor.smallest_pools` (900; test_claims' floor) | start level 1, no danger | wider |
+
+**Kept their own seeds** (dials or a mechanism the corpus does not hold): `test_threat` Variety (300, the family's three-birth wait simulated across the sequence) and its `--report` (1,000 per scale, the wait); `test_trope_claims` (1,620: it spies on the arbiter during the rolls); `test_foundation_roll` (2,250 and 4,000: its own eras and start levels, and it reads the roll's raw output); `test_arbiter_faults` (3,000, fixed magic and era, the foundation only); `test_claims`' role and layout loops (400 per scale, 1,500: fixed tone and mix, the foundation only); `test_forbidden_lifted` (2,000 P4 rolls); `test_p0_dials` (2,000 P0); `test_secret_villain_tables` (450 with P4).
+
+**One assertion replaced, as answered:** `test_identity_roll`'s "the case was exercised" (a role-destroying verb on a role while the main contest has a single institution home) held by luck on the old seeds: over the corpus's 3,000 births the case occurs 0 times (single-home births 78, Divided on a role 60; 18e-2 narrowed Divided to group and settlement roles). `design_foundation.strikable_roles` and `strike_role` are lifted out of `roll` with no behaviour change; the many-seed check of every birth stays (no violation, the record when it applies); the new `test_the_last_home_is_protected_without_dice` proves the protection on every one-home contest and scale of the tables (4), with the Divided verb on six seeds each: the home is never among the roles it may strike, the struck role is another of a kind it fits, and the home is on the verb's record. It replaces the dice-dependent count.
+
+**Changed files:** `tests/_corpus.py` (new), `tests/_floor.py`, `test_identity_roll.py`, `test_identity_secret_roll.py`, `test_layers.py`, `test_move.py`, `test_name_pools.py`, `test_p1_story.py`, `test_promises.py`, `test_secret_layer.py`, `test_threat.py`, `test_world_states.py`; `scripts/design_foundation.py` (the two lifted functions). The unused `itertools` imports and two helpers the move left dead (`run`, `dials_of`) are removed.
+
+**The suite:** the timing run above (825 tests, 28.4 min) was red on one test only: the replaced "exercised" assertion, loaded before its fix. After the fix: the new test passes alone; the gating full run on the final tree: 826 tests, OK, exit code 0, 1,381 s (23.0 min).
