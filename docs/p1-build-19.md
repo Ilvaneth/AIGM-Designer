@@ -47,3 +47,5 @@ Changed files; the suite's count, exit code and time; for 19a the list of hand s
 ## Part 19c — the tests never touch a live guard (added 2026-10-06)
 
 Reported by the coding tab during 19a's suite: the tests' marker guard removes `.runtime/active-design.json` at each campaign test's exit, so a suite run in the main working tree during a live birth could disarm that birth's read guard. Every test that arms, disarms or reads the marker works on its own runtime directory (a temporary project root, or an override the paths module honours in tests only), never the project's `.runtime`; a test arms the real marker, runs a campaign test and finds the marker unchanged. One green commit after 19b: `Plan item 25, build 19c: the tests never touch a live guard`.
+
+**Also in 19c** (found at the 19b audit): `build_design_index.py` rewrote `data/design/monster-ecology.yaml` with other line endings and left it showing as modified with no change of content; a script that rewrites a tracked file keeps that file's line endings (`docs/reports/coding-tab-handoff.md` and the project's memory hold the line-ending rule of the campaign files).
