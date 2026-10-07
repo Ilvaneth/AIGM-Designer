@@ -84,8 +84,8 @@ class Tables(unittest.TestCase):
     def test_the_english_fields_stand_where_the_turkish_stood(self):
         f = "foundation.yaml#"
         for r in dt.rows(f + "spine"):
-            self.assertEqual(set(r["text"]) - {"ends", "ends_both", "heart_short", "key_place_short"}, {"name", "heart", "key_place", "travel"},
-                             r["id"])      # build item 18e-2: the sentence's short names
+            self.assertEqual(set(r["text"]) - {"ends", "ends_both", "heart_short", "key_place_short", "ends_short"}, {"name", "heart", "key_place", "travel"},
+                             r["id"])      # build items 18e-2, 21a: the sentence's short names
             self.assertTrue(("ends" in r["text"]) != ("ends_both" in r["text"]), r["id"])
         for r in dt.rows(f + "ruin_source"):
             self.assertLessEqual({"name", "what", "remnant", "sites", "strangeness"}, set(r["text"]), r["id"])

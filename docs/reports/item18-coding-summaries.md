@@ -477,3 +477,40 @@ Two more were left during my gating run, at 17:04 and 17:25. They came from anot
 **Changed files:** `scripts/hooks/design_read_guard.py`, `tests/test_design_read_guard.py`.
 
 **The suite:** 893 tests, OK, exit code 0, 1,798 s (30.0 min), run over 21b with 21a part 1 beside it (both uncommitted; 21b's commit takes its two files only). No `aigm-*` folder left.
+
+## 21a — a short question and named sides (the fifth coding tab)
+
+**Part 1, the short question.**
+- The door: `design_door.question_sentences` splits the premise's `question` at its question marks and counts each sentence's words. `Door.premise_errors` refuses a sentence past `QUESTION_WORDS = 45`, naming the contest by its id (the identity's questions in order) and the count: `` `question` holds a question of N words for contest_x; one sentence per contest, at most about thirty-five words (refused past 45): say the costs in the sides' lines and the stakes ``. A refusal reaches the retry prompt through `last_error`, as before.
+- The prompt: the question bullet asks for one sentence per contest of at most about thirty-five words, with the costs said elsewhere; the pitch is "three short sentences".
+- The rubric: `rubric_p1_question_concrete`'s `fails_when` adds a question that cannot be read in one breath.
+
+**Part 2, named sides** (the owner-approved rows of the amendment, exactly as listed).
+- **The tables** (`foundation.yaml`):
+  - every one of the 30 spine rows carries `text.ends_short: [end_a, end_b]`;
+  - the 17 generic roles carry `generic: true` and their `noun` (divided_city, merchant_house_divides, foreign_envoy, war_fed_company, fallen_state_remnant, shapeshifter, relic_pieces and two_empires on a and b; fiend_pact on b);
+  - divided_city's halves also carry `toward: end_a` / `end_b` and stay seated in the heart.
+  - `reviewed.json` is restamped by `design_tables.py stamp`. Exactly those 39 rows changed (9 contests, 30 spines), and the file keeps its CRLF working copy. Undo it if the stamp must wait for your audit.
+- **The code** (`design_foundation`):
+  - `seat_short` gives a seated part's short name: an end's `ends_short`, the heart's or key place's short name, and none for an along node.
+  - `side_phrase` names a generic side "<noun> of <seat>", a facing half "<noun> toward <end>", and every other side, or a seat with no short name, by its label.
+  - It is used wherever the story sentence names a side: the two sides, the prize ("the land of …", "the seat of …"), a side that is the move's hand, and a side that is its target.
+  - `rendering`'s owner lines keep the row texts.
+
+**Over the corpus** (3,000 births): 678 story sentences carry a generic side (shapeshifter 75, foreign_envoy 70, relic_pieces 81, divided_city 86, war_fed_company 70, fiend_pact 70, merchant_house_divides 76, fallen_state_remnant 66, two_empires 84). Some of them:
+- Sea raiders enslaved the household of the fjords; now the household of the fjords and the household of the warm bays fight over an inheritance.
+- The risen dead are about to corrupt the bridge-city on the middle course; now the half of the city toward the source and the half of the city toward the delta fight over the bridge-city on the middle course.
+- Slavers opened the way down to the floor; now the country of the rift floor and the country of the rims fight over the land between them.
+- A generation ago, the fiend's envoy plundered the prison-temple; now the house that signed and the rival house of the deep sea fight over the seat of the house that signed.
+- Someone sealed the road down from the edge; now the new power of the inner lands and the new power of the cloud sea fight over the city at the cliff's edge.
+
+**For your reading:** fiend_pact's side a ("the house that signed") is not generic, so its two sides read unevenly ("the house that signed and the rival house of the deep sea"), as the list asks.
+
+**Tests.**
+- New `tests/test_p1_polish.py` (5 tests): the sentence counter; a question past the limit refused with its count and contest, the short one merging; the prompt and the rubric; the tables carry exactly the approved rows (the generic set, the nouns, the halves' `toward`, 30 spines each with two distinct `ends_short`); and the added test, over the corpus, that every generic side reads through its noun and a seat, the two sides never read the same, and no placeholder label stands in a story sentence.
+- Tests that rebuilt the old sentence now build it with `side_phrase`: `test_p1_story` (`subject_of`, `test_the_sentence_reads_as_d_and_d`) and `test_p1_birth2_faults`.
+- `test_written_in_english` allows `ends_short` among the spine's text keys.
+
+**Changed files:** `data/design/foundation.yaml`, `reviewed.json`, `rubrics.yaml`; `prompts/design/P1.premise.md`; `scripts/design_door.py`, `design_foundation.py`; tests: `test_p1_polish.py` (new), `test_p1_story.py`, `test_p1_birth2_faults.py`, `test_written_in_english.py`.
+
+**The suite:** 895 tests, OK, exit code 0, 2,664 s (44.4 min). An earlier run failed six tests that pinned the old sentence and the old stamps; those are updated above. No `aigm-*` folder left.

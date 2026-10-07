@@ -99,7 +99,7 @@ def subject_of(R):
     if hand["id"] == "hand_contest_side":            # build item 19a: the side of the contest by its role
         contest = dt.row("foundation.yaml#contest", R.foundation["contests"][0]["id"])
         role = R.foundation["move"]["hand_role"]
-        return fd.role_short(contest, role).lower(), fd.role_number(contest, role)
+        return fd.side_phrase(R.foundation, contest, role).lower(), fd.role_number(contest, role)      # 21a: a generic side by its seat
     return hand["text"]["subject"].lower(), hand["number"]
 
 
@@ -134,7 +134,8 @@ class ManySeeds(unittest.TestCase):
             self.assertNotIn(", by ", s, "active voice: the hand is no agent phrase")
             self.assertNotIn("{", s)
             contest = dt.row("foundation.yaml#contest", f["contests"][0]["id"])
-            self.assertTrue(s.endswith(f"; now {fd.role_short(contest, 'a')} and {fd.role_short(contest, 'b')} fight over "
+            seats = f["layout"]["contests"][0]["seats"]            # build item 21a: a generic side by its noun and seat
+            self.assertTrue(s.endswith(f"; now {fd.side_phrase(f, contest, 'a', seats)} and {fd.side_phrase(f, contest, 'b', seats)} fight over "
                                        f"{fd.prize_phrase({**f, 'ruin': f['ruin_source']}, f['layout']['contests'][0])}."))
 
     def test_the_pin_and_the_mechanic(self):

@@ -55,7 +55,7 @@ class TheSideOfTheContest(unittest.TestCase):
             contest = dt.row("foundation.yaml#contest", main["id"])
             self.assertIn(role, main["roles"])
             self.assertNotEqual(role, f["break"].get("target_role"), "the side never strikes itself")
-            subject = fd.role_short(contest, role)
+            subject = fd.side_phrase(f, contest, role)          # build item 21a: a generic side by its noun and seat
             lead = "A generation ago, " if f["break"]["time"] == "time_generation_ago" else ""
             s = f["spine_sentence"]
             self.assertTrue(s.lower().startswith((lead + subject + " ").lower()), "the role is the subject")

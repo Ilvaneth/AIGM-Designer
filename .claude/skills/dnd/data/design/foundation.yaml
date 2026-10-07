@@ -122,7 +122,7 @@ tables:
         parts: {heart: [land_river, land_plain], end_a: [land_mountain], end_b: [land_coast], key_place: [land_river]}
         forces: [land_river, land_mountain, land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "a river from source to sea", "heart": "the bridge-city on the middle course", "ends": ["the mountain peoples at the source", "the port in the delta"], "key_place": "the river's only passable ford", "travel": "down and up along the river, by barge and by road"}
+        text: {"name": "a river from source to sea", "heart": "the bridge-city on the middle course", "ends": ["the mountain peoples at the source", "the port in the delta"], "key_place": "the river's only passable ford", "travel": "down and up along the river, by barge and by road", "ends_short": ["the source", "the delta"]}
       - id: spine_great_rift
         breadth: wide
         label: A great rift
@@ -131,7 +131,7 @@ tables:
         parts: {heart: [land_highland], end_a: [land_underground, land_forest, land_river, land_marsh], end_b: [land_highland], key_place: [land_highland, land_mountain]}
         forces: [land_highland]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "a giant rift", "heart": "the bridge that joins the two sides", "heart_short": "the bridge-town over the rift", "ends": ["the floor of the rift", "the highlands on the rims"], "key_place": "the bridge or the stair that goes down to the floor", "key_place_short": "the way down to the floor", "travel": "along the rims and the descent below"}
+        text: {"name": "a giant rift", "heart": "the bridge that joins the two sides", "heart_short": "the bridge-town over the rift", "ends": ["the floor of the rift", "the highlands on the rims"], "key_place": "the bridge or the stair that goes down to the floor", "key_place_short": "the way down to the floor", "travel": "along the rims and the descent below", "ends_short": ["the rift floor", "the rims"]}
       - id: spine_mountain_passes
         breadth: wide
         label: Passes along a range
@@ -140,7 +140,7 @@ tables:
         parts: {heart: [land_mountain], end_a: [land_forest, land_highland, land_plain], end_b: [land_desert, land_steppe], key_place: [land_mountain]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "passes along a mountain range", "heart": "the fortress-city in the greatest pass", "ends": ["the rain-fed slope of the range", "its dry slope"], "key_place": "the main pass", "travel": "from pass to pass, depending on the season"}
+        text: {"name": "passes along a mountain range", "heart": "the fortress-city in the greatest pass", "ends": ["the rain-fed slope of the range", "its dry slope"], "key_place": "the main pass", "travel": "from pass to pass, depending on the season", "ends_short": ["the wet slope", "the dry slope"]}
       - id: spine_long_coast
         breadth: wide
         label: A long coastline
@@ -149,7 +149,7 @@ tables:
         parts: {heart: [land_coast], end_a: [land_cold, land_mountain], end_b: [land_coast], key_place: [land_coast, land_mountain]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
-        text: {"name": "a long coastline", "heart": "the great port", "ends": ["glacier fjords at one end", "warm bays at the other end"], "key_place": "the cape that splits the coast in two", "key_place_short": "the cape that splits the coast", "travel": "by ship along the coast; the mountains cut the land road"}
+        text: {"name": "a long coastline", "heart": "the great port", "ends": ["glacier fjords at one end", "warm bays at the other end"], "key_place": "the cape that splits the coast in two", "key_place_short": "the cape that splits the coast", "travel": "by ship along the coast; the mountains cut the land road", "ends_short": ["the fjords", "the warm bays"]}
       - id: spine_barren_corridor
         breadth: wide
         label: A barren corridor
@@ -158,7 +158,7 @@ tables:
         parts: {heart: [land_desert, land_steppe], end_a: [land_plain, land_river, land_highland, land_forest], end_b: [land_plain, land_river, land_highland, land_forest], key_place: [land_desert, land_steppe]}
         forces_one_of: [land_desert, land_steppe]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "barren corridor", "heart": "the caravanserai-city in the middle of the corridor", "heart_short": "the caravanserai-city", "ends_both": "two civilisations at the two ends of the corridor", "key_place": "the only water source on the road", "key_place_short": "the road's only water source", "travel": "from halt to halt, bound to water"}
+        text: {"name": "barren corridor", "heart": "the caravanserai-city in the middle of the corridor", "heart_short": "the caravanserai-city", "ends_both": "two civilisations at the two ends of the corridor", "key_place": "the only water source on the road", "key_place_short": "the road's only water source", "travel": "from halt to halt, bound to water", "ends_short": ["the eastern end", "the western end"]}
       # 2. centred
       - id: spine_lake_basin
         breadth: tight
@@ -168,7 +168,7 @@ tables:
         parts: {heart: [land_lake], end_a: [land_plain, land_lake, land_forest], end_b: [land_forest, land_steppe, land_cold, land_desert], key_place: [land_mountain]}
         forces: [land_mountain, land_lake]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a basin ringed by mountains, a lake at its centre", "heart": "the island-city in the lake", "ends": ["the fertile basin", "the unknown beyond the mountains"], "key_place": "the only pass out of the basin", "key_place_short": "the basin's only pass", "travel": "inward, over the lake and by the shore roads"}
+        text: {"name": "a basin ringed by mountains, a lake at its centre", "heart": "the island-city in the lake", "ends": ["the fertile basin", "the unknown beyond the mountains"], "key_place": "the only pass out of the basin", "key_place_short": "the basin's only pass", "travel": "inward, over the lake and by the shore roads", "ends_short": ["the basin", "the far mountains"]}
       - id: spine_lone_mountain
         breadth: tight
         label: One giant mountain
@@ -177,7 +177,7 @@ tables:
         parts: {heart: [land_mountain, land_highland], end_a: [land_mountain], end_b: [land_plain, land_forest, land_highland, land_steppe], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a single giant mountain", "heart": "the largest city on the slope", "ends": ["the summit", "the foot"], "key_place": "the road up to the summit or the mouth that goes down into the mountain", "key_place_short": "the road into the mountain", "travel": "up and down in rings"}
+        text: {"name": "a single giant mountain", "heart": "the largest city on the slope", "ends": ["the summit", "the foot"], "key_place": "the road up to the summit or the mouth that goes down into the mountain", "key_place_short": "the road into the mountain", "travel": "up and down in rings", "ends_short": ["the summit", "the foot"]}
       - id: spine_star_crater
         breadth: tight
         label: The crater of a fallen stone
@@ -189,7 +189,7 @@ tables:
         merges_with:                     # owner, 2026-09-28: one crater, the spine's heart
           ruin_fallen_star: "the ruin's crater and star stone are the spine's heart crater"
           ruin_celestial_war: "the war's impact crater is the spine's heart crater"
-        text: {"name": "the crater of a stone that fell from the sky", "heart": "the stone at the centre of the crater", "heart_short": "the town by the crater's stone", "ends": ["the changed inside of the crater", "outside the crater"], "key_place": "the only road down from the rim", "key_place_short": "the road down from the rim", "travel": "from the rim to the centre"}
+        text: {"name": "the crater of a stone that fell from the sky", "heart": "the stone at the centre of the crater", "heart_short": "the town by the crater's stone", "ends": ["the changed inside of the crater", "outside the crater"], "key_place": "the only road down from the rim", "key_place_short": "the road down from the rim", "travel": "from the rim to the centre", "ends_short": ["the crater", "the outer lands"]}
         hooks:
           - {phase: P3, must: "the crater is a landmark and the heart's node"}
       - id: spine_oasis_ring
@@ -200,7 +200,7 @@ tables:
         parts: {heart: [land_desert], end_a: [land_desert], end_b: [land_plain, land_steppe, land_mountain, land_coast], key_place: [land_desert]}
         forces: [land_desert]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "an oasis and the ring around it", "heart": "the oasis", "ends": ["the oasis", "the far side of the desert"], "key_place": "the oasis's water", "travel": "expeditions outward from the oasis; coming back is a must"}
+        text: {"name": "an oasis and the ring around it", "heart": "the oasis", "ends": ["the oasis", "the far side of the desert"], "key_place": "the oasis's water", "travel": "expeditions outward from the oasis; coming back is a must", "ends_short": ["the oasis", "the far desert"]}
       - id: spine_crossroads
         breadth: wide
         label: Four roads meeting
@@ -208,7 +208,7 @@ tables:
         key_kind: crossroad
         parts: {heart: [land_plain, land_steppe], end_a: [], end_b: [], end_c: [], end_d: [], key_place: [land_plain, land_steppe]}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
-        text: {"name": "a crossroads of four roads", "heart": "the crossroads city", "ends_both": "four different climates and countries in the four directions", "key_place": "the crossroads itself", "travel": "outward from the centre, along four arms"}
+        text: {"name": "a crossroads of four roads", "heart": "the crossroads city", "ends_both": "four different climates and countries in the four directions", "key_place": "the crossroads itself", "travel": "outward from the centre, along four arms", "ends_short": ["the north", "the south"]}
       # 3. fragmented
       - id: spine_archipelago
         breadth: wide
@@ -218,7 +218,7 @@ tables:
         parts: {heart: [land_island], end_a: [land_island], end_b: [land_volcanic, land_forest, land_mountain, land_coast], key_place: [land_coast]}
         forces: [land_island, land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
-        text: {"name": "an archipelago", "heart": "the largest island", "ends": ["the inner islands", "the far and wild outer islands"], "key_place": "the only safe strait that links the islands", "key_place_short": "the only safe strait", "travel": "from island to island by ship, depending on the season"}
+        text: {"name": "an archipelago", "heart": "the largest island", "ends": ["the inner islands", "the far and wild outer islands"], "key_place": "the only safe strait that links the islands", "key_place_short": "the only safe strait", "travel": "from island to island by ship, depending on the season", "ends_short": ["the inner islands", "the outer islands"]}
       - id: spine_valley_maze
         breadth: tight
         label: A maze of valleys
@@ -227,7 +227,7 @@ tables:
         parts: {heart: [land_plain, land_river], end_a: [land_forest, land_plain, land_river, land_highland, land_lake], end_b: [land_forest, land_plain, land_river, land_highland, land_lake], key_place: [land_mountain, land_underground]}
         forces: [land_mountain]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "a maze of valleys", "heart": "the widest valley", "ends_both": "valleys parted from one another by mountains, each the valley of a different people", "key_place": "the tunnels and passes that link the valleys", "key_place_short": "the tunnels between the valleys", "travel": "through the passes; each valley is a world apart"}
+        text: {"name": "a maze of valleys", "heart": "the widest valley", "ends_both": "valleys parted from one another by mountains, each the valley of a different people", "key_place": "the tunnels and passes that link the valleys", "key_place_short": "the tunnels between the valleys", "travel": "through the passes; each valley is a world apart", "ends_short": ["the high valley", "the low valley"]}
       - id: spine_forest_clearings
         breadth: tight
         label: Clearings in an endless forest
@@ -236,7 +236,7 @@ tables:
         parts: {heart: [land_plain, land_forest], end_a: [land_plain, land_highland, land_lake, land_marsh], end_b: [land_forest], key_place: [land_forest]}
         forces: [land_forest]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "the clearings of an endless forest", "heart": "the largest clearing", "ends": ["the clearings", "the depths of the forest"], "key_place": "the trails that link the clearings", "travel": "from clearing to clearing, without roads"}
+        text: {"name": "the clearings of an endless forest", "heart": "the largest clearing", "ends": ["the clearings", "the depths of the forest"], "key_place": "the trails that link the clearings", "travel": "from clearing to clearing, without roads", "ends_short": ["the clearings", "the deep forest"]}
       - id: spine_mesa_land
         breadth: tight
         label: A land of mesas
@@ -245,7 +245,7 @@ tables:
         parts: {heart: [land_highland], end_a: [land_highland, land_mountain], end_b: [land_desert, land_river], key_place: [land_highland, land_mountain]}
         forces_one_of: [land_desert, land_highland]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a land of mesas", "heart": "the city on top of the largest mesa", "heart_short": "the city on the great mesa", "ends": ["the inhabited mesa tops", "the wild canyons between"], "key_place": "the bridges and ropeways that link the mesas", "key_place_short": "the bridges between the mesas", "travel": "from mesa to mesa, descents into the canyons"}
+        text: {"name": "a land of mesas", "heart": "the city on top of the largest mesa", "heart_short": "the city on the great mesa", "ends": ["the inhabited mesa tops", "the wild canyons between"], "key_place": "the bridges and ropeways that link the mesas", "key_place_short": "the bridges between the mesas", "travel": "from mesa to mesa, descents into the canyons", "ends_short": ["the mesa tops", "the canyons"]}
       - id: spine_lake_chain
         breadth: wide
         label: A chain of lakes
@@ -254,7 +254,7 @@ tables:
         parts: {heart: [land_lake], end_a: [land_lake], end_b: [land_marsh, land_river, land_forest, land_cold], key_place: [land_lake, land_river]}
         forces: [land_lake]
         weight_by: [{when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "a chain of lakes", "heart": "the city on the strait that joins two lakes", "heart_short": "the city on the strait", "ends_both": "the lakes at the two ends of the chain", "key_place": "the strait between the lakes", "travel": "from lake to lake, by water"}
+        text: {"name": "a chain of lakes", "heart": "the city on the strait that joins two lakes", "heart_short": "the city on the strait", "ends_both": "the lakes at the two ends of the chain", "key_place": "the strait between the lakes", "travel": "from lake to lake, by water", "ends_short": ["the upper lake", "the lower lake"]}
       # 4. layered
       - id: spine_three_depths
         breadth: tight
@@ -265,7 +265,7 @@ tables:
         parts: {heart: [land_underground], end_a: [land_plain, land_forest, land_highland, land_mountain], end_b: [land_underground], key_place: [land_underground]}
         forces: [land_underground]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "the surface, the middle depth and the deep", "heart": "the city in the middle layer", "ends": ["the surface", "the deepest layer"], "key_place": "the great shaft or lift that links the layers", "key_place_short": "the great shaft", "travel": "down and up"}
+        text: {"name": "the surface, the middle depth and the deep", "heart": "the city in the middle layer", "ends": ["the surface", "the deepest layer"], "key_place": "the great shaft or lift that links the layers", "key_place_short": "the great shaft", "travel": "down and up", "ends_short": ["the surface", "the deep"]}
       - id: spine_terraces
         breadth: tight
         label: Terraces
@@ -274,7 +274,7 @@ tables:
         parts: {heart: [land_highland, land_plain], end_a: [land_highland], end_b: [land_plain], key_place: [land_river, land_highland, land_mountain]}
         forces: [land_highland, land_plain]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "terraces", "heart": "the city on the middle terrace", "ends": ["the highland at the very top", "the plain at the very bottom"], "key_place": "the stairs and waterfalls between the terraces", "key_place_short": "the stairs between the terraces", "travel": "step by step"}
+        text: {"name": "terraces", "heart": "the city on the middle terrace", "ends": ["the highland at the very top", "the plain at the very bottom"], "key_place": "the stairs and waterfalls between the terraces", "key_place_short": "the stairs between the terraces", "travel": "step by step", "ends_short": ["the high terrace", "the low plain"]}
       - id: spine_two_worlds
         breadth: wide
         label: Two worlds, one over the other
@@ -286,7 +286,7 @@ tables:
         merges_with:                     # owner, 2026-09-28: the rift is no separate place
           ruin_planar_rift: "the rift is the two worlds' crossing point, the key place"
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
-        text: {"name": "two worlds, one on top of the other", "heart": "the city where the two worlds overlap", "heart_short": "the city between the worlds", "ends": ["our world", "the other plane"], "key_place": "the crossing points", "travel": "going back and forth between the two layers"}
+        text: {"name": "two worlds, one on top of the other", "heart": "the city where the two worlds overlap", "heart_short": "the city between the worlds", "ends": ["our world", "the other plane"], "key_place": "the crossing points", "travel": "going back and forth between the two layers", "ends_short": ["this world", "the other plane"]}
       - id: spine_mountain_within
         breadth: tight
         label: The mountain's inside and outside
@@ -296,7 +296,7 @@ tables:
         parts: {heart: [land_underground], end_a: [land_mountain], end_b: [land_underground], key_place: [land_mountain]}
         forces: [land_mountain, land_underground]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 3}]
-        text: {"name": "the inside and the outside of the mountain", "heart": "the city inside the mountain", "ends": ["the outside of the mountain", "the inside of the mountain"], "key_place": "the gates of the mountain", "travel": "in and out through the gates"}
+        text: {"name": "the inside and the outside of the mountain", "heart": "the city inside the mountain", "ends": ["the outside of the mountain", "the inside of the mountain"], "key_place": "the gates of the mountain", "travel": "in and out through the gates", "ends_short": ["the outer slopes", "the inner halls"]}
       - id: spine_above_below_sea
         breadth: tight
         label: Above and below the sea
@@ -305,7 +305,7 @@ tables:
         parts: {heart: [land_coast], end_a: [land_coast], end_b: [land_island, land_underground, land_marsh], key_place: [land_coast, land_underground]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}]
-        text: {"name": "above the sea and under the sea", "heart": "the coastal city or a reef", "heart_short": "the coastal city", "ends": ["the coast people", "the undersea peoples"], "key_place": "the underwater caves", "travel": "diving and underwater ways"}
+        text: {"name": "above the sea and under the sea", "heart": "the coastal city or a reef", "heart_short": "the coastal city", "ends": ["the coast people", "the undersea peoples"], "key_place": "the underwater caves", "travel": "diving and underwater ways", "ends_short": ["the coast", "the deep sea"]}
       # 5. frontier
       - id: spine_peninsula
         breadth: wide
@@ -315,7 +315,7 @@ tables:
         parts: {heart: [land_coast, land_plain], end_a: [land_coast, land_highland, land_forest], end_b: [land_plain, land_mountain, land_forest, land_steppe], key_place: [land_coast]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [short]}}, x: 2}]
-        text: {"name": "a peninsula", "heart": "the city near the neck", "ends": ["the tip of the peninsula", "the mainland"], "key_place": "the neck, the only land crossing", "key_place_short": "the neck of the peninsula", "travel": "within the peninsula; out by the neck or by sea"}
+        text: {"name": "a peninsula", "heart": "the city near the neck", "ends": ["the tip of the peninsula", "the mainland"], "key_place": "the neck, the only land crossing", "key_place_short": "the neck of the peninsula", "travel": "within the peninsula; out by the neck or by sea", "ends_short": ["the tip", "the mainland"]}
       - id: spine_strait_two_continents
         breadth: wide
         label: A strait and two continents
@@ -324,7 +324,7 @@ tables:
         parts: {heart: [land_coast], end_a: [land_plain, land_mountain, land_forest, land_desert, land_steppe, land_highland], end_b: [land_plain, land_mountain, land_forest, land_desert, land_steppe, land_highland], key_place: [land_coast]}
         forces: [land_coast]
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {era: [nautical]}}, x: 3}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "a strait and two continents", "heart": "the twin city on the two shores", "heart_short": "the twin city", "ends_both": "the two continents", "key_place": "the strait", "travel": "crossing the strait, going along the two shores"}
+        text: {"name": "a strait and two continents", "heart": "the twin city on the two shores", "heart_short": "the twin city", "ends_both": "the two continents", "key_place": "the strait", "travel": "crossing the strait, going along the two shores", "ends_short": ["the western shore", "the eastern shore"]}
       - id: spine_long_wall
         breadth: wide
         label: A border along a long wall
@@ -332,7 +332,7 @@ tables:
         key_kind: gate
         parts: {heart: [land_plain, land_steppe], end_a: [land_plain, land_river, land_forest], end_b: [land_steppe, land_desert, land_cold, land_forest, land_marsh], key_place: [land_mountain, land_highland, land_plain, land_steppe]}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "a border along a long wall", "heart": "the main gate of the wall", "heart_short": "the town at the main gate", "ends": ["inside the wall", "outside it"], "key_place": "the gates", "key_place_short": "the gates of the wall", "travel": "along the wall and out through the gates"}
+        text: {"name": "a border along a long wall", "heart": "the main gate of the wall", "heart_short": "the town at the main gate", "ends": ["inside the wall", "outside it"], "key_place": "the gates", "key_place_short": "the gates of the wall", "travel": "along the wall and out through the gates", "ends_short": ["the lands within", "the lands beyond"]}
       - id: spine_climate_belt
         breadth: wide
         label: A climate belt
@@ -341,7 +341,7 @@ tables:
         parts: {heart: [land_plain, land_steppe, land_highland], end_a: [land_cold], end_b: [land_desert], key_place: [land_mountain, land_coast, land_highland]}
         forces: [land_cold, land_desert]
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "a climate belt", "heart": "the city in the middle of the belt", "heart_short": "the city at the belt's middle", "ends": ["the frozen north", "the scorching south"], "key_place": "the place where the belt narrows", "travel": "east-west along the belt, expeditions to the edges"}
+        text: {"name": "a climate belt", "heart": "the city in the middle of the belt", "heart_short": "the city at the belt's middle", "ends": ["the frozen north", "the scorching south"], "key_place": "the place where the belt narrows", "travel": "east-west along the belt, expeditions to the edges", "ends_short": ["the frozen north", "the scorching south"]}
       - id: spine_edge_of_civilisation
         breadth: wide
         label: The edge of civilisation
@@ -349,7 +349,7 @@ tables:
         key_kind: gate
         parts: {heart: [land_plain, land_river], end_a: [land_plain, land_river, land_highland], end_b: [land_forest, land_marsh, land_mountain, land_cold, land_desert], key_place: [land_river, land_mountain, land_highland]}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}, {when: {dial: {scale: [epic]}}, x: 2}]
-        text: {"name": "the edge of civilisation", "heart": "the last great city", "ends": ["the known lands", "the unmapped wild"], "key_place": "the border fortress or the last bridge", "key_place_short": "the border fortress", "travel": "from the border out into the wild"}
+        text: {"name": "the edge of civilisation", "heart": "the last great city", "ends": ["the known lands", "the unmapped wild"], "key_place": "the border fortress or the last bridge", "key_place_short": "the border fortress", "travel": "from the border out into the wild", "ends_short": ["the known lands", "the wild"]}
       # 6. fantastic
       - id: spine_titan_back
         breadth: tight
@@ -359,7 +359,7 @@ tables:
         parts: {heart: [land_highland, land_forest], end_a: [], end_b: [], key_place: [land_underground, land_mountain]}
         requires: {dial: {magic: [high]}}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "a titan's back", "heart": "the city on the back", "ends": ["the head", "the tail"], "key_place": "the way down into the creature", "travel": "along the back"}
+        text: {"name": "a titan's back", "heart": "the city on the back", "ends": ["the head", "the tail"], "key_place": "the way down into the creature", "travel": "along the back", "ends_short": ["the head", "the tail"]}
       - id: spine_floating_archipelago
         breadth: tight
         label: A floating archipelago
@@ -369,7 +369,7 @@ tables:
         forces: [land_floating_isles]
         requires: {dial: {magic: [high]}}
         weight_by: [{when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "a floating archipelago", "heart": "the largest floating island", "ends": ["the high islands", "the islands close to the ground"], "key_place": "the chains and wind roads that link the islands", "key_place_short": "the chains and wind roads", "travel": "flying ships and bridges"}
+        text: {"name": "a floating archipelago", "heart": "the largest floating island", "ends": ["the high islands", "the islands close to the ground"], "key_place": "the chains and wind roads that link the islands", "key_place_short": "the chains and wind roads", "travel": "flying ships and bridges", "ends_short": ["the high islands", "the low islands"]}
       - id: spine_void_ring
         breadth: tight
         label: A ring around a bottomless void
@@ -378,7 +378,7 @@ tables:
         parts: {heart: [land_highland, land_mountain, land_plain], end_a: [], end_b: [], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
-        text: {"name": "a ring around a bottomless void", "heart": "the city that looks onto the void", "heart_short": "the city above the void", "ends_both": "the two opposite sides of the ring", "key_place": "the only bridge over the void", "travel": "along the ring or by the bridge"}
+        text: {"name": "a ring around a bottomless void", "heart": "the city that looks onto the void", "heart_short": "the city above the void", "ends_both": "the two opposite sides of the ring", "key_place": "the only bridge over the void", "travel": "along the ring or by the bridge", "ends_short": ["the near side", "the far side"]}
       - id: spine_giant_tree
         breadth: tight
         label: One giant tree, mountain-tall
@@ -388,7 +388,7 @@ tables:
         forces: [land_forest]
         requires: {dial: {magic: [medium, high]}}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "a single giant tree, tall as a mountain", "heart": "the city on the trunk", "ends": ["the country in the branches", "the country in the roots"], "key_place": "the trunk", "travel": "up to the branches, down to the roots"}
+        text: {"name": "a single giant tree, tall as a mountain", "heart": "the city on the trunk", "ends": ["the country in the branches", "the country in the roots"], "key_place": "the trunk", "travel": "up to the branches, down to the roots", "ends_short": ["the branches", "the roots"]}
         hooks:
           - {phase: validator, must: "the giant tree is no 'world tree'; nothing in it refers to a real-world mythology (errata #19)"}
       - id: spine_world_edge
@@ -399,7 +399,7 @@ tables:
         parts: {heart: [land_mountain, land_highland], end_a: [land_plain, land_forest, land_steppe, land_highland], end_b: [land_mountain, land_highland, land_coast], key_place: [land_mountain, land_highland]}
         requires: {dial: {magic: [medium, high]}}
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}, {when: {dial: {era: [underground]}}, x: 0.25}]
-        text: {"name": "the edge of the world", "heart": "the city at the edge of the cliff", "heart_short": "the city at the cliff's edge", "ends": ["the inner lands", "the sea of clouds beyond the cliff"], "key_place": "the only road down from the edge", "key_place_short": "the road down from the edge", "travel": "towards the edge and downward"}
+        text: {"name": "the edge of the world", "heart": "the city at the edge of the cliff", "heart_short": "the city at the cliff's edge", "ends": ["the inner lands", "the sea of clouds beyond the cliff"], "key_place": "the only road down from the edge", "key_place_short": "the road down from the edge", "travel": "towards the edge and downward", "ends_short": ["the inner lands", "the cloud sea"]}
 
   # ── 3. the ruin source: what left the dangerous places (8 families, 40) ────────────────────
   ruin_source:
@@ -1592,8 +1592,8 @@ tables:
         prize: heart
         seats: {"a": "heart", "b": "heart"}
         roles:
-          a: {text: "one half of the city", kind: settlement, hint: state}
-          b: {text: "the other half", kind: settlement, hint: state}
+          a: {text: "one half of the city", kind: settlement, hint: state, generic: true, noun: "the half of the city", toward: end_a}
+          b: {text: "the other half", kind: settlement, hint: state, generic: true, noun: "the half of the city", toward: end_b}
           third: {text: "the keepers of the gate that joins the two halves", short: "the middle gate's keepers", hint: null}
           fourth: {text: "the young who want to reunite", short: "the young reunifiers", hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1686,8 +1686,8 @@ tables:
         family: hidden_hand
         prize: heart
         roles:
-          a: {text: "one rival", number: singular, hint: state}
-          b: {text: "the other rival", number: singular, hint: state}
+          a: {text: "one rival", number: singular, hint: state, generic: true, noun: "the house"}
+          b: {text: "the other rival", number: singular, hint: state, generic: true, noun: "the house"}
           third: {text: "the merchant house that gives weapons and money to both", short: "the merchant house", number: singular, hint: trade}
           fourth: {text: "a fugitive who knows the truth", short: "a fugitive witness", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1700,8 +1700,8 @@ tables:
         family: hidden_hand
         prize: heart
         roles:
-          a: {text: "a local power", number: singular, hint: state}
-          b: {text: "the other local power", number: singular, hint: state}
+          a: {text: "a local power", number: singular, hint: state, generic: true, noun: "the power"}
+          b: {text: "the other local power", number: singular, hint: state, generic: true, noun: "the power"}
           third: {text: "the envoy of a distant kingdom who seems a friend to both", short: "the foreign envoy", kind: person, hint: state}
           fourth: {text: "a spy ring that senses the envoy's plan", short: "a wary spy ring", number: singular, hint: criminal}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1715,8 +1715,8 @@ tables:
         family: hidden_hand
         prize: disputed_land
         roles:
-          a: {text: "a country", kind: settlement, hint: state}
-          b: {text: "its neighbour", short: "the neighbouring country", kind: settlement, hint: state}
+          a: {text: "a country", kind: settlement, hint: state, generic: true, noun: "the country"}
+          b: {text: "its neighbour", short: "the neighbouring country", kind: settlement, hint: state, generic: true, noun: "the country"}
           third: {text: "the mercenary company that hires out to both sides and prolongs the war", short: "the war-fed company", number: singular, hint: martial}
           fourth: {text: "the merchants who want peace", hint: trade}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1729,8 +1729,8 @@ tables:
         family: hidden_hand
         prize: heart
         roles:
-          a: {text: "one of the new powers", number: singular, hint: state}
-          b: {text: "the other", short: "the other new power", number: singular, hint: state}
+          a: {text: "one of the new powers", number: singular, hint: state, generic: true, noun: "the new power"}
+          b: {text: "the other", short: "the other new power", number: singular, hint: state, generic: true, noun: "the new power"}
           third: {text: "the old state's secret admirers, who want to found it again", short: "the old state's admirers", hint: null}
           fourth: {text: "someone who does not know they are the heir", short: "an unknowing heir", kind: person, hint: null}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1743,8 +1743,8 @@ tables:
         family: hidden_hand
         prize: seat
         roles:
-          a: {text: "a village or family", short: "one household", number: singular, hint: state}
-          b: {text: "the other", short: "the other household", number: singular, hint: state}
+          a: {text: "a village or family", short: "one household", number: singular, hint: state, generic: true, noun: "the household"}
+          b: {text: "the other", short: "the other household", number: singular, hint: state, generic: true, noun: "the household"}
           third: {text: "a creature or fey in another guise that sets the two sides at each other", short: "a creature in disguise", kind: creature, hint: null}
           fourth: {text: "a hunter who suspects it", short: "a suspicious hunter", kind: person, hint: martial}
         weight_by: [{when: {dial: {content_mix: ["politics"]}}, x: 2}]
@@ -1774,7 +1774,7 @@ tables:
         third_is_rumour: true
         roles:
           a: {text: "the house that signed", number: singular, hint: state}
-          b: {text: "its rival", short: "the rival house", number: singular, hint: state}
+          b: {text: "its rival", short: "the rival house", number: singular, hint: state, generic: true, noun: "the rival house"}
           third: {text: "the fiend's envoy", kind: creature, hint: null}
           fourth: {text: "the fiend hunters", hint: martial}
         weight_by: [{when: {dial: {content_mix: ["mystery"]}}, x: 2}]
@@ -1799,8 +1799,8 @@ tables:
         prize: new
         prize_with: {ruin_sundered_relic: remnant}      # with that ruin the relic is its remnant; without it the relic is a new prize
         roles:
-          a: {text: "a house that holds one piece", short: "a house with one piece", number: singular, hint: state}
-          b: {text: "a house that holds another", short: "a house with another", number: singular, hint: state}
+          a: {text: "a house that holds one piece", short: "a house with one piece", number: singular, hint: state, generic: true, noun: "the house"}
+          b: {text: "a house that holds another", short: "a house with another", number: singular, hint: state, generic: true, noun: "the house"}
           third: {text: "the order sworn to keep the pieces apart", short: "the sworn order", number: singular, hint: religious}
           fourth: {text: "a finder with no banner", kind: person, hint: null}
         weight_by: [{when: {any_of: [ruin_sundered_relic]}, x: 3}, {when: {dial: {content_mix: ["exploration"]}}, x: 2}]
@@ -1836,8 +1836,8 @@ tables:
         family: two_hands
         prize: heart
         roles:
-          a: {text: "one empire", kind: settlement, hint: null}
-          b: {text: "its rival", short: "the rival empire", kind: settlement, hint: null}
+          a: {text: "one empire", kind: settlement, hint: null, generic: true, noun: "the empire"}
+          b: {text: "its rival", short: "the rival empire", kind: settlement, hint: null, generic: true, noun: "the empire"}
           third: {text: "the kingdom between them", kind: settlement, hint: state}
           fourth: {text: "that kingdom's exiles", short: "the border kingdom's exiles", hint: resistance}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]

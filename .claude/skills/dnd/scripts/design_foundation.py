@@ -578,6 +578,39 @@ def role_short(contest: dict, key: str) -> str:
     return role.get("short") or role["text"]
 
 
+def seat_short(spine_row: dict, part: str | None) -> str | None:
+    """A seated part's short name (build item 21a): an end's `ends_short`, the heart's and the key place's short names;
+    None for an along node or no seat."""
+    text = spine_row["text"]
+    if part in END_PARTS:
+        ends = text.get("ends_short") or []
+        k = END_PARTS.index(part)
+        return ends[k] if k < len(ends) else None
+    if part in ("heart", "key_place"):
+        return _short(text, part)
+    return None
+
+
+def side_phrase(out: dict, contest: dict, key: str, seats: dict | None = None) -> str:
+    """A side as the story sentence and the prize phrase name it (build item 21a: the fourth test birth read "one
+    household and the other household"): a generic role (`generic: true`, a placeholder such as "one rival" or "its
+    neighbour") by its `noun` and where the layout seats it, "<noun> of <the seat's short name>"; a role that faces
+    an end (`toward`, the divided city's halves, both seated in the heart) "<noun> toward <that end's short name>";
+    every other role, or a seat with no short name, by its short label."""
+    role = contest["roles"][key]
+    if not role.get("generic"):
+        return role_short(contest, key)
+    spine = rows_by_id("spine")[out["spine"]]
+    if role.get("toward"):
+        where = seat_short(spine, role["toward"])
+        return f"{role['noun']} toward {where}" if where else role_short(contest, key)
+    if seats is None:
+        main = ((out.get("layout") or {}).get("contests") or [{}])[0]
+        seats = (main.get("seats") or {}) if main.get("contest") == contest["id"] else {}
+    where = seat_short(spine, seats.get(key))
+    return f"{role['noun']} of {where}" if where else role_short(contest, key)
+
+
 def role_number(contest: dict, key: str) -> str:
     """A role's grammatical number (build item 19a): its own `number`, else a group's plural and every other kind's
     singular."""
@@ -621,7 +654,7 @@ def target_phrase(out: dict) -> str:
     if piece in ("key_place", "heart"):
         return _short(spine["text"], piece)
     if piece == "role":
-        return role_short(rows_by_id("contest")[out["contests"][0]["id"]], out["target_role"])
+        return side_phrase(out, rows_by_id("contest")[out["contests"][0]["id"]], out["target_role"])
     return THIN_PLACE
 
 
@@ -634,12 +667,12 @@ def prize_phrase(out: dict, seated: dict) -> str:
     own = (contest.get("text") or {}).get("prize")
     if kind == "disputed_land":
         side = contest.get("prize_at")
-        return f"the land of {role_short(contest, side)}" if side else "the land between them"
+        return f"the land of {side_phrase(out, contest, side, seated['seats'])}" if side else "the land between them"
     if kind in ("new", "seat") and own:
         return own
     return {"heart": _short(spine, "heart"), "key_place": _short(spine, "key_place"),
             "remnant": _short(rows_by_id("ruin_source")[out["ruin"]]["text"], "remnant"),
-            "seat": f"the seat of {role_short(contest, 'a')}", "new": "a new thing both want",
+            "seat": f"the seat of {side_phrase(out, contest, 'a', seated['seats'])}", "new": "a new thing both want",
             "thin_place": THIN_PLACE}.get(kind, "")
 
 
@@ -662,7 +695,7 @@ def subject_of(out: dict) -> tuple[str, str]:
     if hand.get("id") == "hand_contest_side" and out["move"].get("hand_role"):
         # build item 19a: the world sees the role act; that it was deceived lives in dm-only alone
         contest = rows_by_id("contest")[out["contests"][0]["id"]]
-        return role_short(contest, out["move"]["hand_role"]), role_number(contest, out["move"]["hand_role"])
+        return side_phrase(out, contest, out["move"]["hand_role"]), role_number(contest, out["move"]["hand_role"])
     return (hand.get("text") or {}).get("subject") or (hand.get("text") or {}).get("name"), hand.get("number") or "singular"
 
 
@@ -684,7 +717,8 @@ def spine_sentence(out: dict) -> str:
     generation-old move opening with "A generation ago,". A slot that would hold texture or nothing is a table fault."""
     main = out["layout"]["contests"][0]
     contest = rows_by_id("contest")[main["contest"]]
-    parts = {"the move": move_clause(out), "side a": role_short(contest, "a"), "side b": role_short(contest, "b"),
+    parts = {"the move": move_clause(out), "side a": side_phrase(out, contest, "a", main["seats"]),
+             "side b": side_phrase(out, contest, "b", main["seats"]),
              "the prize": prize_phrase(out, main)}
     empty = [k for k, v in parts.items() if not v]
     if empty or PIECE_OF_TARGET[out["target"]] == "lifeline" or main["prize"]["kind"] == "lifeline":

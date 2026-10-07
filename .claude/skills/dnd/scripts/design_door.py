@@ -21,6 +21,7 @@ design/dm-only/door-log.json, and the conductor sees a count).
   11  no secret in the public file: no secret row's id or statement, no secret-stock name; the premise's
       spoiler-safe abstract is the archetype's class and nothing else
   12  a lexical "never" pattern (forbidden.yaml's one row) is scanned in the public prose
+  21a the premise's question is one sentence per contest, each at most QUESTION_WORDS words
   20a every premise, signature and break row matches the script's frame (design_frame.py) in every field the rolls
       set: a changed or missing frame field is refused by its name
 """
@@ -55,6 +56,9 @@ NO_PROSE_KEYS = {"id", "type", "file", "secrecy", "origin", "created_phase", "la
                  "kind", "phase", "dm_only", "secret_class", "secret_class_tr", "naming_languages",
                  "hook"}     # build item 18e: an `appears` note's hook is a table's own sentence, checked word for word
 WORD = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z'’]*(?![0-9_])")
+# build item 21a (the fourth test birth: each contest's question ran to about a hundred words and the card could not be
+# read): the prompt asks one sentence per contest of about thirty-five words; the door refuses one past this
+QUESTION_WORDS = 45
 OPENERS = ".!?:;|—–#>"
 
 
@@ -231,6 +235,12 @@ def planes_in(text: str) -> list[tuple[int, str]]:
             if re.search(r"(?<![\w])" + re.escape(name) + r"(?![\w])", line, flags):
                 found.append((no, name))
     return found
+
+
+def question_sentences(text: str) -> list[tuple[str, int]]:
+    """(sentence, words) for each question a premise's `question` holds: a sentence ends at its question mark."""
+    parts = [p for p in re.split(r"(?<=\?)\s+", str(text or "").strip()) if p.strip()]
+    return [(p, len(re.findall(r"[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*", p))) for p in parts]
 
 
 def later_floor(phase) -> bool:
@@ -457,6 +467,12 @@ class Door:
         want = [q["id"] for q in self.identity["questions"]]
         if list(row.get("tensions") or []) != want:
             errs.append(f"{eid}: `tensions` must be the rolled question id(s) {want}")
+        contests = [q.get("contest") for q in self.identity["questions"]]
+        for n, (_, words) in enumerate(question_sentences(row.get("question"))):
+            if words > QUESTION_WORDS:
+                who = contests[n] if n < len(contests) else f"question {n + 1}"
+                errs.append(f"{eid}: `question` holds a question of {words} words for {who}; one sentence per contest, at most about "
+                            f"thirty-five words (refused past {QUESTION_WORDS}): say the costs in the sides' lines and the stakes")
         sigs = [r for r in self.rows.values() if r.get("type") == "signature"]
         for slot in SLOTS:
             n = sum(1 for r in sigs if r.get("slot") == slot)
