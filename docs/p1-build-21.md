@@ -77,3 +77,13 @@ The guard unwraps before it judges a segment:
 - **a grouping:** a leading `(`, `{` and their closers, and a process substitution `<(...)` / `>(...)`, are commands like `$(...)`.
 
 **Tests:** every case above with `grep -r`, `find`, `ls -R` and `Get-ChildItem -Recurse` on a parent folder of dm-only is refused; the same words as text inside a `bash -c` string's own quotes (`bash -c 'echo "grep -r"'`) pass; 21b's text cases still pass.
+
+## Part 21d — the door counts the pitch too (owner-approved 2026-10-07)
+
+Read in the fourth birth's premise: the player pitch's first two sentences ran past sixty words each, though the prompt asked "three sentences"; 21a's prompt now says "three short sentences", but nothing gates it. **A fourth green commit:** `Plan item 25, build 21d: the door counts the pitch`.
+
+1. **The door** refuses a premise row whose `pitch` is not three sentences, or holds a sentence past 40 words, naming the sentence's number and its count (the retry prompt carries it). A sentence ends at `.`, `?` or `!` followed by a space or the end; a question mark inside quotes ends nothing. The prose file's pitch section and the row's `pitch` stay the same text (the door already compares them, or it does so now).
+2. **The prompt** says it: three sentences, each at most about thirty words; the land's breaks and the costs are said elsewhere (the trope breaks, the sides' lines), not in the pitch.
+3. **`rubric_p1_legible`** fails a pitch a player cannot read aloud in under half a minute.
+
+**Tests:** a pitch of four sentences and a pitch with a 41-word sentence are refused with their counts; the fourth birth's pitch is refused; a pitch of three 30-word sentences passes; the prompt's and the rubric's words.
