@@ -34,7 +34,7 @@ mirror: design/dm-only/premise-secret.md
 *(the record is `design/naming.json`)*
 
 ### The player pitch
-*Three sentences, no secret, three jobs: a threat with a face; the campaign's question, asked in this world's words and never answered; the first session's task, where step 1 lands.*
+*Three short sentences, each at most about thirty words, no secret, three jobs: a threat with a face; the campaign's question, asked in this world's words and never answered; the first session's task, where step 1 lands.*
 
 <sentence one> <sentence two> <sentence three>
 

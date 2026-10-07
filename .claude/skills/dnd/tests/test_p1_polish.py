@@ -52,6 +52,81 @@ class TheShortQuestion(Base):
         self.assertIn("cannot be read in one breath", rubric["fails_when"])
 
 
+FOURTH_BIRTH_PITCH = (     # _test-p1-4's public pitch (docs/reports/p1-test-birth-4.md): two sentences past sixty words
+    "Giants are walling the strait between the lakes stone by stone, in a land where the gods mark a hundred chosen in every "
+    "generation to carry a burden with rules and where wars are fought by champions, not armies, and only a challenge of "
+    "champions at the last gap has stopped them for now. Two households at the two ends of the chain fight over the seat of "
+    "the end lake: one keeps the hope that the strait will open and the champions' truce that lets the boats pass, the other "
+    "swears to drag out who set the giants on it, though naming a guilty house would call champions on every lake and tear "
+    "the city on the strait open, so which of them should have the seat? The first task waits in a fishing village on the "
+    "half-walled strait, where the giants' stone convoys pass by night and the village wants someone to follow them and "
+    "learn where they go.")
+
+
+class ThePitch(Base):
+    """Build item 21d: three sentences, each at most forty words, the same text in the row and the prose file."""
+
+    def test_the_door_counts_the_pitch(self):
+        thirty = lambda end: " ".join(["word"] * 29) + " " + end      # noqa: E731  (thirty words a sentence)
+        self.assertEqual(door.pitch_errors("p", f"{thirty('one.')} {thirty('two?')} {thirty('three!')}"), [])
+        four = door.pitch_errors("p", "One is asked. Two are here. Three is turned. Four is more.")
+        self.assertEqual(four, ["p: `pitch` holds 4 sentence(s); it is three short sentences (a threat with a face, the question, "
+                                "the first session's task), the land's breaks and the costs said elsewhere"])
+        long_two = door.pitch_errors("p", "One is asked. " + " ".join(["word"] * 40) + " end. Three is turned.")
+        self.assertEqual(long_two, ["p: `pitch` sentence 2 has 41 words; each is at most about thirty (refused past 40)"])
+        fourth = door.pitch_errors("p", FOURTH_BIRTH_PITCH)
+        self.assertEqual(fourth, ["p: `pitch` sentence 1 has 54 words; each is at most about thirty (refused past 40)",
+                                  "p: `pitch` sentence 2 has 74 words; each is at most about thirty (refused past 40)"])
+        # a stop inside quotes ends nothing, unless the closing quote follows it and a space or the end follows the quote
+        self.assertEqual(door.sentences('Ask: "Which house should hold the seat?" The first task waits in a village.'),
+                         ['Ask: "Which house should hold the seat?"', "The first task waits in a village."])
+        self.assertEqual(door.sentences("The heir says “the seat is mine.” Who is right? Go."),
+                         ["The heir says “the seat is mine.”", "Who is right?", "Go."])
+        self.assertEqual(len(door.sentences('They say "who? why" often. Two. Three.')), 3, "a stop with more inside the quotes ends nothing")
+
+    def test_the_file_s_pitch_is_read_plain(self):
+        """The template's own guidance line is dropped, nothing else; `*`/`_` emphasis is no difference."""
+        pitch = "A threat walks. Who holds the seat? Go to the village."
+        guide = next(iter(door.template_guidance("### The player pitch")))
+        self.assertIn("Three short sentences, each at most about thirty words", guide)
+        for body in (f"*{guide}*\n\n{pitch}", f"*{pitch}*", f"_{pitch}_", f"**A threat walks.** Who holds the seat? *Go to the village.*"):
+            self.assertEqual(door.section_text(f"### The player pitch\n{body}\n\n### Only here\n- x", "### The player pitch"),
+                             door.plain(pitch), body)
+        self.assertEqual(door.section_text("### The player pitch\n*An old guidance line.*\n" + pitch, "### The player pitch"),
+                         "An old guidance line. " + pitch, "a line that is not the template's own is part of the pitch")
+
+    def test_the_merge_refuses_a_long_pitch_and_a_pitch_unlike_the_file(self):
+        w = self.walker()
+
+        def long_pitch(rows, picked):
+            rows[w.premise_id]["pitch"] = FOURTH_BIRTH_PITCH
+        w.write(long_pitch)
+        w.d("phase", "P1", "merge", check=False)
+        why = " ".join((w.json("design/_staging/P1/merge.report.json").get("refused") or {}).get(w.premise_id) or [])
+        self.assertIn("`pitch` sentence 2 has 74 words", why)
+        self.assertIn("and the row's `pitch` differ", why, "the file still holds the stand-in's pitch")
+
+        def other_pitch(rows, picked):
+            rows[w.premise_id]["pitch"] = "Another thing is asked. Three things are only here. One rule is turned over."
+        w.write(other_pitch)
+        w.d("phase", "P1", "merge", check=False)
+        why = " ".join((w.json("design/_staging/P1/merge.report.json").get("refused") or {}).get(w.premise_id) or [])
+        self.assertIn("(its `### The player pitch` section) and the row's `pitch` differ", why)
+        self.assertNotIn("`pitch` holds", why, "the other pitch is three sentences")
+        self.assertNotIn("words; each is at most", why, "each of them short")
+        w.write()
+        w.d("phase", "P1", "merge")
+        self.assertIn(w.premise_id, w.merged(), "the stand-in's pitch is three short sentences, the file's own")
+
+    def test_the_prompt_and_the_rubric_say_it(self):
+        w = self.walker()
+        text = dpm.render(w.name, "P1.premise", w.premise_id)
+        self.assertIn("three short sentences, each at most about thirty words", text)
+        self.assertIn("the land's breaks and the costs are said elsewhere", text)
+        rubric = dt.row("rubrics.yaml#phase_rubric", "rubric_p1_legible")
+        self.assertIn("cannot be read aloud in under half a minute", rubric["fails_when"])
+
+
 class TheNamedSides(unittest.TestCase):
     """Build item 21a part 2 (docs/p1-build-21.md, the amendment): a generic side is named by its noun and its seat."""
 

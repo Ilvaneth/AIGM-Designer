@@ -87,7 +87,10 @@ class Walker:
                   f"covers: [{covers}]\nmirror: design/dm-only/premise-secret.md\n---\n\n# Premise\n\n## Public\n\n### The question\n"
                   f"- who keeps what the old keepers left?\n\n### The three signatures\n- **The people:** the {door.bare(people)} keep the road and ask nothing for it.\n"
                   f"- **The institution:** nobody argues with {picked['institution']} twice.\n- **The phenomenon:** when {picked['phenomenon']} comes, the natives stay indoors.\n\n"
-                  f"### The player pitch\nOne thing is asked. Three things are only here. One rule is turned over.\n{public_extra}\n## Discoverable\n\n- a native could learn why the road is kept.\n")
+                  # build item 21d: the pitch section holds the pitch alone (the door compares it with the row); a test's
+                  # extra public text stands in a section of its own
+                  f"### The world\n{public_extra}\n"
+                  f"### The player pitch\nOne thing is asked. Three things are only here. One rule is turned over.\n\n## Discoverable\n\n- a native could learn why the road is kept.\n")
         mirror = (f"---\nentity: {self.premise_id}\ntype: premise\nsecrecy: secret\nphase: P1\nmirror_of: design/premise.md\n---\n\n## Secret\n\n### The secret\n"
                   f"The truth of the move is written in this file and in no other file of this birth"
                   + (f"; {god} is the god it is pinned to.\n" if pin["god"] else ".\n") + mirror_extra)

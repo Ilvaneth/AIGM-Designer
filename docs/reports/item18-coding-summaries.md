@@ -539,3 +539,29 @@ Two more were left during my gating run, at 17:04 and 17:25. They came from anot
 **Changed files:** `scripts/hooks/design_read_guard.py`, `tests/test_design_read_guard.py`.
 
 **The suite:** 896 tests, OK, exit code 0, 1,998 s (33.3 min). No `aigm-*` folder left.
+
+## 21d — the door counts the pitch (the fifth coding tab)
+
+**The door** (`design_door.py`):
+- **Sentences:** `sentences(text)` folds whitespace and ends a sentence at `.`, `?` or `!` followed by a space or the end; a run such as `...` ends once. Inside quotes (straight or curly) a stop ends nothing, unless the closing quote follows it directly and a space or the end follows the quote; then the sentence ends after the quote (your audit's fix: a pitch that quotes its question). So `Ask: "Which house should hold the seat?" The first task waits in a village.` is two sentences, and `They say "who? why" often.` is one.
+- **The pitch:** `pitch_errors` (called in `Door.premise_errors`) refuses a premise row whose `pitch` is not `PITCH_SENTENCES = 3` sentences, and each sentence past `PITCH_WORDS = 40` words, naming the sentence's number and count (`` `pitch` sentence 2 has 74 words; each is at most about thirty (refused past 40) ``). A refusal reaches the retry prompt through `last_error`.
+- **The file:** no check compared the prose file's pitch with the row's before, so the door does now. `section_text` reads `### The player pitch` up to the next heading. It takes out comments and the template's own guidance line only (`template_guidance` reads it from `templates/design/premise.md`; another italic line is part of the pitch). It reads both sides plain (`plain`: `*`/`_` emphasis and whitespace taken out), so a pitch set in italics is the same pitch. `prose_errors` refuses the premise when the two differ. The template's guidance line now reads "Three short sentences, each at most about thirty words, …".
+
+**The prompt:** "three short sentences, each at most about thirty words (the door refuses …), no secret; the land's breaks and the costs are said elsewhere (the trope breaks, the sides' lines), never in the pitch; the row's `pitch` is the same text as this section". **The rubric:** `rubric_p1_legible`'s `fails_when` adds a pitch that cannot be read aloud in under half a minute.
+
+**The fourth birth's pitch** has three sentences of 54, 74 and 33 words: it is refused for sentences 1 and 2.
+
+**Tests** (`test_p1_polish.py`, class `ThePitch`, 4 tests):
+- three 30-word sentences pass;
+- four sentences are refused with the count, and a 41-word second sentence with its number and count;
+- the fourth birth's pitch is refused (54, 74);
+- your two quote cases (the quoted question ends after its quote; “the seat is mine.” ends after its quote), and a stop with more inside the quotes ends nothing;
+- `test_the_file_s_pitch_is_read_plain`: the template's guidance line dropped and nothing else, and a pitch in `*`, `_` or mixed `**`/`*` emphasis read as the plain pitch;
+- at the merge: the fourth birth's pitch is refused for its length and for differing from the file, another three-sentence pitch is refused for differing from the file alone, and the stand-in's own pitch merges;
+- the prompt's and the rubric's words.
+
+**On the way:** the dry walk's stand-in writer put a test's extra public text inside the pitch section, so the new comparison refused it (one failure in the first run, in `test_p1_birth_faults`). The stand-in now writes that text in a `### The world` section of its own.
+
+**Changed files:** `scripts/design_door.py`, `prompts/design/P1.premise.md`, `templates/design/premise.md`, `data/design/rubrics.yaml`; tests: `test_p1_polish.py`, `test_p1_dry_walk.py`.
+
+**The suite:** after your two fixes, 900 tests, OK, exit code 0, 1,793 s (29.9 min); before them, 899 tests, OK. No `aigm-*` folder left.

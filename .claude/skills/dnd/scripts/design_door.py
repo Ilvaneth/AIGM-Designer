@@ -22,6 +22,8 @@ design/dm-only/door-log.json, and the conductor sees a count).
       spoiler-safe abstract is the archetype's class and nothing else
   12  a lexical "never" pattern (forbidden.yaml's one row) is scanned in the public prose
   21a the premise's question is one sentence per contest, each at most QUESTION_WORDS words
+  21d the premise's pitch is three sentences, each at most PITCH_WORDS words, the same text as the prose file's
+      pitch section
   20a every premise, signature and break row matches the script's frame (design_frame.py) in every field the rolls
       set: a changed or missing frame field is refused by its name
 """
@@ -59,6 +61,9 @@ WORD = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z'’]*(?![0-9_])")
 # build item 21a (the fourth test birth: each contest's question ran to about a hundred words and the card could not be
 # read): the prompt asks one sentence per contest of about thirty-five words; the door refuses one past this
 QUESTION_WORDS = 45
+# build item 21d (the fourth test birth's pitch ran two sentences past sixty words): three sentences, each at most this
+PITCH_WORDS = 40
+PITCH_SENTENCES = 3
 OPENERS = ".!?:;|—–#>"
 
 
@@ -241,6 +246,87 @@ def question_sentences(text: str) -> list[tuple[str, int]]:
     """(sentence, words) for each question a premise's `question` holds: a sentence ends at its question mark."""
     parts = [p for p in re.split(r"(?<=\?)\s+", str(text or "").strip()) if p.strip()]
     return [(p, len(re.findall(r"[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*", p))) for p in parts]
+
+
+def words_in(text: str) -> int:
+    return len(re.findall(r"[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*", str(text or "")))
+
+
+def sentences(text: str) -> list[str]:
+    """A text's sentences (build item 21d): a sentence ends at `.`, `?` or `!` followed by a space or the end; inside
+    quotes (straight or curly) a stop ends nothing, unless the closing quote follows it directly and a space or the end
+    follows the quote: then the sentence ends after the quote (a pitch that quotes its question)."""
+    text = " ".join(str(text or "").split())
+    out, cur, quoted = [], [], False
+    for i, c in enumerate(text):
+        cur.append(c)
+        nxt = text[i + 1] if i + 1 < len(text) else " "
+        if c in "“”\"":
+            opens = c == "“" or (c == '"' and not quoted)
+            if quoted and not opens and i > 0 and text[i - 1] in ".?!" and nxt == " ":
+                out.append("".join(cur).strip())
+                cur = []
+            quoted = opens
+            continue
+        if c in ".?!" and not quoted and nxt == " " and not (i + 1 < len(text) and text[i + 1] in ".?!"):
+            out.append("".join(cur).strip())
+            cur = []
+    rest = "".join(cur).strip()
+    if rest:
+        out.append(rest)
+    return [s for s in out if s]
+
+
+def pitch_errors(eid: str, pitch) -> list[str]:
+    """Three sentences, each at most PITCH_WORDS words (build item 21d); the sentence named by its number and count."""
+    said = sentences(pitch)
+    errs = []
+    if len(said) != PITCH_SENTENCES:
+        errs.append(f"{eid}: `pitch` holds {len(said)} sentence(s); it is three short sentences (a threat with a face, the "
+                    "question, the first session's task), the land's breaks and the costs said elsewhere")
+    for n, s in enumerate(said, 1):
+        w = words_in(s)
+        if w > PITCH_WORDS:
+            errs.append(f"{eid}: `pitch` sentence {n} has {w} words; each is at most about thirty (refused past {PITCH_WORDS})")
+    return errs
+
+
+def plain(text: str) -> str:
+    """A text without its `*` / `_` emphasis, whitespace folded (build item 21d: a pitch set in italics is the same pitch)."""
+    text = re.sub(r"\*+", "", str(text or ""))
+    text = re.sub(r"(?<![A-Za-z0-9])_+|_+(?![A-Za-z0-9])", "", text)
+    return " ".join(text.split())
+
+
+def template_guidance(heading: str) -> set[str]:
+    """The guidance lines the premise template sets under a heading (its whole-line italic instructions), plain."""
+    path = Path(__file__).resolve().parent.parent / "templates" / "design" / "premise.md"
+    lines = path.read_text(encoding="utf-8").split("\n") if path.is_file() else []
+    start = next((i for i, l in enumerate(lines) if l.strip().lower() == heading.lower()), None)
+    out = set()
+    for l in lines[start + 1:] if start is not None else []:
+        if l.lstrip().startswith("#"):
+            break
+        if re.fullmatch(r"\s*\*[^*].*\*\s*", l):
+            out.add(plain(l))
+    return out
+
+
+def section_text(text: str, heading: str) -> str | None:
+    """The prose under a `###` heading up to the next heading, plain (comments, the template's own guidance line and
+    emphasis taken out, whitespace folded); None if absent."""
+    lines = str(text or "").split("\n")
+    start = next((i for i, l in enumerate(lines) if l.strip().lower() == heading.lower()), None)
+    if start is None:
+        return None
+    guide = template_guidance(heading)
+    body = []
+    for l in lines[start + 1:]:
+        if l.lstrip().startswith("#"):
+            break
+        if plain(l) not in guide:
+            body.append(l)
+    return plain(re.sub(r"<!--.*?-->", " ", "\n".join(body), flags=re.S))
 
 
 def later_floor(phase) -> bool:
@@ -467,6 +553,7 @@ class Door:
         want = [q["id"] for q in self.identity["questions"]]
         if list(row.get("tensions") or []) != want:
             errs.append(f"{eid}: `tensions` must be the rolled question id(s) {want}")
+        errs += pitch_errors(eid, row.get("pitch"))          # build item 21d
         contests = [q.get("contest") for q in self.identity["questions"]]
         for n, (_, words) in enumerate(question_sentences(row.get("question"))):
             if words > QUESTION_WORDS:
@@ -535,6 +622,12 @@ class Door:
             warns += self.never_warnings(f"{uid}: {rel}", text)
             for no, name in planes_in(text)[:6]:
                 errs.append(f"{uid}: {rel} line {no}: names a plane ({name}); no plane is named at P1: the thin place's plane is chosen at P2")
+            # build item 21d: the prose file's pitch and the premise row's `pitch` are one text
+            said = section_text(text, "### The player pitch")
+            for eid, row in rows:
+                if row.get("type") == "premise" and said is not None and said != plain(row.get("pitch")):
+                    errs.append(f"{eid}: the pitch in {rel} (its `### The player pitch` section) and the row's `pitch` differ; "
+                                "they are the same three sentences")
         for eid, row in rows:
             if row.get("secrecy") == "secret":
                 continue
