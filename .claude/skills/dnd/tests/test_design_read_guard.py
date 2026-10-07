@@ -148,6 +148,31 @@ class ReadGuard(unittest.TestCase):
         self.arm(session="sess-B")
         self.assertEqual(grep(path=design), 0, "another session's marker")
 
+    def test_the_guard_reads_command_words_not_text(self):
+        """Build item 21b: a heredoc's body, a quoted string's body and a comment are text; a search command is still
+        caught whatever text surrounds it."""
+        self.arm()
+        design = str(self.camp / "design")
+        posix = design.replace("\\", "/")         # an unquoted path in Bash is written with forward slashes
+        text = [("Bash", f'cat > notes.md <<\'EOF\'\nrun find "{design}" and grep -r foo "{design}"\nls -R "{design}"\nEOF\necho done'),
+                ("Bash", f'cat <<-EOF > notes.md\n\tfind "{design}" -name x\n\tEOF'),
+                ("Bash", f'echo "a; grep -r foo {design}" | head'),
+                ("Bash", f"echo 'find {design} -name x'  # and ls -R {design}"),
+                ("Bash", f'git commit -m "the guard now refuses grep -r over {design}"'),
+                ("PowerShell", f"$t = @'\nGet-ChildItem -Recurse {design}\n'@\nWrite-Output $t"),
+                ("PowerShell", f"Write-Output 'gci -Recurse {design}' # dir /s {design}")]
+        for tool, command in text:
+            self.assertEqual(self.guard(payload(tool, command=command)), 0, command)
+        caught = [("Bash", f'cat > x.md <<EOF\nnotes\nEOF\ngrep -rn foo "{design}"'),
+                  ("Bash", f'echo "found: $(grep -r foo {posix})"'),
+                  ("Bash", f"x=`find {posix}`"),
+                  ("Bash", f'echo "a" && ls -R "{design}" # a comment after'),
+                  ("PowerShell", f"Write-Output 'x'; Get-ChildItem -Recurse {design}")]
+        for tool, command in caught:
+            self.assertEqual(self.guard(payload(tool, command=command)), 2, command)
+        self.assertEqual(self.guard(payload("Bash", command=f'cat <<EOF\n{self.dm_only}\nEOF')), 2,
+                         "a dm-only path is refused wherever it stands, a heredoc's body too")
+
     def test_recursive_shell_searches_and_listings_over_a_parent_folder_are_refused(self):
         self.arm()
         design, camp, npcs = str(self.camp / "design"), str(self.camp), str(self.camp / "design" / "npcs")

@@ -32,6 +32,8 @@ reads of a finished file are never guarded (24.6 #5).
     matches no file there now; a recursive shell search or listing (grep -r,
     rg, find, ls -R, tree, git grep, findstr /s, dir /s, Get-ChildItem or
     Select-String -Recurse) on a parent folder is refused (build 19d).
+    Only command words are read: a heredoc's body, a quoted string's body and a
+    comment are text (build item 21b).
   * any mode, any session, any caller — a shell command that names a runtime
     override (AIGM_TEST_RUNTIME, DND_RUNTIME_DIR) is refused: it would move the
     scripts' own marker checks to an empty runtime (build 19c).
@@ -143,8 +145,138 @@ PROTECTED_DIRS = ("dm-only", "_staging")
 # ripgrep's type names whose extensions the protected folders can hold; any other type is its own extension
 TYPE_EXTS = {"md": {"md", "markdown", "mdx", "mkd", "mkdn", "mdwn"}, "markdown": {"md", "markdown", "mdx", "mkd", "mkdn", "mdwn"},
              "json": {"json", "jsonl", "geojson", "sarif"}, "yaml": {"yaml", "yml"}, "txt": {"txt"}, "csv": {"csv"}}
-_SHELL_SPLIT = re.compile(r"\|\||&&|[;|\n]")
 _GITBASH_DRIVE = re.compile(r"^/([a-zA-Z])(/|$)")
+_HEREDOC = re.compile(r"<<(-?)[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\2")
+
+
+def _close_paren(text: str, start: int) -> int:
+    """The index of the `)` that closes the `(` at `start` (the end of the text when it never closes)."""
+    depth, i = 0, start
+    while i < len(text):
+        if text[i] == "(":
+            depth += 1
+        elif text[i] == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    return len(text)
+
+
+def _command_segments(command: str, posix: bool = True) -> list[str]:
+    """The commands of a Bash or PowerShell line, each as its own text (build item 21b: the guard read a heredoc's body
+    as commands and refused the design tab's `find` in it). The line splits on `;`, `&`, `|` and newlines outside
+    quotes; a heredoc's body (`<<EOF` … `EOF`), a PowerShell here-string (`@'` … `'@`), a comment and a quoted
+    string's body are text and never a command; a command substitution (`$(…)`, a backtick pair in Bash), quoted or
+    not, is a command and its own segments are returned too."""
+    segs: list[str] = []
+    cur: list[str] = []
+    heredocs: list[tuple[str, bool]] = []
+    quote = None
+    esc = "\\" if posix else "`"
+    i, n = 0, len(command or "")
+    text = command or ""
+
+    def flush():
+        s = "".join(cur).strip()
+        if s:
+            segs.append(s)
+        cur.clear()
+
+    while i < n:
+        c = text[i]
+        if quote:
+            if c == esc and quote == '"' and i + 1 < n:
+                cur.append(text[i:i + 2])
+                i += 2
+                continue
+            if c == quote:
+                if not posix and i + 1 < n and text[i + 1] == quote:      # PowerShell's doubled quote inside a string
+                    cur.append(c * 2)
+                    i += 2
+                    continue
+                quote = None
+                cur.append(c)
+                i += 1
+                continue
+            if quote == '"' and text.startswith("$(", i):
+                j = _close_paren(text, i + 1)
+                segs.extend(_command_segments(text[i + 2:j], posix))
+                cur.append(text[i:j + 1])
+                i = j + 1
+                continue
+            if quote == '"' and posix and c == "`":
+                j = text.find("`", i + 1)
+                j = n if j < 0 else j
+                segs.extend(_command_segments(text[i + 1:j], posix))
+                cur.append(text[i:j + 1])
+                i = j + 1
+                continue
+            cur.append(c)
+            i += 1
+            continue
+        if c == esc and i + 1 < n:
+            cur.append(text[i:i + 2])
+            i += 2
+            continue
+        if not posix and text.startswith(("@'", '@"'), i) and text[i + 2:i + 3] in ("\n", "\r"):
+            end = text.find("\n" + text[i + 1] + "@", i + 2)
+            i = n if end < 0 else end + 3                  # a here-string's body is text
+            cur.append("''")
+            continue
+        if not posix and text.startswith("<#", i):
+            end = text.find("#>", i + 2)
+            i = n if end < 0 else end + 2
+            continue
+        if c == "#" and (not cur or cur[-1].isspace()):
+            end = text.find("\n", i)
+            i = n if end < 0 else end                       # a comment runs to the end of its line
+            continue
+        if c in "'\"":
+            quote = c
+            cur.append(c)
+            i += 1
+            continue
+        if posix and text.startswith("<<", i) and not text.startswith("<<<", i):
+            m = _HEREDOC.match(text, i)
+            if m:
+                heredocs.append((m.group(3), m.group(1) == "-"))
+                cur.append(" ")
+                i = m.end()
+                continue
+        if text.startswith("$(", i):
+            j = _close_paren(text, i + 1)
+            segs.extend(_command_segments(text[i + 2:j], posix))
+            cur.append(" ")
+            i = j + 1
+            continue
+        if posix and c == "`":
+            j = text.find("`", i + 1)
+            j = n if j < 0 else j
+            segs.extend(_command_segments(text[i + 1:j], posix))
+            cur.append(" ")
+            i = j + 1
+            continue
+        if c == "\n":
+            flush()
+            i += 1
+            for delim, dash in heredocs:                   # each body runs to its delimiter's own line
+                while i < n:
+                    end = text.find("\n", i)
+                    line = text[i:n if end < 0 else end].rstrip("\r")
+                    i = n if end < 0 else end + 1
+                    if (line.lstrip("\t") if dash else line) == delim:
+                        break
+            heredocs.clear()
+            continue
+        if c in ";&|":
+            flush()
+            i += 1
+            continue
+        cur.append(c)
+        i += 1
+    flush()
+    return segs
 
 
 def _abs(path: str, cwd: Path) -> Path:
@@ -239,7 +371,7 @@ def _filtered(files: list[str], glob: str, ftype: str) -> list[str]:
 def _shell_roots(command: str, cwd: Path, posix: bool = True) -> list[tuple[str, Path]]:
     """(the command word, a root) for every recursive search or listing in a Bash or PowerShell command."""
     out = []
-    for seg in _SHELL_SPLIT.split(command or ""):
+    for seg in _command_segments(command or "", posix):
         try:
             toks = shlex.split(seg, posix=posix)
         except ValueError:

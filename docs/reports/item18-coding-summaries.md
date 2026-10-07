@@ -457,3 +457,23 @@ Two more were left during my gating run, at 17:04 and 17:25. They came from anot
 **Changed files:** `scripts/designer.py`; `tests/_campaign.py`, `tests/test_designer.py`, `tests/test_live_guard.py`.
 
 **The suite:** 889 tests, OK, exit code 0, 1,919 s (32.0 min).
+
+## 21b — the guard reads command words, not text (the fifth coding tab)
+
+**The splitter** (`hooks/design_read_guard._command_segments`, used by `_shell_roots`, 19d's search rule). A Bash or PowerShell line is split into its commands, aware of quotes, heredocs and comments:
+- it splits on `;`, `&`, `|` and newlines outside quotes, so a quoted `a; grep -r …` stays one argument;
+- a heredoc's body (`<<EOF`, `<<'EOF'`, `<<-EOF` … to its delimiter line, several per line in order), a PowerShell here-string (`@'`/`@"` … `'@`/`"@`), a `#` comment that opens a word, a PowerShell block comment (`<# … #>`) and a quoted string's body are text;
+- the escapes are the backslash in Bash and the backtick in PowerShell, and PowerShell's doubled quote is honoured;
+- a command substitution is still a command, quoted or not: `$( … )` and, in Bash, a backtick pair are returned as segments of their own.
+
+**What stays as it was:** the dm-only path scan, the registry and secret-dice verbs, and the runtime-override rule still read the whole text, heredoc bodies included (a script fed through a heredoc can open dm-only or set the variable).
+
+**Tests** (`test_design_read_guard.py`, `test_the_guard_reads_command_words_not_text`):
+- These pass: seven text cases, namely a heredoc whose body holds `find`, `grep -r` and `ls -R` over a parent of dm-only (quoted delimiter, and `<<-` with tabs), a quoted `a; grep -r …` piped to `head`, a single-quoted `find …` with a comment holding `ls -R`, a commit message naming `grep -r`, and in PowerShell a here-string holding `Get-ChildItem -Recurse` and a quoted `gci -Recurse` with a `# dir /s` comment.
+- These are still refused: five commands, namely a real `grep -rn` after a heredoc, `$(grep -r …)` inside double quotes, a backtick `find`, `ls -R` after `&&` with a comment after it, and PowerShell's `Get-ChildItem -Recurse` after a `;`.
+- A dm-only path inside a heredoc's body is still refused.
+- An unquoted path in the Bash cases is written with forward slashes, as Bash needs it (an unquoted Windows backslash path is mangled by Bash itself).
+
+**Changed files:** `scripts/hooks/design_read_guard.py`, `tests/test_design_read_guard.py`.
+
+**The suite:** 893 tests, OK, exit code 0, 1,798 s (30.0 min), run over 21b with 21a part 1 beside it (both uncommitted; 21b's commit takes its two files only). No `aigm-*` folder left.
