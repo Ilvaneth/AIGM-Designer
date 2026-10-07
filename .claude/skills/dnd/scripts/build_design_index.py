@@ -31,7 +31,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from paths import data_dir  # noqa: E402
+from paths import data_dir, write_text_keeping_eol  # noqa: E402
 
 try:
     import yaml  # type: ignore
@@ -524,14 +524,18 @@ def render_index(index: dict) -> str:
     return json.dumps(index, ensure_ascii=False, indent=1, sort_keys=False) + "\n"
 
 
+def output_paths() -> tuple[Path, Path]:
+    """The two files a build rewrites: monster-ecology.yaml and the index."""
+    design = data_dir() / "design"
+    return design / ECOLOGY_FILE, design / INDEX_FILE
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="build the designer's SRD index and refresh monster-ecology v0 rows")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--stats", action="store_true")
     a = ap.parse_args(argv)
-    design = data_dir() / "design"
-    eco_path = design / ECOLOGY_FILE
-    idx_path = design / INDEX_FILE
+    eco_path, idx_path = output_paths()
 
     existing = load_ecology(eco_path)
     js = srd_json()
@@ -561,8 +565,8 @@ def main(argv=None) -> int:
             return 1
         print("build_design_index: current")
         return 0
-    eco_path.write_text(new_eco, encoding="utf-8", newline="\n")
-    idx_path.write_text(new_idx, encoding="utf-8", newline="\n")
+    write_text_keeping_eol(eco_path, new_eco)          # tracked files keep their line endings (build 19c)
+    write_text_keeping_eol(idx_path, new_idx)
     print(f"build_design_index: wrote {eco_path.name} ({len(rows)} rows) and {idx_path.name}")
     return 0
 

@@ -28,9 +28,10 @@ HOOKS = ("dice_guard.py", "skill_edit_guard.py", "design_read_guard.py")
 
 
 def clean_env(**overrides) -> dict:
-    """The process env minus everything the skill or Claude Code could key on."""
+    """The process env minus everything the skill or Claude Code could key on (a layout's project
+    keeps its own .runtime, so the suite's runtime override goes too)."""
     env = {k: v for k, v in os.environ.items()
-           if not k.startswith(("DND_", "CLAUDE_"))}
+           if not k.startswith(("DND_", "CLAUDE_")) and k != "AIGM_TEST_RUNTIME"}
     env.update({k: str(v) for k, v in overrides.items()})
     return env
 

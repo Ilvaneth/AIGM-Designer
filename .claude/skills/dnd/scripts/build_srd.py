@@ -33,7 +33,7 @@ except ImportError:
     print("Run with --no-fvtt to skip class features and build spells/items only.")
     yaml = None  # type: ignore
 
-from paths import data_dir as _data_dir
+from paths import data_dir as _data_dir, write_text_keeping_eol
 DATA_DIR  = str(_data_dir())
 
 RAW_5EBITS_BASE = "https://raw.githubusercontent.com/5e-bits/5e-database/main/src"
@@ -614,8 +614,7 @@ def cmd_build(skip_fvtt: bool = False) -> None:
         **categories,
     }
 
-    with open(OUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(dataset, f, separators=(",", ":"))
+    write_text_keeping_eol(OUT_FILE, json.dumps(dataset, separators=(",", ":")))
 
     size_kb = os.path.getsize(OUT_FILE) // 1024
     print()

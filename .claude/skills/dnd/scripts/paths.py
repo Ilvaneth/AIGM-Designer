@@ -19,6 +19,11 @@ Environment:
                         NOT the plugin root). When unset (ad-hoc subprocess, dev
                         checkout) the code root is resolved from this file's
                         location — see skill_root().
+    AIGM_TEST_RUNTIME   The test suite's own runtime directory (tests/_campaign.py
+                        sets it). Honoured only when it lies inside the system's
+                        temporary directory; it then replaces every other runtime
+                        location, so no test arms, disarms or reads a live
+                        birth's guard marker in the project's .runtime/.
 
 Two distinct roots:
     * DATA root  — where campaigns/characters live (DND_CAMPAIGN_ROOT). User data.
@@ -32,6 +37,7 @@ import os
 import pathlib
 import shutil
 import sys
+import tempfile
 
 # Windows CJK fix: piped stdout defaults to the system codepage (cp936/GBK).
 # Every script imports this module, so UTF-8 is forced once here.
@@ -140,12 +146,29 @@ def scripts_dir() -> pathlib.Path:
 # read-only. Keep them beside the user's campaign data, which is stable across
 # installs and updates. Inside a project it is always <project>/.runtime (the
 # environment is ignored there, see project scoping above); otherwise override
-# with DND_RUNTIME_DIR, default <data-root>/.runtime.
+# with DND_RUNTIME_DIR, default <data-root>/.runtime. The test suite's own
+# directory (AIGM_TEST_RUNTIME, inside the temporary directory only) comes first.
+
+TEST_RUNTIME_ENV = "AIGM_TEST_RUNTIME"
+
+
+def test_runtime() -> "pathlib.Path | None":
+    """The test suite's runtime directory, or None: honoured only inside the temporary directory."""
+    raw = os.environ.get(TEST_RUNTIME_ENV, "").strip()
+    if not raw:
+        return None
+    d = pathlib.Path(raw).expanduser().resolve()
+    tmp = pathlib.Path(tempfile.gettempdir()).resolve()
+    return d if d != tmp and d.is_relative_to(tmp) else None
+
 
 def runtime_dir() -> pathlib.Path:
     """Return the writable runtime-state directory, creating it if needed."""
     project = scoped_project()
-    if project is not None:
+    test = test_runtime()
+    if test is not None:
+        d = test
+    elif project is not None:
         d = project / ".runtime"
     else:
         raw = os.environ.get("DND_RUNTIME_DIR", "").strip()
@@ -155,6 +178,21 @@ def runtime_dir() -> pathlib.Path:
     except OSError:
         pass
     return d
+
+
+# ── Rewriting a tracked file ──────────────────────────────────────────────
+# A script that rewrites a file the repository tracks keeps that file's line
+# endings: with core.autocrlf a working copy may be CRLF while the index is LF,
+# and a rewrite in the other endings shows the file as modified with no change
+# of content. A new file is written with LF.
+
+def write_text_keeping_eol(path, text: str) -> None:
+    """Write `text` (any endings) to `path` in the line endings the file already has."""
+    path = pathlib.Path(path)
+    eol = "\r\n" if path.is_file() and b"\r\n" in path.read_bytes() else "\n"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline=eol) as fh:
+        fh.write(text.replace("\r\n", "\n"))
 
 
 def campaigns_dir() -> pathlib.Path:

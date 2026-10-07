@@ -33,7 +33,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import skill_root  # noqa: E402
+from paths import skill_root, write_text_keeping_eol  # noqa: E402
 
 YAML_FILES = ["11-monsters.yaml", "15-creatures.yaml", "16-npcs.yaml"]
 
@@ -190,7 +190,7 @@ def main() -> None:
     backup = json_path.with_suffix(f".json.backup-{stamp}")
     shutil.copy2(json_path, backup)
     dataset.setdefault("_meta", {})["defenses_merged_at"] = datetime.now().isoformat(timespec="seconds")
-    json_path.write_text(json.dumps(dataset, ensure_ascii=False, indent=1), encoding="utf-8")
+    write_text_keeping_eol(json_path, json.dumps(dataset, ensure_ascii=False, indent=1))
     print(f"  wrote {json_path}\n  backup {backup.name}")
 
 

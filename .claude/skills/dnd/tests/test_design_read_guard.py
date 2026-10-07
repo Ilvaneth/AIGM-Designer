@@ -79,6 +79,41 @@ class ReadGuard(unittest.TestCase):
         self.assertEqual(self.guard(payload("Bash", command="py design_dice.py -c salt-lantern log")), 0)
         self.assertEqual(self.guard(payload("Bash", command="ls design/")), 0)
 
+    def test_glob_is_guarded_on_its_path_and_pattern(self):
+        self.arm()
+        design, dm = str(self.camp / "design"), str(self.camp / "design" / "dm-only")
+        self.assertEqual(self.guard(payload("Glob", pattern="**/*.md", path=dm)), 2)
+        self.assertEqual(self.guard(payload("Glob", pattern="dm-only/**", path=design)), 2)
+        self.assertEqual(self.guard(payload("Glob", pattern="campaigns/salt-lantern/design/dm-only/*")), 2)
+        self.assertEqual(self.guard(payload("Glob", pattern="npcs/*.md", path=design)), 0)
+        self.assertEqual(self.guard(payload("Glob", agent="design-critic", pattern="**/*.md", path=dm)), 0)
+        self.assertEqual(self.guard(payload("Glob", agent="general-purpose", pattern="**/*.md", path=dm)), 2)
+
+    def test_powershell_is_guarded_as_bash(self):
+        self.arm()
+        self.assertEqual(self.guard(payload("PowerShell", agent="design-writer", command=f'Get-Content "{self.dm_only}"')), 0)
+        self.assertEqual(self.guard(payload("PowerShell", command=f'Get-Content "{self.dm_only}"')), 2)
+        self.assertEqual(self.guard(payload("PowerShell", command="py registry.py -c salt-lantern export")), 2)
+        self.assertEqual(self.guard(payload("PowerShell", command=f'Get-Content "{self.public}"')), 0)
+
+    def test_a_command_naming_a_runtime_override_is_refused_while_armed(self):
+        commands = ("AIGM_TEST_RUNTIME=/tmp/x py designer.py -c salt-lantern promise list --dm-only",
+                    "export DND_RUNTIME_DIR=/tmp/x; py dice.py 1d20",
+                    "env AIGM_TEST_RUNTIME=/tmp/x py design_dice.py -c salt-lantern log")
+        self.assertEqual(self.guard(payload("Bash", command=commands[0])), 0, "unarmed: allowed")
+        self.arm()
+        for c in commands:
+            proc = run_hook(self.skill, "design_read_guard.py", payload("Bash", command=c), self.env)
+            self.assertEqual(proc.returncode, 2, c)
+            self.assertIn("empty runtime", proc.stderr)
+        ps = '$env:AIGM_TEST_RUNTIME = "C:/x"; py designer.py -c salt-lantern promise list --dm-only'
+        self.assertEqual(self.guard(payload("PowerShell", command=ps)), 2)
+        self.assertEqual(self.guard(payload("Bash", agent="design-writer", command=commands[0])), 2, "agents too")
+        self.assertEqual(self.guard(payload("Bash", command=commands[0], session="sess-B")), 2, "any session")
+        self.assertEqual(self.guard(payload("Bash", command="py designer.py -c salt-lantern promise list")), 0)
+        self.arm(mode="playtest")
+        self.assertEqual(self.guard(payload("Bash", command=commands[1])), 2, "the DM at the table too")
+
     # --- agents --------------------------------------------------------------
 
     def test_allowed_agent_type_reads_dm_only_and_others_do_not(self):

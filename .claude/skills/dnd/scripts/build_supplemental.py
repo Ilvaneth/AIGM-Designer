@@ -35,7 +35,7 @@ import urllib.request
 import urllib.parse
 from html.parser import HTMLParser
 
-from paths import campaigns_dir as _campaigns_dir, find_campaign as _find_campaign, skill_root as _skill_root
+from paths import campaigns_dir as _campaigns_dir, find_campaign as _find_campaign, skill_root as _skill_root, write_text_keeping_eol
 SKILLS_DIR       = str(_skill_root())
 CAMPAIGNS_DIR    = str(_campaigns_dir())
 
@@ -137,8 +137,7 @@ def _load_supplemental() -> dict:
 
 
 def _save_supplemental(data: dict) -> None:
-    with open(SUPPLEMENTAL_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+    write_text_keeping_eol(SUPPLEMENTAL_FILE, json.dumps(data, indent=2))
     print(f"Saved → {SUPPLEMENTAL_FILE}")
 
 

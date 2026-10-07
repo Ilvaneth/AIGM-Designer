@@ -19,7 +19,7 @@ import urllib.request
 import urllib.error
 from datetime import datetime, timezone
 
-from paths import data_dir as _data_dir
+from paths import data_dir as _data_dir, write_text_keeping_eol
 DATA_DIR = str(_data_dir())
 BASE_URL  = "https://raw.githubusercontent.com/5e-bits/5e-database/main/src/2014"
 META_FILE = os.path.join(DATA_DIR, "meta.json")
@@ -62,8 +62,7 @@ def _load_meta() -> dict:
 
 
 def _save_meta(meta: dict) -> None:
-    with open(META_FILE, "w", encoding="utf-8") as f:
-        json.dump(meta, f, indent=2)
+    write_text_keeping_eol(META_FILE, json.dumps(meta, indent=2))
 
 
 def _fetch(url: str, dest: str) -> tuple[bool, str]:

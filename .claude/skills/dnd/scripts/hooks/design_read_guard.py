@@ -4,7 +4,7 @@ design_read_guard.py — PreToolUse hook: the conductor never reads dm-only.
 
 Plan item 19.1, errata 24.2 #4 and #13, 24.6 #5, docs/reports/2026-09-24-payload-probe.md.
 
-Installed on Read | Grep | Bash (see .claude/settings.json). Armed only while a
+Installed on Read | Grep | Glob | Bash | PowerShell (see .claude/settings.json). Armed only while a
 designer command runs, through the marker <runtime-dir>/active-design.json:
 
     {"campaign": "<slug>", "mode": "birth" | "detail" | "playtest",
@@ -25,6 +25,9 @@ Rules while armed for the marked campaign, for the marked session:
     allowlisted player-facing paths; other agents follow the birth rule.
 Unarmed, or armed by another session, everything is allowed: the DM's own
 reads of a finished file are never guarded (24.6 #5).
+  * any mode, any session, any caller — a shell command that names a runtime
+    override (AIGM_TEST_RUNTIME, DND_RUNTIME_DIR) is refused: it would move the
+    scripts' own marker checks to an empty runtime (build 19c).
 
 Exit codes: 0 allow, 2 block (stderr is shown to Claude).
 """
@@ -40,7 +43,8 @@ from pathlib import Path
 SKILL_SCRIPTS = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SKILL_SCRIPTS))
 
-GUARDED_TOOLS = {"Read", "Grep", "Bash"}
+GUARDED_TOOLS = {"Read", "Grep", "Glob", "Bash", "PowerShell"}
+SHELL_TOOLS = {"Bash", "PowerShell"}
 PROTECTED = re.compile(r"(?:^|/)design/(?:dm-only|_staging)(?:/|$)")
 DEFAULT_AGENT_TYPES = ("workflow-subagent", "design-writer", "design-critic", "design-skeleton")
 DEFAULT_PLAYTEST_TYPES = ("player",)
@@ -51,6 +55,9 @@ _PATH_TOKEN = re.compile(r"[\w./\\:~-]*(?:design[/\\](?:dm-only|_staging)[/\\]?[
 _REGISTRY_DM = re.compile(r"registry\.py\b[^\n;&|]*\bshow\b[^\n;&|]*--dm\b")
 _REGISTRY_EXPORT = re.compile(r"registry\.py\b[^\n;&|]*\bexport\b(?![^\n;&|]*--public)")
 _DICE_SECRET = re.compile(r"design_dice\.py\b[^\n;&|]*\blog\b[^\n;&|]*--secret\b")
+# the variables that move paths.runtime_dir(): with one set, a script reads an empty runtime and its own marker checks
+# (promise list --dm-only, the playtest-only dice, the used.json guard) see no birth (build 19c)
+_RUNTIME_OVERRIDE = re.compile(r"\b(AIGM_TEST_RUNTIME|DND_RUNTIME_DIR)\b", re.IGNORECASE)
 
 
 def _marker() -> dict | None:
@@ -99,7 +106,11 @@ def _paths_touched(payload: dict) -> list[str]:
         return [inp.get("file_path", "")]
     if tool == "Grep":
         return [p for p in (inp.get("path", ""), inp.get("glob", "")) if p]
-    if tool == "Bash":
+    if tool == "Glob":                                # a listing shows file names, which can carry secret ids
+        path, pattern = inp.get("path", "") or "", inp.get("pattern", "") or ""
+        joined = f"{path.rstrip('/').rstrip(chr(92))}/{pattern}" if path and pattern else ""
+        return [p for p in (path, pattern, joined) if p]
+    if tool in SHELL_TOOLS:
         return _PATH_TOKEN.findall(inp.get("command", "") or "")
     return []
 
@@ -128,6 +139,12 @@ def check(payload: dict, marker: dict | None) -> str | None:
     """Return a block reason, or None to allow."""
     if payload.get("tool_name") not in GUARDED_TOOLS or not marker:
         return None
+    command = (payload.get("tool_input") or {}).get("command", "") if payload.get("tool_name") in SHELL_TOOLS else ""
+    override = _RUNTIME_OVERRIDE.search(command or "")
+    if override:
+        return (f"A design marker is armed ({marker['campaign']}): a command may not name {override.group(1)}. "
+                f"It moves the runtime directory, so the scripts' own marker checks would read an empty runtime "
+                f"and see no birth. Run the command without it; the test suite sets its own runtime itself.")
     if marker.get("session_id") and payload.get("session_id") and marker["session_id"] != payload["session_id"]:
         return None                                   # another tab's marker
     mode = marker.get("mode", "birth")
@@ -135,7 +152,6 @@ def check(payload: dict, marker: dict | None) -> str | None:
     agent_type = payload.get("agent_type") or ""
     root = _campaign_root(marker["campaign"])
     touched = _paths_touched(payload)
-    command = (payload.get("tool_input") or {}).get("command", "") if payload.get("tool_name") == "Bash" else ""
     verb = _bash_prints_dm_only(command) if command else None
     protected = [p for p in touched if _is_protected(p, root)]
 

@@ -27,7 +27,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import skill_root  # noqa: E402
+from paths import skill_root, write_text_keeping_eol  # noqa: E402
 
 # Rule-bearing chapters. The monster/creature/NPC files are stat blocks and the
 # class/race files are character options -- neither belongs in a rules lookup.
@@ -163,14 +163,14 @@ def main() -> None:
         return
 
     out = data_dir / "dnd5e_rules.json"
-    out.write_text(json.dumps({
+    write_text_keeping_eol(out, json.dumps({
         "_meta": {
             "built_at": datetime.now().isoformat(timespec="seconds"),
             "source": "SRD 5.1 (OGL 1.0a) — data/srd-5.1-yaml/",
             "entries": len(entries),
         },
         "rules": entries,
-    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    }, ensure_ascii=False, indent=1))
     print(f"  wrote {out}")
 
 

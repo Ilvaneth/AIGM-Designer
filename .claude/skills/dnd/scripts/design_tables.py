@@ -30,7 +30,7 @@ from functools import lru_cache
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from paths import data_dir  # noqa: E402
+from paths import data_dir, write_text_keeping_eol  # noqa: E402
 
 try:
     import yaml  # type: ignore
@@ -411,7 +411,7 @@ def write_stamps() -> int:
     body = {"_meta": {"what": "row id -> hash of the row's content at its last audit (docs/p1-build-7c.md, inspection)",
                       "tables": list(REVIEWED_TABLES)},
             "rows": dict(sorted(rows_now.items()))}
-    reviewed_path().write_text(json.dumps(body, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    write_text_keeping_eol(reviewed_path(), json.dumps(body, ensure_ascii=False, indent=1) + "\n")
     return len(rows_now)
 
 
