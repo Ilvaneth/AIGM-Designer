@@ -39,7 +39,8 @@ SECRECY = ("public", "discoverable", "secret")
 
 # Staging vocabulary shared by registry.py, design_manifest.py and designer.py (tuning birth 1, 2026-09-25).
 NON_FRAGMENTS = ("skeleton.json",)
-NON_FRAGMENT_SUFFIXES = (".facts.json", ".news.json", ".critique.json", ".prompt.json", ".report.json", ".secret.json")
+NON_FRAGMENT_SUFFIXES = (".facts.json", ".news.json", ".critique.json", ".prompt.json", ".report.json", ".secret.json",
+                         ".frame.json")      # build item 20a: P1's registry frame, written by the script
 # A container fragment stands for a document or a batch: it is not a registry entity itself; its
 # `rows[]` (registry rows) merge one by one and its members are separate fragments.
 CONTAINER_PREFIXES = ("doc_", "calculus_", "primer_", "villagebatch_", "npcbatch_", "seedbatch_")

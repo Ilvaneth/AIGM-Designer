@@ -789,6 +789,9 @@ def phase_begin(campaign: str, phase: str, as_json: bool, session_id: str | None
         ph["roster"] = document_roster(campaign, phase)
         ph["skeleton"] = {"status": "n/a", "agent": None}
     dm.save(campaign, data, f"designer.py phase {phase} begin")
+    if phase == "P1":
+        import design_frame as dfr
+        dfr.write(campaign)          # build item 20a: the frame of every row the writer owes, beside its fragment path
     out = pending_with_prompts(campaign, phase)
     if as_json:
         print(json.dumps(out, indent=2, ensure_ascii=False))
@@ -1045,11 +1048,7 @@ def refusal_owner(campaign: str, phase: str, uid: str, roster: list) -> str:
 def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, seconds: int | None = None,
                 run_dirs: list | None = None) -> int:
     record_critics(campaign, phase)
-    # root-cause analysis 1, RC-09: the Workflow's totalTokens is summed peak context, not output; the run's own
-    # transcripts say what the phase cost, per role
-    for rd in run_dirs or []:
-        import design_cost as dc
-        dc.record(campaign, phase, rd, merged=True)
+    import design_cost as dc
     report_path = design_dir(campaign) / "_staging" / phase / "merge.report.json"
     if report_path.is_file():
         report_path.unlink()            # birth 2: never read a previous run's report
@@ -1063,9 +1062,17 @@ def phase_merge(campaign: str, phase: str, day: int, tokens: int | None = None, 
         # birth 2 (3.1): registry.py died on a fragment and the conductor saw exit 0 and 77 seed calls
         print(f"designer: registry.py merge crashed (exit {proc.returncode}); nothing seeded, {phase} unchanged — "
               "the traceback above is a development finding; fix the script, then run this merge again", file=sys.stderr)
+        for rd in run_dirs or []:
+            dc.record(campaign, phase, rd, merged=False)
         return 1
     report = read_json(report_path) or {}
     refused: dict = report.get("refused") or {}
+    # root-cause analysis 1, RC-09: the Workflow's totalTokens is summed peak context, not output; the run's own
+    # transcripts say what the phase cost, per role. Build item 20a: recorded after the merge, with what it took; a run
+    # whose every unit the door refused is not merged
+    units = {"merged": len(report.get("units") or []), "refused": len(refused)}
+    for rd in run_dirs or []:
+        dc.record(campaign, phase, rd, merged=not (units["refused"] and not units["merged"]), units=units)
     # root-cause analysis 1, RC-08: design_seed reads merged/ only, and skeleton.json moved there after the seed ran,
     # so a skeleton's graph was seeded one merge late or never; absorb first, then seed, and keep the result
     absorbed = absorb_skeleton(campaign, phase)

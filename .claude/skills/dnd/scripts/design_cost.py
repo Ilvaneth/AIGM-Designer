@@ -99,10 +99,11 @@ def run_usage(run_dir: Path) -> dict:
     return {"run": run_dir.name, "by_role": by_role, "totals": totals}
 
 
-def record(campaign: str, phase: str, run_dir: str, merged: bool = False) -> int:
+def record(campaign: str, phase: str, run_dir: str, merged: bool = False, units: dict | None = None) -> int:
     """One run's cost on the phase's ledger. `merged` is set by `designer.py phase PN merge --run-dir`; a run recorded
     by itself is one that was not merged (build item 18f: the test birth's failed Workflow cost 95,155 tokens no ledger
-    held), and the report counts it apart."""
+    held), and the report counts it apart. `units` is the merge's outcome, `{merged, refused}` (build item 20a: a run
+    whose every unit the door refused read `merged: true`); such a run is not merged."""
     rd = Path(run_dir)
     if not rd.is_dir():
         print(f"design_cost: no transcript folder {run_dir}", file=sys.stderr)
@@ -111,11 +112,13 @@ def record(campaign: str, phase: str, run_dir: str, merged: bool = False) -> int
     data = dm.load(campaign)
     ph = data["phases"][phase]
     cost = ph.setdefault("cost", {"runs": {}, "totals": {}})
-    cost["runs"][usage["run"]] = dict(usage, at=now_iso(), merged=bool(merged or (cost["runs"].get(usage["run"]) or {}).get("merged")))
+    cost["runs"][usage["run"]] = dict(usage, at=now_iso(), merged=bool(merged or (cost["runs"].get(usage["run"]) or {}).get("merged")),
+                                      **({"units": dict(units)} if units is not None else {}))
     cost["totals"] = {k: sum(r["totals"].get(k, 0) for r in cost["runs"].values()) for k in FIELDS + ("peak_sum",)}
     dm.save(campaign, data, f"design_cost.py record --phase {phase}")
     t = usage["totals"]
-    print(f"design_cost: {phase} run {usage['run']}{'' if merged else ' (not merged)'}: {t['agents']} agents, {t['requests']} requests, output {t['output']:,}, "
+    outcome = f" (units merged {units['merged']}, refused {units['refused']})" if units is not None else ""
+    print(f"design_cost: {phase} run {usage['run']}{'' if merged else ' (not merged)'}{outcome}: {t['agents']} agents, {t['requests']} requests, output {t['output']:,}, "
           f"cache read {t['cache_read']:,} (peak context summed {t['peak_sum']:,})".replace(",", "."))
     return 0
 

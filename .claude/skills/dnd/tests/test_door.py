@@ -21,6 +21,7 @@ from collections import Counter
 
 from _campaign import CAMPAIGNS, SCRIPTS, USED, MarkerGuard, TestCampaign
 from test_tuning_birth_1 import fragment, row
+import _p1_frame as p1f
 _row = row
 
 sys.path.insert(0, str(SCRIPTS))
@@ -131,29 +132,13 @@ class NewBirth(unittest.TestCase):
             USED.unlink()
         self.guard.__exit__(None, None, None)
 
-    # a well-formed P1, as the script's own records give it
+    # a well-formed P1: the script's frame (build item 20a), its text fields filled
     def units(self) -> dict:
-        ident = self.m["identity"]
-        out = {}
-        for slot in door.SLOTS:
-            name = self.naming["candidates"][slot]["names"][0]["name"]
-            eid = "signature_" + re.sub(r"[^a-z0-9]+", "_", door.bare(name).lower()).strip("_")
-            out[eid] = row(eid, "signature", name, created_phase="P1", kind="institution" if slot == "institution" else "magic",
-                           summary="what a native knows of it, in one line.", slot=slot, home=self.d.home_id(slot),
-                           rolled=self.d.rolled_of(slot), stamped={"kind": "x"},
-                           appears=[{"phase": p, "hook": sorted(h)[0], "text": f"it shows at this floor in its own way, among the {slot} of the land"}
-                                    for p, h in sorted(self.d.hooks_by_floor(slot).items())])   # W4 (build item 18e): the hook restated
-        for b in ident["trope_breaks"]:
-            eid = "break_" + b["id"][len("break_"):]
-            out[eid] = row(eid, "break", dt.row("trope-breaks.yaml", b["id"])["label"], created_phase="P1", row=b["id"], tie=b["tie"],
-                           summary="the break as a native states it.", stamped={"row": b["id"]})
-        arch = dt.row("secrets.yaml#archetype", json.loads((self.dir / "design/dm-only/dice-log.json").read_text(encoding="utf-8"))["identity"]["secret"]["archetype"])
-        pid = f"premise_{self.slug}"
-        out[pid] = row(pid, "premise", "The premise", created_phase="P1", file="design/premise.md", summary="the question in one line.",
-                       tensions=[q["id"] for q in ident["questions"]], secret_class=arch["hides_in"],
-                       signatures=[e for e in out if e.startswith("signature_")], trope_breaks=[e for e in out if e.startswith("break_")],
-                       question="what is owed to those who stayed?", dm_only={"clues": []})
-        return out
+        import design_frame as dfr
+        rows, _ = p1f.fill(dfr.build(self.name), god=next(e["name"] for L in self.pool["languages"].values() for e in L.get("god", [])),
+                           question="what is owed to those who stayed?",
+                           note=lambda slot: f"it shows at this floor in its own way, among the {slot} of the land")
+        return rows
 
     def stage(self, units: dict, public: str | None = None, mirror: str | None = None) -> subprocess.CompletedProcess:
         pid = f"premise_{self.slug}"

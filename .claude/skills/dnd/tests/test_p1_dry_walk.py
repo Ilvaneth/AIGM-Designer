@@ -30,6 +30,8 @@ import design_manifest as dm  # noqa: E402
 import design_names as dn  # noqa: E402
 import design_promises as dp  # noqa: E402
 import design_tables as dt  # noqa: E402
+from design_io import is_fragment  # noqa: E402
+import _p1_frame as p1f  # noqa: E402
 
 TIMES: dict = {}
 
@@ -69,45 +71,13 @@ class Walker:
         self.begin = self.d("phase", "P1", "begin", "--json")
         return self
 
-    # step 4: the stand-in writer
+    # step 4: the stand-in writer, on the script's frame (build item 20a): it fills the text fields and nothing else
     def write(self, change=None, public_extra: str = "", mirror_extra: str = ""):
-        m = dm.load(self.name)
-        ident = m["identity"]
-        naming, pool = self.json("design/naming.json"), self.json("design/dm-only/name-pool.json")
-        secret_ledger = self.json("design/dm-only/promises.json")["promises"]
-        the_door = door.Door(self.name, {"entities": {}}, [])
-        secret = self.json("design/dm-only/dice-log.json")["identity"]["secret"]
-        twist = secret["twist"]                                                                   # build item 18d: optional
-        arch = dt.row("secrets.yaml#twist", twist) if twist else {"id": None, "hides_in": "threat"}
-        self.pin = pin = secret["pin"]                                                            # build item 18e (W1)
-        base = lambda eid, etype, name, **extra: dict({
-            "id": eid, "type": etype, "name": name, "aliases": [], "summary": "what a native would say of it, in one line.",
-            "file": "design/premise.md", "secrecy": "public", "created_phase": "P1", "origin": "birth", "stamped": {}, "refs": []}, **extra)
-        rows = {}
-        picked = {}
-        for slot in door.SLOTS:
-            picked[slot] = naming["candidates"][slot]["names"][0]["name"]
-            eid = "signature_" + re.sub(r"[^a-z0-9]+", "_", door.bare(picked[slot]).lower()).strip("_")
-            rows[eid] = base(eid, "signature", picked[slot], kind="institution" if slot == "institution" else "magic", stamped={"kind": slot},
-                             slot=slot, home=the_door.home_id(slot), rolled=the_door.rolled_of(slot), rule="how a native knows it, in a line.",
-                             appears=[{"phase": p, "hook": sorted(hooks)[0], "text": f"at this floor the {slot} shows in what the natives do every day"}
-                                      for p, hooks in sorted(the_door.hooks_by_floor(slot).items())])
-        for b in ident["trope_breaks"]:
-            eid = "break_" + b["id"][len("break_"):]
-            rows[eid] = base(eid, "break", dt.row("trope-breaks.yaml", b["id"])["label"], row=b["id"], tie=b["tie"], stamped={"row": b["id"]})
+        pool = self.json("design/dm-only/name-pool.json")
+        self.pin = pin = self.json("design/dm-only/dice-log.json")["identity"]["secret"]["pin"]       # build item 18e (W1)
         god = next(e["name"] for L in pool["languages"].values() for e in L.get("god", []))
-        stages = sorted((p for p in secret_ledger if p["source"] == "clue_stage"), key=lambda p: p["clue"])
-        sig_ids = [e for e in rows if e.startswith("signature_")]
-        rows[self.premise_id] = base(
-            self.premise_id, "premise", "The premise", question="who keeps what the old keepers left?", pitch="One thing is asked. Three things are only here. One rule is turned over.",
-            tensions=[q["id"] for q in ident["questions"]], signatures=sig_ids, trope_breaks=[e for e in rows if e.startswith("break_")],
-            secret_class=arch["hides_in"], stamped={"question": "who keeps what the old keepers left?"},
-            refs=sig_ids,
-            dm_only={"secret_twist": arch["id"], "secret": "the truth of the move, told once and only here.", "villain_answer": "the pole carried to its end.",
-                     "dm_pitch": "what the keeper of the table steers toward.", "stamped_fields": ["secret_twist"],
-                     "pinned": ({"god": god, "relation": pin["relation"], "event": "the move"} if pin["god"] else {"piece": pin["piece"], "event": "the move"}),
-                     "clues": [{"n": p["clue"], "levels": p["levels"], "kind": "a thing seen", "piece": secret["stages"][p["clue"] - 1]["clues"][0]["piece"],
-                                "how": "a search", "placed_in": None} for p in stages]})
+        self.frame = self.json(f"design/_staging/P1/{self.premise_id}.frame.json")
+        rows, picked = p1f.fill(self.frame, god=god)
         if change:
             change(rows, picked)
         self.rows, self.picked = rows, picked
@@ -126,7 +96,8 @@ class Walker:
         (self.dir / "design/dm-only/premise-secret.md").write_text(mirror, encoding="utf-8", newline="\n")
         self.staging.mkdir(parents=True, exist_ok=True)
         for f in self.staging.glob("*.json"):
-            f.unlink()
+            if is_fragment(f):
+                f.unlink()
         for eid, r in rows.items():
             frag = {"schema_version": 1, "id": eid, "type": r["type"], "phase": "P1", "attempt": 1, "agent": f"P1.{eid}.a1", "mode": "birth",
                     "prose": {"file": "design/premise.md"} if eid == self.premise_id else None,

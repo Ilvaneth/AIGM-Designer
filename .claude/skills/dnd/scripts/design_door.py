@@ -21,6 +21,8 @@ design/dm-only/door-log.json, and the conductor sees a count).
   11  no secret in the public file: no secret row's id or statement, no secret-stock name; the premise's
       spoiler-safe abstract is the archetype's class and nothing else
   12  a lexical "never" pattern (forbidden.yaml's one row) is scanned in the public prose
+  20a every premise, signature and break row matches the script's frame (design_frame.py) in every field the rolls
+      set: a changed or missing frame field is refused by its name
 """
 
 from __future__ import annotations
@@ -326,6 +328,41 @@ def prose_strings(node, path: str = "") -> list[tuple[str, str]]:
     return []
 
 
+# ── a signature's rolled ground (module functions: the frame builds on them too, build item 20a) ─────────────
+
+def home_id_of(identity: dict, foundation: dict, slot: str) -> str:
+    """A signature's home as an id: the lifeline's row (or the new-people scar), the institution's contest and
+    role, the ruin source's row (or the break)."""
+    ident, f = identity[slot], foundation
+    if slot == "people":
+        return f["lifeline"]["id"] if ident["home"] == "lifeline" else ident["home"]
+    if slot == "institution":
+        return f"{f['contests'][0]['id']}.{ident['role']}"
+    return f["ruin_source"] if ident["home"] == "ruin_source" else "break"
+
+
+def rolled_of_identity(identity: dict, slot: str) -> dict:
+    ident = identity[slot]
+    if slot == "people":
+        return {"lineage": ident["lineage"], "visible": ident["traits"]["visible"], "behaving": ident["traits"]["behaving"], "attitude": ident["attitude"]}
+    return {k: ident[k] for k in ROLLED[slot]}
+
+
+def hooks_by_floor_of(identity: dict, slot: str) -> dict:
+    """The later floors a signature's tables promised, each with the hooks that promise it (W4, build item 18e: an
+    `appears` note restates one of them)."""
+    import design_promises as dp
+    out: dict = {}
+    for sub in SIGNATURE_TABLES[slot]:
+        ref = f"signatures.yaml#{sub}"
+        for rid in rolled_of_identity(identity, slot).values():
+            row = dt.row(ref, rid)
+            for h in dp.hooks_of(ref, row) if row else []:
+                if later_floor(h["phase"]):
+                    out.setdefault(h["phase"], set()).add(str(h["must"]))
+    return out
+
+
 # ── the door ─────────────────────────────────────────────────────────────────────────────────────────────────
 
 class Door:
@@ -362,38 +399,18 @@ class Door:
         self.whole, hidden = conflict_errors(campaign)
         self.hidden += hidden
         self.whole = seal_errors(campaign, self.m) + self.whole
+        import design_frame as dfr
+        self.frame = dfr.build(campaign, self.m)          # build item 20a: the rows' rolled fields, as the script wrote them
 
     # 7
     def home_id(self, slot: str) -> str:
-        """A signature's home as an id: the lifeline's row (or the new-people scar), the institution's contest and
-        role, the ruin source's row (or the break)."""
-        ident, f = self.identity[slot], self.foundation
-        if slot == "people":
-            return f["lifeline"]["id"] if ident["home"] == "lifeline" else ident["home"]
-        if slot == "institution":
-            return f"{f['contests'][0]['id']}.{ident['role']}"
-        return f["ruin_source"] if ident["home"] == "ruin_source" else "break"
+        return home_id_of(self.identity, self.foundation, slot)
 
     def rolled_of(self, slot: str) -> dict:
-        ident = self.identity[slot]
-        if slot == "people":
-            return {"lineage": ident["lineage"], "visible": ident["traits"]["visible"], "behaving": ident["traits"]["behaving"], "attitude": ident["attitude"]}
-        return {k: ident[k] for k in ROLLED[slot]}
+        return rolled_of_identity(self.identity, slot)
 
     def hooks_by_floor(self, slot: str) -> dict:
-        """The later floors a signature's tables promised, each with the hooks that promise it (W4, build item 18e: an
-        `appears` note restates one of them)."""
-        import design_promises as dp
-        out: dict = {}
-        rolled = self.rolled_of(slot)
-        for sub in SIGNATURE_TABLES[slot]:
-            ref = f"signatures.yaml#{sub}"
-            for rid in rolled.values():
-                row = dt.row(ref, rid)
-                for h in dp.hooks_of(ref, row) if row else []:
-                    if later_floor(h["phase"]):
-                        out.setdefault(h["phase"], set()).add(str(h["must"]))
-        return out
+        return hooks_by_floor_of(self.identity, slot)
 
     def floors_of(self, slot: str) -> list[str]:
         """The later floors a signature's tables promised: the phases of its rolled rows' hooks."""
@@ -449,8 +466,9 @@ class Door:
         for b in self.identity["trope_breaks"]:
             if have.count(b["id"]) != 1:
                 errs.append(f"{eid}: the rolled trope break {b['id']} needs exactly one break entity ({have.count(b['id'])} found)")
-        # 11: the spoiler-safe abstract is the archetype's class and nothing else
-        arch = dt.row("secrets.yaml#archetype", (self.secret_identity.get("secret") or {}).get("archetype") or "")
+        # 11: the spoiler-safe abstract is the twist's class and nothing else (build item 20a: read in the twist table,
+        # where every twist stands; the archetype table lacks twist_greater_power, whose class the door then refused)
+        arch = dt.row("secrets.yaml#twist", (self.secret_identity.get("secret") or {}).get("twist") or "")
         if arch and row.get("secret_class") != arch.get("hides_in"):
             errs.append(f"{eid}: `secret_class` is the twist's class as its row gives it (`hides_in`) and nothing else")
         elif not arch and (self.secret_identity.get("secret") or {}).get("facts") and row.get("secret_class") != "threat":
@@ -525,8 +543,11 @@ class Door:
         return errs, warns
 
     def unit_errors(self, uid: str, frag: dict, rows: list[tuple[str, dict]]) -> tuple[list[str], list[str]]:
+        import design_frame as dfr
         errs = list(self.whole)
         for eid, row in rows:
+            if self.frame is not None:
+                errs += dfr.frame_errors(self.campaign, self.frame, eid, row, self.rows)
             if row.get("type") == "signature":
                 errs += self.signature_errors(eid, row)
             elif row.get("type") == "break":

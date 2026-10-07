@@ -56,8 +56,9 @@ class Prompt(unittest.TestCase):
         for needle in ("design/design.json#foundation", "design/design.json#identity", "`overrides`", "recorded merges",
                        "`design/naming.json`", "`candidates`", "**Names (rolled, never invented).**", "**Promises due at this phase.**",
                        "design/dm-only/dice-log.json", "under `threat`", "the four `facts`", "`spine_sentence`",   # build item 18e: the chain
-                       "`pinned` (`{god, relation, event}` when a god is pinned, else `{piece, event}`", "`slot`", "`home` and `rolled`",
-                       "`appears`", "`row` and `tie`", "`secret_class`"):
+                       # build item 20a: the rolled fields are the script's frame; the prompt names the frame and what the writer fills
+                       ".frame.json`", "copy every other field unchanged", "`pinned.god`", "`signature_<slug of that name>`",
+                       "`appears`", "`row` and `tie`", "`stamped` stays an object"):
             self.assertIn(needle, t, needle)
         m = json.loads((self.dir / "design/design.json").read_text(encoding="utf-8"))
         for p in m["promises"]:

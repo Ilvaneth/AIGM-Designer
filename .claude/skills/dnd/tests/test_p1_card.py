@@ -235,7 +235,7 @@ class LegacyAndFields(unittest.TestCase):
         prompt = (SCRIPTS.parent / "prompts" / "design" / "P1.premise.md").read_text(encoding="utf-8")
         for old in ("pitch_tr", "secret_tr", "villain_answer_tr", "dm_pitch_tr", "secret_class_tr", "world_default_tr"):
             self.assertNotIn(old, prompt, old)
-        for new in ("`pitch`", "`secret_class`", "`secret`", "`villain_answer`", "`dm_pitch`"):
+        for new in ("`pitch`", "`secret`", "`villain_answer`", "`dm_pitch`"):     # `secret_class` is the frame's (build item 20a)
             self.assertIn(new, prompt, new)
         docs = (SCRIPTS.parents[3] / "docs" / "schemas" / "entities.md").read_text(encoding="utf-8")
         self.assertIn("read through `design_io.text_field`", docs)

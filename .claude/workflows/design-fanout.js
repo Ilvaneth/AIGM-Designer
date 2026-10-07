@@ -99,7 +99,7 @@ const critique = (e, order, loop) => agent(bootstrap('critic', (order === 2 ? e.
 })
 
 const fix = (e, loop, verdict, findings) => agent(bootstrap('writer (fix loop)', e.prompt_cmd, e,
-  `A critic returned "${verdict}" on your previous attempt. Read design/_staging/${a.phase}/${e.id}.critique.md (and the dm-only copy if the critic wrote one; the phase critic writes design/_staging/${a.phase}/phase.critique.md) and repair exactly what its findings name; keep every stamped field; this is fix loop ${loop} of ${MAX_FIX_LOOPS}. Overwrite the prose and rewrite the fragment last.` +
+  `A critic returned "${verdict}" on your previous attempt. Read design/_staging/${a.phase}/${e.id}.critique.md (and the dm-only copy if the critic wrote one; the phase critic writes design/_staging/${a.phase}/phase.critique.md) and repair exactly what its findings name; keep every stamped field; this is fix loop ${loop} of ${MAX_FIX_LOOPS}. Overwrite the prose and rewrite the fragment last, then run the registry check your prompt gives (\`registry.py ... check --phase ${a.phase} --id ${e.id}\`) and fix every line it prints before you return.` +
   (findings && findings.length ? `\nThe findings: ${findings.map(f => f.rubric_id + ' on ' + f.entity_id + (f.reason_code ? ' (' + f.reason_code + ')' : '')).join('; ')}.` : '')), {
   label: `${a.phase}.${e.id}.fix${loop}`,
   phase: 'Write',

@@ -36,7 +36,7 @@ ROLES = ("skeleton", "writer", "critic", "phase_critic", "ask")
 PLACEHOLDERS = {
     "campaign", "campaign_dir", "skill_dir", "phase", "attempt", "lang", "dials", "scale", "scale_line", "seed",
     "entity_id", "entity_type", "entity_name", "entity_summary", "files", "rolls", "phase_rolls", "directions", "staging_phase",
-    "wishes", "template", "prose_path", "mirror_path", "fragment_path", "notes_path", "rubrics", "common",
+    "wishes", "template", "prose_path", "mirror_path", "fragment_path", "frame_path", "notes_path", "rubrics", "common",
     "schema", "agent_label", "roster", "party_size", "level_band", "content_mix", "critic_order", "name_pool",
     "critic_loop", "critique_path", "prior_campaigns", "critic_reads", "phase_reads", "verdict_options", "verdict_overall",
 }
@@ -361,6 +361,8 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         "wishes": f"must: {', '.join(d['wishes']['must']) or '—'}; must not: {', '.join(d['wishes']['must_not']) or '—'}",
         "template": paths["template"], "prose_path": paths["prose_path"], "mirror_path": paths["mirror_path"],
         "fragment_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.json",
+        # build item 20a: the script's frame of P1's registry rows, beside the premise's fragment path
+        "frame_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.frame.json",
         "notes_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.notes.md",
         "rubrics": rubric_lines(phase, scope, critic_order) if role in ("critic", "phase_critic") else "",
         "schema": schema_text(str(fm.get("schema") or "writer")),

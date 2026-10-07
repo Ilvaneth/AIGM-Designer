@@ -112,10 +112,14 @@ def projection_of(canonical: dict) -> dict:
 
 
 def stamps_of(entity: dict) -> dict:
-    """Public stamps plus the secret ones `dm_only.stamped_fields` names."""
-    dm = entity.get("dm_only") or {}
-    secret = {k: dm[k] for k in dm.get("stamped_fields", []) if k in dm}
-    return {**entity.get("stamped", {}), **secret}
+    """Public stamps plus the secret ones `dm_only.stamped_fields` names. A malformed row (`stamped` a list, `dm_only`
+    not an object) has none: row_errors refuses it by name, and the merge goes on to say so (build item 20a: a
+    `stamped` list crashed the merge before its refusal)."""
+    dm = entity.get("dm_only") if isinstance(entity.get("dm_only"), dict) else {}
+    fields = dm.get("stamped_fields") if isinstance(dm.get("stamped_fields"), list) else []
+    secret = {k: dm[k] for k in fields if isinstance(k, str) and k in dm}
+    stamped = entity.get("stamped") if isinstance(entity.get("stamped"), dict) else {}
+    return {**stamped, **secret}
 
 
 def counts_of(entities: dict) -> dict:
@@ -530,7 +534,12 @@ def ref_errors(eid: str, row: dict, known: set) -> list[str]:
             "not exist yet, and cite a document (the consequence calculus, the cosmology) in the prose, never in refs"]
 
 
-def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) -> int:
+def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0, check: bool = False,
+          only: str | None = None) -> int:
+    """Merge a phase's staged fragments, unit by unit. With `check` (build item 20a, the third test birth's #5: a
+    shape fault passed two critics and a fix writer before the merge found it) every unit is judged by the same
+    rules and the door, the faults are printed and nothing is written; `only` keeps the units of one fragment (and
+    the members it lists)."""
     staging = design_dir(campaign) / "_staging" / phase
     if not staging.is_dir():
         print(f"registry: no staging folder {staging}", file=sys.stderr)
@@ -643,15 +652,21 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
         if not errs:
             for t, n in new_rows.items():
                 used[t] += n
-        for w in warns:
-            print(f"  ! {w}", file=sys.stderr)
+        if check:
+            u["warns"] = warns
+        else:
+            for w in warns:
+                print(f"  ! {w}", file=sys.stderr)
         if errs:
             refused[u["id"]] = errs
-            for e in errs:
-                print(f"  ✗ {e}", file=sys.stderr)
+            if not check:
+                for e in errs:
+                    print(f"  ✗ {e}", file=sys.stderr)
         else:
             accepted.append(u)
 
+    if check:
+        return check_report(phase, units, refused, only)
     if door is not None:
         door.close()            # what the conductor may not read: the dm-only door log
     merged_dir = staging / "merged"
@@ -716,6 +731,27 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0) ->
     if summary:
         print("\n".join(summary))
     return 1 if refused else 0
+
+
+def check_report(phase: str, units: list[dict], refused: dict, only: str | None) -> int:
+    """`registry.py check`: the faults of the staged units, as the merge would refuse them; nothing written."""
+    if only:
+        lead = next((u for u in units if u["id"] == only), None)
+        if lead is None:
+            print(f"registry: check {phase} — no staged fragment {only}", file=sys.stderr)
+            return 1
+        keep = {only} | {str(m) for m in (lead["frag"] or {}).get("members") or []}
+        units = [u for u in units if u["id"] in keep]
+    bad = [u for u in units if u["id"] in refused]
+    for u in units:
+        for w in u.get("warns") or []:
+            print(f"  ! {w}")
+        for e in refused.get(u["id"], []):
+            print(f"  ✗ {e}")
+    print(f"registry: check {phase} — {len(units)} staged unit(s), {len(bad)} with faults"
+          + (f": {', '.join(u['id'] for u in bad)}; fix each line above and run this check again" if bad else "; the merge would take them all")
+          + " (nothing written)")
+    return 1 if bad else 0
 
 
 # ── other verbs ───────────────────────────────────────────────────────────────
@@ -864,6 +900,10 @@ def main(argv=None) -> int:
     m.add_argument("--revise", metavar="LOG_ID", help="allow stamped-field changes under this revision id")
     m.add_argument("--day", type=int, default=0, help="campaign day for overlay writes")
 
+    ck = sub.add_parser("check", help="judge the staged fragments as the merge would, and write nothing")
+    ck.add_argument("--phase", required=True)
+    ck.add_argument("--id", dest="only", help="one fragment's units (and the members it lists)")
+
     sub.add_parser("project", help="regenerate projection and snapshot from the canonical file")
 
     e = sub.add_parser("export", help="print the public projection")
@@ -900,6 +940,8 @@ def main(argv=None) -> int:
     args = p.parse_args(argv)
     if args.cmd == "merge":
         return merge(args.campaign, args.phase, args.revise, args.day)
+    if args.cmd == "check":
+        return merge(args.campaign, args.phase, check=True, only=args.only)
     if args.cmd == "project":
         return project(args.campaign)
     if args.cmd == "export":

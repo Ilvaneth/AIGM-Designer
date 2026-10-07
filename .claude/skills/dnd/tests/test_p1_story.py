@@ -42,7 +42,9 @@ class Tables(unittest.TestCase):
         self.assertIn("goal", by["rubric_p1_question_concrete"]["question"])
         self.assertEqual(by["rubric_p1_legible"]["question"],
                          "Does the player pitch show a threat with a face, ask the campaign's question in this world's words without answering it, "
-                         "and give the party something to do in the first session?")      # build item 19a: the pitch carries the question
+                         "and give the party something to do in the first session? When the villain is known to the world (known and untouchable, "
+                         "or known but no one knows where), does the public premise show its public face, what the world knows it as, and never "
+                         "its hidden part?")      # build item 19a: the pitch carries the question; 20a: a known villain's public face
         self.assertFalse([r for r in by.values() if r["phase"] == "P1" and re.search(r"\bthe break\b|\bchooser\b", r["question"])])
 
     def test_the_small_tables(self):
@@ -218,7 +220,7 @@ class Birth(unittest.TestCase):
         begin = run("designer.py", "-c", self.name, "phase", "P1", "begin", "--json")
         text = dpm.render(self.name, "P1.premise")
         for needle in ("spine_sentence", "under `threat`", "the four `facts`", "`stages`", "`pin`", "`identity.mechanic.shape`",
-                       "{phase, hook, text}", "`dm_only.serves_clue`", "with the Read tool and never with Bash",
+                       "its `phase` and its `hook`", "`dm_only.serves_clue`",       # build item 20a: the frame gives the notes "with the Read tool and never with Bash",
                        "You decide nothing the rolls decide"):
             self.assertIn(needle, text, needle)
         for gone in ("concretise", "the chooser as the person", "archetype row's `cause`", "fell from the sky", "the break's true cause"):
