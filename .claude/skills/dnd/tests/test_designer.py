@@ -100,6 +100,46 @@ class NewBirth(unittest.TestCase):
         self.assertEqual((marker["campaign"], marker["mode"]), (name, "birth"))
         self.assertIn("roll: dial.scale", proc.stdout)
 
+    def test_the_p0_card_shows_the_dials_in_words_and_no_dice(self):
+        """Build item 20b: the owner's card rule on P0: the dials in words, the chapters by level range, the seed; no roll,
+        no die, no row id, and no act (the arc's acts are P7's to reshape)."""
+        name, _ = self.birth(seed="CARD-0001")
+        m = self.manifest(name)
+        card = (CAMPAIGNS / name / "design" / "_approval" / "P0.card.md").read_text(encoding="utf-8")
+        self.assertNotRegex(card, r"\bd\d+\b", "a die's notation")
+        self.assertNotIn("→", card)
+        self.assertNotRegex(card, r"\bact\b", "the arc's acts")
+        self.assertNotIn("dial.", card)
+        self.assertNotIn("content_mix.", card)
+        for dial in ("scale", "tone", "magic", "era", "danger", "content_mix"):
+            for r in dt.rows(f"dials.yaml#{dial}"):
+                self.assertNotIn(r["id"], card, f"the row id {r['id']}")
+        word = lambda dial, value: next(r["label"] for r in dt.rows(f"dials.yaml#{dial}") if r["value"] == value)  # noqa: E731
+        d = m["dials"]
+        for label, dial in (("Scale", "scale"), ("Darkness", "tone"), ("Magic", "magic"), ("Era", "era"), ("Danger", "danger")):
+            self.assertIn(f"- **{label}:** {word(dial, d[dial])}", card)
+        self.assertIn("- **Content mix:** " + ", ".join(word("content_mix", c) for c in d["content_mix"]), card)
+        self.assertIn(f"- **Party:** 2 characters, starting at level {d['start_level']}", card)
+        self.assertIn(f"- **Seed:** `{m['seed']['master']}`", card)
+        self.assertIn("- **Wishes:** must: none; must not: none", card)
+        chapters = m["arc_skeleton"]
+        self.assertIn("## The chapters", card)
+        self.assertEqual(card.count("- Chapter "), len(chapters))
+        lo, hi = chapters[0]["level_band"]
+        self.assertIn(f"- Chapter 1: levels {lo}-{hi}", card)
+        self.assertTrue(any(r["label"] == "dial.tone" for r in m["dice_log"]), "the rolls stay in the public dice log")
+
+    def test_a_legacy_p0_card_is_not_rebuilt(self):
+        name, _ = self.birth(seed="CARD-0002")
+        path = CAMPAIGNS / name / "design" / "_approval" / "P0.card.md"
+        legacy = ("# Phase 0 — the dials (legacy)\n\n## Rolls (blank dials)\n- `dial.tone` d3 → 2 = **tone_shadowed**\n\n"
+                  "## The arc skeleton\n- chapter_1 — act 1, levels 1-3\n")
+        path.write_text(legacy, encoding="utf-8", newline="\n")
+        run("-c", name, "preroll", "--phase", "P1", check=True)
+        run("-c", name, "phase", "P1", "begin", "--json", check=True)
+        run("-c", name, "status", check=False)
+        self.assertEqual(path.read_text(encoding="utf-8"), legacy)
+
     def test_given_dials_are_not_rolled_and_a_real_birth_waits_for_onay(self):
         name = f"_test-real-birth-{os.getpid()}-{uuid.uuid4().hex[:6]}"   # git-ignored: nothing is ever committed
         self.names.append(name)

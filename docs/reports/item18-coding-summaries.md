@@ -412,3 +412,48 @@ Otherwise a **mask** is rolled from a new secret table (`antagonists.yaml#mask`,
 **For your notice:** every test process's `tests/_campaign.py` makes an `aigm-used-*` folder in the temporary directory and never removes it (several hundred are there now). This predates 19c; the fix is an `atexit` removal like the runtime folder's, which I left out of this item.
 
 **The suite:** 886 tests, OK, exit code 0, 1,860 s (31.0 min). Two earlier runs were stopped (a script edit mid-run) or failed on my own wording (the visibility ids in the prompt, and a test that pinned the legibility rubric's old sentence); both were fixed before this run. `.runtime` was empty after, and no `aigm-runtime-*` folder was left.
+
+## 20b — the P0 card without dice (the fifth coding tab)
+
+**The card** (`designer.p0_card`, written once at `new`). It shows the dials in words: each value is printed as its row's label in `dials.yaml` (`designer.dial_word`), and the tone is printed as **Darkness**. Then the content mix, the party and its band, the wishes and the seed, and the arc's chapters by level range. It has no roll section, no die notation, no row id, and no "act" (the arc's acts are P7's to reshape: finding D5). The blank dials' rolls stay in the public dice log, and `new` still prints its `roll:` lines for the conductor. A legacy card is not rebuilt: nothing but `new` writes `P0.card.md`, and a test plants an old card and finds it unchanged after `preroll`, `phase P1 begin` and `status`. The leak scan and the approval are unchanged.
+
+**One fresh P0 card** (`designer.py new _test-card-demo --scale epic --party-size 1 --seed CARD-DEMO`, the other dials rolled; a throwaway campaign, deleted after):
+
+```markdown
+# Phase 0 — the dials (_test-card-demo)
+
+- **Scale:** Epic: 10 chapters, levels 1-20
+- **Darkness:** Shadowed
+- **Magic:** Low
+- **Era:** Nautical
+- **Danger:** Lethal
+- **Content mix:** War, Mystery, Exploration
+- **Party:** 1 character, starting at level 1; the band runs from level 1 to 20
+- **Wishes:** must: none; must not: none
+- **Seed:** `CARD-DEMO`
+
+## The chapters
+- Chapter 1: levels 1-3
+- Chapter 2: levels 3-5
+- Chapter 3: levels 5-7
+- Chapter 4: levels 7-9
+- Chapter 5: levels 9-11
+- Chapter 6: levels 11-12
+- Chapter 7: levels 12-14
+- Chapter 8: levels 14-16
+- Chapter 9: levels 16-18
+- Chapter 10: levels 18-20
+```
+
+**The used.json folders** (your addition). `tests/_campaign.py` registers `atexit` removal of its `aigm-used-*` folder, as for the runtime folder: one per test process, isolation kept. Cleaned once by the exact prefix: **379 folders** removed before this run.
+
+Two more were left during my gating run, at 17:04 and 17:25. They came from another suite on the 20a commit, which has no cleanup (your audit committed `129531e` at the same time). Two checks support that: my own short run of `test_live_guard.py`, which starts two child test processes, left the count unchanged; and the new test below passes. I removed those two by name as well; none remain.
+
+**Tests:**
+- `test_designer.NewBirth.test_the_p0_card_shows_the_dials_in_words_and_no_dice`: no die notation, no arrow, no "act", no `dial.` label and no `dials.yaml` row id; every dial in words, the party, the seed, the wishes, one line per chapter; the rolls still in the dice log.
+- `test_a_legacy_p0_card_is_not_rebuilt`.
+- `test_live_guard.SuiteRuntime.test_a_test_process_leaves_no_used_folder`: a fresh process that imports `_campaign` leaves neither its used folder nor its runtime folder.
+
+**Changed files:** `scripts/designer.py`; `tests/_campaign.py`, `tests/test_designer.py`, `tests/test_live_guard.py`.
+
+**The suite:** 889 tests, OK, exit code 0, 1,919 s (32.0 min).

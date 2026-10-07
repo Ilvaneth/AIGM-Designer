@@ -704,22 +704,35 @@ def roll_blank_dials(seed: str, given: dict) -> tuple[dict, list[dict]]:
     return resolved, records
 
 
+def dial_word(dial: str, value: str) -> str:
+    """A dial's value as the card says it: its row's label in dials.yaml."""
+    row = next((r for r in dt.rows(f"dials.yaml#{dial}") if r.get("value") == value), None)
+    return str((row or {}).get("label") or value)
+
+
 def p0_card(campaign: str, manifest: dict, records: list[dict]) -> Path:
+    """The owner's card rule (build item 14b; build item 20b for P0): the dials in words, the chapters by level range,
+    the seed; no roll, no die and no row id (the public dice log holds them). The arc's acts are P7's to reshape
+    (the third test birth's finding D5), so the card shows chapters only. `records` (the blank dials' rolls) stay in
+    the dice log; the card does not print them."""
     d = manifest["dials"]
+    party = int(d["party_size"])
+    chapters = manifest["arc_skeleton"]
     lines = [f"# Phase 0 — the dials ({campaign})", "",
-             f"- **Scale:** {d['scale']} · **Tone:** {d['tone']} · **Magic:** {d['magic']} · **Era:** {d['era']} · **Danger:** {d['danger']}",
-             f"- **Party:** {d['party_size']} characters, level {d['start_level']} → band {d['level_band'][0]}-{d['level_band'][1]}",
-             f"- **Content mix:** {', '.join(d['content_mix'])}",
-             f"- **Seed:** `{manifest['seed']['master']}`",
-             f"- **Wishes:** must: {', '.join(d['wishes']['must']) or '—'}; must not: {', '.join(d['wishes']['must_not']) or '—'}", ""]
-    if records:
-        lines.append("## Rolls (blank dials)")
-        for r in records:
-            lines.append(f"- `{r['label']}` {r['notation']} → {r['raw']} = **{r['row_id']}**")
-        lines.append("")
-    lines.append("## The arc skeleton")
-    for ch in manifest["arc_skeleton"]:
-        lines.append(f"- {ch['chapter']} — act {ch['act']}, levels {ch['level_band'][0]}-{ch['level_band'][1]}")
+             f"- **Scale:** {dial_word('scale', d['scale'])}: {len(chapters)} chapters, levels {d['level_band'][0]}-{d['level_band'][1]}",
+             f"- **Darkness:** {dial_word('tone', d['tone'])}",
+             f"- **Magic:** {dial_word('magic', d['magic'])}",
+             f"- **Era:** {dial_word('era', d['era'])}",
+             f"- **Danger:** {dial_word('danger', d['danger'])}",
+             f"- **Content mix:** {', '.join(dial_word('content_mix', c) for c in d['content_mix'])}",
+             f"- **Party:** {party} character{'s' if party != 1 else ''}, starting at level {d['start_level']}; "
+             f"the band runs from level {d['level_band'][0]} to {d['level_band'][1]}",
+             f"- **Wishes:** must: {', '.join(d['wishes']['must']) or 'none'}; must not: {', '.join(d['wishes']['must_not']) or 'none'}",
+             f"- **Seed:** `{manifest['seed']['master']}`", "",
+             "## The chapters"]
+    for n, ch in enumerate(chapters, 1):
+        lo, hi = ch["level_band"]
+        lines.append(f"- Chapter {n}: levels {lo}-{hi}")
     path = design_dir(campaign) / CARD_DIR / "P0.card.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")

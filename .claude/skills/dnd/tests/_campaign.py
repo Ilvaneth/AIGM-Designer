@@ -34,6 +34,7 @@ CAMPAIGNS = PROJECT / "campaigns"
 # variable is set when the first test module imports this one, so in-process calls and subprocesses both see it
 USED = Path(tempfile.mkdtemp(prefix="aigm-used-")) / "used.json"
 os.environ["DESIGN_USED_PATH"] = str(USED)
+atexit.register(shutil.rmtree, USED.parent, ignore_errors=True)     # build 20b: one folder per process, removed at its exit
 
 # the suite's own runtime directory, set before any test computes a path, so the guard marker every test arms,
 # disarms or reads is never the project's .runtime/active-design.json (build 19c); a test process started by

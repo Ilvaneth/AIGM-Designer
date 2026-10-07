@@ -59,6 +59,16 @@ class SuiteRuntime(unittest.TestCase):
         with mock.patch.dict(os.environ, {"AIGM_TEST_RUNTIME": ""}):
             self.assertEqual(paths.runtime_dir().resolve(), (PROJECT / ".runtime").resolve())
 
+    def test_a_test_process_leaves_no_used_folder(self):
+        """Build item 20b: each test process makes its own used.json folder and removes it at exit."""
+        env = {k: v for k, v in os.environ.items() if k not in ("AIGM_TEST_RUNTIME", "DESIGN_USED_PATH")}
+        out = subprocess.run([sys.executable, "-c", "import _campaign; print(_campaign.USED.parent); print(_campaign.RUNTIME)"],
+                             cwd=str(TESTS), capture_output=True, text=True, env=env, encoding="utf-8", check=True).stdout.split()
+        used, runtime = Path(out[0]), Path(out[1])
+        self.assertTrue(used.name.startswith("aigm-used-"))
+        self.assertFalse(used.exists(), "the used.json folder outlived its process")
+        self.assertFalse(runtime.exists(), "the runtime folder outlived its process")
+
     def test_a_layout_project_keeps_its_own_runtime(self):
         self.assertNotIn("AIGM_TEST_RUNTIME", clean_env())
 
