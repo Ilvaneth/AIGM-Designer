@@ -66,3 +66,14 @@ The mechanism (the coding tab's proposal, accepted): every spine row carries `en
 | world_edge | the inner lands | the cloud sea |
 
 A generic side seated elsewhere than an end (the heart, beside the key place) is named "<noun> of <that part's short>". **Added test:** over the corpus every generic side in a story sentence reads through its noun and a seat, and the two sides of one contest never read the same.
+
+## Part 21c — the guard reads inside a wrapper (owner-approved 2026-10-07)
+
+Found at 21b's audit: a recursive search wrapped in another command passes the guard, because the guard judges a segment by its first word. Most of these passed before 21b too; one got slightly worse (`bash -c "cd x; grep -r y ."` was split by the old regex and is now quoted text). **A third green commit after 21a:** `Plan item 25, build 21c: the guard reads inside a wrapper`.
+
+The guard unwraps before it judges a segment:
+- **a command string:** the string argument of `bash -c`, `sh -c`, `zsh -c`, `eval`, `powershell` / `pwsh` `-Command` / `-c` (and `-EncodedCommand`, refused outright while a marker is armed, since it cannot be read), `Invoke-Expression` / `iex`, `cmd /c` is parsed as commands, recursively;
+- **a prefix:** `env` (with its `VAR=value` arguments), `sudo`, `time`, `nohup`, `command`, `exec`, `nice`, `timeout <n>`, `xargs` (with its options) and `&` / `.` in PowerShell are skipped to the real command word;
+- **a grouping:** a leading `(`, `{` and their closers, and a process substitution `<(...)` / `>(...)`, are commands like `$(...)`.
+
+**Tests:** every case above with `grep -r`, `find`, `ls -R` and `Get-ChildItem -Recurse` on a parent folder of dm-only is refused; the same words as text inside a `bash -c` string's own quotes (`bash -c 'echo "grep -r"'`) pass; 21b's text cases still pass.
