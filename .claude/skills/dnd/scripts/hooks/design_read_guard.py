@@ -25,6 +25,13 @@ Rules while armed for the marked campaign, for the marked session:
     allowlisted player-facing paths; other agents follow the birth rule.
 Unarmed, or armed by another session, everything is allowed: the DM's own
 reads of a finished file are never guarded (24.6 #5).
+  * a caller who may not read dm-only (the conductor in birth and detail, the
+    player agent, an ad-hoc agent) may not search a folder that holds
+    design/dm-only or design/_staging unless the search keeps them out: a
+    Grep or Glob over a parent folder passes only with a glob or type that
+    matches no file there now; a recursive shell search or listing (grep -r,
+    rg, find, ls -R, tree, git grep, findstr /s, dir /s, Get-ChildItem or
+    Select-String -Recurse) on a parent folder is refused (build 19d).
   * any mode, any session, any caller — a shell command that names a runtime
     override (AIGM_TEST_RUNTIME, DND_RUNTIME_DIR) is refused: it would move the
     scripts' own marker checks to an empty runtime (build 19c).
@@ -34,9 +41,11 @@ Exit codes: 0 allow, 2 block (stderr is shown to Claude).
 
 from __future__ import annotations
 
+import fnmatch
 import json
 import os
 import re
+import shlex
 import sys
 from pathlib import Path
 
@@ -125,6 +134,184 @@ def _bash_prints_dm_only(command: str) -> str | None:
     return None
 
 
+# ── a search through a parent folder (build 19d) ─────────────────────────────
+# A Grep or Glob whose path holds the protected folders reads inside them unless its filter keeps them out; a filter
+# is judged against the files there now (what the search could print at this moment). The shell forms are judged by
+# their roots only: a recursive search or listing on a parent folder is refused, whatever its filters.
+
+PROTECTED_DIRS = ("dm-only", "_staging")
+# ripgrep's type names whose extensions the protected folders can hold; any other type is its own extension
+TYPE_EXTS = {"md": {"md", "markdown", "mdx", "mkd", "mkdn", "mdwn"}, "markdown": {"md", "markdown", "mdx", "mkd", "mkdn", "mdwn"},
+             "json": {"json", "jsonl", "geojson", "sarif"}, "yaml": {"yaml", "yml"}, "txt": {"txt"}, "csv": {"csv"}}
+_SHELL_SPLIT = re.compile(r"\|\||&&|[;|\n]")
+_GITBASH_DRIVE = re.compile(r"^/([a-zA-Z])(/|$)")
+
+
+def _abs(path: str, cwd: Path) -> Path:
+    path = _GITBASH_DRIVE.sub(lambda m: f"{m.group(1)}:/", path.strip())
+    p = Path(path).expanduser()
+    try:
+        return (p if p.is_absolute() else cwd / p).resolve()
+    except Exception:
+        return cwd / p
+
+
+def _protected_files(search: Path, root: Path) -> list[str] | None:
+    """The protected files a search rooted at `search` reaches, relative to it (posix); None when it holds none."""
+    out, held = [], False
+    for name in PROTECTED_DIRS:
+        d = (root / "design" / name).resolve()
+        if not d.is_dir():
+            continue
+        try:
+            d.relative_to(search)                     # the search root holds this folder (or is it)
+        except ValueError:
+            try:
+                search.relative_to(d)                 # or lies inside it
+            except ValueError:
+                continue
+        held = True
+        for f in d.rglob("*"):
+            if f.is_file():
+                try:
+                    out.append(f.relative_to(search).as_posix())
+                except ValueError:
+                    out.append(f.name)
+    return out if held else None
+
+
+def _braces(glob: str) -> list[str]:
+    m = re.search(r"\{([^{}]*)\}", glob)
+    if not m:
+        return [glob]
+    return [x for alt in m.group(1).split(",") for x in _braces(glob[:m.start()] + alt + glob[m.end():])]
+
+
+def _glob_rx(glob: str) -> str:
+    out, i = "", 0
+    while i < len(glob):
+        if glob.startswith("**/", i):
+            out, i = out + "(?:.*/)?", i + 3
+        elif glob.startswith("**", i):
+            out, i = out + ".*", i + 2
+        elif glob[i] == "*":
+            out, i = out + "[^/]*", i + 1
+        elif glob[i] == "?":
+            out, i = out + "[^/]", i + 1
+        elif glob[i] == "[" and glob.find("]", i + 1) > i:
+            j = glob.find("]", i + 1)
+            cls = glob[i + 1:j]
+            out, i = out + "[" + ("^" + cls[1:] if cls.startswith("!") else cls) + "]", j + 1
+        else:
+            out, i = out + re.escape(glob[i]), i + 1
+    return out
+
+
+def _glob_hits(glob: str, rel: str) -> bool:
+    """ripgrep's glob reading: no slash matches any one segment; a slash anchors it at the search root, and a glob
+    that matches a folder takes in everything under it."""
+    segs = rel.split("/")
+    for alt in _braces(glob.replace("\\", "/")):
+        g = alt.rstrip("/")
+        if g.startswith("./"):
+            g = g[2:]
+        if "/" not in g:
+            if any(fnmatch.fnmatchcase(s.lower(), g.lower()) for s in segs):
+                return True
+            continue
+        rx = re.compile(_glob_rx(g.lstrip("/")), re.IGNORECASE)
+        if any(rx.fullmatch("/".join(segs[:n])) for n in range(1, len(segs) + 1)):
+            return True
+    return False
+
+
+def _filtered(files: list[str], glob: str, ftype: str) -> list[str]:
+    """The protected files a Grep's glob and type (or a Glob's pattern) let through."""
+    if glob:
+        files = ([f for f in files if not _glob_hits(glob[1:], f)] if glob.startswith("!")
+                 else [f for f in files if _glob_hits(glob, f)])
+    if ftype:
+        exts = TYPE_EXTS.get(ftype.lower(), {ftype.lower()})
+        files = [f for f in files if f.rsplit(".", 1)[-1].lower() in exts and "." in f.rsplit("/", 1)[-1]]
+    return files
+
+
+def _shell_roots(command: str, cwd: Path, posix: bool = True) -> list[tuple[str, Path]]:
+    """(the command word, a root) for every recursive search or listing in a Bash or PowerShell command."""
+    out = []
+    for seg in _SHELL_SPLIT.split(command or ""):
+        try:
+            toks = shlex.split(seg, posix=posix)
+        except ValueError:
+            toks = seg.split()
+        if not posix:                                 # PowerShell: backslashes are path separators, quotes stay on
+            toks = [t[1:-1] if len(t) > 1 and t[0] == t[-1] and t[0] in "\"'" else t for t in toks]
+        while toks and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", toks[0]):
+            toks = toks[1:]                           # VAR=value prefixes
+        if not toks:
+            continue
+        word = Path(toks[0].replace("\\", "/")).name.lower().removesuffix(".exe")
+        args = toks[1:]
+        if word == "git" and args[:1] == ["grep"]:
+            word, args = "git grep", args[1:]
+        low = [a.lower() for a in args]
+        short = [a[1:] for a in args if re.fullmatch(r"-[A-Za-z]+", a)]
+        if word in ("grep", "egrep", "fgrep"):
+            recursive = any(a in ("--recursive", "--dereference-recursive") for a in low) or any("r" in s.lower() for s in short)
+        elif word in ("rg", "ripgrep", "find", "tree", "ag", "ack", "rgrep", "git grep"):
+            recursive = True
+        elif word in ("ls", "dir", "gci", "get-childitem", "select-string", "sls"):
+            recursive = (any(re.fullmatch(r"-rec\w*", a) or a in ("--recursive", "/s") for a in low)
+                         or (word in ("ls", "dir") and any("R" in s for s in short)))
+        elif word == "findstr":
+            recursive = any(re.fullmatch(r"/[a-z]*s[a-z]*", a) for a in low)
+        else:
+            recursive = False
+        if not recursive:
+            continue
+        roots = []
+        for a in args:
+            if a.startswith("-") or (a.startswith("/") and len(a) <= 3 and word in ("findstr", "dir")):
+                continue
+            parts = re.split(r"[\\/]", a)
+            cut = next((i for i, s in enumerate(parts) if any(c in s for c in "*?[")), None)
+            base = "/".join(parts[:cut]) if cut is not None else a
+            if cut is not None and not base:
+                continue                              # a bare wildcard: the search root stays the working folder
+            p = _abs(base or ".", cwd)
+            if p.exists():
+                roots.append(p)
+        out.extend((word, r) for r in (roots or [cwd]))
+    return out
+
+
+def _ancestor_search(payload: dict, root: Path | None) -> str | None:
+    """A description of a search that reaches the protected folders through a parent folder, or None."""
+    if root is None:
+        return None
+    tool = payload.get("tool_name")
+    inp = payload.get("tool_input") or {}
+    cwd = Path(payload.get("cwd") or os.getcwd())
+    if tool in ("Grep", "Glob"):
+        search = _abs(inp.get("path") or ".", cwd)
+        files = _protected_files(search, root)
+        if files is None:
+            return None
+        glob = inp.get("glob", "") if tool == "Grep" else inp.get("pattern", "")
+        ftype = inp.get("type", "") if tool == "Grep" else ""
+        if tool == "Grep" and not glob and not ftype:
+            return f"Grep over {search} with no glob or type"
+        hit = _filtered(files, glob or "", ftype or "")
+        if hit:
+            return f"{tool} over {search} ({glob or ftype}) reaches {hit[0]}"
+        return None
+    if tool in SHELL_TOOLS:
+        for word, r in _shell_roots(inp.get("command", "") or "", cwd, posix=tool == "Bash"):
+            if _protected_files(r, root) is not None:
+                return f"{word} over {r}"
+    return None
+
+
 def _allowlisted(path: str, root: Path | None, allow: list) -> bool:
     if root is None:
         return False
@@ -166,15 +353,24 @@ def check(payload: dict, marker: dict | None) -> str | None:
                             f"({', '.join(allow) or 'none listed'}); {p} is not one of them. See {RULE_REF}.")
             if verb:
                 return f"The player agent may not run {verb}. See {RULE_REF}."
+            search = _ancestor_search(payload, root)
+            if search:
+                return (f"The player agent may not search a folder that holds design/dm-only or design/_staging "
+                        f"({search}). See {RULE_REF}.")
             return None
         # other agents in a playtest follow the birth rule below
 
     allowed_types = tuple(marker.get("agent_types_allowed") or DEFAULT_AGENT_TYPES)
     if agent_id and agent_type in allowed_types:
         return None                                   # a designer agent, fresh context: may read dm-only
-    if not protected and not verb:
-        return None
     who = "an agent of type " + repr(agent_type) if agent_id else "the conductor"
+    if not protected and not verb:
+        search = _ancestor_search(payload, root)
+        if not search:
+            return None
+        return (f"Design mode '{mode}' is armed for {marker['campaign']}: {who} may not search a folder that holds "
+                f"design/dm-only or design/_staging unless the search keeps them out ({search}). Give a path outside "
+                f"the campaign's design folder, or a Grep/Glob glob or type that matches no file there. See {RULE_REF}.")
     what = verb or ", ".join(protected[:3])
     return (f"Design mode '{mode}' is armed for {marker['campaign']}: {who} may not read dm-only content "
             f"({what}). The conductor holds only the public projection (registry.py export --public) and "

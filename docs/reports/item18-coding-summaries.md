@@ -336,3 +336,27 @@ Otherwise a **mask** is rolled from a new secret table (`antagonists.yaml#mask`,
 **Changed files:** `.claude/settings.json` (the matcher); `scripts/paths.py`, `hooks/design_read_guard.py`, `build_design_index.py`, `design_tables.py`, `merge_srd_defenses.py`, `build_rules_index.py`, `build_srd.py`, `build_supplemental.py`, `data_pull.py`; `tests/_campaign.py`, `tests/_layouts.py`, `tests/test_design_read_guard.py`; new `tests/test_live_guard.py`.
 
 **The suite:** before the guard rule 868 tests, OK, exit 0, 1,906 s; the gating run after it 871 tests, OK, exit code 0, 1,878 s (31.3 min). The project's `.runtime` was empty before and after; no `aigm-runtime-*` directory was left in the temporary directory. (A run started before the Glob request was stopped and rerun; while cleaning up after it I also removed two older leftover fixture copies, `campaigns/_test-manifest-4224-5f4d17` and `_test-revise-8412-f62df6`.)
+
+## 19d — no search reaches dm-only through a parent folder (the fifth coding tab)
+
+**Who.** The rule binds a caller who may not read dm-only: the conductor in birth and detail mode, an ad-hoc agent in any mode and the player agent in a playtest. Designer agents of the allowed types and the DM at the playtest table stay free, as for Read. As before, another session's marker does not apply.
+
+**Grep and Glob** (`design_read_guard._ancestor_search`). The search root is the call's `path`, or the payload's `cwd` when it has none. When that root holds the marked campaign's `design/dm-only` or `design/_staging` (or lies inside one), the call is judged against the files there now (`_protected_files`): what it could print at that moment.
+- A Grep with no `glob` and no `type` is refused.
+- Otherwise the filter is applied to those files, and the call is refused when any file gets through. A Glob's `pattern` is the filter.
+- Globs are read as ripgrep reads them (`_glob_hits`). With no slash, a glob matches any one path segment, so `*.md` reaches `dm-only/arc.md`. With a slash, it is anchored at the search root, and a glob that matches a folder takes in everything under it. `{a,b}` is expanded, and a leading `!` excludes (`!{dm-only,_staging}` passes; `!dm-only/npcs/**` does not).
+- A `type` keeps the files whose extension is the type's (`TYPE_EXTS` for md, markdown, json, yaml, txt and csv; any other type is its own extension).
+- So `**`, `**/*.md`, `*/*.json`, `*.md`, type `md` or `json` over `design/` are refused; `npcs/*.md`, `*.py`, type `py`, and `design/*.md` from the campaign folder pass.
+
+**Bash and PowerShell** (`_shell_roots`). The command is split on `;`, `&&`, `||`, `|` and newlines. Each part is tokenized: POSIX for Bash; for PowerShell, non-POSIX with the quotes stripped, so backslash paths survive. `VAR=` prefixes are skipped.
+- Recursive forms: `grep`, `egrep` and `fgrep` with `-r`/`-R` (also inside a cluster such as `-rn`) or `--recursive`; `rg`, `find`, `tree`, `ag`, `ack`, `rgrep` and `git grep` always; `ls` and `dir` with `-R` or `/s`; `gci`, `Get-ChildItem`, `Select-String` and `sls` with `-Rec…`; `findstr` with `/s`.
+- Roots: the arguments that exist as paths, a wildcard argument cut at its first wildcard segment, or the working folder when none is given. Git Bash `/c/…` paths are read as `C:/…`.
+- A recursive form whose root holds a protected folder is refused, whatever its own filters (`--include`, `-g` and `-Filter` are not judged; the refusal names the Grep/Glob route). Non-recursive listings (`ls design`, `Get-ChildItem design`) and searches below the protected folders' parent (`grep -rn … design/npcs`) pass.
+
+**Tests** (`test_design_read_guard.py`, 13 tests, 2 new). The old line that expected a Grep over `design/` to pass now expects a refusal; `design/npcs` passes. Each Grep and Glob form above is tested in both directions, with no path through `cwd` (the project refused, the skill folder allowed). A designer agent is allowed, an ad-hoc agent refused, and another session's marker does not apply. Thirteen shell forms are refused and seven allowed; `rg` with no path through `cwd` is tested both ways. A designer agent's `grep -rn` is allowed. In the playtest, the DM is free, while the player's shell and Grep searches are refused.
+
+**The birth protocol** (`docs/p1-test-birth-2.md`). It has no conductor search step: the conductor runs `designer.py`, `design_cost.py`, `design_revise.py` and `design_names.py`, the Workflow and the review block. No rule here blocks a step it names. One friction: while the guard is armed, a conductor's Grep or Glob with no path in the project root is refused, since the project root holds the campaign. The reason says to give a path outside the campaign's design folder.
+
+**Changed files:** `scripts/hooks/design_read_guard.py`, `tests/test_design_read_guard.py`.
+
+**The suite:** 873 tests, OK, exit code 0, 2,258 s (37.6 min). `.runtime` empty after; no `aigm-runtime-*` left.

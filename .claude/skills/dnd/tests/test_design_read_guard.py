@@ -5,7 +5,8 @@ Cases in both directions (plan item 22.1): the conductor is denied dm-only
 while armed and free when unarmed; an allowed agent type reads dm-only; an
 ad-hoc agent does not; Bash paths and the registry verbs that print dm-only;
 another session's marker; playtest confines the player agent to the
-allowlist and frees the DM; dice_guard refuses an agent's roll during birth.
+allowlist and frees the DM; dice_guard refuses an agent's roll during birth;
+no search reaches dm-only through a parent folder (build 19d).
 """
 
 import json
@@ -62,7 +63,9 @@ class ReadGuard(unittest.TestCase):
         self.assertEqual(self.guard(payload("Read", file_path=str(self.camp / "design/_staging/P5/x.json"))), 2)
         self.assertEqual(self.guard(payload("Read", file_path=self.public)), 0)
         self.assertEqual(self.guard(payload("Grep", pattern="x", path=str(self.camp / "design" / "dm-only"))), 2)
-        self.assertEqual(self.guard(payload("Grep", pattern="x", path=str(self.camp / "design"))), 0)
+        self.assertEqual(self.guard(payload("Grep", pattern="x", path=str(self.camp / "design" / "npcs"))), 0)
+        self.assertEqual(self.guard(payload("Grep", pattern="x", path=str(self.camp / "design"))), 2,
+                         "a parent folder with no filter reads inside dm-only (build 19d)")
 
     def test_armed_conductor_bash_paths_and_registry_verbs(self):
         self.arm()
@@ -113,6 +116,63 @@ class ReadGuard(unittest.TestCase):
         self.assertEqual(self.guard(payload("Bash", command="py designer.py -c salt-lantern promise list")), 0)
         self.arm(mode="playtest")
         self.assertEqual(self.guard(payload("Bash", command=commands[1])), 2, "the DM at the table too")
+
+    # --- a search through a parent folder (build 19d) -------------------------
+
+    def test_grep_and_glob_over_a_parent_folder_pass_only_when_their_filter_keeps_dm_only_out(self):
+        self.arm()
+        design, camp = str(self.camp / "design"), str(self.camp)
+        grep = lambda **kw: self.guard(payload("Grep", pattern="x", **kw))  # noqa: E731
+        glob = lambda **kw: self.guard(payload("Glob", **kw))  # noqa: E731
+        self.assertEqual(grep(path=camp), 2)
+        self.assertEqual(grep(path=design, glob="**"), 2)
+        self.assertEqual(grep(path=design, glob="*.md"), 2, "a slashless glob matches at any depth")
+        self.assertEqual(grep(path=design, type="md"), 2)
+        self.assertEqual(grep(path=design, type="json"), 2, "dice-log.json")
+        self.assertEqual(grep(path=design, glob="npcs/*.md"), 0)
+        self.assertEqual(grep(path=design, glob="*.py"), 0)
+        self.assertEqual(grep(path=design, type="py"), 0)
+        self.assertEqual(grep(path=design, glob="!{dm-only,_staging}"), 0, "an exclusion of both folders")
+        self.assertEqual(grep(path=design, glob="!dm-only/npcs/**"), 2, "an exclusion that leaves files in")
+        self.assertEqual(glob(path=design, pattern="**/*.md"), 2)
+        self.assertEqual(glob(path=design, pattern="dm-only/**"), 2)
+        self.assertEqual(glob(path=design, pattern="*/*.json"), 2)
+        self.assertEqual(glob(path=camp, pattern="design/*.md"), 0)
+        self.assertEqual(glob(path=design, pattern="npcs/*.md"), 0)
+        self.assertEqual(self.guard(payload("Grep", pattern="x") | {"cwd": str(self.project)}), 2, "no path: the working folder")
+        self.assertEqual(self.guard(payload("Grep", pattern="x") | {"cwd": str(self.skill)}), 0)
+        self.assertEqual(self.guard(payload("Glob", pattern="**/*.md") | {"cwd": str(self.project)}), 2)
+        self.assertEqual(self.guard(payload("Grep", agent="design-critic", pattern="x", path=design)), 0)
+        self.assertEqual(self.guard(payload("Glob", agent="workflow-subagent", pattern="**", path=camp)), 0)
+        self.assertEqual(self.guard(payload("Grep", agent="general-purpose", pattern="x", path=design)), 2)
+        self.arm(session="sess-B")
+        self.assertEqual(grep(path=design), 0, "another session's marker")
+
+    def test_recursive_shell_searches_and_listings_over_a_parent_folder_are_refused(self):
+        self.arm()
+        design, camp, npcs = str(self.camp / "design"), str(self.camp), str(self.camp / "design" / "npcs")
+        refused = [("Bash", f'grep -rn foo "{design}"'), ("Bash", f'grep -R foo "{camp}"'), ("Bash", f'rg foo "{design}"'),
+                   ("Bash", f'find "{design}" -name "*.md"'), ("Bash", f'ls -R "{camp}"'), ("Bash", f'tree "{design}"'),
+                   ("Bash", f'cd x; git grep foo -- "{camp}"'), ("Bash", f'echo a && grep -r foo "{design}" | head'),
+                   ("PowerShell", f'Get-ChildItem -Recurse -Path "{design}"'), ("PowerShell", f"gci {design} -Rec -Filter *.md"),
+                   ("PowerShell", f'Get-ChildItem "{design}" -Recurse | Select-String foo'),
+                   ("PowerShell", f'findstr /s /i foo "{design}\\*.md"'), ("PowerShell", f'dir /s "{camp}"')]
+        allowed = [("Bash", f'grep foo "{self.public}"'), ("Bash", f'ls "{design}"'), ("Bash", f'grep -rn foo "{npcs}"'),
+                   ("Bash", f'rg foo "{self.skill}"'), ("PowerShell", f'Get-ChildItem "{design}"'),
+                   ("PowerShell", f'Get-ChildItem -Recurse "{npcs}"'), ("Bash", "py designer.py -c salt-lantern status")]
+        for tool, command in refused:
+            proc = run_hook(self.skill, "design_read_guard.py", payload(tool, command=command), self.env)
+            self.assertEqual(proc.returncode, 2, command)
+            self.assertIn("may not search", proc.stderr)
+        for tool, command in allowed:
+            self.assertEqual(self.guard(payload(tool, command=command)), 0, command)
+        self.assertEqual(self.guard(payload("Bash", command="rg foo") | {"cwd": str(self.project)}), 2, "no path: the working folder")
+        self.assertEqual(self.guard(payload("Bash", command="rg foo") | {"cwd": str(self.skill)}), 0)
+        self.assertEqual(self.guard(payload("Bash", agent="design-writer", command=f'grep -rn foo "{design}"')), 0)
+        self.arm(mode="playtest", playtest_allowlist=["design/player-primer.md"])
+        self.assertEqual(self.guard(payload("Bash", command=f'grep -rn foo "{design}"')), 0, "the DM at the table")
+        self.assertEqual(self.guard(payload("Bash", agent="player", command=f'grep -rn foo "{design}"')), 2)
+        self.assertEqual(self.guard(payload("Grep", agent="player", pattern="x", path=design)), 2)
 
     # --- agents --------------------------------------------------------------
 
