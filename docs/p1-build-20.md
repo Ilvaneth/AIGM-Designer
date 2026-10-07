@@ -31,3 +31,12 @@ The P0 card still prints the dice (`dial.tone d3 → 2 = tone_shadowed`) and row
 ## The summary (each part)
 
 Changed files; the suite's count, exit code and time; for 20a a frame printed for one birth and a list of the fields the writer fills per row type; for 20b one fresh P0 card.
+
+## Added from the birth's report (2026-10-07; part of 20a)
+
+`docs/reports/p1-test-birth-3.md` section 6 adds four faults:
+
+5. **A shape fault survives the whole chain.** The critics judge the prose, so a fragment the door will refuse passes two critics and a fix writer before the merge finds it (a fix writer even rewrote the fragment's shape). Beside the frame: the writer and every fix writer run the door's row check on their fragment before they return (a `registry.py` or `designer.py` command that checks a staged fragment against the registry's rules and the frame, printing the faults), and fix what it prints; the Workflow's prompts say so.
+6. **A known villain has a public face.** The villain's visibility was "known and untouchable" (the low villages' warden), yet the public premise never named it; three critics noted it and none asked a fix. When the visibility makes the villain known (known and untouchable, known but nowhere to be found), the public premise shows its public face (what the world knows it as), never its hidden part; the prompt says so and `rubric_p1_legible` checks it.
+7. **The lifeline sets no side's stance.** The value ("hired guards") was written into the sides' stances and means, and the question pulled against itself (two fix rounds on `rubric_p1_question_concrete`). The prompt says: the sides' stances and the question's stakes come from the contest, the prize and the goal; the lifeline may colour the world they stand in, never decide a side's stance or its means.
+8. **A fully refused run is not "merged".** The cost ledger's row for a run whose every unit the door refused says `merged: true`; it records the units merged and refused instead.
