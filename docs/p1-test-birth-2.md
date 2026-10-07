@@ -13,6 +13,8 @@
 3. While the birth runs or waits at a stop, nobody edits the working tree from another tab; the development tab only reads.
 4. Never put a `design/dm-only/…` or `design/_staging/…` path into a Bash command. Agents read dm-only with the Read tool, never with Bash (the prompts say so since build 18e).
 5. Never edit `design/design.json`, `design/naming.json` or anything the preroll wrote: the seal refuses every unit after it.
+6. While the guard is armed, a search (Grep, Glob, or a recursive Bash or PowerShell listing) from a folder that holds the campaign's `design/dm-only` is refused (build 19d); if you must search, name a path outside the campaign (the skill's folder, `docs/`).
+7. Do not run `designer.py commit` in a test birth: a test campaign is git-ignored and the command has nothing to commit (the permission classifier refused it once).
 
 ## The birth
 
@@ -26,7 +28,7 @@ Record the preroll's printed lines verbatim and the card's story sentence once t
 
 - **S1:** `begin --json` lists exactly one entity, the premise, with `"workflow": "design-fanout"`. Anything else is a stop.
 - Call the Workflow tool with `name: "design-fanout"` and `args` = that JSON object (a real JSON value).
-- After the Workflow returns, before any text to the owner: `phase P1 merge --tokens <output tokens> --seconds <duration> --run-dir "<the Transcript dir the result printed>"`, then `commit --message "P1 fan-out"`.
+- After the Workflow returns, before any text to the owner: `phase P1 merge --tokens <output tokens> --seconds <duration> --run-dir "<the Transcript dir the result printed>"`.
 - **A Workflow that completed but lists the premise under `failed`** (or returned nothing) is not merged: record its cost with `py .claude/skills/dnd/scripts/design_cost.py -c _test-p1-2 record --phase P1 --run-dir "<its Transcript dir>"` (since build 18f a run not merged is counted, and marked so), then run `begin --json` and the Workflow again.
 - **The door.** A line `refused N: …` means the door refused one or more *units of the premise's fragment* (the premise row, a signature row or a break row); the premise is relisted with them. Record the refusal lines verbatim, run `begin --json` and the Workflow once more, then merge again. A second refusal of the same fragment is a stop (`door`), with both refusals' lines.
 - A critic return refused at the merge is recorded verbatim; it is a stop only when the gate then shows `critic_missing`.
@@ -46,7 +48,7 @@ Record the preroll's printed lines verbatim and the card's story sentence once t
 | S8 D&D | the gate names `dnd_incomplete`, or the `D&D:` line shows a missing piece |
 | door | the same fragment refused twice |
 
-A critic chain that ended at `fix` after its loops is recorded, not a stop. **A gate item `phase_fix_due` is not a stop either** (build 18f): the phase critic asked a fix on a row the premise writes; run `phase P1 begin --json` (it serves the fix to the premise's writer, the entry carrying `phase_fix`), the Workflow, the merge with `--run-dir`, the commit, then check, card and report again; record the round.
+A critic chain that ended at `fix` after its loops is recorded, not a stop. **A gate item `phase_fix_due` is not a stop either** (build 18f): the phase critic asked a fix on a row the premise writes; run `phase P1 begin --json` (it serves the fix to the premise's writer, the entry carrying `phase_fix`), the Workflow, the merge with `--run-dir`, then check, card and report again; record the round.
 
 ## The review stop (always, stop or not)
 
@@ -66,10 +68,10 @@ last command: <command> → exit <code>
 runs: <the Workflow run ids, failed ones too>
 ```
 
-The owner carries it to the development tab, which reads the campaign (dm-only included) and answers with one of these:
+Send the block to the development tab (the design and review tab) with SendMessage; it reads the campaign (dm-only included) and answers, carrying the owner's word, with one of these:
 
 - **`devam`**: `phase P1 approve` (a test birth approves itself), then the end block.
-- **`düzelt: <one sentence>`**: `design_revise.py -c _test-p1-2 round --phase P1 --scope entity --entity <the premise id> --action replace --text "<the sentence>"`, then `begin --json`, the Workflow, merge (with `--run-dir`), commit, check, card, report, and the review block again.
+- **`düzelt: <one sentence>`**: `design_revise.py -c _test-p1-2 round --phase P1 --scope entity --entity <the premise id> --action replace --text "<the sentence>"`, then `begin --json`, the Workflow, merge (with `--run-dir`), check, card, report, and the review block again.
 - **`isim yenile <people | institution | phenomenon>`**: `design_names.py -c _test-p1-2 reroll --slot <slot> --onay`, then the `düzelt` path with the sentence the development tab gives.
 - **`vazgeç <promise id>: <one sentence>`**: `designer.py -c _test-p1-2 promise waive <id> "<the sentence>" --onay`, then card, report, and the review block again.
 - **`yeniden koş P1`**: `phase P1 rerun --reason "<the stop>"` (`--reseed` only if the answer says so), `preroll --phase P1`, and the birth from `begin` again.
