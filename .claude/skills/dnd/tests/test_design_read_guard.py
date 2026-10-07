@@ -173,6 +173,37 @@ class ReadGuard(unittest.TestCase):
         self.assertEqual(self.guard(payload("Bash", command=f'cat <<EOF\n{self.dm_only}\nEOF')), 2,
                          "a dm-only path is refused wherever it stands, a heredoc's body too")
 
+    def test_the_guard_reads_inside_a_wrapper(self):
+        """Build item 21c: a command string, a prefix, a grouping and a process substitution are read through to the
+        command they wrap; an encoded PowerShell command is refused, since it cannot be read."""
+        self.arm()
+        design = str(self.camp / "design")
+        d = design.replace("\\", "/")              # Bash paths, forward slashes
+        refused = [("Bash", f'bash -c "grep -r x {d}"'), ("Bash", f"sh -c 'cd /tmp; ls -R {d}'"), ("Bash", f"zsh -c 'find {d}'"),
+                   ("Bash", f"bash -lc 'find {d}'"), ("Bash", f'eval "find {d} -name x"'),
+                   ("Bash", f"env FOO=1 grep -r x {d}"), ("Bash", f"env -u HOME FOO=1 find {d}"), ("Bash", f"sudo -u me find {d}"),
+                   ("Bash", f"time ls -R {d}"), ("Bash", f"nohup grep -r x {d} &"), ("Bash", f"command find {d}"),
+                   ("Bash", f"exec find {d}"), ("Bash", f"nice -n 5 ls -R {d}"), ("Bash", f"timeout 5 grep -r x {d}"),
+                   ("Bash", f"echo a | xargs -n 1 grep -r x {d}"), ("Bash", f"( grep -r x {d} )"), ("Bash", f"(grep -r x {d})"),
+                   ("Bash", f"{{ grep -r x {d}; }}"), ("Bash", f"diff <(ls -R {d}) notes.txt"), ("Bash", f"tee >(grep -r x {d}) < a"),
+                   ("Bash", f'bash -c "sudo find {d}"'),
+                   ("PowerShell", f'powershell -NoProfile -Command "Get-ChildItem -Recurse {design}"'),
+                   ("PowerShell", f'pwsh -c "gci {design} -Recurse"'), ("PowerShell", f'Invoke-Expression "Get-ChildItem -Recurse {design}"'),
+                   ("PowerShell", f"iex 'gci -Recurse {design}'"), ("PowerShell", f'cmd /c dir /s "{design}"'),
+                   ("PowerShell", f"& {{ Get-ChildItem -Recurse {design} }}"), ("PowerShell", f". {{ gci -Recurse {design} }}"),
+                   ("PowerShell", "powershell -EncodedCommand ZQBjAGgAbwAgAGgAaQA=")]
+        for tool, command in refused:
+            self.assertEqual(self.guard(payload(tool, command=command)), 2, command)
+        passed = [("Bash", f"bash -c 'echo \"grep -r {d}\"'"), ("Bash", 'bash -c "echo hi"'), ("Bash", f"sudo ls {d}"),
+                  ("Bash", f"env FOO=1 py designer.py -c salt-lantern status"), ("Bash", f"( cd {d}/npcs && ls )"),
+                  ("PowerShell", f"powershell -Command \"Write-Output 'gci -Recurse {design}'\""),
+                  ("PowerShell", f'pwsh -c "Get-ChildItem {design}"')]
+        for tool, command in passed:
+            self.assertEqual(self.guard(payload(tool, command=command)), 0, command)
+        proc = run_hook(self.skill, "design_read_guard.py", payload("PowerShell", command="pwsh -ec ZQBjAGgAbwA="), self.env)
+        self.assertIn("cannot be read", proc.stderr)
+        self.assertEqual(self.guard(payload("PowerShell", agent="design-writer", command="pwsh -ec ZQBjAGgAbwA=")), 0, "a designer agent")
+
     def test_recursive_shell_searches_and_listings_over_a_parent_folder_are_refused(self):
         self.arm()
         design, camp, npcs = str(self.camp / "design"), str(self.camp), str(self.camp / "design" / "npcs")

@@ -33,7 +33,12 @@ reads of a finished file are never guarded (24.6 #5).
     rg, find, ls -R, tree, git grep, findstr /s, dir /s, Get-ChildItem or
     Select-String -Recurse) on a parent folder is refused (build 19d).
     Only command words are read: a heredoc's body, a quoted string's body and a
-    comment are text (build item 21b).
+    comment are text (build item 21b). A wrapper is read through (build item
+    21c): a prefix (env, sudo, time, nohup, command, exec, nice, timeout, xargs,
+    PowerShell's `.`) is skipped to the real command, a command string (bash/sh
+    -c, eval, powershell -Command, Invoke-Expression, cmd /c) is parsed again,
+    a grouping and a process substitution are commands; -EncodedCommand is
+    refused, since it cannot be read.
   * any mode, any session, any caller — a shell command that names a runtime
     override (AIGM_TEST_RUNTIME, DND_RUNTIME_DIR) is refused: it would move the
     scripts' own marker checks to an empty runtime (build 19c).
@@ -244,7 +249,7 @@ def _command_segments(command: str, posix: bool = True) -> list[str]:
                 cur.append(" ")
                 i = m.end()
                 continue
-        if text.startswith("$(", i):
+        if text.startswith(("$(", "<(", ">("), i):          # build item 21c: a process substitution too
             j = _close_paren(text, i + 1)
             segs.extend(_command_segments(text[i + 2:j], posix))
             cur.append(" ")
@@ -368,8 +373,80 @@ def _filtered(files: list[str], glob: str, ftype: str) -> list[str]:
     return files
 
 
-def _shell_roots(command: str, cwd: Path, posix: bool = True) -> list[tuple[str, Path]]:
-    """(the command word, a root) for every recursive search or listing in a Bash or PowerShell command."""
+# build item 21c: a search wrapped in another command is judged as the command it wraps. A prefix runs the command
+# after it (its options, and the arguments its options take, skipped); a command string is parsed again as commands.
+_PREFIXES = {"env": {"-u", "--unset", "-C", "--chdir", "-S", "--split-string"}, "sudo": {"-u", "-g", "-C", "-h", "-p", "-U", "-r", "-t"},
+             "doas": {"-u", "-C"}, "time": {"-o", "-f"}, "nohup": set(), "command": set(), "exec": {"-a"}, "nice": {"-n"},
+             "ionice": {"-c", "-n", "-p"}, "stdbuf": {"-i", "-o", "-e"}, "timeout": {"-s", "--signal", "-k", "--kill-after"},
+             "xargs": {"-n", "-I", "-d", "-P", "-L", "-s", "-a", "-E", "--max-args", "--replace", "--delimiter",
+                       "--max-procs", "--max-lines", "--arg-file", "--eof"},
+             ".": set()}
+_SHELLS = ("bash", "sh", "zsh", "dash", "ksh")
+_PS = ("powershell", "pwsh")
+_PS_COMMAND = re.compile(r"^-c(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?$", re.IGNORECASE)
+_PS_ENCODED = re.compile(r"^-(?:e|ec|en|enc|enco|encod|encode|encoded|encodedc\w*)$", re.IGNORECASE)
+ENCODED = "an encoded command"
+
+
+def _unwrap(toks: list[str]) -> list[str]:
+    """The tokens from the real command word on: VAR=value assignments and the prefixes skipped, a grouping's brackets
+    taken off."""
+    while toks:
+        if re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", toks[0]):
+            toks = toks[1:]                           # VAR=value prefixes
+            continue
+        if toks[0] in ("(", "((", "{"):
+            toks = toks[1:]
+            continue
+        if toks[0].startswith("(") and len(toks[0]) > 1:
+            toks = [toks[0].lstrip("(")] + toks[1:]
+            continue
+        word = "." if toks[0] == "." else Path(toks[0].replace("\\", "/")).name.lower().removesuffix(".exe")
+        if word not in _PREFIXES:
+            break
+        takes, rest = _PREFIXES[word], toks[1:]
+        while rest and (rest[0].startswith("-") or (word == "env" and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", rest[0]))):
+            opt = rest.pop(0)
+            if opt in takes and rest:
+                rest.pop(0)                           # the option's own argument
+        if word == "timeout" and rest:
+            rest = rest[1:]                           # the duration
+        toks = rest
+    while toks and toks[-1] in (")", "))", "}"):
+        toks = toks[:-1]
+    if toks and toks[-1].endswith(")") and toks[-1].count("(") < toks[-1].count(")"):
+        toks = toks[:-1] + [toks[-1].rstrip(")")]
+    return toks
+
+
+def _command_string(word: str, args: list[str]) -> tuple[str, bool] | None:
+    """(the command string a wrapper runs, read as POSIX or not), ENCODED for an unreadable one, or None."""
+    if word in _SHELLS:
+        for n, a in enumerate(args):
+            if re.fullmatch(r"-[A-Za-z]*c[A-Za-z]*", a) and n + 1 < len(args):
+                return args[n + 1], True
+        return None
+    if word == "eval":
+        return " ".join(args), True
+    if word in _PS:
+        for n, a in enumerate(args):
+            if _PS_ENCODED.match(a):
+                return ENCODED, False
+            if _PS_COMMAND.match(a):
+                return " ".join(args[n + 1:]), False
+        return None
+    if word in ("invoke-expression", "iex"):
+        return " ".join(a for a in args if not _PS_COMMAND.match(a)), False
+    if word == "cmd":
+        for n, a in enumerate(args):
+            if a.lower() in ("/c", "/k"):
+                return " ".join(args[n + 1:]), False
+    return None
+
+
+def _shell_roots(command: str, cwd: Path, posix: bool = True, depth: int = 0) -> list[tuple[str, Path | None]]:
+    """(the command word, a root) for every recursive search or listing in a Bash or PowerShell command; a wrapper's
+    command string is read too (build item 21c), and an encoded one is (word, None)."""
     out = []
     for seg in _command_segments(command or "", posix):
         try:
@@ -378,12 +455,19 @@ def _shell_roots(command: str, cwd: Path, posix: bool = True) -> list[tuple[str,
             toks = seg.split()
         if not posix:                                 # PowerShell: backslashes are path separators, quotes stay on
             toks = [t[1:-1] if len(t) > 1 and t[0] == t[-1] and t[0] in "\"'" else t for t in toks]
-        while toks and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", toks[0]):
-            toks = toks[1:]                           # VAR=value prefixes
+        toks = _unwrap(toks)
         if not toks:
             continue
         word = Path(toks[0].replace("\\", "/")).name.lower().removesuffix(".exe")
         args = toks[1:]
+        wrapped = _command_string(word, args)
+        if wrapped is not None:
+            inner, inner_posix = wrapped
+            if inner == ENCODED:
+                out.append((f"{word} -EncodedCommand", None))
+            elif depth < 8:
+                out.extend(_shell_roots(inner, cwd, inner_posix, depth + 1))
+            continue
         if word == "git" and args[:1] == ["grep"]:
             word, args = "git grep", args[1:]
         low = [a.lower() for a in args]
@@ -439,6 +523,8 @@ def _ancestor_search(payload: dict, root: Path | None) -> str | None:
         return None
     if tool in SHELL_TOOLS:
         for word, r in _shell_roots(inp.get("command", "") or "", cwd, posix=tool == "Bash"):
+            if r is None:
+                return f"{word}, which cannot be read"      # build item 21c: an encoded command is refused while armed
             if _protected_files(r, root) is not None:
                 return f"{word} over {r}"
     return None

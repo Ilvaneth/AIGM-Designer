@@ -514,3 +514,28 @@ Two more were left during my gating run, at 17:04 and 17:25. They came from anot
 **Changed files:** `data/design/foundation.yaml`, `reviewed.json`, `rubrics.yaml`; `prompts/design/P1.premise.md`; `scripts/design_door.py`, `design_foundation.py`; tests: `test_p1_polish.py` (new), `test_p1_story.py`, `test_p1_birth2_faults.py`, `test_written_in_english.py`.
 
 **The suite:** 895 tests, OK, exit code 0, 2,664 s (44.4 min). An earlier run failed six tests that pinned the old sentence and the old stamps; those are updated above. No `aigm-*` folder left.
+
+## 21c — the guard reads inside a wrapper (the fifth coding tab)
+
+**The unwrapping** (`hooks/design_read_guard.py`, before 19d's search rule judges a command):
+- **`_unwrap`** skips `VAR=value` assignments and the prefixes `env` (with its own `VAR=value` arguments), `sudo`, `doas`, `time`, `nohup`, `command`, `exec`, `nice`, `ionice`, `stdbuf`, `timeout` (and its duration), `xargs` and PowerShell's `.`, each with its options and the arguments its options take (`_PREFIXES`). It also takes off a grouping's `(`, `((`, `{` and their closers, including a `(` or `)` stuck to a word.
+- **`_command_string`** reads the string a wrapper runs and parses it again as commands, recursively (eight levels at most): `bash`/`sh`/`zsh`/`dash`/`ksh -c` (also in a cluster such as `-lc`), `eval`, `powershell`/`pwsh -Command` (any abbreviation down to `-c`), `Invoke-Expression`/`iex`, and `cmd /c` / `/k`. A PowerShell `-EncodedCommand` (`-e`, `-ec`, `-enc` …) comes back as unreadable and is refused while a marker is armed ("… which cannot be read").
+- PowerShell's `&` call operator was already split off by 21b's splitter, so `& { … }` reads as a grouping.
+- **Process substitution:** `<( … )` and `>( … )` are commands like `$( … )` (`_command_segments`).
+
+**Scope (my reading):** the encoded command is refused within the search rule's scope, which is the conductor in birth and detail, an ad-hoc agent and the playtest player. A designer agent and the DM at the table stay free, as for every other search; the test pins that. If "outright" means every caller (like the runtime-override rule), it is a one-line move.
+
+**Tests** (`test_design_read_guard.py`, `test_the_guard_reads_inside_a_wrapper`):
+- **Refused:** 29 commands over a parent folder of dm-only, each wrapped one way. They cover:
+  - every command string (`bash -c`, `sh -c` after a `cd`, `zsh -c`, `bash -lc`, `eval`, `powershell -NoProfile -Command`, `pwsh -c`, `Invoke-Expression`, `iex`, `cmd /c dir /s`);
+  - every prefix (`env FOO=1`, `env -u HOME FOO=1`, `sudo -u me`, `time`, `nohup … &`, `command`, `exec`, `nice -n 5`, `timeout 5`, `xargs -n 1` after a pipe), plus a prefix inside a command string (`bash -c "sudo find …"`);
+  - every grouping (`( … )`, `(grep …)`, `{ …; }`, `<( … )`, `>( … )`, PowerShell's `& { … }` and `. { … }`);
+  - `powershell -EncodedCommand`.
+- **Passed:** the same words as text inside a command string's own quotes (`bash -c 'echo "grep -r …"'`, `powershell -Command "Write-Output 'gci -Recurse …'"`), a harmless `bash -c`, a non-recursive `sudo ls` and `pwsh -c "Get-ChildItem …"`, `env FOO=1 py designer.py …`, and a grouping that lists below the protected folders. The encoded refusal says "cannot be read"; a designer agent's encoded command passes.
+- 21b's text cases still pass.
+
+**On the way:** PowerShell's `.` prefix was missed at first (`Path(".").name` is empty); `_unwrap` now reads it as a word.
+
+**Changed files:** `scripts/hooks/design_read_guard.py`, `tests/test_design_read_guard.py`.
+
+**The suite:** 896 tests, OK, exit code 0, 1,998 s (33.3 min). No `aigm-*` folder left.
