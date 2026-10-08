@@ -28,7 +28,7 @@ Already ruled before this review (`docs/p1-tags.md` §§2-3) and not decided aga
 
 ## S2 — Pantheon II: domains, churches, relations, god secrets (owner-approved 2026-10-08)
 
-**Domains** (`pantheon.yaml#domain_scaffold`). All eight stay. A god's domain is a fact of the world, not a rule text: the SRD 5.1 prints only the Life domain's subclass, and a player who wants another reads it in their own book (the skill prints no non-SRD rule text). Each god's 1-2 domains are rolled to the scale's coverage rule, and its alignment from its domain's `alignments`. **At standard and epic at least one god is evil** (its cult can be a hand). Light's church shape "an order of lamplighters" becomes "a sun temple on a height" (the owner's tired images).
+**Domains** (`pantheon.yaml#domain_scaffold`). All eight stay. A god's domain is a fact of the world, not a rule text: the SRD 5.1 prints only the Life domain's subclass, and a player who wants another reads it in their own book (the skill prints no non-SRD rule text). Each god's 1-2 domains are rolled to the scale's coverage rule, and its alignment from its domain's `alignments`. **At standard and epic at least one god is evil** (its cult can be a hand). Light's church shape loses "order of lamplighters", and its "a temple on a height" becomes "a sun temple on a height" (the owner's tired images).
 
 **Churches** (`church_archetype`, 11 rows kept). The archetype is rolled for the greater gods only; the great gods among them carry it into P4 as factions. Lesser gods and powers take one church line rolled from their domain's `church_shape`. P2's row owns the church's form; P4's faction follows its `faction_archetype`.
 
