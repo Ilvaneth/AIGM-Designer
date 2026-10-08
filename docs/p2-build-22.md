@@ -63,7 +63,9 @@ Every override a P1 row names for a P2 default (the regulator's identity and str
 2. **The frame:** at `phase P2 begin` the script writes the frame of every P2 registry row (`god_`, `plane_`, `era_`, `event_` and the calendar seed: ids, types, an object `stamped`, every rolled field), as build 20a does for P1; the door refuses a missing, changed or reshaped frame field by name; the writer checks its fragment with `registry.py check` before returning.
 3. **The door's checks** (S7 #3): the god count and the domain coverage; at least one evil god at standard and epic; a festival per greater god; the four seated story events; every plane P1 names touched; twelve months of 28 days and a seven-day week; a secret seat's id or fact never in a public file.
 
-**Tests:** each refusal by name; P1's P2 promises close; a P2 promise to P3 appears in the ledger.
+4. **The tag pass is enforced for every floor** (errata 24.2 #33): a test fails when a phase stands in `SOURCE_PHASES` while a row of a table it rolls lacks its reviewed stamp, or while the corpus holds a birth with a declared clash among that phase's rolls. P0, P1 and P2 pass it after this item; P3-P8 cannot be bound without their own tag pass.
+
+**Tests:** each refusal by name; P1's P2 promises close; a P2 promise to P3 appears in the ledger; the floor test above (a stamp removed in a temporary copy turns it red).
 
 ## Part 22d — the writer, the critics, the card
 
