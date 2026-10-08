@@ -9,7 +9,7 @@
 | Auditing a phase's roller | 1 *(suite)*, 2 *(suite)*, 3, 27, 31 |
 | Auditing a build before its commit | 4, 5, 29, 24; 30 *(suite)* |
 | Writing a specification or answering a tab's question | 6, 7 |
-| Starting a new floor | 15, 8, 19, 20 |
+| Starting a new floor | 15, 8, 19, 20, 32 *(suite)* |
 | Running or reading a test birth | 9, 10, 11, 12, 13, 18, 21, 26 |
 | Building the pipeline's plumbing | 25 *(suite)*, 28, 23 *(suite)* |
 | A fault that comes back | 14, 22 |
@@ -176,3 +176,8 @@
 **Variants of the first entries:** the swap test's earlier form rebuilt the public ledger without the secret rolls (12a, 18d); the ruling-by-ruling audit also compares the built data with the approved lists by script (11a, 16d, 21a); the clean checkout also means: commit on the exit code, never on a piped tail; no edit while the suite runs; `git status` clean in the worktree after it (line endings); no `aigm-*` folder left in the temporary directory.
 
 **Lessons that are methods:** close a class with a gate and a class test; a parent's exit code carries its child's crash; checking within one table misses clashes across tables, so measure over many seeds; quantify the owner's diagnosis over seeds and list what was checked clean; stop and report when the source and the instruction differ, and never lower a floor test; write edit scripts with the Write tool and quote short YAML words.
+
+### 32. Derive a floor's tables from what the corpus rolls, and check their stamps
+- **Catches:** a table a floor rolls that no one listed for review, so it was never stamped (an owner review skipped).
+- **How:** the floor test collects every table the corpus births actually draw from at that floor (not a hand-kept list), and fails when one of their rows lacks a reviewed stamp while the floor stands in `SOURCE_PHASES`.
+- **Proved:** build 22c (2026-10-08): five tables P1 had rolled since item 18 had no stamp; four had never been reviewed by the owner, who then approved them and two new rows.
