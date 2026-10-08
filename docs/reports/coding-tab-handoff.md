@@ -227,3 +227,87 @@ Where the walk may stumble (suspected while writing, none verified):
 - **The hub rule (the owner, 2026-10-06):** every report, summary pointer and question goes to the design and review tab by `SendMessage` (`local_39bf34e9-08ef-4d72-806d-3f2e75fc52d8`, "Designer 6-Opus"); no commit before its answer; never push. The coding tab writes its summaries under the part's heading in `docs/reports/item18-coding-summaries.md`.
 - **`build_design_index.py`** rewrites `srd-index-2014.json` (and `monster-ecology.yaml`, unchanged so far); `--check` says whether they are current.
 - **`monster-ecology.yaml` shows as modified** after `build_design_index.py` ran: line endings only (`git diff` shows nothing); it was left out of 19b's commit.
+
+## 13. Items 19c-22a (2026-10-07/08, the fifth coding tab), for the next coding tab
+
+**Committed by this tab** (none pushed by it; the design tab audits and pushes):
+
+| Item | Commit | What |
+|---|---|---|
+| 19c | `310eb2b` | the tests never touch a live guard; scripts keep a tracked file's line endings |
+| 19d | `a574ee0` | no search reaches dm-only through a parent folder |
+| 20a | `17572a3` | the script frames P1's rows; the writer's `registry.py check` |
+| 20b | `fdb6080` | the P0 card without dice |
+| 21b | `aa7b29c` | the guard reads command words, not text |
+| 21a | `790ef64` | a short question and named sides |
+| 21c | `9efe748` | the guard reads inside a wrapper |
+| 21d | `f022910` | the door counts the pitch |
+| 22a | not yet committed: the audit fixes are in the tree, the suite not rerun after them | the cosmos tables |
+
+The design tab committed 22a-0's draft and the owner's rulings (`e2059c5`). Every item's summary is under its heading in `docs/reports/item18-coding-summaries.md`.
+
+**Where item 22 stands.** 22a is done. 22b-22e are to do, in order:
+- **22b:** the P2 roller, in the threat's order.
+- **22c:** the ledger, the frame and the door for P2, and the test that enforces a tag pass for every floor.
+- **22d:** the writer, the critics and the card.
+- **22e:** the dry walk of P2 and the measurement after.
+
+The specification is `docs/p2-build-22.md`. The rows are `docs/p2-tags.md` S1-S7, with its last section "The tag pass (22a-0): the owner's rulings". The draft `docs/reports/p2-tags-draft.md` lists every pair, `requires`, fit, override, `home_of` and second owner, with its number (D1-D23, R1-R15, §5's chart).
+
+**What 22b needs to know.**
+- **The roller is still today's `preroll_p2`** (`scripts/designer.py`, about line 362). 22a only took out the year and the week and added the legacy anchor stopgap: with no P1 time row in the context, the anchor is a plain die recorded as forced. 22b replaces the function (the spec suggests a module `design_cosmos.py`) and calls it from `preroll --phase P2`.
+- **The Roller** (`designer.Roller`):
+  - `table(label, ref, secret=, avoid=, exclude=, where=, weigh=, slot=)`, `forced(label, ref, row_id, reason)`, `notation(label, "d6")`, `count(label, band)`; `Roller.in_memory(master, dials, phase=)` for the corpus.
+  - Every table draw goes through `design_arbiter`, which applies the rows' `requires`, `conflicts_with`, `claims` (via `claims.yaml#clashes`) and `weight_by` on its own. So the tags 22a wrote take effect as soon as a roll goes through `R.table`.
+  - `forced` checks conflicts only, not `requires`.
+  - `R.ctx.has(id_or_token)` reads the context.
+- **The data 22a wrote that no code reads yet** (22b's to read):
+  - `planes.yaml`: `rules.sets`, `rules.named_planes` (P1 row → fits; `one_of_each`, `weight`), `rules.moon_seat`, and `home_of` on the baseline rows (a family id, `{family, creatures}` or `{family: family_god, by: alignment}`);
+  - `calendar.yaml`: `rules` (`month_length` 28, `months` 12, `week_days` 7, the climate, festivals and dated-days rules) and the table `underground_count` (roll it in the underground era only);
+  - `scale.yaml`: `history.divergences` (1 / 2 / 3) and the new amounts;
+  - `pantheon.yaml`: `rules.evil_god` and `god_story`.
+- **The overrides are data only.** 22b applies them as forced records with their reason:
+  - the regulator ×3 and its strictness;
+  - `pantheon_type` (ancestors), `pantheon_presence` (gods among mortals → walking), `moon` (the moon trades → `moon_is_a_plane`);
+  - `festivals` (the type's folk festival), `great_gods_count` and `greater_gods_count` (dualist → 2);
+  - `great_gods_floor`: the raisers, joined by the `any_two` combine line.
+  `design_promises.SCRIPT_APPLIED` lists only `pantheon_type` today. Extend it so the ledger marks the others as kept by script (22b and 22c).
+- **Order matters for the requires:**
+  - `regulator_church` requires `domain_knowledge` or `domain_light`, and `regulator_the_dead` requires `pantheon_ancestor_gods` or `domain_death`. The gods' domains must be rolled as `pantheon.yaml#domain_scaffold` rows (so their ids enter the context) **before** magic.
+  - `rel_mirror` requires a secret `godrel_*` row (the pin).
+  - The start anchors require P1's time rows (`time_just_now`, `time_unfolding` → after the event; `time_coming` → days before; `time_generation_ago` → the four others).
+- **Not tags, but roller logic:**
+  - the climate's pool from the palette: union of the biomes' climates (`regions.yaml#biome`), weighted by how many kinds allow each; `allowed_climates()` in `docs/reports/p2-tags-draft/measure_p2.py` does it;
+  - per-plane facts: `dev_reachable_by_death` narrows that plane's cost, and the time-rate fits apply when the plane is the ruin's or the scar's;
+  - the folk festivals by the domains' `domain_affinity`;
+  - `church_pilgrimage` ×3 is a `weight_by` on `life_pilgrim_road`, but it belongs to the pilgrim road's own greater god.
+- **The measurement after (22e):** `docs/reports/p2-tags-draft/measure_p2.py` measured today's roller: 91.5 % of 3,000 births before. Point it at the new roller and rerun. It deep-copies each corpus birth's `R.ctx`; the shared corpus must never be changed (`tests/_corpus.py` checks digests).
+
+**Tests that pin what 22a built:**
+- `test_p2_tables.py` (rows, claims, pairs, layers, rule 8, `home_of`, named planes, no P1 hooks, no deleted ids);
+- `test_claims.py` (10 topics, 14 pairs, 29 defaults);
+- `test_trope_claims.py` (the breaks' claims and overrides);
+- `test_design_tables.py` (the cosmos block).
+The floor test (`tests/_floor.py`) reads only P1's corpus pools today; 22c's "every floor has a tag pass" test is new.
+
+**Pitfalls I hit:**
+1. **A Bash heredoc eats backslashes:** `\n` in a Python string written through `<<'EOF'` became a real newline five or six times. Write every edit script with the Write tool, or edit with Edit.
+2. **A regex over YAML blocks hung:** one with nested optional groups and lazy repetition ran for minutes. Cut such blocks by index (`t.index(...)`), and run edit scripts under `timeout 60`.
+3. **A fixture test hits an empty pool:** tests preroll P2 on the fixture, a legacy birth with no foundation and no time rows. A new `requires` on a P1 row empties the pool there. Test every new requirement against the fixture as well as the corpus.
+4. **Stamp after a table edit:** after the owner approves table edits, run `design_tables.py stamp`. `design_tables.unreviewed()` must be empty for `test_claims` and `test_name_tables`; it reports changed P1 rows too.
+5. **Edits during a running suite:** a table edit invalidates a running suite, and so does a script edit, since it reaches the suite's subprocesses. A test-file edit does not.
+6. **The read guard:** since 21b-21d it refuses recursive searches over a campaign's design folder while a birth is armed in your session. The tests use their own runtime (19c), so this matters only for your own shell during a live birth.
+
+**The suite:** about 900 tests, 30-45 minutes. Run it in the background with a 2-hour timeout, append `EXIT $?` to the log, read the exit line, and check that no `aigm-*` folder is left in the temporary directory.
+
+**The routine:**
+- The design tab is session `local_dc4d3bc7-cb70-4266-97b4-94f6206f7508` ("Campaign Designer tasarım ve denetim sekmesi"). The owner speaks with it.
+- For every part:
+  1. run the full suite;
+  2. write a summary under the part's heading in `docs/reports/item18-coding-summaries.md`;
+  3. send the design tab a short `SendMessage`;
+  4. commit by path only after its answer, with the message the specification gives;
+  5. send it the hash.
+- Never push. Run nothing that calls a model.
+
+**State when this tab stopped:** 22a with the design tab's 14 audit fixes applied and re-stamped, uncommitted; the full suite was not rerun after the fixes (last green run 909 tests before them). Next: run the suite, report to the design tab (note: fix 14 asked to drop *dispel evil and good* from the echo planes' credits, but SRD 5.1 names the Shadowfell and the Feywild in that very spell, so it was kept), commit 22a by path after its answer.
