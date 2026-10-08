@@ -87,7 +87,7 @@ Already ruled before this review (`docs/p1-tags.md` §§2-3) and not decided aga
 
 **Festivals** (16): one per greater god (its domain's festival) and one or two folk festivals rolled (not the gods band's top, which drew 14 of 16 at epic). Names from the pools, as the months'.
 
-**Dated days:** the empty month and the lawless day (P1), the taboo's holy day, and any other dated day are seated inside the campaign's first year.
+**Dated days:** the empty month and the lawless day (P1), the taboo's holy day, and any other dated day are seated inside the campaign's span (the scale's sessions × days per session with the slack; 40-60 days at short, as `docs/p1-tags.md` already ruled for the empty month).
 
 **Start anchor** (6) follows P1's move time: "happening now", a few days after the move's last step; "about to", a counted number of days before its next step (`anchor_days_before_doom` is reworded to it); "a generation ago", rolled among festival eve, season start, market day and midwinter.
 
