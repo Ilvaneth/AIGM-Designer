@@ -2,6 +2,20 @@
 
 *Started 2026-10-08 on the owner's word: a method one tab finds and proves goes here, so every tab (design, coding, test birth) can use it. Each entry says what it catches, how to run it, and where it proved itself. Add to it when a method earns its place; never delete one without saying why.*
 
+**A catalogue, not a checklist.** Read this index and the entries for the task at hand only. The methods marked *(suite)* run by themselves in the test suite once built: nobody applies them by hand.
+
+| The task | The methods |
+|---|---|
+| Auditing a phase's roller | 1 *(suite)*, 2 *(suite)*, 3, 27, 31 |
+| Auditing a build before its commit | 4, 5, 29, 24; 30 *(suite)* |
+| Writing a specification or answering a tab's question | 6, 7 |
+| Starting a new floor | 15, 8, 19, 20 |
+| Running or reading a test birth | 9, 10, 11, 12, 13, 18, 21, 26 |
+| Building the pipeline's plumbing | 25 *(suite)*, 28, 23 *(suite)* |
+| A fault that comes back | 14, 22 |
+| Before designing on an assumption about the platform | 17 |
+| After many decisions folded into one document | 16 |
+
 ## Auditing a roller (the scripts that roll a phase)
 
 ### 1. The swap test (secret invariance)
