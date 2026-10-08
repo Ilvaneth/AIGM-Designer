@@ -13,13 +13,14 @@
 
 The draft is a document: the coding tab writes it and does not commit it; the design tab audits it, the owner reviews the new topics, the clash pairs and the `home_of` proposals (not each row's claims), as for P1, and the design tab commits it with the owner's rulings; then 22a builds the rows with the approved tags. Rule 8: the P2 tables whose rows may repeat across campaigns (`avoid_used: false`) are exempt from the five-row floor; say for each table which it is.
 
-**Then five green commits, in order.** After each: the full suite in the background, the exit code read, a summary under "22a" … "22e" in `docs/reports/item18-coding-summaries.md`, a message to the design tab; no commit before its answer; never push.
+**Then six green commits, in order** (22n, added on 2026-10-08, comes between 22c and 22d). After each: the full suite in the background, the exit code read, a summary under "22a" … "22e" in `docs/reports/item18-coding-summaries.md`, a message to the design tab; no commit before its answer; never push.
 
 | Part | What | Commit message |
 |---|---|---|
 | 22a | the P2 tables: rows, layers, requires, conflicts (S1-S6) | `Plan item 25, build 22a: the cosmos tables` |
 | 22b | the P2 roller, in the threat's order | `Plan item 25, build 22b: the cosmos rolled on the foundation` |
 | 22c | the ledger, the frame and the door for P2 | `Plan item 25, build 22c: P2 keeps its promises` |
+| 22n | the cosmos's name stocks (owner-approved patterns) | `Plan item 25, build 22n: the cosmos's names` |
 | 22d | the writer, the critics and the card | `Plan item 25, build 22d: the cosmos writer, critics and card` |
 | 22e | the dry walk of P2 and the whole-P2 measurement | `Plan item 25, build 22e: the dry walk of P2` |
 
@@ -66,6 +67,20 @@ Every override a P0 or P1 row names for a P2 default (the regulator's identity a
 4. **The tag pass is enforced for every floor** (errata 24.2 #33): a test fails when a phase stands in `SOURCE_PHASES` while a row of a table it rolls lacks its reviewed stamp, or while the corpus holds a birth with a declared clash among that phase's rolls. P0, P1 and P2 pass it after this item; P3-P8 cannot be bound without their own tag pass.
 
 **Tests:** each refusal by name; P1's P2 promises close; a P2 promise to P3 appears in the ledger; the floor test above (a stamp removed in a temporary copy turns it red).
+
+## Part 22n — the cosmos's names (owner-approved 2026-10-08)
+
+Every proper noun P2 makes comes from a pool (errata #25). The pool held gods, epithets, months, days and places, nothing for planes, festivals, moons, ages or events. Five new pattern groups in `naming.yaml#patterns`, written in its part grammar (no finished name in the table: a shown name anchors births), and five new stocks in the name pool built with them (`design_names.py`), each checked by `acceptable()` against the campaign's taken names:
+
+1. **plane** (two patterns, one rolled per name): `the` + a head root as adjective + one of `plane_words` [Realm, Reach, Deep, Expanse, Hollow, Vault, Wild, Shore, Court, Gulf] (the common tongue); or one word of the old tongue's bag. Stock: the touched planes, the moon's seat and the demiplanes the scale can hold.
+2. **festival:** a greater god's festival is the god's pooled name + `'s ` + one of [Feast, Night, Day, Vigil] (the god's language); a folk festival is `the ` + one of [Feast, Night, Day, Vigil, Fair] + ` of the ` + a head root as noun (the common tongue). Stock: the greater gods plus two.
+3. **moon** (two patterns): `the ` + a colour root + ` ` + one of `moon_words` [Watcher, Eye, Wanderer, Hound, Shield, Maiden, Sickle, Crown]; or a fresh name of the common tongue (drawn like a place name, never one a place holds). Stock: two.
+4. **age:** `{Name}` a pooled person or place name; `{Thing}` a head root as noun; `{Rulers}` `the ` + a head root as noun + ` ` + one of [Kings, Queens, Lords, Princes]; the ruin's age `The Fall of ` + one word of the old tongue's bag (the fallen realm keeps the tongue of its ruins). The common tongue. Stock: the scale's ages.
+5. **event:** `the ` + the event type's word + ` of ` + a pooled place, person or god name (the common tongue): founding Founding, treaty Treaty, disaster one of [Burning, Drowning, Fall], war War, succession Crowning, discovery Finding, plague Sickness, miracle Miracle, heresy Heresy, exile Exile, migration Crossing, vanishing Vanishing, naming Naming, wreck or loss Wreck (with a ship of the `ships` stock: `the Wreck of the <ship>`), silencing Silencing (with a god's name), building Raising. The word sits on each `history.yaml#event_type` row as `name_word`. Stock: the dated and the deep-past events.
+
+22b's records that carry no name yet (planes, festivals, moons, ages, events) take theirs from these stocks; the frame (22c) carries them; the writer (22d) uses them and invents none. The plane, moon and event word lists and the per-type words are table rows: stamp them (the owner approved them on 2026-10-08).
+
+**Tests:** each pattern draws over the corpus's languages without an empty stock at epic; no two names of one campaign collide; no stock holds a blacklisted name; every event type has its word; a P2 record with no name fails the door after 22n.
 
 ## Part 22d — the writer, the critics, the card
 
