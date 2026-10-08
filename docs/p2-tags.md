@@ -99,3 +99,7 @@ Already ruled before this review (`docs/p1-tags.md` §§2-3) and not decided aga
 4. **The P2 card**, without dice or row ids (as P0's since build 20b): the gods with their ranks and domains, the touched planes, magic in words, the ages, the calendar and the start date.
 
 **The review of P2 is complete.** The specification follows as build item 22 (`docs/p2-build-22.md`), part by part, to the coding tab on the owner's word; the P2 tables get their reviewed stamps when the rows are written.
+
+## The tag system holds for P2 (owner, 2026-10-08)
+
+Asked by the owner after the review: P1's nine tag rules (`docs/p1-tags.md` §1: claims, clashes declared pair by pair, overrides, requires, fits, the dials as the root, per-row reviewed stamps and the five-row floor, one target one owner) apply to P2 in full. The review above named only the clashes it met; a full tag pass comes first in build 22 (`docs/p2-build-22.md`, 22a-0): the coding tab drafts every row's claims, the candidate clash pairs (P2 against P2, P1 and the dials), the overrides, requires and fits, the "who sets what" chart's P2 targets and the clash share before; the design tab audits; the owner reviews the new topics and the clash pairs; then the rows are built.

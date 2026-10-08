@@ -2,7 +2,17 @@
 
 *Written by the design and review tab for the coding tab, 2026-10-08, after the owner's review of P2 (`docs/p2-tags.md`, sessions S0-S7; the survey it stands on is `docs/reports/p2-survey.md`). P2 is rebuilt the way P1 was in items 18-20: the script rolls everything a table decides, in the threat's order, and the writer writes prose on a frame. `docs/p2-tags.md` is the specification of the rows; this file is the build. Where the two seem to differ, `p2-tags.md` holds; ask the design tab.*
 
-**Five green commits, in order.** After each: the full suite in the background, the exit code read, a summary under "22a" … "22e" in `docs/reports/item18-coding-summaries.md`, a message to the design tab; no commit before its answer; never push.
+**First, the tag pass (22a-0, no code; owner-approved 2026-10-08).** P1's nine tag rules (`docs/p1-tags.md` §1) hold for P2 in full. Before any row is built, the coding tab writes a draft for review, `docs/reports/p2-tags-draft.md`:
+1. **Claims:** for every P2 row (the rows as `docs/p2-tags.md` leaves them, new rows included), the `topic: value` claims its own sentence, hook or effect states literally (rule 1); new topics marked as new.
+2. **Clash pairs**, declared one by one (rule 2): between P2 rows, and between P2 rows and P0/P1 rows (the dials included, rule 7). Candidates to weigh, at least: the magic dial's plenty against `source_a_dying_thing`; faded magic against wild magic; P1's printed writing against `source_study`; the trope breaks on gods, magic, the moon, time and death against the pantheon, magic and calendar rows; the clashes S1-S6 already named.
+3. **Overrides** (rule 4): every P0/P1 row that rewrites a P2 default, and every P2 row that rewrites a later default.
+4. **Requires** (rule 5) and **fits** (rule 6, weights only).
+5. **The "who sets what" chart** (rule 9) extended with P2's targets; any second owner of one target is flagged.
+6. **The measurement before:** over the shared corpus extended with today's `preroll_p2`, the share of births holding a clash the draft declares (P1's figure was 86.4 % before item 10).
+
+The design tab audits the draft; the owner reviews the new topics and the clash pairs (not each row's claims), as for P1; then 22a builds the rows with the approved tags. Rule 8: the P2 tables whose rows may repeat across campaigns (`avoid_used: false`) are exempt from the five-row floor; say for each table which it is.
+
+**Then five green commits, in order.** After each: the full suite in the background, the exit code read, a summary under "22a" … "22e" in `docs/reports/item18-coding-summaries.md`, a message to the design tab; no commit before its answer; never push.
 
 | Part | What | Commit message |
 |---|---|---|
@@ -18,6 +28,7 @@
 
 Edit `pantheon.yaml`, `planes.yaml`, `magic.yaml`, `history.yaml`, `calendar.yaml` and `scale.yaml` exactly as `docs/p2-tags.md` S1-S6 say. In short:
 
+0. **The approved tags** from the tag pass: every row's claims, the clash pairs in `claims.yaml`, the overrides, requires and fits; the "who sets what" chart.
 1. **Layers on every P2 table** (S0 #1): story for the seated history events and the pinned god's seat; stage for the planes P1 names and the climate; texture for the rest. The one-way rule holds as in P1 (texture never fills a story slot).
 2. **Pantheon:** `pantheon_monotheist` and `pantheon_animist` (weight 1 each; their texts in S1; the monotheist row `conflicts_with: [ruin_gods_quarrel]` through the arbiter); `pantheon_silent_gods` conflicts with `presence_omens` and `presence_walking`; `break_gods_among_mortals` forces `presence_walking`; the polytheist hook rewritten; the dead gods' "what answers" is public or discoverable. `god_secret` keeps only its five discoverable rows; the domains' `secret_tendency` lists keep only those five. Light's "an order of lamplighters" becomes "a sun temple on a height".
 3. **Planes:** three new baseline rows with labels of this table's own (the fey echo, the shadow echo, the realm beyond; `group` and `spells` filled from the SRD's plane-touching spells where they apply; each with the creature families it is home to); `dev_secret_holds` deleted; `cost_name` reworded; one common hook in place of the sixteen copies.
@@ -64,6 +75,6 @@ Every override a P1 row names for a P2 default (the regulator's identity and str
 
 ## Part 22e — the dry walk and the measurement
 
-The model-free dry walk of P1 (`tests/test_p1_dry_walk.py`) extended to P2: a stand-in writer fills the frame, the door, the ledger and the card run, and wrong turns are refused (a frame field changed, a P1-named plane left untouched, a festival missing for a greater god, a dated day outside the span, a secret seat named in a public file). The whole-P2 measurement over the corpus, written into the summary: the counts' spread per scale, the type and presence spread, the touched planes per scale, every domain reached, the evil god held, the divergences per scale, every P1 promise to P2 closed.
+The model-free dry walk of P1 (`tests/test_p1_dry_walk.py`) extended to P2: a stand-in writer fills the frame, the door, the ledger and the card run, and wrong turns are refused (a frame field changed, a P1-named plane left untouched, a festival missing for a greater god, a dated day outside the span, a secret seat named in a public file). The whole-P2 measurement over the corpus, written into the summary: the counts' spread per scale, the type and presence spread, the touched planes per scale, every domain reached, the evil god held, the divergences per scale, every P1 promise to P2 closed, and **the measurement after**: the share of births holding a declared clash (the tag pass's figure before; zero after).
 
 **After 22e:** the design tab writes the next test birth's protocol (P0, P1 and P2 with a review stop after each), which also shows build 21's fixes in a real birth.
