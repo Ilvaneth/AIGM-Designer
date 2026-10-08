@@ -152,6 +152,7 @@ def write_all(campaign: str, canonical: dict, snapshot: dict, written_by: str) -
 
 PROSE_TYPES = ("npc", "site", "settlement", "faction", "region", "chapter", "thread")
 OPAQUE_SECRET_NPC = re.compile(r"^npc_s\d+$")
+OPAQUE_SECRET_PLANE = re.compile(r"^plane_s\d+$")      # build item 22c: the threat's own home plane
 TURKISH_LETTERS = re.compile(r"[çğıöşüÇĞİÖŞÜ]")
 NAME_GROUPS = {**{t: "person" for t in ("npc", "pc")},
                **{t: "place" for t in ("settlement", "site", "place", "district", "region", "polity")},
@@ -167,6 +168,8 @@ def row_errors(eid: str, row: dict) -> list[str]:
         errs.append(f"{eid}: a {row.get('type')} row without a file is a stub — set `status: pending` and `owner_phase` (or write the file)")
     if row.get("secrecy") == "secret" and row.get("type") == "npc" and not OPAQUE_SECRET_NPC.match(eid):
         errs.append(f"{eid}: a secret npc's id is opaque (npc_s01-style); this id names it")
+    if row.get("secrecy") == "secret" and row.get("type") == "plane" and not OPAQUE_SECRET_PLANE.match(eid):
+        errs.append(f"{eid}: a secret plane's id is opaque (plane_s01-style); this id names it")
     if row.get("type") not in ENTITY_TYPES:
         errs.append(f"{eid}: unknown type {row.get('type')!r}")
     elif id_type(eid) != row["type"]:
@@ -512,7 +515,7 @@ def pool_errors(eid: str, row: dict, pool: dict | None, canonical: dict, phase: 
                 "take the next unused name from the list in your prompt (names are rolled, never invented)"]
     holder = names[given] or claimed.get(given)
     if holder and holder != eid:
-        return [f"{eid}: the rolled name {given!r} is already taken by {holder}; take the next unused one"]
+        return [f"{eid}: the rolled name {given!r} is already taken; take the next unused one"]     # 22c: a holder may be secret
     claimed[given] = eid
     return []
 
@@ -605,7 +608,7 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0, ch
     english = dman.writes_english(dman.load(campaign))
     # build item 13b: P1's door, for a birth whose P1 the script rolled (a legacy birth is checked as before)
     import design_door
-    door = design_door.Door(campaign, canonical, incoming) if design_door.applies(dman.load(campaign), phase) else None
+    door = design_door.door_for(campaign, canonical, incoming, phase)     # P1's or, since build item 22c, P2's
     for u in units:
         errs, warns = list(u["errors"]), []
         if u["frag"]:
@@ -711,6 +714,14 @@ def merge(campaign: str, phase: str, revise: str | None = None, day: int = 0, ch
                                      dn.given_of(row.get("name")), eid)
                     elif row.get("type") in ("npc", "god"):
                         dn.mark_secret_used(campaign, dn.given_of(row.get("name")), eid)
+        if pool:
+            # build item 22c: a pooled name a merged row holds as a field's whole value is reserved at every phase (the
+            # premise's pinned god was left unused at P1's merge, and P2's roller could give it to another god)
+            secret_stock = dn.load_secret(campaign)
+            held = sum(dn.reserve_named(pool, secret_stock, row, eid) for u in accepted for eid, row in u["rows"])
+            if held and secret_stock is not None:
+                stamp_meta(secret_stock, campaign, f"registry.py merge --phase {phase} (secret stock)")
+                write_json_atomic(dn.secret_path(campaign), secret_stock)
             dn.save_pool(campaign, pool, f"registry.py merge --phase {phase}")
         write_all(campaign, canonical, snapshot, f"registry.py merge --phase {phase}")
         save_overlay(campaign, overlay, "registry.py merge")

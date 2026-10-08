@@ -63,7 +63,8 @@ import design_tables as dt  # noqa: E402
 from design_io import design_dir, dm_only_dir, is_stub, read_json, stamp_meta, write_json_atomic  # noqa: E402
 
 KEY = "promises"                         # design.json#promises
-SOURCE_PHASES = ("P0", "P1")             # the phases whose rolled rows are sources; a later floor joins at its turn
+SOURCE_PHASES = ("P0", "P1", "P2")       # the phases whose rolled rows are sources; a later floor joins at its turn
+BUILT_AT_P1 = ("P0", "P1")               # the phases P1's preroll builds the ledger from; a later one adds itself (add_phase)
 DUE_OTHER = ("validator", "play")
 DUE_ALIASES = {"names": "P1", "slice2": "play"}     # claims.yaml#defaults: the naming rolls are P1's; slice 2 is play
 DUE_ORDER = dm.PHASES + DUE_OTHER
@@ -379,7 +380,7 @@ def build_for(campaign: str) -> tuple[int, int]:
     then add what the registry already holds. A rebuilt ledger starts open: a P1 rerun judged nothing yet."""
     m = dm.load(campaign)
     attempt = int((m["phases"].get("P1") or {}).get("attempt") or 1)
-    now = lambda r: r.get("phase") != "P1" or int(r.get("attempt") or 1) == attempt
+    now = lambda r: r.get("phase") in BUILT_AT_P1 and (r.get("phase") != "P1" or int(r.get("attempt") or 1) == attempt)
     log = read_json(dm_only_dir(campaign) / "dice-log.json") or {}
     public, secret = build(m["dials"], [r for r in m.get("dice_log") or [] if now(r)], [r for r in log.get("rolls") or [] if now(r)],
                            m["foundation"], m["identity"], log.get("identity"))
@@ -387,6 +388,57 @@ def build_for(campaign: str) -> tuple[int, int]:
     sync(campaign, "P1")
     m = dm.load(campaign)
     return len(m[KEY]), len(load_secret(campaign))
+
+
+def later_than(due: str, phase: str) -> bool:
+    return DUE_ORDER.index(due) > DUE_ORDER.index(phase)
+
+
+def add_phase(campaign: str, phase: str) -> tuple[int, int]:
+    """A floor's preroll (build item 22c; P2 first): its rolled rows' forward hooks (due after it) and its rows'
+    overrides join the ledger, public or secret by their rows as P1's do; the promises an earlier attempt of the phase
+    added leave first. P2 adds one secret placement more: the threat's own home plane at epic (option d of 22b) has a
+    site, reserved for P6. Returns the promises the phase now carries (public, secret). A legacy birth has no ledger."""
+    m = dm.load(campaign)
+    if not has_ledger(m) or phase not in SOURCE_PHASES or phase in BUILT_AT_P1:
+        return 0, 0
+    log = read_json(dm_only_dir(campaign) / "dice-log.json") or {}
+    attempt = int((m["phases"].get(phase) or {}).get("attempt") or 1)
+    mine = lambda r: r.get("phase") == phase and int(r.get("attempt") or 1) == attempt
+    p1_attempt = int((m["phases"].get("P1") or {}).get("attempt") or 1)
+    L = Ledger(m[KEY], load_secret(campaign))
+    for key, p in list(L.items.items()):           # the earlier attempt's promises of this phase
+        srcs = sources(p)
+        if all(s["from_phase"] == phase for s in srcs):
+            del L.items[key]
+        elif any(s["from_phase"] == phase for s in srcs):
+            keep = [s for s in srcs if s["from_phase"] != phase]
+            p.update(keep[0])
+            p["also"] = keep[1:]
+    rows = rolled_rows(m["dials"], [r for r in m.get("dice_log") or [] if mine(r)], [r for r in log.get("rolls") or [] if mine(r)])
+    rows = [x for x in rows if x[2] == phase]
+    secret_rows = [row for _, row, _, hidden in rows if hidden] + [
+        dt.row(r["table"], r["row_id"]) for r in log.get("rolls") or []
+        if r.get("phase") == "P1" and int(r.get("attempt") or 1) == p1_attempt and r.get("row_id") and ".yaml" in str(r.get("table"))
+        and dt.row(r["table"], r["row_id"])]
+
+    def add(source, origin, from_phase, due, text, name, check="critic", hidden=False, **extra):
+        return L.add(source, origin, from_phase, due_of(due), text, name, check,
+                     secret=hidden or names_secret(text, secret_rows), **extra)
+    for ref, row, ph, hidden in rows:
+        for h in hooks_of(ref, row):
+            if later_than(due_of(h["phase"]), phase):
+                add("hook", row["id"], ph, h["phase"], str(h["must"]), row.get("label") or row["id"], check_of(h, row), hidden)
+    override_promises(rows, add)
+    home = (log.get("cosmos") or {}).get("home_plane") or {}
+    if phase == "P2" and home.get("own"):
+        label = (dt.row("planes.yaml#baseline", home["baseline"]) or {}).get("label") or home["baseline"]
+        add("placement", "cosmos.home_plane", "P2", "P6", f"the threat's home plane ({label}) has a site of its own, "
+            "where an epic finale can stand", "The threat's home plane", hidden=True, kind="home_plane")
+    public, secret = L.split()
+    save(campaign, public, secret, f"designer.py preroll --phase {phase} (promises)")
+    return (sum(1 for p in public if any(s["from_phase"] == phase for s in sources(p))),
+            sum(1 for p in secret if any(s["from_phase"] == phase for s in sources(p))))
 
 
 def sync(campaign: str, phase: str | None = None) -> int:
@@ -490,7 +542,11 @@ def rule_clue_placed(S: State, p: dict) -> bool:
 
 
 def rule_god_registered(S: State, p: dict) -> bool:
-    return bool(S.named("god", p.get("subject")))
+    """The god the premise pins is a god row: by its name or an alias, or by its true name in dm-only (a pinned
+    secret-stock name, build item 22c)."""
+    low = str(p.get("subject")).strip().lower()
+    return bool(S.named("god", p.get("subject"))) or any(
+        e.get("type") == "god" and str(((e.get("dm_only") or {}).get("true_name")) or "").strip().lower() == low for e in S.canon.values())
 
 
 def rule_event_dated(S: State, p: dict) -> bool:

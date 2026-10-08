@@ -75,7 +75,9 @@ class Walker:
     def write(self, change=None, public_extra: str = "", mirror_extra: str = ""):
         pool = self.json("design/dm-only/name-pool.json")
         self.pin = pin = self.json("design/dm-only/dice-log.json")["identity"]["secret"]["pin"]       # build item 18e (W1)
-        god = next(e["name"] for L in pool["languages"].values() for e in L.get("god", []))
+        # build item 22c (the audit): a pinned god is named from the secret stock; it is that god's true name
+        secret_pool = self.json("design/dm-only/name-pool-secret.json")
+        god = next(e["name"] for L in secret_pool["languages"].values() for e in L.get("god", []))
         self.frame = self.json(f"design/_staging/P1/{self.premise_id}.frame.json")
         rows, picked = p1f.fill(self.frame, god=god)
         if change:

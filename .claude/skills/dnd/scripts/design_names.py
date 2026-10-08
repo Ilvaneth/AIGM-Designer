@@ -1018,6 +1018,37 @@ def mark_used(pool: dict, lang: str | None, kind: str, name: str, eid: str) -> N
                 return
 
 
+def _string_values(node, skip=("id", "type", "file", "secrecy", "origin", "created_phase", "lang", "status")) -> set:
+    out: set = set()
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k not in skip:
+                out |= _string_values(v, skip)
+    elif isinstance(node, list):
+        for v in node:
+            out |= _string_values(v, skip)
+    elif isinstance(node, str) and node.strip():
+        out.add(node.strip())
+    return out
+
+
+def reserve_named(pool: dict | None, secret: dict | None, row: dict, eid: str) -> int:
+    """Build item 22c: a pooled name that a merged row holds as the whole value of one of its fields (a premise's
+    `dm_only.pinned.god`, a name field) is reserved under that row at the merge, at every phase, so no later row takes
+    it. A name inside prose is never reserved: a summary that mentions a person to come must not block that person's
+    row. Returns the names reserved."""
+    values = _string_values(row)
+    n = 0
+    for stock in (pool, secret):
+        for L in ((stock or {}).get("languages") or {}).values():
+            for entries in L.values():
+                for e in entries:
+                    if not e.get("used_by") and e.get("name") in values:
+                        e["used_by"], e["used_at"] = eid, now_iso()
+                        n += 1
+    return n
+
+
 STOCK_WORDS = {"person": "persons", "god": "gods", "places": "places", "regions": "regions", "inns": "inns",
                "buildings": "quarters, markets and buildings", "ships": "ships", "epithets": "god epithets", "sites": "ruin sites"}
 

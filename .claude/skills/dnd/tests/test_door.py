@@ -135,7 +135,9 @@ class NewBirth(unittest.TestCase):
     # a well-formed P1: the script's frame (build item 20a), its text fields filled
     def units(self) -> dict:
         import design_frame as dfr
-        rows, _ = p1f.fill(dfr.build(self.name), god=next(e["name"] for L in self.pool["languages"].values() for e in L.get("god", [])),
+        secret = json.loads((self.dir / "design/dm-only/name-pool-secret.json").read_text(encoding="utf-8"))
+        # build item 22c (the audit): a pinned god is named from the secret stock
+        rows, _ = p1f.fill(dfr.build(self.name), god=next(e["name"] for L in secret["languages"].values() for e in L.get("god", [])),
                            question="what is owed to those who stayed?",
                            note=lambda slot: f"it shows at this floor in its own way, among the {slot} of the land")
         return rows

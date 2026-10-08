@@ -764,3 +764,91 @@ On `docs/p2-build-22.md` 22b (with the afterlife and keeper additions of `39b863
 **Note for 22e:** `docs/reports/p2-tags-draft/measure_p2.py` calls `preroll_p2` with no P1 records; it must pass `m["p1"] = design_cosmos.p1_of(R)` (or call `design_cosmos.roll`).
 
 **The suite:** before the audit 918 tests OK; after the audit's fixes 919 tests, OK, exit code 0, 2,366 s (39.4 min). A run I stopped mid-way (the audit came in) left two `aigm-*` folders, which I removed; the two dated 17:01 are the ones the previous tab reported.
+
+## 22c — P2 keeps its promises (the sixth coding tab)
+
+On `docs/p2-build-22.md` 22c and the design tab's answers during the build (the pinned god's name, the names before 22n, the five unstamped P1 tables, two new `greater_power` rows).
+
+**1. The ledger** (`design_promises.py`).
+- `SOURCE_PHASES` is now P0, P1, P2. P1's preroll still builds the ledger from P0 and P1 (`BUILT_AT_P1`).
+- P2's preroll calls the new `add_phase(campaign, "P2")`:
+  - P2's rolled rows' forward hooks (due after P2) and their overrides join the ledger, public or secret by their rows, as P1's do;
+  - a rerun's earlier P2 promises leave first;
+  - at epic, the threat's own home plane (option d of 22b) adds one secret placement to P6: "the threat's home plane has a site of its own".
+- To make the touched planes' baseline rows public sources, each public plane record (`plane.N`) now names its row (`planes.yaml#baseline`, notation `seated`, no die). The swap test is unchanged and green.
+- P1's promises due at P2 close the way P1's do. The on-disk test shows every script promise due at P2 kept: the overrides, the pinned god registered, the move dated.
+
+**2. The frame** (new `scripts/design_cosmos_door.py`, written at `phase P2 begin` to `design/_staging/P2/doc_cosmology.frame.json`).
+- Every row the writer owes, as the rolls set it:
+  - `god_<slug>` (rank, great, domains as labels, alignment, epithet, church, relations, fallen; a hidden name as `dm_only.true_name`);
+  - `plane_<baseline>` (baseline, touched, named_by, deviation, time_rate with its rate, way_in, cost, keeper);
+  - `era_<n>` (order, row, ruin);
+  - `event_<n>` and `event_deep_<n>` (seat, event_type, divergence, memory, years_ago, year, day, witness_list; the origin's row in `dm_only`).
+- Ids never depend on a name; names come in 22n.
+- The move's event carries the alias "the move" (P1's placement promise names it). Its day is the last step before the start, or the next step after it when the move is still coming.
+- The container carries the calendar seed (`calendar.py init`: the date, 12 months, `month_length` 28, 7 day names) and the calendar block (climate, moon, underground count, festivals with month and day, the start, the anchor, the dated days, the span). Only `calendar.seasons` is filled.
+- The threat's own home plane is a secret row of the frame.
+- **Before 22n** the registry refuses a row with no name, so `name` stands in the fill of the nameless rows (`UNNAMED`); 22n sets it in the frame (the design tab's ruling).
+
+**3. The door** (`CosmosDoor`; `design_door.door_for` dispatches P1's or P2's from `registry.py` merge and check).
+- The P2 seal (`design.json#p2_seal`: the public cosmos and its dm-only half), stamped at P2's preroll.
+- Every framed row present; no god, plane, era or event beside them; each frame field unchanged; `stamped` an object equal to the row's own; the seed and the calendar block as framed.
+- S7 #3: the god count and the coverage; the evil god at standard and epic; a festival per greater god; the four seated events once each; every plane P1 names touched (`named_by`); 12 × 28 and a seven-day week.
+- A secret seat's id or fact in no public text (the prose and the public rows' fields): a secretly rolled P1 row's id, the secret home plane's id, a hidden or secret-stock name. The refusal names the kind, never the word.
+
+**4. The tag pass for every floor** (new `tests/test_floor_tag_pass.py`). A phase stands in `SOURCE_PHASES` only when every row of every table it rolls carries a stamp matching the row as it stands, and no corpus birth holds a declared clash among its rolls. The tables are read from what the corpus rolls (P0 the dials and scale, P1 the prerolls, P2 the cosmos), so a phase the corpus does not roll (P3-P8) cannot be bound. A removed or a stale stamp turns it red.
+- **It found a real gap:** five tables P1 has rolled since item 18 were never stamped: `antagonists.yaml#hand` (27 rows), `#move_state` (4), `secrets.yaml#god_relation` (5), `#greater_power` (4), `signatures.yaml#mechanic_shape` (6). The owner reviewed them (the hand in item 18's row review, the other four today). They are now in `REVIEWED_TABLES` and stamped.
+- **Two new rows** in `secrets.yaml#greater_power`, owner-approved: `power_archfey` ("an archfey of the fey echo") and `power_elemental_prince` ("an elemental prince of evil"). They are like their siblings: label, text, one P2 hook. **Fits proposed, not written, for your check:** `power_archfey` ×2 under `family_hag_fey`; `power_elemental_prince` ×2 under `family_genie_elemental` and `ruin_bound_elements`. **This is a P1 table change:** the shared corpus births' secret power draws move (the digest is computed per run, so no stored value changes); `test_p1_story` pinned 4 rows and now pins 6.
+
+**5. The pinned god's name** (the design tab's ruling).
+- **The cause:** P1's merge reserved no pooled name; `_test-p1-1`'s pinned god (the common tongue's 6th god name) stayed unused in the pool.
+- **The fix, one rule at every merge** (`design_names.reserve_named`, called from `registry.py` merge): a pooled name that a row holds as the *whole value* of a field (a premise's `dm_only.pinned.god`, a name) is reserved under that row. A name inside prose is never reserved, so a summary that mentions a person to come never blocks that person's row.
+- **The roller** (22b's `name_gods`): the pinned seat's god (the threat's under `family_god`, else the power's) takes that name, in the language it came from (`god.lang`, which the registry checks). A secret-stock name is its true name (`dm_only.true_name`) and the god takes the next public name. No other god takes it.
+- `rule_god_registered` also accepts the true name.
+- Also: the greater gods' church archetypes are now distinct (a frame showed two great gods with one watch house).
+
+**The audit round** (the design tab's findings; one suite run for all):
+- **The pin, the cause fixed:** a pinned god's name always comes from the secret stock. P1's prompt says so, and P1's door refuses `dm_only.pinned.god` when it is not a secret-stock god name. The name is the pinned seat's god's true name (`dm_only.true_name`); the god takes its public face like every god, in the gods' language and the pool's order. A legacy public-stock pin is treated the same. Nothing public moves with the pin: the P1 card's name counts, the gods' languages and the public god names all stay as they would be. The language fix of my first round is gone: every god carries the gods' language.
+- **Opaque ids:** the threat's own home is `plane_s01` (`HOME_ID`). The registry refuses a secret plane whose id is not `plane_s<n>`, as it refuses a secret NPC's.
+- **The door's checks:**
+  - the P1-named-plane check reads P1's current attempt only;
+  - the leak check has the fact half: a secretly rolled P1 row's statement, rule or cause sentence;
+  - P2's own secret words: `rel_mirror`, and a home of its own's id and baseline row. A linked home is a public plane and says nothing by itself;
+  - the whole-set checks run on whatever unit carries the framed rows, the seed or the calendar.
+- **The frame** carries the god story (`story` on its greater god's row) and the pilgrim road's god (`pilgrim_road`). It also tells the writer that the dm-only prose's front matter `covers` the secret row: the validator's `file_unclaimed` caught it.
+- **Reservations:** the merge reserves a pinned name under the premise, and P2's roller moves it to the god it names. The registry's "already taken" message no longer prints a holder's id (it may be secret).
+- **Tables:**
+  - `twist_greater_power`'s statement names all six powers;
+  - the two fits are written (`power_archfey` ×2 under `family_hag_fey`; `power_elemental_prince` ×2 under `family_genie_elemental` and `ruin_bound_elements`);
+  - re-stamped.
+- **Tests:**
+  - `test_cosmos_roll.SwapNames`: 150 corpus births, rolled with a name pool drawn in memory, the second roll with another birth's threat, secret and pin; the public names and languages are identical, and the pin is the seat's true name, in no public record;
+  - `test_cosmos_door.EpicHome`: an on-disk epic birth (seed COSMOS-HOME-1) whose home is a plane of its own: the secret frame row `plane_s01`, the secret P6 placement, the merge through the door, and no output (merge, check, report) or public file naming the home;
+  - the pinned-name test reads the secret-stock rule;
+  - the P1 dry walk's and `test_door`'s stand-ins now pin a secret-stock name.
+
+**Tests:**
+- **New `test_cosmos_door.py`**, an on-disk standard birth (seed COSMOS-PIN-17, whose P1 pins a god):
+  - P1 is walked and approved by the P1 dry walk's stand-ins;
+  - P2's preroll seals and extends the ledger: a P2 promise to P3, forward hooks only;
+  - `begin` writes the frame;
+  - a stand-in writer on the frame passes the door, and every script promise due at P2 is kept;
+  - the pinned name is on the pinned seat's god only;
+  - each refusal by name: a changed field, a missing row, a dropped seated event, a missing festival, a changed month, a reshaped stamp, an extra god;
+  - a secret row's id in the prose is refused without being named;
+  - an edited cosmos breaks the seal;
+  - the reservation rule (a field value yes, prose no).
+- **New `test_floor_tag_pass.py`.**
+- **Updated:** `test_cosmos_roll` (a seated public plane record is allowed, a drawn one is not); `test_p1_story` (6 powers).
+
+**Changed files:**
+- scripts: `design_cosmos_door.py` (new), `design_cosmos.py`, `design_promises.py`, `design_door.py`, `design_names.py`, `design_tables.py`, `registry.py`, `designer.py`;
+- data: `secrets.yaml`, `reviewed.json`;
+- tests: `test_cosmos_door.py`, `test_floor_tag_pass.py` (new), `test_cosmos_roll.py`, `test_p1_story.py`, `test_p1_dry_walk.py`, `test_door.py`;
+- prompts: `prompts/design/P1.premise.md` (the pin from the secret stock).
+
+**Method for `docs/methods.md`** (the design tab adds it): derive a floor's tables from what the corpus actually rolls, and check every row's stamp against the row as it stands; a phase the corpus does not roll cannot be bound.
+
+**Notes for 22d:** the writer's prompt must say: copy the frame, fill only `fill`, run `registry.py check`, and `name` is the writer's only until 22n. `render_player.py` reads an event's `taught_tr` (legacy); the new rows hold `taught`.
+
+**The suite:** first round 930 tests OK; after the audit round 932 tests, OK, exit code 0, 2,474 s (41.2 min). No `aigm-*` folder left by my runs (the two dated 17:01 are the earlier ones).

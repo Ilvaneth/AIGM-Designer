@@ -87,8 +87,12 @@ def load_p1(campaign: str) -> dict:
     from design_io import design_dir, dm_only_dir, read_json
     m = dm.load(campaign)
     log = read_json(dm_only_dir(campaign) / "dice-log.json") or {}
+    canon = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities") or {}
+    premise = next((r for r in canon.values() if r.get("type") == "premise"), None) or {}
+    pinned = ((premise.get("dm_only") or {}).get("pinned") or {}).get("god")
     return {"foundation": m.get("foundation"), "identity": m.get("identity"), "secret": log.get("identity"),
-            "threat": log.get("threat"), "naming": read_json(design_dir(campaign) / "naming.json")}
+            "threat": log.get("threat"), "naming": read_json(design_dir(campaign) / "naming.json"),
+            "pinned_god": {"name": pinned, "premise": premise.get("id")} if pinned else None}
 
 
 def p1_of(R1) -> dict:
@@ -549,8 +553,13 @@ def rate_weigh(on_this: bool):
 
 def roll_plane(R, base: str, k, pid: str, named_by: list[str], on_this: bool, secret: bool = False) -> dict:
     if not secret:
-        rec = note(R, base, pid, ("named by " + ", ".join(named_by)) if named_by else "a touched seat")
-        rec["seat"] = "moon" if pid == MOON else "baseline"
+        # the plane and its seat, no die (the seat's draw is secret); the baseline row is named, so the promise ledger
+        # reads its hooks as public (build item 22c)
+        rec = R._record(base, None if pid == MOON else PL + "baseline")
+        rec.update({"notation": "seated", "raw": None, "row_id": None if pid == MOON else pid, "value": pid,
+                    "derived_from": ("named by " + ", ".join(named_by)) if named_by else "a touched seat",
+                    "seat": "moon" if pid == MOON else "baseline"})
+        R._keep(rec, False)
     if pid == MOON:
         dev = R.forced(f"{base}.deviation", PL + "deviation", "dev_is_this_world", "the moon is a place in this world (planes.yaml rules.moon_seat)",
                        secret=secret)["row_id"]
@@ -633,6 +642,7 @@ def roll_gods(R, dials: dict, slots: list[dict], out: dict, secret: dict, pool, 
         out["evil_god"] = god["n"]
     else:
         out["evil_god"] = next((g["n"] for g in gods if g["alignment"] in EVIL), None)
+    names["pinned_seat"] = seats.get("threat_god") or seats.get("power_god")
     name_gods(R, gods, pool, names)
     return gods
 
@@ -655,16 +665,37 @@ def take(entries: list, eid: str) -> str | None:
     return None
 
 
+def _entry(stock: dict | None, name: str, free_for: tuple) -> dict | None:
+    """A god entry of a stock by its name, any language, unused or held by one of `free_for`."""
+    for L in ((stock or {}).get("languages") or {}).values():
+        for e in L.get("god") or []:
+            if e.get("name") == name and e.get("used_by") in (None,) + free_for:
+                return e
+    return None
+
+
 def name_gods(R, gods: list[dict], pool: dict | None, names: dict) -> None:
-    """Each god a name and an epithet from the pool, reserved under the id the frame carries (god_<slug>); the
-    unnamed god of break_god_name_forbidden takes its hidden name from the secret stock. No pool, no names."""
+    """Each god a name and an epithet from the pool, in the gods' language and the pool's order, reserved under the id
+    the frame carries (god_<slug>). The unnamed god of break_god_name_forbidden goes by its epithet and takes a hidden
+    name from the secret stock. The pinned seat's god (the 22c audit) takes its public face like every god; the name the
+    premise pinned (P1's `dm_only.pinned.god`, a secret-stock name; a legacy public-stock pin alike) is its true name in
+    dm-only and is reserved under its id. Nothing public moves with the pin. No pool, no names."""
     import design_io
     lid = names.get("lang")
     if not pool or not lid:
         return
     L = pool["languages"].get(lid) or {}
     unnamed = names.get("unnamed_god")
+    pin = names.get("pinned") or {}
+    pinned_n = names.get("pinned_seat")
+    pin_name, premise = pin.get("name"), pin.get("premise")
+    held = (premise,) if premise else ()
+    pin_entry = None
+    if pin_name and pinned_n:
+        pin_entry = _entry(names.get("secret_pool"), pin_name, held) or _entry(pool, pin_name, held)
+    taken = {pin_name} if pin_name else set()
     for g in gods:
+        g["lang"] = lid
         if g["n"] == unnamed:
             # the unnamed god goes by its epithet; its id follows the epithet, so the hidden name is in no public field
             entry = next((e for e in L.get("epithets") or [] if not e.get("used_by")), None)
@@ -673,19 +704,23 @@ def name_gods(R, gods: list[dict], pool: dict | None, names: dict) -> None:
             g["epithet"] = entry["name"]
             g["id"] = "god_" + design_io.slug(entry["name"].removeprefix("the ").removeprefix("The "))
             entry["used_by"] = g["id"]
-            S = ((names.get("secret_pool") or {}).get("languages") or {}).get(lid) or {}
-            hidden = next((e for e in S.get("god") or [] if not e.get("used_by")), None)
-            if hidden:
-                hidden["used_by"] = g["id"]
-                names.setdefault("hidden", {})[g["n"]] = hidden["name"]
+            if g["n"] != pinned_n or pin_entry is None:
+                S = ((names.get("secret_pool") or {}).get("languages") or {}).get(lid) or {}
+                hidden = next((e for e in S.get("god") or [] if not e.get("used_by")), None)
+                if hidden:
+                    hidden["used_by"] = g["id"]
+                    names.setdefault("hidden", {})[g["n"]] = hidden["name"]
         else:
-            entry = next((e for e in L.get("god") or [] if not e.get("used_by")), None)
+            entry = next((e for e in L.get("god") or [] if not e.get("used_by") and e.get("name") not in taken), None)
             if entry is None:
                 continue
             g["id"] = "god_" + design_io.slug(entry["name"])
             entry["used_by"] = g["id"]
             g["name"] = entry["name"]
             g["epithet"] = take(L.get("epithets") or [], g["id"])
+        if g["n"] == pinned_n and pin_entry is not None:
+            pin_entry["used_by"] = g["id"]
+            names.setdefault("hidden", {})[g["n"]] = pin_entry["name"]
         # the names ride on the god's first record, its rank
         R.by_label[f"god.{g['n']}.rank"].update({"god_id": g["id"], "name": g["name"], "epithet": g["epithet"]})
 
@@ -723,12 +758,15 @@ def roll_pantheon(R, dials: dict, p1: dict, slots: list[dict], out: dict, secret
     if (f.get("lifeline") or {}).get("id") == "life_pilgrim_road":
         pilgrim = choose(R, "pilgrim_god", [g["n"] for g in gods if g["rank"] == "greater"])
     out["pilgrim_god"] = pilgrim
+    drawn: set = set()
     for g in gods:
         if g["rank"] == "greater":
+            # each greater god a church of its own archetype (build item 22c: two great gods drew one watch house)
             g["church"] = {"archetype": R.table(
-                f"god.{g['n']}.church", P + "church_archetype", avoid=False, weigh=church_weigh(g["n"] == pilgrim),
+                f"god.{g['n']}.church", P + "church_archetype", avoid=False, weigh=church_weigh(g["n"] == pilgrim), exclude=set(drawn),
                 where=(lambda r: r.get("faction_archetype") != "none") if g["great"] else None,
                 why="a great god's church is a faction")["row_id"]}
+            drawn.add(g["church"]["archetype"])
         else:
             shapes = list(domains[g["domains"][0]]["church_shape"])
             g["church"] = {"line": choose(R, f"god.{g['n']}.church", shapes)}
@@ -1220,7 +1258,7 @@ def roll(R, dials: dict, p1: dict, pool: dict | None = None, secret_pool: dict |
     sc = dt.scale_row(dials["scale"])
     out: dict = {"stamped": True}
     secret: dict = {}
-    names = {"lang": god_language(p1.get("naming"), pool), "secret_pool": secret_pool}
+    names = {"lang": god_language(p1.get("naming"), pool), "secret_pool": secret_pool, "pinned": p1.get("pinned_god")}
     slots: list = []
 
     def counts():

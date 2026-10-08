@@ -104,6 +104,25 @@ def applies(manifest: dict, phase: str) -> bool:
     return phase == "P1" and all(isinstance(manifest.get(k), (dict, list)) for k in ("foundation", "identity", "promises", SEAL))
 
 
+def door_for(campaign: str, canonical: dict, incoming: list, phase: str):
+    """The door of a merge: P1's (this module) or P2's (design_cosmos_door.py, build item 22c); None for a legacy
+    birth's phase."""
+    m = dm.load(campaign)
+    if applies(m, phase):
+        return Door(campaign, canonical, incoming)
+    if phase == "P2":
+        import design_cosmos_door as cd
+        if cd.applies(m):
+            return cd.CosmosDoor(campaign, canonical, incoming)
+    return None
+
+
+def seal_p2(campaign: str) -> dict:
+    """P2's preroll: stamp the cosmos's seal (design_cosmos_door.py)."""
+    import design_cosmos_door as cd
+    return cd.seal(campaign)
+
+
 # ── 7. the seal ──────────────────────────────────────────────────────────────────────────────────────────────
 
 def _hash(node) -> str:
@@ -554,6 +573,14 @@ class Door:
         if list(row.get("tensions") or []) != want:
             errs.append(f"{eid}: `tensions` must be the rolled question id(s) {want}")
         errs += pitch_errors(eid, row.get("pitch"))          # build item 21d
+        # build item 22c (the audit): a pinned god is named from the secret stock alone; it is that god's true name, and P2
+        # gives the god its public face like every god's
+        pinned = ((row.get("dm_only") or {}).get("pinned") or {}).get("god")
+        if pinned:
+            import design_names as dn
+            if dn.given_of(str(pinned)) not in self.names.secret["god"]:
+                errs.append(f"{eid}: `dm_only.pinned.god` is a god name of the secret stock (run `design_names.py -c CAMP secret "
+                            "--lang L --kind god`); it becomes the god's true name, never a public one")
         contests = [q.get("contest") for q in self.identity["questions"]]
         for n, (_, words) in enumerate(question_sentences(row.get("question"))):
             if words > QUESTION_WORDS:

@@ -635,6 +635,13 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         c = R.cosmos["counts"]
         print(f"designer: cosmos — {c['gods']} gods ({c['greater']} greater, {c['lesser']} lesser, {c['power']} powers; "
               f"{c['great']} great), {len(R.cosmos['planes'])} touched plane(s), {len(R.cosmos['events'])} dated events")
+        # build item 22c: P2's rolled rows join the promise ledger; the preroll's records are the writer's ground (sealed)
+        import design_promises as dpr
+        if dpr.has_ledger(dm.load(campaign)):
+            p_pub, p_sec = dpr.add_phase(campaign, phase)
+            print(f"designer: promises — {p_pub} public, {p_sec} secret from {phase} (counts only)")
+            import design_door
+            design_door.seal_p2(campaign)
     if R.naming is not None:
         # build item 11b: the script writes design/naming.json, the stocks, the secret stock and the candidates
         naming = dn.write_rolled(campaign, R.naming, phase, attempt)
@@ -806,6 +813,9 @@ def phase_begin(campaign: str, phase: str, as_json: bool, session_id: str | None
     if phase == "P1":
         import design_frame as dfr
         dfr.write(campaign)          # build item 20a: the frame of every row the writer owes, beside its fragment path
+    elif phase == "P2":
+        import design_cosmos_door as cdoor
+        cdoor.write(campaign)        # build item 22c: P2's frame, the same way
     out = pending_with_prompts(campaign, phase)
     if as_json:
         print(json.dumps(out, indent=2, ensure_ascii=False))

@@ -74,7 +74,7 @@ class Tables(unittest.TestCase):
             self.assertIn(h["number"], ("singular", "plural"), h["id"])
             self.assertTrue(h["text"]["subject"] and h["text"]["subject"][0].islower(), h["id"])
         self.assertTrue(dt.roll_header("secrets.yaml#greater_power").get("secret"))
-        self.assertEqual(len(dt.rows("secrets.yaml#greater_power")), 4)
+        self.assertEqual(len(dt.rows("secrets.yaml#greater_power")), 6)     # build item 22c: the archfey, the elemental prince
         self.assertEqual(sum(1 for r in dt.rows("secrets.yaml#greater_power") if r.get("god")), 1)
 
     def test_the_door_s_story_fields(self):

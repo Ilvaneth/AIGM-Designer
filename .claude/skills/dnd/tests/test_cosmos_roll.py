@@ -162,8 +162,8 @@ def faults(d: dict, R1, R, pub: dict, sec: dict) -> list[str]:
         god = next(g for g in pub["gods"] if g["n"] == seats["threat_god"])
         if god["alignment"] not in dc.plane_alignments(seats["home_plane"]):
             out.append(f"the god's home {seats['home_plane']} is not the plane of its alignment {god['alignment']}")
-    if any(r.get("table") == "planes.yaml#baseline" or r["label"].startswith("plane.") and r.get("raw") is not None
-           and r["label"].count(".") == 1 for r in R.public):
+    if any(r.get("table") == "planes.yaml#baseline" and r.get("notation") != "seated" or r["label"].startswith("plane.")
+           and r.get("raw") is not None and r["label"].count(".") == 1 for r in R.public):
         out.append("a touched plane's seat drawn in public")
     if any("alignment" in str(e.get("why")) for r in R.public for e in r.get("excluded") or []):
         out.append("a public draw bent by the home plane's alignment")
@@ -395,6 +395,55 @@ class Swap(unittest.TestCase):
                 self.assertEqual(public_view(R, pub), public_view(S, spub), f"{R1.master} with {R2.master}'s secret")
                 swapped[scale] += 1
         self.assertEqual(set(swapped), {"short", "standard", "epic"})
+
+
+def pools_of(d: dict, R1) -> tuple[dict, dict]:
+    """A corpus birth's name pool and secret stock, drawn in memory as P1's preroll draws them on disk."""
+    import design_names as dn
+    pool = {"_meta": {}, "rolled": True, "languages": {}, "calendar": {}}
+    secret = {"_meta": {}, "rolled": True, "languages": {}}
+    dn.fill_pool(pool, R1.naming, R1.master, d, R1.foundation, "P1", 1, secret=secret, registered=set())
+    dn.fill_secret(secret, R1.naming, R1.master, d, "P1", 1, pool, registered=set())
+    return pool, secret
+
+
+def pin_of(R1, secret: dict) -> dict | None:
+    """The premise's pin as a P1 writer makes it: a god of the secret stock when the chain pins a god."""
+    if not ((R1.identity_secret or {}).get("secret") or {}).get("pin", {}).get("god"):
+        return None
+    name = next(e["name"] for L in secret["languages"].values() for e in L.get("god", []))
+    return {"name": name, "premise": "premise_x"}
+
+
+class SwapNames(unittest.TestCase):
+    """The swap test with the names (the 22c audit): rolled with a pool, the gods' public names and languages do not move
+    with the threat, the secret or the pin; the pin is the pinned seat's god's true name, in dm-only alone."""
+
+    def test_the_names_are_blind_to_the_secret(self):
+        by_scale: dict = {}
+        for d, R1 in _corpus.births(150):
+            by_scale.setdefault(d["scale"], []).append((d, R1))
+        pinned = 0
+        for scale, rows in by_scale.items():
+            for i, (d, R1) in enumerate(rows):
+                _, R2 = rows[(i + 1) % len(rows)]
+                pool, secret = pools_of(d, R1)
+                outs = []
+                for threat_of in (R1, R2):
+                    pl, sp = copy.deepcopy(pool), copy.deepcopy(secret)
+                    S = designer.Roller.in_memory(R1.master, d, phase="P2")
+                    S.ctx = copy.deepcopy(R1.ctx)
+                    p1 = dict(dc.p1_of(R1), threat=threat_of.threat, secret=threat_of.identity_secret, pinned_god=pin_of(threat_of, sp))
+                    pub, sec = dc.roll(S, d, p1, pl, sp)
+                    outs.append(public_view(S, pub))
+                    seat = sec["seats"]["threat_god"] or sec["seats"]["power_god"]
+                    if p1["pinned_god"] and seat is not None:
+                        pinned += 1
+                        self.assertEqual(sec["hidden_names"][seat], p1["pinned_god"]["name"], "the pin is the god's true name")
+                        self.assertNotIn(p1["pinned_god"]["name"], json.dumps(pub), "the true name is in no public record")
+                self.assertTrue(all(g["id"] for g in json.loads(outs[0])["cosmos"]["gods"]), "every god named from the pool")
+                self.assertEqual(outs[0], outs[1], f"{R1.master}: the public names moved with {R2.master}'s secret")
+        self.assertTrue(pinned, "some births pin a god")
 
 
 class OnDisk(unittest.TestCase):
