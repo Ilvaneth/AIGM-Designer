@@ -136,3 +136,17 @@ Asked by the coding tab while building the roller; the owner ruled 1 and 5, the 
 ## The cosmos's names (owner-approved 2026-10-08)
 
 Five pattern groups, so that every proper noun P2 makes comes from a pool (build part 22n in `docs/p2-build-22.md`): planes (`the` + adjective + a plane word, or an old-tongue word), festivals (a god's: its name + 's + Feast/Night/Day/Vigil; a folk one: the Feast/Night/Day/Vigil/Fair of the + root), moons (`the` + colour + Watcher/Eye/Wanderer/Hound/Shield/Maiden/Sickle/Crown, or a fresh common-tongue name), ages (`{Name}` a pooled person or place, `{Thing}` a root, `{Rulers}` the + root + Kings/Queens/Lords/Princes, the ruin's age The Fall of + an old-tongue word), and events (the + the event type's word + of + a pooled place, person or god; the sixteen words as the design tab listed them). The owner asked whether this is enough: the design tab checked every proper noun P2 makes against the pools and found one gap, the events' names, which the fifth group fills; P3-P8's names are checked at each floor's own review.
+
+## Where the dead go (owner-approved 2026-10-08)
+
+Found by the design tab's sufficiency check of P2: no table said where the dead go, unless a Death god or a plane "reachable by dying" happened to be rolled; the writer would have decided it, and players ask it (clerics, raising the dead, the folk's belief). A new table `pantheon.yaml#afterlife` (layer texture, `avoid_used: false`), rolled at the end of the pantheon step:
+- `afterlife_god_plane` (weight 3, the classic D&D default): the dead go to the plane of their god or their alignment.
+- `afterlife_grey` (1): the dead fade in a grey land (the shadow echo).
+- `afterlife_judge` (1): a judge weighs the dead; requires a counted god with the Death domain or a power-rank god, who is the judge.
+- `afterlife_rebirth` (1): the dead are born again.
+- `afterlife_unremembered` (1): the raised remember nothing of where they were, and the churches quarrel over it. (A plain "nobody knows, none came back" was rejected at the check: in a D&D world clerics raise the dead.)
+- `afterlife_one_land` (weight 0, forced only): all the dead go to one land the living can reach; forced when a touched plane rolled `dev_reachable_by_death`, and that plane is the land.
+
+Tags (the design tab's draft, inside the owner's approval): a new default `afterlife` overridden by `dev_reachable_by_death`; fits `afterlife_god_plane` ×3 under `break_gods_are_ancestors_known`, `afterlife_grey` ×2 under `pantheon_dead_gods`, `afterlife_rebirth` ×2 under `pantheon_animist`; no clash (`break_dead_rise` stands with every row: the unlaid dead never reach the afterlife). One owner: the Death god's hook "the god's disposition names what death is" becomes "the god's disposition follows the afterlife row". Raising the dead works by the rules under every row (S4's principle).
+
+**A correction to answer 9 (keepers), from the same check:** a creature keeper's CR is not held inside the party's band (the world does not scale): it lies between the campaign band's middle level and its top level + 3, and the plane's site owes legibility and an escape route.
