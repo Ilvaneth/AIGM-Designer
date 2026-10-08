@@ -311,3 +311,71 @@ The floor test (`tests/_floor.py`) reads only P1's corpus pools today; 22c's "ev
 - Never push. Run nothing that calls a model.
 
 **State when this tab stopped:** 22a with the design tab's 14 audit fixes applied and re-stamped, uncommitted; the full suite was not rerun after the fixes (last green run 909 tests before them). Next: run the suite, report to the design tab (note: fix 14 asked to drop *dispel evil and good* from the echo planes' credits, but SRD 5.1 names the Shadowfell and the Feywild in that very spell, so it was kept), commit 22a by path after its answer.
+
+## 14. Items 22b-22c (2026-10-08/09, the sixth coding tab), for the next coding tab
+
+*The secret layer is named here only by its mechanism, never by a row of a birth.*
+
+**Committed by this tab** (none pushed by it; the design tab audits and pushes):
+
+| Item | Commit | What | Suite |
+|---|---|---|---|
+| 22b | `4f9068e` | the cosmos rolled on the foundation (`design_cosmos.py`) | 919 OK |
+| 22c | `6b162c3` | P2 keeps its promises (ledger, frame, seal, door, floor test) | 932 OK |
+
+Each item's summary is under its heading in `docs/reports/item18-coding-summaries.md`. Both items went through an audit round: read those paragraphs, since the rulings changed the code twice.
+
+**Where item 22 stands.** 22a, 22b and 22c are done. Still to do, in this order (`docs/p2-build-22.md`):
+- **22n:** the cosmos's names: five pattern groups and five pool stocks for planes, festivals, moons, ages and events;
+- **22d:** the writer, the critics and the card;
+- **22e:** the dry walk of P2 and the whole-P2 measurement.
+
+The rows and rulings are `docs/p2-tags.md`, including every 22b/22c ruling the design tab recorded: the eleven 22b answers, option (d) for the epic home, the pin as a secret-stock true name, the afterlife, the keepers' window.
+
+**The code 22b and 22c built** (read the module docstrings first):
+- **`scripts/design_cosmos.py`**: `roll(R, dials, p1, pool=None, secret_pool=None, on_step=None)`, seven steps (`STEPS`). It returns `(public, secret)`:
+  - the public half goes to `design.json#cosmos`;
+  - the secret half goes to `dm-only/dice-log.json#cosmos` (`seats`, `home_plane`, `mirror`, `origin`, `hidden_names`, `vulnerable_time`).
+  - `load_p1(campaign)` reads the P1 records and the premise's pin; `p1_of(R1)` reads them from an in-memory P1 roller.
+  - `designer.preroll_p2` calls `roll`, draws the pool first (`design_names.ensure_pool`), and saves the pools, the cosmos, the ledger addition and the seal.
+- **The rules every later roller must keep** (`docs/methods.md` #1, #2; both are permanent tests in `test_cosmos_roll.py`):
+  - no public draw reads a secret record;
+  - every secret label stands in every birth (a `note` with value `None` when its fact does not hold), so labels and the secret count never vary;
+  - a later step never edits an earlier step's record;
+  - a secret row's id never names its content (`plane_s01`, `npc_s01`).
+- **Names in 22b:**
+  - gods: the next unused god name and epithet of the common tongue (else the people's), reserved in the pool under `god_<slug>`;
+  - the unnamed god goes by its epithet, its hidden name from the secret stock;
+  - the pinned seat's god keeps its public face; the premise's pin (a secret-stock name) is its true name (`hidden_names`, the frame's `dm_only.true_name`);
+  - 12 of the 14 month names and 7 of the 9 day names, used by `calendar.months` / `calendar.days`.
+  - Planes, festivals, the moon, ages and events have **no name yet**: their records and frame rows hold `name: ""`.
+- **`scripts/design_cosmos_door.py`**:
+  - **the frame:** `build(campaign)` / `write(campaign)` at `phase P2 begin` → `design/_staging/P2/doc_cosmology.frame.json`, with `rows`, `secret_rows` and `container` (the seed and the calendar block). Ids: `god_<slug>`, `plane_<baseline short>`, `plane_s01` (the epic home of its own, secret), `era_<n>`, `event_<n>`, `event_deep_<n>`;
+  - **the seal:** `design.json#p2_seal`;
+  - **the door:** `CosmosDoor`, dispatched by `design_door.door_for` from `registry.py` merge and check.
+- **`UNNAMED`** (`design_cosmos_door.py`): until 22n, `name` is in the `fill` of the planes', eras' and events' frame rows, because the registry refuses a row without a name. **22n's job:** draw the five stocks, set each name in 22b's records or the frame, and take `name` out of `fill`. The festivals' and the moon's `name` in the calendar block stay `""` (they are not rows). 22n fills them in the frame and the door compares them.
+- **The pool API** (`design_names.py`):
+  - `ensure_pool(campaign, phase)` draws or tops up the public stocks and the secret stock;
+  - `fill_pool(pool, naming, master, dials, foundation, phase, attempt, secret=, registered=set())` and `fill_secret(...)` draw in memory (the corpus's `SwapNames` test does this: `test_cosmos_roll.pools_of`);
+  - `_draw_stock` / `_options` / `_compose` fill a pattern from roots and word lists; a new stock goes in `STOCKS` and `stock_sizes`;
+  - `mark_used` / `pool_names` / `all_pool_names` are what the registry door reads.
+- **`reserve_named(pool, secret, row, eid)`** runs at every merge (`registry.py`): a pooled name that a row holds as a field's *whole value* is reserved under that row; a name inside prose never is. 22b's roller moves a pinned name from the premise's hold to the god it names. 22n's names should be reserved by 22b's roller (`used_by` = the frame id) as the gods' are, so the merge finds them held by the right id.
+- **The ledger** (`design_promises.py`): `SOURCE_PHASES` is P0-P2; P1's preroll builds P0+P1 (`BUILT_AT_P1`). `add_phase(campaign, "P2")` at P2's preroll adds forward hooks (due after P2) and overrides. `SCRIPT_APPLIED` / `APPLIED_BY_RECORD` list the defaults the roller applies; a P2 record carries `overrides: [{row, default}]`.
+- **The floor test** (`tests/test_floor_tag_pass.py`): the tables a bound phase rolls are read from what the corpus rolls. A P3 that joins `SOURCE_PHASES` fails until it has its own tag pass *and* a corpus roll.
+
+**Pitfalls I hit:**
+1. **The swap test was not in my first draft;** the audit found three leaks I had made: a secret seat bending a public draw, varying secret labels, and a public plane list chosen by the secret threat. Write the swap test first for any roller.
+2. **The Bash heredoc eats a backslash** (`\\n` in an edit script's string). Write edit scripts with the Write tool into the scratchpad, as the earlier handoffs say. It bit me once more.
+3. **The convention test** forbids `weight: 0` except on a row another row's override forces (`afterlife_one_land`).
+4. **The validator's `file_unclaimed`:** a secret row's file (the dm-only prose) must `cover` it in its front matter.
+5. **Stopping a suite mid-run** leaves two `aigm-*` folders in the temporary directory (the stopped process never runs its `atexit`); remove only the ones your run made (check their times). The two dated 17:01 on 2026-10-08 are older and not this tab's.
+6. **The P1 dry walk's and `test_door`'s stand-ins** pin a secret-stock name now; any new stand-in must too.
+
+**The suite:** 932 tests, about 41 minutes. Run it in the background with `scripts/run_tests.py > log; echo "EXIT $?" >> log`, and watch it with `Monitor` on `^FAIL:|^ERROR:|^Ran |^OK|^FAILED|^EXIT`. The output is dots, so a `... FAIL` filter never fires. The monitor expires every 30 minutes; re-arm it. The slowest new parts:
+- `test_cosmos_roll` rolls the cosmos for 3,000 births, the swap test twice, the order test once, and `SwapNames` 150 births with pools (about 2 minutes);
+- `test_floor_tag_pass` shares the cosmos cache;
+- `test_cosmos_door` walks P1 at standard and at epic (about 40 s).
+
+**The routine:** unchanged from §13. The design tab is "Campaign Designer tasarım ve denetim sekmesi" (`local_dc4d3bc7-cb70-4266-97b4-94f6206f7508`). For each part: suite, summary, message, commit by path after its answer, hash. Never push. Tell the design tab whenever a method proves itself; it keeps `docs/methods.md`.
+
+**State when this tab stopped:** 22c committed (`6b162c3`), the tree clean apart from this section (uncommitted, for the design tab). Next: 22n.
