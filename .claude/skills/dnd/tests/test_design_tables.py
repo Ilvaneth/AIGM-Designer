@@ -76,6 +76,8 @@ class Convention(unittest.TestCase):
 
     def test_every_row_has_id_label_hooks(self):
         seen = 0
+        # a row an override forces may carry weight 0: it is never drawn, only forced (build item 22b: afterlife_one_land)
+        forced_only = {o.get("to") for _, _, r in every_row() for o in r.get("overrides") or [] if isinstance(o, dict)}
         for name, sub, r in every_row():
             seen += 1
             with self.subTest(table=name, sub=sub, row=r.get("id")):
@@ -89,8 +91,10 @@ class Convention(unittest.TestCase):
                 for h in hooks:
                     self.assertIn(h.get("phase"), dt.HOOK_TARGETS, h)
                     self.assertTrue(str(h.get("must", "")).strip(), h)
-                if "weight" in r:
+                if "weight" in r and r["id"] not in forced_only:
                     self.assertGreater(float(r["weight"]), 0)
+                elif "weight" in r:
+                    self.assertGreaterEqual(float(r["weight"]), 0)
         self.assertGreater(seen, 100)
 
     def test_ids_unique_across_all_tables(self):

@@ -93,22 +93,34 @@ class Rows(unittest.TestCase):
         for defaults in got.values():
             self.assertFalse(set(defaults) - set(REG["defaults"]))
 
-    def test_the_one_override_the_preroll_applies_is_the_ancestor_gods(self):
-        """P2 forces the pantheon type a trope break names (unchanged behaviour, read from the list form); every
-        other override is data only."""
+    def test_the_preroll_applies_the_breaks_overrides_of_p2_defaults(self):
+        """P2 forces the pantheon type a trope break names (read from the list form) and, since build item 22b, the
+        presence "the gods live among mortals" names and the moon "the moon trades" names; a type override that names
+        no type row (the silent and dead gods leave the pool) is the claims' clash, never a forced record."""
         ov = BREAKS["break_gods_are_ancestors_known"]["overrides"]
         self.assertEqual(ov, [{"default": "pantheon_type", "to": "pantheon_ancestor_gods"}])
         self.assertIsNotNone(dt.row("pantheon.yaml#type", "pantheon_ancestor_gods"))
         dials = {"scale": "short", "tone": "shadowed", "magic": "low", "era": "medieval", "content_mix": ["war", "mystery", "horror"],
                  "party_size": 2, "level_band": [1, 5]}
-        for forced, breaks in (("pantheon_ancestor_gods", ["break_gods_are_ancestors_known"]), (None, ["break_gods_among_mortals"])):
+        for forced, breaks in (("pantheon_ancestor_gods", ["break_gods_are_ancestors_known"]), (None, ["break_gods_among_mortals"]),
+                               (None, ["break_moon_trades"])):
             R = designer.Roller.in_memory("P2-OVERRIDE", dials, phase="P2")
+            for b in breaks:
+                R.ctx.add(b, False)
             m = {"dials": dials, "dice_log": [{"phase": "P1", "table": "trope-breaks.yaml", "label": "break.1", "row_id": b} for b in breaks]}
             designer.preroll_p2(R, m)
             rec = R.by_label["pantheon_type"]
             self.assertEqual(rec.get("notation") == "forced", forced is not None, breaks)
             if forced:
                 self.assertEqual(rec["row_id"], forced)
+                self.assertEqual(rec["overrides"], [{"row": breaks[0], "default": "pantheon_type"}])
+            if breaks == ["break_gods_among_mortals"]:
+                self.assertNotIn(rec["row_id"], ("pantheon_dead_gods", "pantheon_silent_gods"))
+                pres = R.by_label["pantheon_presence"]
+                self.assertEqual((pres["notation"], pres["row_id"]), ("forced", "presence_walking"))
+            if breaks == ["break_moon_trades"]:
+                self.assertEqual((R.by_label["moon"]["notation"], R.by_label["moon"]["row_id"]), ("forced", "moon_is_a_plane"))
+                self.assertIn("moon", [pl["baseline"] for pl in R.cosmos["planes"]])
 
     def test_the_fits_are_weights(self):
         def w(rid, **ctx):

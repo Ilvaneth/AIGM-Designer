@@ -343,6 +343,7 @@ tables:
       - id: dev_reachable_by_death
         label: Reachable by dying
         rule: "the plane is where the dead go and the living can follow, at a cost"
+        overrides: [{default: afterlife, to: afterlife_one_land}]     # docs/p2-tags.md "Where the dead go"
         hooks:
           - {phase: P2, must: "the cost row is cost_the_way_back or cost_years (the roller narrows this plane's cost); the afterlife's truth is discoverable"}
 

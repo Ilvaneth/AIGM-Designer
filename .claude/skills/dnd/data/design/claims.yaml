@@ -103,6 +103,7 @@ defaults:
   festivals: {phase: P2, what: "the festivals: one per greater god and one or two folk festivals (calendar.yaml rules.festivals)"}
   great_gods_count: {phase: P2, what: "how many great gods there are (scale.yaml great_gods)"}
   greater_gods_count: {phase: P2, what: "how many greater gods there are (pantheon.yaml#rank shares)"}
+  afterlife: {phase: P2, what: "where the dead go (pantheon.yaml#afterlife)"}     # build item 22b: "Where the dead go"
   era_equipment: {phase: P3, what: "the era's equipment rule (srd_equipment)"}
   seat_of_rule_anchor: {phase: P3, what: "the era's 'seat of rule' anchor"}
   travel_danger: {phase: P3, what: "the travel tables' danger default"}

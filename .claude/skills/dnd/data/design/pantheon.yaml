@@ -240,7 +240,7 @@ tables:
         faction_affinity: [religious, criminal]
         secret_tendency: [godsecret_fading, godsecret_was_mortal]
         hooks:
-          - {phase: P2, must: "the Death god's disposition names what death is in this world; the afterlife's truth is discoverable"}
+          - {phase: P2, must: "the Death god's disposition follows the afterlife row (pantheon.yaml#afterlife)"}
 
   rank:
     rows:
@@ -459,3 +459,41 @@ tables:
         tier: discoverable
         hooks:
           - {phase: P3, must: "the god's speech is a travel-table result in its region"}
+
+  afterlife:
+    layer: texture
+    roll: {avoid_used: false}
+    note: "where the dead go (owner-approved 2026-10-08; docs/p2-tags.md 'Where the dead go'): rolled at the end of the pantheon step; raising the dead works by the rules under every row (S4's principle); break_dead_rise stands with every row (the unlaid dead never reach the afterlife)"
+    rows:
+      - id: afterlife_god_plane
+        label: To their god's plane
+        weight: 3
+        rule: "the dead go to the plane of their god or their alignment"
+        weight_by: [{when: {any_of: [break_gods_are_ancestors_known]}, x: 3}]
+      - id: afterlife_grey
+        label: The grey land
+        weight: 1
+        rule: "the dead fade in a grey land (the shadow echo)"
+        weight_by: [{when: {any_of: [pantheon_dead_gods]}, x: 2}]
+      - id: afterlife_judge
+        label: A judge of the dead
+        weight: 1
+        rule: "a judge weighs the dead"
+        requires: {any_of: [domain_death, rank_power]}      # a counted god with the Death domain or a power-rank god
+        hooks:
+          - {phase: P2, must: "the judge is a counted god with the Death domain or a power-rank god (P2's roll names it)"}
+      - id: afterlife_rebirth
+        label: Born again
+        weight: 1
+        rule: "the dead are born again"
+        weight_by: [{when: {any_of: [pantheon_animist]}, x: 2}]
+      - id: afterlife_unremembered
+        label: Unremembered
+        weight: 1
+        rule: "the raised remember nothing of where they were, and the churches quarrel over it"
+      - id: afterlife_one_land
+        label: One land of the dead
+        weight: 0                                           # forced only: a touched plane reachable by dying
+        rule: "all the dead go to one land the living can reach"
+        hooks:
+          - {phase: P2, must: "the land is the touched plane that rolled dev_reachable_by_death"}

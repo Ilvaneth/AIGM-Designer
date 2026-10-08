@@ -678,3 +678,89 @@ On `docs/p2-build-22.md` 22a, `docs/p2-tags.md` S1-S6, and the tag pass's ruling
 - tests: `test_p2_tables.py` (new), `test_design_tables.py`, `test_claims.py`, `test_trope_claims.py`, `test_root_cause_1.py`, `test_general_themes.py`, `test_foundation_tables.py`.
 
 **The suite:** 909 tests, OK, exit code 0, 1,908 s (31.8 min). The first full run failed two tests that pinned the old pair list and the casters contest's overrides; they are updated above. Two `aigm-*` folders dated 17:01 sit in the temporary directory. My runs leave none, so they are from another process; I have not removed them.
+
+## 22b — the cosmos rolled on the foundation (the sixth coding tab)
+
+On `docs/p2-build-22.md` 22b (with the afterlife and keeper additions of `39b8637`), `docs/p2-tags.md` S0-S7, and the design tab's answers to the eleven 22b questions (recorded in `p2-tags.md`).
+
+**The roller.** A new module, `scripts/design_cosmos.py`. `designer.preroll_p2` now calls `design_cosmos.roll(R, dials, p1, pool, secret_pool)`. It reads the approved P0/P1 records: the foundation and identity from design.json, and the secret and threat from dm-only. It writes the public half to `design.json#cosmos` (stamped) and the secret half to `dm-only/dice-log.json#cosmos`. The Roller gains `cosmos`, `cosmos_secret` and `name_pools`. Every roll is a labelled record; `roll(..., on_step=)` lets a test watch the steps. The seven steps, in order:
+1. **Type and counts:**
+   - a P1 row that names a type row forces it;
+   - the god count;
+   - the rank split: one die over every (greater, lesser, power) inside the shares that sums to the count; under the dualist, greater is forced to 2 and the nearest split is used when none fits inside;
+   - the great gods: the dualist's 2, else the band raised to the floor the P1 rows name (`raised_to_floor`). The floor is one per seated religious role (the identity's merged role hints), 1 for "gods among mortals" and 1 for the unnamed god. Greater rises to great inside the god count;
+   - the touched count: the band plus the magic dial's modifier, never below 1, raised in this step to the fewest planes that serve every public P1 row naming one (`raised_to_named`, ruling 6; the audit: no later step touches it).
+2. **Seats (secret):**
+   - the ruin's god: a public die over the lesser and power slots when the ruin is of the gods family;
+   - the threat's god: lesser or power. It is one god with the ruin's when the ruin is the imprisoned or the departed god (ruling 2);
+   - `power_god`: any slot;
+   - at epic, the home's fits from `home_of` (per creature for the genie and the fiend; a god's by its alignment), bound at the end of step 4 (option d below).
+   - every secret label stands in every birth, null when its fact does not hold (`seat.threat_god`, `seat.power_god`, `seat.home_plane` at epic, `rel_mirror.to`, `dated.vulnerable_time`, the home's five).
+3. **Planes** (every seat draw secret, the same whatever the threat is):
+   - The P1 rows that name a plane are slots. The thin place's two rows are one slot, and so are the two worlds and the rift. Slots go tightest first.
+   - A slot takes a plane of its own while the seats allow, keeping every later slot served (an exact minimum-cover check). Otherwise it shares one already touched. The celestial war seats upper and lower, upper only at short.
+   - Free seats come from the baseline (never the Material). The moon is a candidate on a gate die (1 in N+1) when `moon_is_a_plane` passes the constraints.
+   - Each touched plane gets its public record (the plane and its seat, no die; the planes P1 names first with "named by <row>", the rest in the baseline's order) and: a deviation (never removed; the moon forced `dev_is_this_world`), a rate (the ×2 fit on the ruin's or the scar's plane, or on every plane when no ruin or scar names one), a way in, and a cost (narrowed under `dev_reachable_by_death`). No name: 22n.
+4. **Pantheon:**
+   - the presence, forced to walking by the override;
+   - the unnamed god among the great gods;
+   - per god: its rank (forced from the split), 1-2 domains, and an alignment from the first domain. The domains are kept feasible for the coverage: a god is raised to 2 domains, and a draw is restricted to missing domains only when the coverage needs it;
+   - the evil god, as two new records (`evil_god`, `evil_god.alignment`);
+   - names (below);
+   - the pilgrim road's greater god, which alone carries the ×3;
+   - churches: a great god never draws a church whose `faction_archetype` is none;
+   - the web: tree edges plus one more per greater god; the polytheist's rivalry and alliance are forced only when the draws left need them; `rel_mirror` is never public, and a pinned god gets a secret mirror (ruling 8);
+   - the god story (standard and epic);
+   - **the afterlife**: forced `afterlife_one_land` when a touched plane is reachable by dying, else rolled; the judge is named among the Death gods and the powers;
+   - the keepers: an aligned power on an outer plane, else an SRD creature (ruling 9 and the audit): an inner plane every creature of its element (azer, salamander, magmin, efreeti, xorn, gargoyle, invisible stalker, djinni, the mephits, the elementals), a lawful evil plane the lawful fiends (devils), a chaotic evil one the chaotic (demons), a neutral or mixed one any fiend, the upper planes the same by the celestials' alignment; CR from the band's middle level to its top + 3;
+   - **the threat's home at epic (option d):** a secret plane record outside the public planes and count. A public touched plane that fits is only linked; otherwise the home is a secret plane of its own, with its deviation, rate, way in, cost and keeper on the secret log and a P6 site reserved. A god's home is the outer plane of the alignment it rolled in public.
+5. **History:**
+   - The four seated events: the move (its years from the time row), the origin (public event; its true layer is P1's chain, the secret record says so), the founding, and the ruin's fall (in the older half of the span). They count inside the dated events.
+   - The other events by type, with years. The deep events.
+   - Exactly 1/2/3 divergences, picked among the unseated events (dated and deep); every other one is forced `div_none`. A memory per event.
+   - The ages: the first (`age_before` or `age_founding`) and the present in place, the ruin's age seated at a rolled place, the middles rolled.
+6. **Magic:** source, constraint, visibility, taboos. The regulator is a forced value record when overridden (the combine line when two overriders stand together), else rolled. The services (ruling 5: the new `services` field). The strictness: forced by override (the strictest holds) or the dial's. Wild magic.
+7. **Calendar:**
+   - the fixed year (12 × 28, a seven-day week); 12 of the 14 month names and 7 of the 9 day names from the pool;
+   - the climate: the palette's allowed climates, weighted by kinds × the row's fits; the underground era forced;
+   - the moon: forced when it is seated, else drawn without the place;
+   - the underground count;
+   - festivals: one per greater god (first domain's kind, else second's, else rolled), plus 1-2 folk festivals. The type's own folk kind comes first (ruling 10), with ×2 by the greater gods' domains; when a greater god's festival already is of that kind, it carries the type's feast (tagged) and the folk festivals are free (the audit);
+   - festival dates;
+   - the start year (years_covered + d300), the anchor (requires the time row; legacy plain die), the start date per anchor (festival eve, a season's first day, midwinter in the hard season, a few days after the move, days before the next step);
+   - the span (ruling 4) and the dated days at offsets 1..span low: the empty month, the lawless day, the holy day's festival, and (secret) the weakness's vulnerable time.
+
+**Names (ruling 1).** On a script-rolled naming only, the preroll draws the pool first (`ensure_pool`). Each god takes the next unused god name and epithet of the common tongue (else the people's), reserved under `god_<slug>`. The registry door accepts it because the holder equals the id. The unnamed god goes by its epithet: its id follows the epithet, and its hidden name comes from the secret stock. The months and days are reserved as `calendar.months` and `calendar.days`. A legacy pool and the in-memory corpus name nothing. Planes, festivals, moons and ages stay nameless (22n).
+
+**Leaks found and closed.** (1) My first draft bent the threat god's public domain draw by its secret home plane's alignment; it stopped 4 of 3,000 births, and the exclusion's reason named the plane. (2) The design tab's audit found the secret labels in `design.json#dice_log_secret` varying with secret facts, and the public touched planes chosen by the secret threat. As built: no public draw reads a secret record; every secret label stands in every birth; the home is secret (option d); every seat draw is in the secret log. **The swap test** proves it: each corpus birth rolled again with another birth's threat and secret swapped in gives the same public records, cosmos, secret labels and count, at every scale (`docs/methods.md` #1). **The order test** runs over the whole corpus (#2): it found the touched count rewritten by step 3 in 17 of 3,000 births; the raise now lives in step 1.
+
+**The ledger, the type narrowing:** `break_gods_among_mortals`' type override (it names no row: the claims' clash applies it) is tagged on the type record and checked by script like the other P2 defaults.
+
+**Tables (stamped):**
+- `magic.yaml#regulator`: `services` on all 9 rows, and a note;
+- `pantheon.yaml#afterlife`: 6 rows, texture, `avoid_used: false`, the fits and the judge's `requires`;
+- the Death domain's hook follows the afterlife row;
+- `dev_reachable_by_death` overrides the new default `afterlife` (`claims.yaml`, 30 defaults).
+
+**The ledger.** `design_promises.SCRIPT_APPLIED` gains the nine P2 defaults the roller applies. `APPLIED_BY_RECORD` checks them by the record: a P2 record of the latest attempt carries `overrides: [{row, default}]`. Combine promises on those defaults are script-checked too.
+
+**Measured over 3,000 corpus births (P1 prerolls, P2 in memory):** no stop on an empty pool and no fault of `test_cosmos_roll.faults` (0 of 3,000; ~35 ms a birth). The rulings' raises, per 1,000 births of a scale: the great gods raised to the floor: short 175 (17.5 %), standard 13, epic 7; the touched count raised so every P1-named plane is served (ruling 6): short 3, standard 14, epic 0.
+
+**Tests:**
+- **New `test_cosmos_roll.py`:**
+  - every corpus birth passes `faults()`: no clash, the counts, no secret seat in public, every named plane touched, keepers (and their window), the afterlife, coverage, the evil god, churches, seats, a connected web, the story by scale, the four seated events, the ages, exact divergences, the regulator, strictness, presence, type and moon overrides, the fixed year, festivals, the anchor, the dated days, the climate;
+  - every domain, type, presence and afterlife is reached; the counts spread; the same seed gives the same cosmos;
+  - order: no step changes an earlier record (every corpus birth);
+  - swap: the public face is blind to the secret (every corpus birth, every scale);
+  - the seats: one god versus two, the homes (linked and of their own), nothing public;
+  - on disk: a standard birth's preroll names its gods, months and days and keeps the seats in dm-only; the legacy fixture still prerolls.
+- **Updated:**
+  - `test_trope_claims`: the overrides the preroll applies (type, presence, moon);
+  - `test_claims`: 30 defaults;
+  - `test_design_tables`: a zero weight is allowed on a row an override forces.
+
+**Changed files:** `scripts/design_cosmos.py` (new), `designer.py`, `design_promises.py`; `data/design/magic.yaml`, `pantheon.yaml`, `planes.yaml`, `claims.yaml`, `reviewed.json`; `tests/test_cosmos_roll.py` (new), `test_trope_claims.py`, `test_claims.py`, `test_design_tables.py`, `test_promises.py` (the type override is script-checked).
+
+**Note for 22e:** `docs/reports/p2-tags-draft/measure_p2.py` calls `preroll_p2` with no P1 records; it must pass `m["p1"] = design_cosmos.p1_of(R)` (or call `design_cosmos.roll`).
+
+**The suite:** before the audit 918 tests OK; after the audit's fixes 919 tests, OK, exit code 0, 2,366 s (39.4 min). A run I stopped mid-way (the audit came in) left two `aigm-*` folders, which I removed; the two dated 17:01 are the ones the previous tab reported.

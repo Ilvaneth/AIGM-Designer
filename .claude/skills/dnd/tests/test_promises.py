@@ -144,8 +144,7 @@ class Ledger(unittest.TestCase):
                 self.assertTrue(p["text"].startswith(defaults[p["default"]]["what"] + ": "))
                 seen[p["default"]] += 1
                 script = p["check"] == "script:override_applied"
-                self.assertEqual(script, p["default"] in dp.SCRIPT_APPLIED and
-                                 (p["default"] != "pantheon_type" or bool(dt.row("pantheon.yaml#type", str(p["to"])))))
+                self.assertEqual(script, p["default"] in dp.SCRIPT_APPLIED)
             rolled = {r["id"] for _, r, _, _ in dp.rolled_rows(b["dials"], b["rolls"], b["rolls_secret"])}
             mine = {(s["from"], p["default"]) for p in b["public"] + b["secret"] if p["source"] == "override" for s in sources(p) if s["source"] == "override"}
             want = {(o["row"], o["default"]) for o in b["identity"]["overrides"]}

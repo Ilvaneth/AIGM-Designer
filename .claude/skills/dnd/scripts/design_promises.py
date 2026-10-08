@@ -73,8 +73,16 @@ NO_TABLE = ("dice", "tokens")            # dice-log records that name no table r
 PART_WORDS = {"key_place": "the key place", "heart": "the heart", "end_a": "the first end", "end_b": "the second end",
               "end_c": "the third end", "end_d": "the fourth end"}
 # overrides a roll applies itself, so a script can say they are kept: P2's preroll forces the pantheon type a trope
-# break names; P1's naming rolls give language 2 to the contest's other side; P1's lineage roll inverts its weights
-SCRIPT_APPLIED = ("pantheon_type", "second_language", "lineage_palette_weights")
+# break names; P1's naming rolls give language 2 to the contest's other side; P1's lineage roll inverts its weights.
+# Build item 22b: the cosmos's roller applies every other P2 default a row overrides, and its record names them
+# (`overrides` on the record: the row and the default)
+SCRIPT_APPLIED = ("pantheon_type", "second_language", "lineage_palette_weights",
+                  "regulator_identity", "regulator_strictness", "great_gods_floor", "pantheon_presence", "moon", "festivals",
+                  "great_gods_count", "greater_gods_count", "afterlife")
+# a type override that names no type row ("the gods live among mortals": the silent and dead gods leave) is applied
+# by the claims' clash, and the type record names it (build item 22b's audit)
+APPLIED_BY_RECORD = ("regulator_identity", "regulator_strictness", "great_gods_floor", "pantheon_presence", "moon",
+                     "festivals", "great_gods_count", "greater_gods_count", "afterlife")
 
 
 def secret_path(campaign: str) -> Path:
@@ -332,15 +340,16 @@ def override_promises(rows: list[tuple], add) -> None:
         # build item 22a: an `any_two` line holds for whichever two or more of its rows were rolled
         if ids == set(c["rows"]) or (c.get("any_two") and len(ids) >= 2):
             d = defaults[c["default"]]
+            check = "script:override_applied" if c["default"] in APPLIED_BY_RECORD else "critic"
             for row, phase, hidden, o in both:
                 combined.add((row["id"], c["default"]))
                 add("override", row["id"], phase, d["phase"], f"{d['what']}: {c['combine']}", row.get("label") or row["id"],
-                    hidden=hidden, default=c["default"], to=c["combine"])
+                    check, hidden, default=c["default"], to=c["combine"])
     for row, phase, hidden, o in overrides:
         if (row["id"], o["default"]) in combined:
             continue
         d = defaults[o["default"]]
-        applied = o["default"] in SCRIPT_APPLIED and (o["default"] != "pantheon_type" or bool(dt.row("pantheon.yaml#type", str(o.get("to")))))
+        applied = o["default"] in SCRIPT_APPLIED
         add("override", row["id"], phase, d["phase"], f"{d['what']}: {o.get('to')}", row.get("label") or row["id"],
             "script:override_applied" if applied else "critic", hidden, default=o["default"], to=o.get("to"))
 
@@ -491,7 +500,7 @@ def rule_event_dated(S: State, p: dict) -> bool:
 def rule_override_applied(S: State, p: dict) -> bool:
     """An override a roll applies itself (SCRIPT_APPLIED)."""
     default = p.get("default")
-    if default == "pantheon_type":
+    if default == "pantheon_type" and dt.row("pantheon.yaml#type", str(p.get("to"))):
         rec = S.latest("P2", "pantheon_type")
         return bool(rec) and rec.get("row_id") == p.get("to") and rec.get("notation") == "forced"
     if default == "second_language":
@@ -499,6 +508,13 @@ def rule_override_applied(S: State, p: dict) -> bool:
         return S.naming.get("rolled") is True and langs[1:2] == ["other_side"]
     if default == "lineage_palette_weights":
         return bool(S.latest("P1", "people.lineage"))
+    if default in APPLIED_BY_RECORD or default == "pantheon_type":
+        # build item 22b: a cosmos record of P2's latest attempt names the row and the default it applied
+        p2 = [r for r in S.manifest.get("dice_log") or [] if r.get("phase") == "P2"]
+        last = max((int(r.get("attempt") or 1) for r in p2), default=0)
+        froms = {s["from"] for s in sources(p)}
+        return any(int(r.get("attempt") or 1) == last and any(o.get("default") == default and o.get("row") in froms
+                                                              for o in r.get("overrides") or []) for r in p2)
     return False
 
 

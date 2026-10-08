@@ -221,44 +221,54 @@ tables:
   regulator:
     notation: d9
     roll: {avoid_used: false}    # rule 8: three rows are forced by P1's overrides; a guild and a church repeat
+    note: "`services`: who gives the magic services (identify, training, a price list) under the row (the 22b ruling 5): the regulator itself, or the casters themselves; a rolled church archetype that lists identify then gives them"
     rows:
       - id: regulator_signature_institution
         label: The signature institution
+        services: "the regulator"
         weight: 3
       - id: regulator_crown_office
         label: An office of the state
+        services: "the regulator"
         hooks:
           - {phase: P4, must: "the office is an asset of the state faction; its head is an NPC"}
       - id: regulator_guild
         label: The mage guild
+        services: "the regulator"
         weight_by: [{when: {any_of: [source_study]}, x: 3}]   # the tag pass: in place of source_study's P4 hook
         hooks:
           - {phase: P4, must: "the guild's service menu lists identify, training and a licence"}
       - id: regulator_church
         label: The church
+        services: "the regulator"
         requires: {any_of: [domain_knowledge, domain_light]}   # the tag pass R7: a counted god of Knowledge or Light
         hooks:
           - {phase: P2, must: "the regulating god's domain is Knowledge or Light; what the church lets pass is a discoverable story"}
       - id: regulator_nobody
         label: Nobody
+        services: "the casters themselves, each at their own price"
         conflicts_with: [constraint_licence]   # the tag pass D21: a licence is a ledger the regulator keeps
         hooks:
           - {phase: P8, must: "the primer says what happens to a caster who harms someone: nothing formal, something informal"}
       - id: regulator_the_phenomenon
         label: The phenomenon itself
+        services: "the casters themselves, each at their own price"
         hooks:
           - {phase: P2, must: "the phenomenon's rule punishes misuse without a person involved"}
       - id: regulator_foreign_power
         label: A foreign power
+        services: "the regulator"
         hooks:
           - {phase: P4, must: "the regulator is a polity or faction from outside the map's centre; its stance to the state is the question"}
       - id: regulator_the_dead
         label: The dead
+        services: "the regulator"
         requires: {any_of: [pantheon_ancestor_gods, domain_death]}   # the tag pass R8: the ancestor lists or the grave wardens
         hooks:
           - {phase: P2, must: "the ancestor lists or the grave wardens decide who may cast"}
       - id: regulator_a_creature
         label: A creature
+        services: "the casters themselves, each at their own price"
         hooks:
           - {phase: P6, must: "the regulator is a site boss or a power with a fixed CR"}
 

@@ -100,7 +100,7 @@ class Registry(unittest.TestCase):
         self.assertEqual(dt.clashing_tokens({"magic": "middling"}), set())
 
     def test_the_overridable_defaults(self):
-        self.assertEqual(len(REG["defaults"]), 29)      # build item 22a: five P2 defaults
+        self.assertEqual(len(REG["defaults"]), 30)      # build item 22a: five P2 defaults; 22b: where the dead go
         for did, d in REG["defaults"].items():
             self.assertTrue(d["phase"] and d["what"], did)
 

@@ -157,6 +157,9 @@ class Roller:
         self.identity_secret: dict | None = None      # the secret and the villain: dm-only alone
         self.threat: dict | None = None               # the threat (build item 18c): dm-only alone
         self.naming: dict | None = None               # the languages and the calendar's roots (design/naming.json)
+        self.cosmos: dict | None = None               # P2's cosmos (build item 22b): public, design.json#cosmos
+        self.cosmos_secret: dict | None = None        # its seats: dm-only alone
+        self.name_pools: tuple | None = None          # (pool, secret stock) the cosmos named its gods from: saved after the flush
         self.exempt: set = set()                      # conflict pairs a forced roll was allowed to stand in
         self.pools: dict[str, int] = {}               # table → its smallest pool after the constraints (the floor)
         self.pool_of: dict[str, int] = {}             # label → that draw's pool after the constraints
@@ -170,7 +173,7 @@ class Roller:
         R.public, R.secret, R.secret_notes, R.by_label = [], [], [], {}
         R.ctx = arb.Context(dials=dict(dials))
         R.foundation, R.identity, R.identity_secret, R.naming, R.exempt = None, None, None, None, set()
-        R.threat = None
+        R.threat, R.cosmos, R.cosmos_secret, R.name_pools = None, None, None, None
         R.pools, R.pool_of = {}, {}
         return R
 
@@ -286,7 +289,7 @@ class Roller:
     def flush(self) -> tuple[int, int]:
         data = dm.load(self.campaign)
         data["dice_log"].extend(self.public)
-        if self.secret:
+        if self.secret or self.cosmos_secret is not None:
             path = dm_only_dir(self.campaign) / "dice-log.json"
             log = read_json(path) or {"_meta": {"schema_version": 1, "campaign": self.campaign}, "rolls": []}
             log["rolls"].extend(self.secret)
@@ -294,6 +297,8 @@ class Roller:
                 log["identity"] = self.identity_secret       # the secret and the villain as P1 rolled them
             if self.threat is not None:
                 log["threat"] = self.threat                  # the threat as P1 rolled it (build item 18c)
+            if self.cosmos_secret is not None:
+                log["cosmos"] = self.cosmos_secret           # the cosmos's seats as P2 rolled them (build item 22b)
             stamp_meta(log, self.campaign, "designer.py preroll (secret)")
             write_json_atomic(path, log)
             dls = data["dice_log_secret"]
@@ -360,58 +365,24 @@ def preroll_p1(R: Roller, m: dict) -> None:
 
 
 def preroll_p2(R: Roller, m: dict) -> None:
-    sc = scale_of(m)
-    breaks = rolled_rows(m, "trope-breaks.yaml")
-    override = None
-    for b in breaks:
-        row = dt.row("trope-breaks.yaml", b) or {}
-        # the one override applied today: a trope break that names a pantheon type forces it (the ancestor gods).
-        # Every other override is data for the floor that owns the default (claims.yaml).
-        for o in row.get("overrides") or []:
-            if o.get("default") == "pantheon_type" and dt.row("pantheon.yaml#type", str(o.get("to"))):
-                override = (b, o["to"])
-    if override:
-        R.forced("pantheon_type", "pantheon.yaml#type", override[1], f"override by {override[0]}")
+    """Build item 22b: the cosmos rolled on the foundation, in the threat's order (design_cosmos.py): the type and the
+    counts, the threat's seats, the planes, the pantheon, the history, magic and the calendar. The gods, the months
+    and the days are named from the campaign's pool (a script-rolled naming only); an in-memory Roller reads the P1
+    records from `m['p1']` and names nothing."""
+    import design_cosmos as dc
+    pool = secret_pool = None
+    if R.campaign:
+        import design_names as dn
+        p1 = dc.load_p1(R.campaign)
+        pool = dn.ensure_pool(R.campaign, R.phase, R.attempt)
+        if pool is not None and pool.get("rolled"):
+            secret_pool = dn.load_secret(R.campaign)
+            R.name_pools = (pool, secret_pool)
+        else:
+            pool = None
     else:
-        R.table("pantheon_type", "pantheon.yaml#type", avoid=False)
-    R.table("pantheon_presence", "pantheon.yaml#presence", avoid=False)
-    for sub in ("source", "constraint", "visibility", "regulator"):
-        R.table(f"magic_{sub}", f"magic.yaml#{sub}")
-    R.table("magic_taboo.1", "magic.yaml#taboo")
-    if R.notation("taboo.second", "d2")["raw"] == 2 and R.row("magic_taboo.1") != "taboo_none":
-        R.table("magic_taboo.2", "magic.yaml#taboo", exclude={R.row("magic_taboo.1"), "taboo_none"})
-    gate = (dt.dial_row("magic", dials_of(m)["magic"]) or {}).get("effects", {}).get("wild_magic_roll", {})
-    raw = R.notation("wild_gate", gate.get("notation", "d6"))["raw"]
-    if raw in (gate.get("on") or []):
-        R.table("wild_shape", "magic.yaml#wild", avoid=False, exclude={"wild_no"})
-    else:
-        R.forced("wild_shape", "magic.yaml#wild", "wild_no", f"gate {gate.get('notation', 'd6')}={raw} not in {gate.get('on')}")
-    # build item 22a: the year is fixed (12 × 28, a seven-day week; docs/p2-tags.md S6), so year_shape and week are
-    # no longer rolled; every calendar table repeats across campaigns. Build item 22b replaces this roller.
-    for sub in ("climate", "moon"):
-        R.table(sub, f"calendar.yaml#{sub}", avoid=False)
-    # the start anchor follows the move's time (S6: each anchor row requires a time row); a birth whose P1 rolled no
-    # move time (a legacy birth) draws it with a plain die, recorded as forced with that reason
-    if any(R.ctx.has(t) for t in ("time_just_now", "time_unfolding", "time_coming", "time_generation_ago")):
-        R.table("start_anchor", "calendar.yaml#start_anchor", avoid=False)
-    else:
-        anchors = dt.rows("calendar.yaml#start_anchor")
-        raw = R.notation("start_anchor.legacy", f"d{len(anchors)}")["raw"]
-        R.forced("start_anchor", "calendar.yaml#start_anchor", anchors[raw - 1]["id"],
-                 "a birth with no move time (a legacy birth): the anchor is drawn plainly (build item 22a)")
-    hist = sc["history"]
-    ages: list[str] = []
-    for n in range(1, R.count("ages_count", hist["ages"]) + 1):
-        ages.append(R.table(f"age.{n}", "history.yaml#age_template", exclude=set(ages))["row_id"])
-    for n in range(1, R.count("events_count", hist["dated_events"]) + 1):
-        R.table(f"event.{n}", "history.yaml#event_type", avoid=False)
-        R.table(f"divergence.{n}", "history.yaml#divergence", avoid=False)
-        R.table(f"memory.{n}", "history.yaml#memory", avoid=False)
-    for n in range(1, R.count("deep_count", hist["deep_past_events"]) + 1):
-        R.table(f"deep.{n}", "history.yaml#event_type", avoid=False)
-    fests: list[str] = []
-    for n in range(1, band(sc["gods"])[1] + 1):
-        fests.append(R.table(f"festival.{n}", "calendar.yaml#festival_type", avoid=False, exclude=set(fests))["row_id"])
+        p1 = m.get("p1") or {"foundation": m.get("foundation"), "identity": m.get("identity")}
+    R.cosmos, R.cosmos_secret = dc.roll(R, dials_of(m), p1, pool, secret_pool)
 
 
 def preroll_p3(R: Roller, m: dict) -> None:
@@ -651,6 +622,19 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         dm.save(campaign, data, f"designer.py preroll --phase {phase} (identity)")
         print(f"designer: identity — {di.line(R.identity)}")
     import design_names as dn
+    if R.cosmos is not None:
+        data = dm.load(campaign)
+        data["cosmos"] = R.cosmos                # public and stamped (build item 22b); its seats are dm-only's
+        dm.save(campaign, data, f"designer.py preroll --phase {phase} (cosmos)")
+        if R.name_pools:                         # the gods, the months and the days took their names from the pool
+            pool, secret_pool = R.name_pools
+            dn.save_pool(campaign, pool, f"designer.py preroll --phase {phase} (the cosmos's names)")
+            if secret_pool is not None:
+                stamp_meta(secret_pool, campaign, f"designer.py preroll --phase {phase} (the unnamed god's hidden name)")
+                write_json_atomic(dn.secret_path(campaign), secret_pool)
+        c = R.cosmos["counts"]
+        print(f"designer: cosmos — {c['gods']} gods ({c['greater']} greater, {c['lesser']} lesser, {c['power']} powers; "
+              f"{c['great']} great), {len(R.cosmos['planes'])} touched plane(s), {len(R.cosmos['events'])} dated events")
     if R.naming is not None:
         # build item 11b: the script writes design/naming.json, the stocks, the secret stock and the candidates
         naming = dn.write_rolled(campaign, R.naming, phase, attempt)
@@ -680,8 +664,14 @@ def preroll(campaign: str, phase: str, attempt: int | None) -> int:
         dm.save(campaign, data, f"designer.py preroll --phase {phase}")
     print(f"designer: {phase} prerolled — {n_pub} public rolls, {n_sec} secret (labels only in design.json)")
     for rec in R.public:
-        what = rec.get("row_id") or (f"{rec.get('raw')} → count {rec['value']}" if "value" in rec else
-                                     ", ".join(rec["items"]) if rec.get("items") else rec.get("raw"))
+        if rec.get("row_id"):
+            what = rec["row_id"]
+        elif "value" in rec and rec.get("raw") is None:           # a value a rule sets (build item 22b): no die
+            what = f"{rec['value']}" + (f" ({rec['forced_by']})" if rec.get("forced_by") else "")
+        elif "value" in rec:
+            what = f"{rec.get('raw')} → {'count ' if rec['label'].endswith('_count') else ''}{rec['value']}"
+        else:
+            what = ", ".join(rec["items"]) if rec.get("items") else rec.get("raw")
         print(f"  {rec['label']:<32} {rec['table']:<32} {rec['notation'] or '':<7} → {what}")
     return 0
 
