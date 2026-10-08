@@ -286,6 +286,7 @@ tables:
         merges_with:                     # owner, 2026-09-28: the rift is no separate place
           ruin_planar_rift: "the rift is the two worlds' crossing point, the key place"
         weight_by: [{when: {dial: {era: [nautical]}}, x: 0.25}]
+        hooks: [{phase: P2, must: "its other plane is a touched plane, chosen among the non-material planes (planes.yaml rules.named_planes)"}]   # the P2 tag pass
         text: {"name": "two worlds, one on top of the other", "heart": "the city where the two worlds overlap", "heart_short": "the city between the worlds", "ends": ["our world", "the other plane"], "key_place": "the crossing points", "travel": "going back and forth between the two layers", "ends_short": ["this world", "the other plane"]}
       - id: spine_mountain_within
         breadth: tight
@@ -733,6 +734,7 @@ tables:
         olgu_families: [time, place_path]
         text: {"name": "the place where time broke", "what": "a spell broke time", "remnant": "a city whose time is frozen", "remnant_short": "the time-frozen city", "sites": "streets where time flows differently", "strangeness": "pieces of the past and of the future wander the city"}
       - id: ruin_star_kingdom
+        hooks: [{phase: P2, must: "what it called came from the realm beyond (baseline_beyond), which is touched"}]   # the P2 tag pass
         label: The kingdom that reached for the stars
         family: planes
         remnant_kind: structure
@@ -1283,6 +1285,7 @@ tables:
         escalation: ["seizing of ships", "coastal war"]
         text: {"name": "two cities that want the same harbour", "name_note": "on either side of the key place"}
       - id: contest_one_pasture
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Two peoples, one pasture"
         family: two_hands
         prize: disputed_land
@@ -1295,6 +1298,7 @@ tables:
         escalation: ["herd raids", "blood feud"]
         text: {"name": "two peoples, one pasture"}
       - id: contest_one_shrine
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Two faiths, one holy place"
         family: two_hands
         prize: remnant
@@ -1347,6 +1351,7 @@ tables:
         escalation: ["new laws", "coup attempt"]
         text: {"name": "the old order and the reformers"}
       - id: contest_old_gods_new_faith
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Old gods, a new faith"
         family: old_new
         prize: heart
@@ -1399,6 +1404,7 @@ tables:
         escalation: ["the cutting of aid", "the marches breaking away"]
         text: {"name": "the capital and the marches", "name_note": "the capital at the heart"}
       - id: contest_lords_peasants
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         claims: {nobility: exists}
         label: "Lords and peasants"
         family: strong_weak
@@ -1435,10 +1441,11 @@ tables:
           third: {text: "the illicit masters who teach magic in secret", short: "the secret magic teachers", hint: criminal}
           fourth: {text: "a faith that wants to ban magic altogether", short: "a magic-banning faith", number: singular, hint: religious}
         weight_by: [{when: {dial: {content_mix: ["war"]}}, x: 2}]
-        overrides: [{default: regulator_identity, to: "the contest's side a"}, {default: regulator_strictness, to: strict}]
+        overrides: [{default: regulator_identity, to: "the contest's side a"}, {default: regulator_strictness, to: strict}, {default: great_gods_floor, to: "one great god per seated religious role"}]
         escalation: ["bans", "caster hunt"]
         text: {"name": "casters and the casterless"}
       - id: contest_sealed_remnant
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "The sealed remnant"
         family: open_close
         prize: remnant
@@ -1487,6 +1494,7 @@ tables:
         escalation: ["copying", "assassination"]
         text: {"name": "those who spread knowledge and those who keep it", "prize": "the guarded knowledge"}
       - id: contest_open_close_gate
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Those who open the gate and those who close it"
         family: open_close
         prize: thin_place
@@ -1513,6 +1521,7 @@ tables:
         escalation: ["the theft of the maps", "ambush on the road"]
         text: {"name": "groups racing for the treasure"}
       - id: contest_empty_throne
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         claims: {nobility: exists, rule: hereditary}
         label: "An empty throne, three houses"
         family: race
@@ -1563,6 +1572,7 @@ tables:
         escalation: ["claims", "blood at the resource"]
         text: {"name": "who will take the new resource first", "prize": "the new resource"}
       - id: contest_two_branches
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Two branches of one people"
         family: kin
         prize: heart
@@ -1575,6 +1585,7 @@ tables:
         escalation: ["separate markets", "separate armies"]
         text: {"name": "two branches of one people"}
       - id: contest_order_schism
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "An order splits"
         family: kin
         prize: remnant
@@ -1627,6 +1638,7 @@ tables:
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
         text: {"name": "humans and giants"}
       - id: contest_humans_dragon
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Humans and a dragon"
         family: nonhuman
         prize: disputed_land
@@ -1639,6 +1651,7 @@ tables:
         hooks: [{phase: validator, must: "both sides have just interests; neither is inherently evil"}]
         text: {"name": "humans and the dragon"}
       - id: contest_humans_fey
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Humans and the fey"
         family: nonhuman
         prize: disputed_land
@@ -1756,6 +1769,7 @@ tables:
   # ── 6. the break: built last, strikes one of the pieces (target · action · scars · time · winner) ─────
       # ── the general themes (build item 16b; owner-approved 2026-10-04; hints, prizes, seats and steps by the coding tab) ──
       - id: contest_living_dead
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "The living and the dead"
         family: nonhuman
         prize: heart
@@ -1782,6 +1796,7 @@ tables:
         hooks: [{phase: P4, must: "the third's hand is a rumour natives repeat, never proven in public"}]
         text: {"name": "the fiend behind the pact"}
       - id: contest_elemental_lord
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "Mortals and the elemental lord"
         family: nonhuman
         prize: disputed_land
@@ -1794,6 +1809,7 @@ tables:
         escalation: ["offerings withheld", "flood and fire", "the binding attempted"]
         text: {"name": "mortals and the elemental lord"}
       - id: contest_relic_pieces
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "The pieces of the relic"
         family: race
         prize: new
@@ -1807,6 +1823,7 @@ tables:
         escalation: ["a piece changes hands", "open raids for the pieces", "two pieces joined"]
         text: {"name": "the pieces of the relic", "prize": "the pieces of the relic"}
       - id: contest_prophecy
+        overrides: [{default: great_gods_floor, to: "one great god per seated religious role"}]   # open point 7 of the P2 tag pass
         label: "The prophecy's two readings"
         family: open_close
         prize: new

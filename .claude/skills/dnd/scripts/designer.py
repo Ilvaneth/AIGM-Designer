@@ -386,8 +386,19 @@ def preroll_p2(R: Roller, m: dict) -> None:
         R.table("wild_shape", "magic.yaml#wild", avoid=False, exclude={"wild_no"})
     else:
         R.forced("wild_shape", "magic.yaml#wild", "wild_no", f"gate {gate.get('notation', 'd6')}={raw} not in {gate.get('on')}")
-    for sub in ("climate", "year_shape", "week", "moon", "start_anchor"):
-        R.table(sub, f"calendar.yaml#{sub}", avoid=(sub == "climate"))
+    # build item 22a: the year is fixed (12 × 28, a seven-day week; docs/p2-tags.md S6), so year_shape and week are
+    # no longer rolled; every calendar table repeats across campaigns. Build item 22b replaces this roller.
+    for sub in ("climate", "moon"):
+        R.table(sub, f"calendar.yaml#{sub}", avoid=False)
+    # the start anchor follows the move's time (S6: each anchor row requires a time row); a birth whose P1 rolled no
+    # move time (a legacy birth) draws it with a plain die, recorded as forced with that reason
+    if any(R.ctx.has(t) for t in ("time_just_now", "time_unfolding", "time_coming", "time_generation_ago")):
+        R.table("start_anchor", "calendar.yaml#start_anchor", avoid=False)
+    else:
+        anchors = dt.rows("calendar.yaml#start_anchor")
+        raw = R.notation("start_anchor.legacy", f"d{len(anchors)}")["raw"]
+        R.forced("start_anchor", "calendar.yaml#start_anchor", anchors[raw - 1]["id"],
+                 "a birth with no move time (a legacy birth): the anchor is drawn plainly (build item 22a)")
     hist = sc["history"]
     ages: list[str] = []
     for n in range(1, R.count("ages_count", hist["ages"]) + 1):

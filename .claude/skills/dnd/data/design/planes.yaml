@@ -13,21 +13,49 @@
 schema_version: 1
 table: planes
 consumed_by: [P2, P6, P8]
-plan: "item 5 (planes), 17 #10, item 18.3"
+plan: "item 5 (planes), 17 #10, item 18.3; build item 22 (docs/p2-tags.md S3, the tag pass)"
+layer: texture             # build item 22a (S0 #1): a touched plane's deviation, rate, way in and cost; the baseline is stage
 roll: {labels: [P2.plane_deviation.<baseline id>, P2.plane_touched.<n>, P2.plane_rate.<n>, P2.plane_way.<n>, P2.plane_cost.<n>], avoid_used: false, note: "deviation is rolled per baseline row the tone or a break flags; touched planes are chosen, then rate / way / cost are rolled per touched plane"}
 rules:
-  touched_count: "scale.yaml planes_touched, plus the magic dial's planes_touched_modifier, never below 1"
+  touched_count: "scale.yaml planes_touched, plus the magic dial's planes_touched_modifier, never below 1; the planes P1 names are seated first and shared to fit the count (one plane at short); the moon takes a seat when it is a place; at epic the threat's home plane takes one free seat (secret)"
+  moon_seat: "when moon_is_a_plane or break_moon_trades holds, the moon is a touched seat of its own: no baseline row, deviation dev_is_this_world, its way in, cost and rate rolled like any touched plane's, its name from the pool"
+  home_of: "a baseline row's `home_of` lists the threat families (antagonists.yaml#villain_family) whose home it is: a family id, or {family, creatures} when the home is per creature, or {family, by: alignment} for a god; a family on no row has no home plane"
+  sets:      # the tag pass's names for groups of baseline rows (22b resolves them)
+    non_material: "every baseline row but baseline_material and baseline_demiplane"
+    inner: [baseline_air, baseline_earth, baseline_fire, baseline_water]
+    upper: "the outer rows of tier upper"
+    lower: "the outer rows of tier lower"
+  plane_fits:     # the tag pass's fits that hold for one touched plane only (22b applies them to that plane's rolls)
+    - {table: time_rate, rows: [rate_slow, rate_fast, rate_stopped, rate_seasonal, rate_bargained], x: 2, when: [ruin_broken_time, scar_time_flow_changed], on: "the ruin's or the scar's plane"}
+  named_planes:   # the tag pass (docs/reports/p2-tags-draft.md §6.1): a P1 row that names a plane draws it among these
+    land_thin_place: {fits: [non_material]}
+    target_thin_place: {fits: [non_material]}
+    ruin_celestial_war: {fits: [upper, lower], one_of_each: true}
+    ruin_elven_withdrawal: {fits: [baseline_fey_echo, baseline_cg], weight: {baseline_fey_echo: 3}}
+    ruin_planar_rift: {fits: [non_material]}
+    ruin_planar_invasion: {fits: [lower, inner]}
+    ruin_devils_bargain: {fits: [baseline_nine_hells]}
+    ruin_demon_gate: {fits: [baseline_ce]}
+    ruin_sleeping_realm: {fits: [baseline_astral, baseline_fey_echo]}
+    ruin_star_kingdom: {fits: [baseline_beyond]}
+    act_merged_with_plane: {fits: [non_material]}
+    scar_plane_thinned: {fits: [non_material]}
+    break_dreams_are_a_place: {fits: [baseline_astral]}
+    break_moon_trades: {fits: [moon]}
+    spine_two_worlds: {fits: [non_material]}
   touched_plane_carries: [way_in, cost, site (a site_ entity with a fixed tier), time_rate, keeper (a power or a creature), what_it_wants_from_visitors]
   untouched: "exists for spells; a local name is optional; no site, no entity unless a break names it"
   primer_line: "one sentence per plane the folk have a word for; the rule that spells follow this cosmology"
   calendar: "time_rate rows give the `--rate` (material minutes per local minute) or `--rate-range` calendar.py takes"
 hooks_common:
   - {phase: P2, must: "the cosmology's Planes section lists the baseline verdict per plane, the touched planes with all six fields, and the primer rule line"}
+  - {phase: P2, must: "an outer plane the campaign touches has a local name and says which god or power holds it; if a break removes one, banishment to its alignment goes elsewhere"}
   - {phase: P8, must: "the primer names only the planes a native has a word for"}
 
 tables:
 
   baseline:
+    layer: stage            # build item 22a (S0 #1): the planes P1 names are where the story happens
     note: "the SRD appendix; `srd` says what the appendix itself provides; `alignment` on Outer Plane rows follows the appendix's sixteen-by-alignment rule; ids are table rows, not registry ids"
     rows:
       - id: baseline_material
@@ -56,6 +84,7 @@ tables:
         group: inner
         srd: "one of the four Elemental Planes ringing the Material Plane"
         spells: [conjure elemental, plane shift, gate]
+        home_of: [{family: family_genie_elemental, creatures: [djinni, air-elemental]}]
         hooks:
           - {phase: P2, must: "if touched, a vortex portal on a height is its way in (the SRD's portal rule)"}
       - id: baseline_earth
@@ -63,7 +92,8 @@ tables:
         group: inner
         srd: "one of the four Elemental Planes; solid earth at its pure extent"
         spells: [conjure elemental, plane shift, gate]
-        touch_bias: [era_underground]
+        home_of: [{family: family_genie_elemental, creatures: [earth-elemental]}]
+        weight_by: [{when: {dial: {era: [underground]}}, x: 2}]   # a free touched seat (the tag pass's fit)
         hooks:
           - {phase: P2, must: "if touched, a mine or a cave is its vortex"}
       - id: baseline_fire
@@ -71,7 +101,7 @@ tables:
         group: inner
         srd: "one of the four Elemental Planes; the efreeti's home city is the appendix's example bargain"
         spells: [conjure elemental, plane shift, gate]
-        touch_bias: [tone_shadowed]
+        home_of: [{family: family_genie_elemental, creatures: [efreeti, fire-elemental]}]
         hooks:
           - {phase: P2, must: "if touched, the heart of a volcano or a great kiln is its vortex"}
       - id: baseline_water
@@ -79,7 +109,8 @@ tables:
         group: inner
         srd: "one of the four Elemental Planes; the depths of the ocean lead to it"
         spells: [conjure elemental, plane shift, gate]
-        touch_bias: [era_nautical]
+        home_of: [{family: family_genie_elemental, creatures: [water-elemental]}]
+        weight_by: [{when: {dial: {era: [nautical]}}, x: 2}]
         hooks:
           - {phase: P2, must: "if touched, the deep sea is its vortex; a coastal culture has a name for it"}
       - id: baseline_chaos
@@ -97,8 +128,7 @@ tables:
         shape: "a mountain of ascending terraces; the lawful good dead climb it"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_lg_ng
         label: "The Lawful-Neutral Good Plane (the Twin Lands)"
         group: outer
@@ -107,8 +137,7 @@ tables:
         shape: "two lands facing each other across a sky; industry and peace"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_elysium
         label: "The Neutral Good Plane (the Blessed Meadows)"
         group: outer
@@ -117,8 +146,7 @@ tables:
         shape: "a neutral good Upper Plane; the appendix's example of alignment dissonance"
         srd: "the SRD appendix names this plane (Elysium, its example of alignment dissonance); the name is real-world mythology and is not used here (errata 24.2 #19)"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_ng_cg
         label: "The Neutral-Chaotic Good Plane (the Beast Wilds)"
         group: outer
@@ -127,8 +155,7 @@ tables:
         shape: "an endless wilderness where every animal is a lord"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_cg
         label: "The Chaotic Good Plane (the Revels)"
         group: outer
@@ -137,8 +164,7 @@ tables:
         shape: "forests and halls of unending feast and song"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_cg_cn
         label: "The Chaotic Good-Neutral Plane (the Fields of Contest)"
         group: outer
@@ -147,8 +173,7 @@ tables:
         shape: "floating lands of endless battle where the fallen rise at dusk"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_cn
         label: "The Chaotic Neutral Plane (the Formless Sea)"
         group: outer
@@ -157,8 +182,7 @@ tables:
         shape: "raw possibility; matter obeys whoever wills hardest"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [{family: family_god, by: alignment}]
       - id: baseline_cn_ce
         label: "The Chaotic Neutral-Evil Plane (the Howling Caverns)"
         group: outer
@@ -167,8 +191,7 @@ tables:
         shape: "tunnels of wind that drives visitors mad"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [{family: family_deceiver_fiend, creatures: [succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_ce
         label: "The Chaotic Evil Plane (the Bottomless Pits)"
         group: outer
@@ -177,8 +200,7 @@ tables:
         shape: "layers without end, each a demon lord's country"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_demon, {family: family_deceiver_fiend, creatures: [succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_ce_ne
         label: "The Chaotic-Neutral Evil Plane (the Prison Orbs)"
         group: outer
@@ -187,8 +209,7 @@ tables:
         shape: "nested spheres of prison; nothing that enters is meant to leave"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [{family: family_deceiver_fiend, creatures: [succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_hades
         label: "The Neutral Evil Plane (the Grey Country)"
         group: outer
@@ -197,8 +218,7 @@ tables:
         shape: "an Outer Plane named by the appendix; the grey country of the hopeless dead"
         srd: "the SRD appendix names this plane (Hades); the name is real-world mythology and is not used here (errata 24.2 #19)"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [{family: family_deceiver_fiend, creatures: [night-hag, succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_ne_le
         label: "The Neutral-Lawful Evil Plane (the Furnace Mountains)"
         group: outer
@@ -207,8 +227,7 @@ tables:
         shape: "volcanic slopes where everything is for sale"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [{family: family_deceiver_fiend, creatures: [succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_nine_hells
         label: "The Nine Hells"
         group: outer
@@ -217,8 +236,7 @@ tables:
         shape: "an Outer Plane of nine layers; the appendix's example of distance meaning nothing"
         srd: "named in the SRD appendix"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_devil, {family: family_deceiver_fiend, creatures: [rakshasa, succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_le_ln
         label: "The Lawful Evil-Neutral Plane (the Colliding Iron)"
         group: outer
@@ -227,8 +245,7 @@ tables:
         shape: "iron cubes grinding against each other, armies on every face"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [{family: family_deceiver_fiend, creatures: [succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_ln
         label: "The Lawful Neutral Plane (the Plane of Gears)"
         group: outer
@@ -237,8 +254,7 @@ tables:
         shape: "a machine the size of a world; law without mercy or malice"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [{family: family_god, by: alignment}]
       - id: baseline_ln_lg
         label: "The Lawful Neutral-Good Plane (the Ordered Orchards)"
         group: outer
@@ -247,8 +263,7 @@ tables:
         shape: "fields in perfect rows; the harvest is a law"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
-        hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+        home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_hub
         label: "The True Neutral Plane (the Hub)"
         group: outer
@@ -257,8 +272,31 @@ tables:
         shape: "a plane between the sixteen, if this world has one; the appendix's sixteen exclude neutrality"
         srd: "the SRD names sixteen Outer Planes by alignment and describes them only as a group; this one is described here, never named, so the campaign names it"
         spells: [plane shift, gate, banishment]
+        home_of: [{family: family_god, by: alignment}]
+      - id: baseline_fey_echo
+        label: "The Fey Echo (the Bright Echo)"
+        group: echo
+        srd: "the SRD 5.1's spells name the plane the fey are sent to (dispel evil and good, forbiddance); this table describes it under its own label (S3): the bright echo of the world, of archfey, hags and fey courts, where the elves withdrew"
+        spells: [dispel evil and good, forbiddance, plane shift]
+        home_of: [family_hag_fey]
         hooks:
-          - {phase: P2, must: "if it exists here, the cosmology gives it a local name and says which god or power holds it; if removed, banishment to this alignment goes elsewhere"}
+          - {phase: P2, must: "if touched, its courts and its bargains are its face; a promise made there binds"}
+      - id: baseline_shadow_echo
+        label: "The Shadow Echo (the Dark Echo)"
+        group: echo
+        srd: "the SRD 5.1's spells name the plane the undead are sent to (dispel evil and good, forbiddance, creation); this table describes it under its own label (S3): the dark echo of the world, of shadows and the undead's road"
+        spells: [dispel evil and good, forbiddance, creation, plane shift]
+        home_of: [family_undead]
+        hooks:
+          - {phase: P2, must: "if touched, its grey roads are the undead's way in and out of the world"}
+      - id: baseline_beyond
+        label: "The Realm Beyond"
+        group: beyond
+        srd: "no SRD 5.1 text names it; the realm outside the planes the gods keep, whence the threat family from beyond comes (S3)"
+        spells: []
+        home_of: [family_from_beyond]
+        hooks:
+          - {phase: P2, must: "if touched, no god holds it; what comes from it obeys no plane's law"}
       - id: baseline_demiplane
         label: Demiplanes
         group: demiplane
@@ -268,7 +306,7 @@ tables:
           - {phase: P6, must: "a demiplane touched by the campaign is a site with one entrance and a stamped minimum depth"}
 
   deviation:
-    notation: d8
+    notation: d7
     rows:
       - id: dev_unchanged
         label: Unchanged
@@ -299,19 +337,14 @@ tables:
           - {phase: P2, must: "the inversion is public or discoverable, never secret: a trope break or a signature carries it"}
       - id: dev_is_this_world
         label: Is a place in this world
-        rule: "the plane is a region, a depth or a moon of the Material Plane (secret_planes_are_one's public form)"
+        rule: "the plane is a region, a depth or a moon of the Material Plane"
         hooks:
           - {phase: P3, must: "the place is a map node or an off-graph inset"}
-      - id: dev_secret_holds
-        label: The big secret's home
-        rule: "the plane exists and is where the secret's Act 3 clue is"
-        hooks:
-          - {phase: P6, must: "the plane is touched; its site is the Act 3 clue site"}
       - id: dev_reachable_by_death
         label: Reachable by dying
         rule: "the plane is where the dead go and the living can follow, at a cost"
         hooks:
-          - {phase: P2, must: "the cost row is cost_the_way_back or cost_years; the afterlife's truth is discoverable"}
+          - {phase: P2, must: "the cost row is cost_the_way_back or cost_years (the roller narrows this plane's cost); the afterlife's truth is discoverable"}
 
   time_rate:
     notation: d6
@@ -332,7 +365,7 @@ tables:
         label: Fast (an hour there is a day here)
         rate: 24
         hooks:
-          - {phase: P7, must: "the doom clock is the danger of entering; the primer's folklore knows people who came back old"}
+          - {phase: P8, must: "the fast rate is the price of entering: days pass outside; the primer's folklore knows people who came back old"}
       - id: rate_stopped
         label: Stopped
         rate: 0
@@ -362,7 +395,7 @@ tables:
         label: A rite on a date
         rule: "the way opens for a rite performed on a calendar date"
         hooks:
-          - {phase: P2, must: "the date is a festival or the dead days"}
+          - {phase: P2, must: "the date is a festival"}
       - id: way_death
         label: Death or near death
         rule: "the dying cross; the nearly dead glimpse"
@@ -371,6 +404,7 @@ tables:
       - id: way_dream
         label: Dream
         rule: "sleepers cross; the Astral is the road"
+        weight_by: [{when: {any_of: [break_dreams_are_a_place]}, x: 2}]   # the tag pass's fit
         hooks:
           - {phase: P2, must: "the magic system's dream rule and the Astral deviation agree"}
       - id: way_tide
@@ -381,13 +415,11 @@ tables:
       - id: way_mirror
         label: A mirror or a reflection
         rule: "still water, a polished shield, a mirror kept shrouded"
-        hooks:
-          - {phase: P1, must: "rule_mirror_doors, if rolled, is this way"}
+        weight_by: [{when: {any_of: [rule_mirror_doors]}, x: 3}]   # the tag pass: in place of its P1 hook
       - id: way_phenomenon
         label: Through the signature phenomenon
         rule: "the phenomenon at full strength is the door"
-        hooks:
-          - {phase: P1, must: "the phenomenon's rule states the door"}
+        requires: {any_of: [rule_mirror_doors, rule_shifting_doors]}   # the tag pass R6
       - id: way_guide
         label: A guide creature
         rule: "a creature (a power, a beast, a psychopomp) takes those it chooses"
@@ -407,8 +439,7 @@ tables:
           - {phase: P5, must: "a Known Fact is what the crossing takes"}
       - id: cost_name
         label: A name
-        hooks:
-          - {phase: P1, must: "naming.json's rite of naming can restore it, at a price"}
+        rule: "the traveller's true name is taken; they answer to no other"
       - id: cost_sense
         label: A sense or a part of the body
         hooks:

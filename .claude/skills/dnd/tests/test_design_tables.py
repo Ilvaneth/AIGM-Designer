@@ -293,7 +293,7 @@ class Floors(unittest.TestCase):
     def test_pantheon_types_presence_and_the_srd_domains(self):
         self.assertEqual([r["id"] for r in dt.rows("pantheon.yaml#type")],
                          ["pantheon_polytheist", "pantheon_dualist", "pantheon_dead_gods", "pantheon_silent_gods",
-                          "pantheon_ancestor_gods"])
+                          "pantheon_ancestor_gods", "pantheon_animist"])       # build item 22a: animism (S1)
         self.assertGreaterEqual(len(dt.rows("pantheon.yaml#presence")), 5)
         domains = [r["label"] for r in dt.rows("pantheon.yaml#domain_scaffold")]
         self.assertEqual(domains, ["Knowledge", "Life", "Light", "Nature", "Tempest", "Trickery", "War", "Death"])
@@ -302,9 +302,11 @@ class Floors(unittest.TestCase):
         self.assertGreaterEqual(len(dt.rows("pantheon.yaml#church_archetype")), 8)
         self.assertGreaterEqual(len(dt.rows("pantheon.yaml#relationship")), 8)
         secrets = dt.rows("pantheon.yaml#god_secret")
-        self.assertGreaterEqual(len(secrets), 8)
+        # build item 22a (S2): the five discoverable rows alone, as texture
+        self.assertEqual([r["id"] for r in secrets], ["godsecret_was_mortal", "godsecret_lying_about_domain", "godsecret_fading",
+                                                      "godsecret_is_new", "godsecret_not_silent"])
         for r in secrets:
-            self.assertIn(r["tier"], ("discoverable", "secret"), r["id"])
+            self.assertEqual(r["tier"], "discoverable", r["id"])
         # every scaffold row points at real festival and god-secret rows
         fest = {r["id"] for r in dt.rows("calendar.yaml#festival_type")}
         god_secret_ids = {r["id"] for r in secrets}
@@ -323,7 +325,7 @@ class Floors(unittest.TestCase):
         self.assertIn("Elysium", by_id["baseline_elysium"]["srd"])   # the SRD name stays a note, never a label
         self.assertIn("Hades", by_id["baseline_hades"]["srd"])
         for r in base:
-            self.assertIn(r["group"], ("material", "transitive", "inner", "outer", "demiplane"), r["id"])
+            self.assertIn(r["group"], ("material", "transitive", "inner", "outer", "demiplane", "echo", "beyond"), r["id"])
             self.assertTrue(r["srd"], r["id"])
         # the sixteen Outer Planes by alignment (the SRD's rule), plus the neutral hub
         outer = [r for r in base if r["group"] == "outer"]
@@ -367,7 +369,7 @@ class Floors(unittest.TestCase):
                 self.assertNotIn(val.split()[0], banned, (name, sub, r["id"]))
 
     def test_magic_tables_and_the_wild_gate(self):
-        for sub, floor in (("source", 10), ("constraint", 8), ("visibility", 5), ("taboo", 10), ("regulator", 8), ("wild", 6)):
+        for sub, floor in (("source", 10), ("constraint", 5), ("visibility", 5), ("taboo", 10), ("regulator", 8), ("wild", 6)):
             self.assertGreaterEqual(len(dt.rows(f"magic.yaml#{sub}")), floor, sub)
         self.assertEqual(dt.rows("magic.yaml#wild")[0]["id"], "wild_no")
         for r in dt.rows("dials.yaml#magic"):
@@ -376,17 +378,19 @@ class Floors(unittest.TestCase):
             self.assertTrue(set(gate["on"]) <= {1, 2, 3, 4, 5, 6}, r["id"])
 
     def test_history_tables(self):
-        for sub, floor in (("age_template", 12), ("event_type", 14), ("divergence", 10), ("memory", 6)):
+        for sub, floor in (("age_template", 12), ("event_type", 14), ("divergence", 9), ("memory", 6)):
             self.assertGreaterEqual(len(dt.rows(f"history.yaml#{sub}")), floor, sub)
         for r in dt.rows("history.yaml#divergence"):
-            self.assertIn(r["tier"], ("public", "discoverable", "secret"), r["id"])
+            self.assertIn(r["tier"], ("public", "discoverable"), r["id"])     # build item 22a (S5): no secret tier
         self.assertEqual(dt.rows("history.yaml#divergence")[0]["id"], "div_none")
         self.assertGreaterEqual(dt.rows("history.yaml#divergence")[0]["weight"], 3)
 
-    def test_calendar_months_are_thirty_days_and_climates_have_seasons(self):
-        doc = dt.load("calendar.yaml")
-        self.assertEqual(doc["rules"]["month_length"], 30)
-        self.assertIn("--month-length 30", doc["rules"]["init_call"])
+    def test_calendar_months_are_twenty_eight_days_and_climates_have_seasons(self):
+        doc = dt.load("calendar.yaml")         # build item 22a (S6): the year is fixed, 12 × 28 with a seven-day week
+        self.assertEqual((doc["rules"]["month_length"], doc["rules"]["months"], doc["rules"]["week_days"]), (28, 12, 7))
+        self.assertIn("--month-length 28", doc["rules"]["init_call"])
+        self.assertNotIn("year_shape", doc["tables"])
+        self.assertNotIn("week", doc["tables"])
         climates = dt.rows("calendar.yaml#climate")
         self.assertGreaterEqual(len(climates), 6)
         for c in climates:
@@ -394,14 +398,11 @@ class Floors(unittest.TestCase):
             for s in c["seasons"]:
                 self.assertEqual(set(s["tone"]), {"temperature", "sky", "smell", "sound"}, c["id"])
             self.assertTrue(c["hazards"], c["id"])
-        for y in dt.rows("calendar.yaml#year_shape"):
-            self.assertEqual(y["year_days"], y["months"] * 30 + y["intercalary_days"], y["id"])
         self.assertGreaterEqual(len(dt.rows("calendar.yaml#festival_type")), 14)
         domains = set(dt.load("pantheon.yaml")["rules"]["domains"])
         for f in dt.rows("calendar.yaml#festival_type"):
             self.assertTrue(set(f["domain_affinity"]) <= domains, f["id"])
         self.assertGreaterEqual(len(dt.rows("calendar.yaml#moon")), 6)
-        self.assertGreaterEqual(len(dt.rows("calendar.yaml#week")), 3)
         self.assertGreaterEqual(len(dt.rows("calendar.yaml#start_anchor")), 5)
 
     # --- batch C: lands ---------------------------------------------------------

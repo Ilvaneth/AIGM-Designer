@@ -175,6 +175,7 @@ rows:
       - {phase: P2, must: "every god has a mortal biography in the history; rank is earned; one candidate is pending"}
       - {phase: P4, must: "a religious faction's endgame is raising its founder"}
   - id: break_moon_trades
+    overrides: [{"default": "moon", "to": "moon_is_a_plane"}]   # the P2 tag pass §3.2
     layer: story                   # a world state: it joins a story piece (build item 18b)
     label: "The moon is inhabited and trades"
     family: gods
@@ -199,6 +200,7 @@ rows:
       - {phase: P6, must: "a site's holy ground changes what a cleric can do there"}
       - {phase: P8, must: "the player files and character creation state it"}
   - id: break_god_name_forbidden
+    overrides: [{"default": "great_gods_floor", "to": "the unnamed god counts among the great gods"}]   # open point 7
     label: "Naming one of the gods is forbidden"
     family: gods
     statement: "One god's name may not be spoken; its priests hide, and whoever knows the name is dangerous."
@@ -211,12 +213,13 @@ rows:
       - {phase: P5, must: "an NPC knows the name"}
       - {phase: P8, must: "the player files and character creation state it"}
   - id: break_gods_among_mortals
+    claims: {gods: among_mortals}      # the P2 tag pass (D4, D5)
     layer: story
     weight: 3                      # a classic world state, drawn only where a public join holds (the 18c-2 answer)                   # a world state: it joins a story piece (build item 18b)
     label: "The gods live among mortals"
     family: gods
     statement: "The gods live among mortals; each keeps a house, and one may knock at its door."
-    overrides: [{"default": "great_gods_floor", "to": 1}, {"default": "pantheon_type", "to": "the silent-gods and dead-gods types leave the pool"}]
+    overrides: [{"default": "great_gods_floor", "to": 1}, {"default": "pantheon_type", "to": "the silent-gods and dead-gods types leave the pool"}, {"default": "pantheon_presence", "to": "presence_walking"}]
     weight_by: [{"when": {"any_of": ["ruin_dead_god", "ruin_gods_quarrel", "ruin_departed_god", "ruin_imprisoned_god", "ruin_failed_apotheosis"]}, "x": 2}]
     text: {"name": "the gods live among mortals; each has a house, and one knocks at its door", "at_table": "the party can speak with a god face to face"}
     joins:
@@ -399,6 +402,7 @@ rows:
       - {phase: P8, must: "the primer says which tongue is spoken where"}
       - {phase: P8, must: "the player files and character creation state it"}
   - id: break_casting_forbidden
+    claims: {casting: forbidden}       # the P2 tag pass (D6)
     label: "Casting is forbidden"
     family: knowledge
     statement: "Casting a spell is a crime; those who can cast hide it."

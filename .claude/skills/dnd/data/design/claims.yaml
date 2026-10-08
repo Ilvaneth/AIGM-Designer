@@ -23,8 +23,13 @@ topics:
   nobility: {label: "the nobility", values: [exists, none]}
   below_ground: {label: "below ground", values: [lived_in]}
   writing: {label: "writing", values: [printed]}
-  magic: {label: "how plentiful magic is", values: [scarce, middling, plentiful, faded]}
+  magic: {label: "how plentiful magic is", values: [scarce, middling, plentiful, faded, running_out]}
   war: {label: "how war is fought", values: [by_armies, by_champions]}
+  # build item 22a (the P2 tag pass, docs/reports/p2-tags-draft.md §1.1; the owner's rulings in docs/p2-tags.md)
+  gods: {label: "what the gods are now", values: [answering, dead, silent, among_mortals, spirits]}
+  gods_shown: {label: "how the gods show themselves", values: [never, omens, ordained, at_places, walking, through_phenomenon]}
+  casting: {label: "whether casting is allowed", values: [forbidden, licensed, by_caste, free]}
+  moon: {label: "the moon", values: [none, unseen, one, two, place, face, tidal]}
 
 # pair by pair; `rule=throne` clashes with neither by_lot nor dragon_sovereign
 clashes:
@@ -35,6 +40,14 @@ clashes:
   - ["rule=throne", "rule=guild_council"]
   - ["magic=plentiful", "magic=faded"]
   - ["war=by_armies", "war=by_champions"]
+  # build item 22a: the P2 tag pass's pairs between two claims (D1-D6, and C5 for the silent gods)
+  - ["gods=dead", "gods_shown=walking"]
+  - ["gods=silent", "gods_shown=omens"]
+  - ["gods=silent", "gods_shown=walking"]
+  - ["gods=among_mortals", "gods=dead"]
+  - ["gods=among_mortals", "gods=silent"]
+  - ["casting=forbidden", "casting=free"]
+  - ["gods=silent", "gods_shown=through_phenomenon"]
 
 # tokens that are no claim: the layout sets them (design_foundation.py)
 tokens:
@@ -84,6 +97,12 @@ defaults:
   regulator_identity: {phase: P2, what: "who the magic regulator is (magic.yaml#regulator)"}
   pantheon_type: {phase: P2, what: "the pantheon type (pantheon.yaml#type)"}
   great_gods_floor: {phase: P2, what: "the lower bound of the great gods (scale.yaml great_gods)"}
+  # build item 22a (the P2 tag pass §3.2)
+  pantheon_presence: {phase: P2, what: "how the gods show themselves (pantheon.yaml#presence)"}
+  moon: {phase: P2, what: "the moon (calendar.yaml#moon)"}
+  festivals: {phase: P2, what: "the festivals: one per greater god and one or two folk festivals (calendar.yaml rules.festivals)"}
+  great_gods_count: {phase: P2, what: "how many great gods there are (scale.yaml great_gods)"}
+  greater_gods_count: {phase: P2, what: "how many greater gods there are (pantheon.yaml#rank shares)"}
   era_equipment: {phase: P3, what: "the era's equipment rule (srd_equipment)"}
   seat_of_rule_anchor: {phase: P3, what: "the era's 'seat of rule' anchor"}
   travel_danger: {phase: P3, what: "the travel tables' danger default"}
@@ -99,9 +118,14 @@ defaults:
   weekly_volatility: {phase: slice2, what: "the weekly volatility budget"}
   lineage_palette_weights: {phase: P1, what: "the lineage roll's palette weights (item 10)"}
 
-# how two overrides of one default stand together: [{default, rows: [a, b], combine: "one line"}]
+# how two overrides of one default stand together: [{default, rows: [a, b], combine: "one line"}];
+# `any_two: true` makes one line hold for any two or more of its rows (build item 22a)
 combines:
   - {default: regulator_identity, rows: [break_magic_is_nobility, contest_casters_casterless], combine: "the contest's side a is the nobility; one regulator"}
   - {default: regulator_identity, rows: [break_casting_forbidden, contest_casters_casterless], combine: "the contest's side a is the ban's licensed exception and its enforcer; one regulator"}
   - {default: regulator_strictness, rows: [break_casting_forbidden, contest_casters_casterless], combine: "the ban's strictest rule holds; side a enforces it"}
   - {default: site_attitude_pool, rows: [break_monsters_have_treaties, break_dungeons_inhabited], combine: "the treaty people's lairs are negotiate; every other site's pool loses kill and ignore"}
+  # build item 22a (open point 7): the great gods' raisers stand together. A line with `any_two: true` holds for
+  # whichever two or more of its rows are rolled together (the ledger makes them one promise)
+  - {default: great_gods_floor, any_two: true, rows: [break_gods_among_mortals, break_god_name_forbidden, contest_one_pasture, contest_one_shrine, contest_old_gods_new_faith, contest_lords_peasants, contest_casters_casterless, contest_sealed_remnant, contest_open_close_gate, contest_empty_throne, contest_two_branches, contest_order_schism, contest_humans_dragon, contest_humans_fey, contest_living_dead, contest_elemental_lord, contest_relic_pieces, contest_prophecy],
+     combine: "the floor is the count of distinct great gods the rows name: one per seated religious role, at least one among mortals, the unnamed god one of them; under the dualist pantheon its two great gods carry them"}

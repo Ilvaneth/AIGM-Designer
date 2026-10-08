@@ -328,7 +328,9 @@ def override_promises(rows: list[tuple], add) -> None:
     combined: set = set()
     for c in claims.get("combines") or []:
         both = [x for x in overrides if x[3]["default"] == c["default"] and x[0]["id"] in c["rows"]]
-        if {x[0]["id"] for x in both} == set(c["rows"]):
+        ids = {x[0]["id"] for x in both}
+        # build item 22a: an `any_two` line holds for whichever two or more of its rows were rolled
+        if ids == set(c["rows"]) or (c.get("any_two") and len(ids) >= 2):
             d = defaults[c["default"]]
             for row, phase, hidden, o in both:
                 combined.add((row["id"], c["default"]))

@@ -342,7 +342,9 @@ REVIEWED_TABLES = ("dials.yaml", "scale.yaml", "foundation.yaml", "trope-breaks.
                    "antagonists.yaml#weakness", "antagonists.yaml#lair_form", "antagonists.yaml#lair_where",
                    "antagonists.yaml#mask",     # build item 19b
                    # build item 11: the part bags; the lexicon, the patterns and the word lists are stamped by naming_stamps()
-                   "naming.yaml#family")
+                   "naming.yaml#family",
+                   # build item 22a: the P2 tables (the owner's review of 2026-10-08, docs/p2-tags.md)
+                   "pantheon.yaml", "planes.yaml", "magic.yaml", "history.yaml", "calendar.yaml")
 
 
 def reviewed_path() -> Path:

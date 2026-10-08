@@ -472,19 +472,20 @@ class UsedRows(Base):
         m = self.c.json("design/design.json")
         self.assertEqual(designer.record_used(self.c.name, "P2"), 0, "the micro fixture records nothing")
         m["_meta"]["fixture"] = False
-        m["dice_log"].append({"phase": "P2", "table": "pantheon.yaml#presence", "label": "presence", "row_id": "presence_walking"})
+        # build item 22a: the presence repeats across campaigns now (rule 8); the magic source still does not
+        m["dice_log"].append({"phase": "P2", "table": "magic.yaml#source", "label": "magic_source", "row_id": "source_the_planes"})
         self.c.write_json("design/design.json", m)
         log = self.c.json("design/dm-only/dice-log.json") if self.c.path("design/dm-only/dice-log.json").is_file() else {"rolls": []}
         log["rolls"].append({"phase": "P2", "table": secret_ref, "label": "secret.kind", "row_id": secret_row})
         self.c.write_json("design/dm-only/dice-log.json", log)
         self.assertGreaterEqual(designer.record_used(self.c.name, "P2"), 2, "the fixture's own P2 rolls come along")
         mine = json.loads(self.tmp.read_text(encoding="utf-8"))["campaigns"][self.c.name]
-        self.assertIn("presence_walking", mine["pantheon.yaml#presence"])
+        self.assertIn("source_the_planes", mine["magic.yaml#source"])
         self.assertNotIn(secret_row, json.dumps(mine), "the secret row id never reaches used.json in clear")
         self.assertTrue(mine[secret_ref][0].startswith("h:"), "a secret row is kept as a hash")
-        self.assertIn("presence_walking", self.dd.rows_used_elsewhere("_test-next", "pantheon.yaml#presence"))
+        self.assertIn("source_the_planes", self.dd.rows_used_elsewhere("_test-next", "magic.yaml#source"))
         self.assertIn(secret_row, self.dd.rows_used_elsewhere("_test-next", secret_ref), "the hash still excludes the row")
-        self.assertEqual(self.dd.rows_used_elsewhere("real-campaign", "pantheon.yaml#presence"), set(),
+        self.assertEqual(self.dd.rows_used_elsewhere("real-campaign", "magic.yaml#source"), set(),
                          "a real campaign is never narrowed by a test birth")
 
 

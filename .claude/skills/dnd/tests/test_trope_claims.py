@@ -55,7 +55,9 @@ class Rows(unittest.TestCase):
                          {"break_rule_by_lottery": {"rule": "by_lot"},
                           "break_no_kings_only_guilds": {"nobility": "none", "rule": "guild_council"},
                           "break_war_is_ritual": {"war": "by_champions"}, "break_magic_is_nobility": {"nobility": "exists"},
-                          "break_dragons_rule": {"rule": "dragon_sovereign"}, "break_magic_sold": {"magic": "plentiful"}})
+                          "break_dragons_rule": {"rule": "dragon_sovereign"}, "break_magic_sold": {"magic": "plentiful"},
+                          # build item 22a: the P2 tag pass's claims on two breaks
+                          "break_gods_among_mortals": {"gods": "among_mortals"}, "break_casting_forbidden": {"casting": "forbidden"}})
 
     def test_the_further_clashes_and_requirements(self):
         self.assertEqual({k: r["conflicts_with"] for k, r in BREAKS.items() if r.get("conflicts_with")},
@@ -80,7 +82,10 @@ class Rows(unittest.TestCase):
             "break_magic_is_nobility": ["regulator_identity", "caster_share", "primer_public_casting"],
             "break_dragons_rule": ["state_leader"], "break_monsters_have_treaties": ["site_attitude_pool"],
             "break_lineage_homes_inverted": ["lineage_palette_weights"], "break_gods_are_ancestors_known": ["pantheon_type"],
-            "break_gods_among_mortals": ["great_gods_floor", "pantheon_type"], "break_cities_dangerous": ["travel_danger"],
+            # build item 22a: the P2 tag pass adds the presence, the moon and the unnamed god's floor
+            "break_gods_among_mortals": ["great_gods_floor", "pantheon_type", "pantheon_presence"],
+            "break_moon_trades": ["moon"], "break_god_name_forbidden": ["great_gods_floor"],
+            "break_cities_dangerous": ["travel_danger"],
             "break_dungeons_inhabited": ["site_attitude_pool"], "break_the_enemy_won": ["state_identity"],
             "break_dead_month": ["weekly_volatility"], "break_iron_is_sacred": ["era_equipment"],
             "break_maps_are_illegal": ["player_map"], "break_no_writing": ["loot_writing"],

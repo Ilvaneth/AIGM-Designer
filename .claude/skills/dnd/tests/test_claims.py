@@ -57,12 +57,17 @@ def known_token(tok: str) -> bool:
 
 class Registry(unittest.TestCase):
 
-    def test_six_topics_and_seven_clash_pairs(self):
+    def test_ten_topics_and_fourteen_clash_pairs(self):
         self.assertEqual({t: v["values"] for t, v in TOPICS.items()},
                          {"rule": ["hereditary", "throne", "by_lot", "guild_council", "dragon_sovereign"],
                           "nobility": ["exists", "none"], "below_ground": ["lived_in"], "writing": ["printed"],
-                          "magic": ["scarce", "middling", "plentiful", "faded"], "war": ["by_armies", "by_champions"]})
-        self.assertEqual(len(REG["clashes"]), 7)
+                          "magic": ["scarce", "middling", "plentiful", "faded", "running_out"], "war": ["by_armies", "by_champions"],
+                          # build item 22a: the P2 tag pass's topics
+                          "gods": ["answering", "dead", "silent", "among_mortals", "spirits"],
+                          "gods_shown": ["never", "omens", "ordained", "at_places", "walking", "through_phenomenon"],
+                          "casting": ["forbidden", "licensed", "by_caste", "free"],
+                          "moon": ["none", "unseen", "one", "two", "place", "face", "tidal"]})
+        self.assertEqual(len(REG["clashes"]), 14)
         for a, b in REG["clashes"]:
             self.assertTrue(known_token(dt.CLAIM + a) and known_token(dt.CLAIM + b), (a, b))
 
@@ -95,7 +100,7 @@ class Registry(unittest.TestCase):
         self.assertEqual(dt.clashing_tokens({"magic": "middling"}), set())
 
     def test_the_overridable_defaults(self):
-        self.assertEqual(len(REG["defaults"]), 24)
+        self.assertEqual(len(REG["defaults"]), 29)      # build item 22a: five P2 defaults
         for did, d in REG["defaults"].items():
             self.assertTrue(d["phase"] and d["what"], did)
 
@@ -328,6 +333,9 @@ class Overrides(unittest.TestCase):
 
     def test_two_overrides_of_one_default_carry_a_combine_line(self):
         written = {(c["default"], frozenset(c["rows"])) for c in REG.get("combines") or [] if c.get("combine")}
+        # build item 22a: an `any_two` line holds for every pair of its rows
+        written |= {(c["default"], frozenset(pair)) for c in REG.get("combines") or [] if c.get("any_two")
+                    for pair in itertools.combinations(c["rows"], 2)}
         for default, users in self.rows_overriding().items():
             for a, b in itertools.combinations(users, 2):
                 if self.together(a, b):

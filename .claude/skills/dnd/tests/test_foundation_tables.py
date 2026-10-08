@@ -592,7 +592,8 @@ class TagReview(unittest.TestCase):
                          {("contest_surface_deep", "b"): weigh, ("contest_mine_owners_miners", "fourth"): weigh})
         self.assertEqual(by["contest_two_branches"]["roles"]["a"]["text"], "the branch that counts the old collapse a punishment")
         self.assertEqual(by["contest_two_branches"]["roles"]["b"]["text"], "the branch that counts it an opportunity")
-        self.assertEqual([o["default"] for o in by["contest_casters_casterless"]["overrides"]], ["regulator_identity", "regulator_strictness"])
+        self.assertEqual([o["default"] for o in by["contest_casters_casterless"]["overrides"]],
+                         ["regulator_identity", "regulator_strictness", "great_gods_floor"])     # build item 22a: its religious role
 
     def test_the_break_rows(self):
         times = {r["id"]: r for r in dt.rows("foundation.yaml#time")}

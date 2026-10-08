@@ -208,7 +208,7 @@ tables:
     note: "what a cult believes. The table's own rule, not a cliché rule (build item 16a): `unspecified` never enters a pool, because a rolled doctrine must state a belief for P4 to build on; the row stays so the validator can name it"
     rows:
       - {id: cultdoc_world_reborn, value: world_reborn, label: The world must end to be reborn, hooks: [{phase: P4, must: "the ending it wants is one of the arc's endings"}]}
-      - {id: cultdoc_god_imprisoned, value: god_imprisoned, label: Our god is imprisoned and we will free it, hooks: [{phase: P2, must: "godsecret_bound or the pantheon's silence"}]}
+      - {id: cultdoc_god_imprisoned, value: god_imprisoned, label: Our god is imprisoned and we will free it, hooks: [{phase: P2, must: "the pantheon's silence or an imprisoned god gives the belief its ground"}]}
       - {id: cultdoc_dead_deserve_voice, value: dead_deserve_voice, label: The dead deserve a voice, hooks: [{phase: P2, must: "funerary custom denies it"}]}
       - {id: cultdoc_law_is_enemy, value: law_is_enemy, label: The law is the enemy of the living, hooks: [{phase: P4, must: "the state's law level is ≥ 4"}]}
       - {id: cultdoc_phenomenon_is_gift, value: phenomenon_is_gift, label: The phenomenon is a gift the regulator hoards, hooks: [{phase: P1, must: "the regulator is another faction"}]}

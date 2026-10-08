@@ -6,14 +6,16 @@
 schema_version: 1
 table: history
 consumed_by: [P2, P4, P5, P7, P8]
-plan: "item 5 (history), 17 #12, item 8.6"
-roll: {labels: [P2.age.<n>, P2.event.<n>, P2.divergence.<n>], avoid_used: true, note: "ages and event types are rolled per slot; divergence is rolled per dated event, weight 3 on none"}
+plan: "item 5 (history), 17 #12, item 8.6; build item 22 (docs/p2-tags.md S5, the tag pass)"
+layer: texture             # build item 22a (S0 #1): the seated events (the move, the villain's origin, the ruin's age) are story records
+roll: {labels: [P2.age.<n>, P2.event.<n>, P2.divergence.<n>], avoid_used: true, note: "the ages between the first and the present avoid other campaigns' rows; event types, divergences and memories repeat (rule 8: their sub-tables say so)"}
 rules:
-  ages: "scale.yaml history.ages; the last age is the present and is named for what it lacks or fears; the first age holds the deep past"
+  ages: "scale.yaml history.ages; the first age (age_before or age_founding) and the present (age_now_named_for_fear) stand in place, the ruin's fall is an age, only the ages between are rolled (none at short)"
   events: "scale.yaml history.dated_events over history.years_covered, plus history.deep_past_events; at least one event per age"
-  pins: [the villain's origin, the big secret's origin, the signature institution's founding, the last war or disaster, the start settlement's founding or refounding]
-  layers: "every event has `as_taught` (public) and `as_happened` (discoverable or secret); a divergence row of `div_none` means the layers agree"
-  living_memory: "every event within 60 years lists witnesses among the NPC roster; a witness holds a Known Fact from the as_happened layer only if the divergence row allows"
+  seated: [the move (dated from P1's time row), the villain's origin (its true layer secret, from P1's chain), the signature institution's founding, the ruin's fall (an age)]
+  layers: "every event has `as_taught` (public) and `as_happened` (discoverable; secret only for the villain's origin); a divergence row of `div_none` means the layers agree"
+  divergences: "exactly scale.yaml history.divergences of the unseated dated events diverge (1 / 2 / 3); every other event's layers agree"
+  living_memory: "witness lists are written for the seated story events only (S5: they do not swell P5's people)"
 hooks_common:
   - {phase: P2, must: "each age and event carries its id, a year or span, its taught line and, where they differ, its true line in dm-only"}
   - {phase: P5, must: "Known Facts baselines are filled from the witness lists"}
@@ -28,12 +30,12 @@ tables:
         label: The Founding
         span_hint: "the first age; ends with a date everyone knows"
         hooks:
-          - {phase: P2, must: "the founding event is in it; its as_happened layer is the first place the big secret can hide"}
+          - {phase: P2, must: "the founding event is in it"}
       - id: age_golden
         label: The Golden Age
         span_hint: "an age everyone wishes they were born in; it ended for a reason nobody agrees on"
         hooks:
-          - {phase: P2, must: "the ending is a dated event with a divergence"}
+          - {phase: P2, must: "the ending is a dated event"}
       - id: age_silence
         label: The Silence
         span_hint: "an age defined by an absence (of gods, of ships, of rain, of a people)"
@@ -58,7 +60,7 @@ tables:
         label: The Dimming
         span_hint: "an age in which something is slowly going out"
         hooks:
-          - {phase: P7, must: "the dimming is a clock the doom completes"}
+          - {phase: P8, must: "the primer says what is going out, as the folk see it"}
       - id: age_reckoning
         label: The Reckoning
         span_hint: "an age of tribunals, lists and settlements of old debts"
@@ -86,9 +88,9 @@ tables:
           - {phase: P8, must: "the primer carries a law that dates from the sickness"}
       - id: age_now_named_for_fear
         label: The present, named for what it fears
-        span_hint: "the last age; its name is a fear or a lack (the Waiting, the Unlit, the Short Years)"
+        span_hint: "the last age; its name is what the folk fear of the threat's public face (the Waiting, the Unlit, the Short Years)"
         hooks:
-          - {phase: P2, must: "the present age's name is the taught form of the doom"}
+          - {phase: P2, must: "the present age is named for what the folk fear of the threat's public face, never its hidden part"}
       - id: age_before
         label: Before
         span_hint: "an unnamed deep age; ruins older than the record"
@@ -97,6 +99,7 @@ tables:
 
   event_type:
     notation: d16
+    roll: {avoid_used: false}
     rows:
       - id: evtype_founding
         label: A founding
@@ -129,7 +132,7 @@ tables:
       - id: evtype_miracle
         label: A miracle
         hooks:
-          - {phase: P2, must: "the god credited has a secret about it"}
+          - {phase: P2, must: "the god credited has a discoverable story about it"}
       - id: evtype_heresy
         label: A heresy
         hooks:
@@ -148,8 +151,6 @@ tables:
           - {phase: P6, must: "where the vanished went is a site"}
       - id: evtype_naming
         label: A naming or renaming
-        hooks:
-          - {phase: P1, must: "naming.json records the old name as an alias"}
       - id: evtype_wreck_or_loss
         label: A wreck or a loss
         hooks:
@@ -164,8 +165,9 @@ tables:
           - {phase: P3, must: "the built thing is a landmark or an anchor; who paid is discoverable"}
 
   divergence:
-    notation: d12
-    note: "how the as_taught and as_happened layers differ; rolled per dated event"
+    notation: d9
+    roll: {avoid_used: false}
+    note: "how the as_taught and as_happened layers differ; exactly scale.yaml history.divergences of them per campaign (S5), every tier public or discoverable: the campaign's secret comes from P1's chain alone"
     rows:
       - id: div_none
         label: The layers agree
@@ -185,19 +187,14 @@ tables:
           - {phase: P5, must: "one of the several has descendants in the roster"}
       - id: div_disaster_was_caused
         label: The disaster was caused
-        tier: secret
+        tier: discoverable
         hooks:
-          - {phase: P4, must: "the cause is a faction's ancestor or the villain's origin"}
+          - {phase: P4, must: "the cause is a faction's ancestor"}
       - id: div_treaty_was_surrender
         label: The treaty was a surrender
         tier: discoverable
         hooks:
           - {phase: P4, must: "the surrendered thing is an asset the other side still holds"}
-      - id: div_miracle_was_a_machine
-        label: The miracle was a device or a rite
-        tier: secret
-        hooks:
-          - {phase: P6, must: "the device is an item_ or a site payoff"}
       - id: div_date_is_wrong
         label: The date is wrong
         tier: discoverable
@@ -205,32 +202,23 @@ tables:
           - {phase: P2, must: "the calendar or a grave shows the true date"}
       - id: div_villain_was_victim
         label: The villain of the story was the victim
-        tier: secret
+        tier: discoverable
         hooks:
           - {phase: P5, must: "the victim's line still exists and knows"}
-      - id: div_did_not_happen
-        label: It never happened
-        tier: secret
-        hooks:
-          - {phase: P2, must: "who invented it and why is a god's or a faction's secret"}
       - id: div_two_events_were_one
         label: Two events were one
         tier: discoverable
         hooks:
           - {phase: P2, must: "the two taught events are both entities; the true one is the dm-only mirror"}
-      - id: div_price_was_hidden
-        label: The price was hidden
-        tier: secret
-        hooks:
-          - {phase: P7, must: "the price is still being paid; a front step is the next payment"}
       - id: div_someone_survived
         label: Someone survived who should not have
-        tier: secret
+        tier: discoverable
         hooks:
-          - {phase: P5, must: "the survivor is a secret NPC with an opaque id"}
+          - {phase: P5, must: "the survivor is an NPC whose survival is discoverable"}
 
   memory:
     notation: d7
+    roll: {avoid_used: false}
     note: "who holds the as_happened layer; drives the witness lists and the Known Facts baseline"
     rows:
       - id: mem_elders
@@ -247,8 +235,6 @@ tables:
           - {phase: P6, must: "the records are an item_ in a site or an anchor"}
       - id: mem_the_dead
         label: The dead, if they can be read
-        hooks:
-          - {phase: P1, must: "only if the signature phenomenon or institution reads the dead"}
       - id: mem_nobody
         label: Nobody living
         hooks:

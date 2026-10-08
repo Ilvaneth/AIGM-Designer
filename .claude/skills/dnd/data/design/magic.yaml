@@ -10,11 +10,13 @@
 schema_version: 1
 table: magic
 consumed_by: [P1, P2, P4, P5, P6, P8]
-plan: "item 5 (magic), 17 #11, errata 24.2 #17"
-roll: {labels: [P2.magic_source, P2.magic_constraint, P2.magic_visibility, P2.magic_taboo, P2.magic_regulator, P2.wild_gate, P2.wild_shape], avoid_used: true}
+plan: "item 5 (magic), 17 #11, errata 24.2 #17; build item 22 (docs/p2-tags.md S4, the tag pass)"
+layer: texture             # build item 22a (S0 #1): most of magic is texture
+roll: {labels: [P2.magic_source, P2.magic_constraint, P2.magic_visibility, P2.magic_taboo, P2.magic_regulator, P2.wild_gate, P2.wild_shape], avoid_used: true, note: "the source and the taboo avoid other campaigns' rows; the constraint, the visibility, the regulator and the wild shape repeat (rule 8: their sub-tables say so)"}
 rules:
+  principle: "no magic row changes a character's spellcasting by the rules: a row says how the world sees magic, rules it and makes it pay; a player character's spells work as the 2014 rules write them (S4)"
   availability: "the magic dial (dials.yaml#magic) sets caster share, loot multiplier and the regulator's strength; this table never changes availability"
-  srd: "every SRD spell works unless a taboo or the planes table says otherwise; the primer carries the rule lines a caster PC needs (what is illegal, what leaves a trace, what a plane-referencing spell does)"
+  srd: "every SRD spell works as written; a taboo is a law, not a rule of magic; the planes table decides only where plane-touching spells lead; the primer carries the rule lines a caster PC needs (what is illegal, what leaves a trace, where a plane-referencing spell leads)"
   signature: "the P1 phenomenon is written here as a rule with a cost and a regulator; it appears in the primer as a native knows it"
 hooks_common:
   - {phase: P2, must: "the cosmology's Magic section fills availability, source, constraints, visibility, taboos, regulator, signature phenomenon and wild magic, each as one line"}
@@ -23,14 +25,14 @@ hooks_common:
 tables:
 
   source:
-    notation: d12
+    notation: d11
     rows:
       - id: source_the_gods
         label: The gods
         weight: 2
-        rule: "all magic is granted; arcane casters are priests who do not know it"
+        rule: "magic flows from the gods; the churches call a wizard's formulae prayers in another tongue"
         hooks:
-          - {phase: P2, must: "the pantheon's silence or death decides what happens to spells"}
+          - {phase: P2, must: "the pantheon's silence or death decides what the churches teach about spells"}
       - id: source_the_planes
         label: The planes
         weight: 2
@@ -53,14 +55,14 @@ tables:
         label: Blood and lineage
         weight: 1
         rule: "magic is inherited; the families are known and counted"
+        weight_by: [{when: {any_of: [break_magic_is_nobility]}, x: 2}]   # the tag pass's fit
         hooks:
           - {phase: P5, must: "caster NPCs belong to named lineages; one lineage is the villain's"}
       - id: source_names
         label: Names
         weight: 1
         rule: "to name a thing truly is to move it; the naming language is the spellbook"
-        hooks:
-          - {phase: P1, must: "naming.json marks the binding language"}
+        weight_by: [{when: {any_of: [rule_true_names, rule_tongue_of_magic]}, x: 2}]   # the tag pass: in place of its P1 hook
       - id: source_bargains
         label: Bargains
         weight: 1
@@ -71,59 +73,49 @@ tables:
         label: The signature phenomenon
         weight: 2
         rule: "the phenomenon is the only source; other casting is a use of it under another name"
-        hooks:
-          - {phase: P1, must: "the phenomenon's rule covers every caster class the primer allows"}
+        requires: {any_of: [user_everyone, user_casters]}   # the tag pass R5: every caster may use it (S4's principle)
       - id: source_a_dying_thing
         label: A dying thing
         weight: 1
-        rule: "magic comes from something that is running out (a star, a god, a well); the amount left is a secret"
+        rule: "magic comes from something that is running out (a star, a god, a well); everyone knows the source is running out"
+        claims: {magic: running_out}
+        weight_by: [{when: {any_of: [ruin_dried_source]}, x: 2}]   # the tag pass (C1 becomes a fit)
         hooks:
-          - {phase: P2, must: "the big secret or a god's secret is the amount left"}
+          - {phase: P2, must: "the cosmology says in public what runs out and how fast"}
       - id: source_study
         label: Study alone
         weight: 2
         rule: "magic is a craft like any other; whoever can read can learn, so reading is guarded"
+        weight_by: [{when: {any_of: ["claim:writing=printed"]}, x: 2}]   # the tag pass (C3 becomes a fit)
         hooks:
-          - {phase: P4, must: "the regulator is a guild or a school with a service menu"}
+          - {phase: P8, must: "the primer says how one learns magic and who guards the books"}
       - id: source_unknown
         label: Nobody knows
         weight: 1
         rule: "magic works and nobody agrees why; every faction has a theory and the theories are politics"
         hooks:
           - {phase: P4, must: "two factions' stance is a disagreement about the source"}
-      - id: source_the_sleeper
-        label: A sleeper's dreams
-        weight: 1
-        rule: "magic is what a sleeping thing dreams; casting is borrowing a dream; waking it is the doom"
-        hooks:
-          - {phase: P7, must: "the doom is the waking"}
 
   constraint:
-    notation: d10
+    notation: d5
+    roll: {avoid_used: false}    # rule 8: five rows, the classic one among them, repeat across campaigns
     rows:
       - id: constraint_components
         label: Scarce components
         rule: "spells need a material the land yields in one place; the supply is an asset"
         hooks:
           - {phase: P4, must: "the component's source is a faction asset on the map"}
-      - id: constraint_time
-        label: Only at certain times
-        rule: "magic works at a time of day, a season or a phase of the moon"
-        hooks:
-          - {phase: P2, must: "the calendar carries the windows; the simulation's volatility follows them"}
-      - id: constraint_place
-        label: Only in certain places
-        rule: "magic works where something is (a road, a stone, a well) and fails elsewhere"
-        hooks:
-          - {phase: P3, must: "the places are map nodes or landmarks; the player map shows the public ones"}
       - id: constraint_caste
         label: Only for a caste
         rule: "only the ordained, the born or the marked may cast; everyone else who does is a criminal"
+        claims: {casting: by_caste}
+        weight_by: [{when: {any_of: [break_magic_is_nobility, contest_casters_casterless]}, x: 2}]
         hooks:
           - {phase: P8, must: "the primer says how one becomes permitted"}
       - id: constraint_licence
         label: Licence and ledger
         rule: "casting is legal with a licence; the licence is a ledger entry the regulator keeps"
+        claims: {casting: licensed}
         hooks:
           - {phase: P4, must: "the regulator's ledger is an asset; a lost licence is a seed"}
       - id: constraint_echo
@@ -131,29 +123,15 @@ tables:
         rule: "a cast spell can be read afterwards; nothing magical is secret for long"
         hooks:
           - {phase: P6, must: "a clue in the trail is an echo"}
-      - id: constraint_price_in_self
-        label: A price in the self
-        rule: "each spell costs the caster something (years, memory, a sense); the cost is visible over time"
+      - id: constraint_law_and_folk
+        label: The law and the folk
+        rule: "magic's only limits are the law and what the folk will bear"
         hooks:
-          - {phase: P5, must: "caster NPCs' appearances show the price"}
-      - id: constraint_exhaustion
-        label: Exhaustion
-        rule: "casting is labour; a caster who casts too much sleeps for days"
-        hooks:
-          - {phase: P6, must: "rest pressure in sites counts caster fatigue"}
-      - id: constraint_witness
-        label: Needs a witness
-        rule: "no spell works unseen; a caster needs someone to watch, and the watcher shares the cost"
-        hooks:
-          - {phase: P5, must: "every caster NPC has a named witness"}
-      - id: constraint_none_known
-        label: No known constraint
-        rule: "magic seems free; the constraint is the secret"
-        hooks:
-          - {phase: P2, must: "the true constraint is a god's or the big secret"}
+          - {phase: P8, must: "the primer says which spells the law names and what the folk will not bear"}
 
   visibility:
     notation: d6
+    roll: {avoid_used: false}
     rows:
       - id: visibility_invisible
         label: Invisible
@@ -204,20 +182,20 @@ tables:
           - {phase: P4, must: "a faction does it anyway; its asset is the harvest"}
       - id: taboo_healing_for_pay
         label: Selling healing
+        conflicts_with: [break_magic_sold]     # the tag pass D22: "magic is bought and sold like bread"
         hooks:
           - {phase: P3, must: "the price table has no healing line; a black market does"}
       - id: taboo_casting_on_a_day
         label: Casting on the holy day
         hooks:
-          - {phase: P2, must: "the calendar marks the day; a festival enforces it"}
+          - {phase: P2, must: "the calendar seats the day as a greater god's festival (P2's calendar step); the festival enforces it"}
       - id: taboo_teaching_outsiders
         label: Teaching magic to outsiders
         hooks:
           - {phase: P9, must: "a socket is a PC who was taught anyway"}
       - id: taboo_naming
         label: Speaking a true name
-        hooks:
-          - {phase: P1, must: "the naming language carries the taboo"}
+        weight_by: [{when: {any_of: [rule_true_names]}, x: 2}]   # the tag pass: in place of its P1 hook
       - id: taboo_scrying
         label: Looking from afar
         hooks:
@@ -228,8 +206,7 @@ tables:
           - {phase: P6, must: "a site's occupant is a bound thing whose binder is known"}
       - id: taboo_the_phenomenon_unlicensed
         label: Using the phenomenon without leave
-        hooks:
-          - {phase: P1, must: "the signature institution issues the leave"}
+        requires: {none_of: [user_no_one]}     # the tag pass R3: a phenomenon someone can use
       - id: taboo_iron_or_metal
         label: Casting through metal
         hooks:
@@ -237,31 +214,34 @@ tables:
       - id: taboo_none
         label: No taboo
         weight: 1
+        claims: {casting: free}               # its hook: "nothing magical is forbidden" (the tag pass D6)
         hooks:
           - {phase: P8, must: "the primer says plainly that nothing magical is forbidden, and why the regulator exists anyway"}
 
   regulator:
     notation: d9
+    roll: {avoid_used: false}    # rule 8: three rows are forced by P1's overrides; a guild and a church repeat
     rows:
       - id: regulator_signature_institution
         label: The signature institution
         weight: 3
-        hooks:
-          - {phase: P1, must: "the institution's seed includes the licence, the penalty and the fracture"}
       - id: regulator_crown_office
         label: An office of the state
         hooks:
           - {phase: P4, must: "the office is an asset of the state faction; its head is an NPC"}
       - id: regulator_guild
         label: The mage guild
+        weight_by: [{when: {any_of: [source_study]}, x: 3}]   # the tag pass: in place of source_study's P4 hook
         hooks:
           - {phase: P4, must: "the guild's service menu lists identify, training and a licence"}
       - id: regulator_church
         label: The church
+        requires: {any_of: [domain_knowledge, domain_light]}   # the tag pass R7: a counted god of Knowledge or Light
         hooks:
-          - {phase: P2, must: "the regulating god's domain is Knowledge, Light or Law-adjacent; the church's secret is what it lets pass"}
+          - {phase: P2, must: "the regulating god's domain is Knowledge or Light; what the church lets pass is a discoverable story"}
       - id: regulator_nobody
         label: Nobody
+        conflicts_with: [constraint_licence]   # the tag pass D21: a licence is a ledger the regulator keeps
         hooks:
           - {phase: P8, must: "the primer says what happens to a caster who harms someone: nothing formal, something informal"}
       - id: regulator_the_phenomenon
@@ -274,6 +254,7 @@ tables:
           - {phase: P4, must: "the regulator is a polity or faction from outside the map's centre; its stance to the state is the question"}
       - id: regulator_the_dead
         label: The dead
+        requires: {any_of: [pantheon_ancestor_gods, domain_death]}   # the tag pass R8: the ancestor lists or the grave wardens
         hooks:
           - {phase: P2, must: "the ancestor lists or the grave wardens decide who may cast"}
       - id: regulator_a_creature
@@ -283,6 +264,7 @@ tables:
 
   wild:
     notation: d7
+    roll: {avoid_used: false}
     rows:
       - id: wild_no
         label: No wild magic
@@ -297,13 +279,12 @@ tables:
       - id: wild_overflow
         label: Overflow of the phenomenon
         rule: "surges are the signature phenomenon happening too much"
-        hooks:
-          - {phase: P1, must: "the phenomenon's rule states its overflow"}
+        # the tag pass R2: a phenomenon that can happen "too much" (these eight cannot)
+        requires: {none_of: [rule_beasts_sense_lies, rule_roads_lead_where_needed, rule_night_distances, rule_true_names, rule_gesture_magic, rule_seasons_bound_to_a_beast, rule_land_guards_lifeline, rule_one_way_magic]}
       - id: wild_dead_god_static
         label: Dead-god static
-        rule: "surges are fragments of a dead or silent god's will"
-        hooks:
-          - {phase: P2, must: "the pantheon type is dead or silent, or a god's secret is"}
+        rule: "surges are fragments of a dead god's will"
+        requires: {any_of: [pantheon_dead_gods, ruin_dead_god]}   # the tag pass R1 (S4)
       - id: wild_weather
         label: Weather
         rule: "surges are local weather: hail indoors, a still wind, a fog with a smell"

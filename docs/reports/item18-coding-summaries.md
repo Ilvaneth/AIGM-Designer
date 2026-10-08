@@ -565,3 +565,116 @@ Two more were left during my gating run, at 17:04 and 17:25. They came from anot
 **Changed files:** `scripts/design_door.py`, `prompts/design/P1.premise.md`, `templates/design/premise.md`, `data/design/rubrics.yaml`; tests: `test_p1_polish.py`, `test_p1_dry_walk.py`.
 
 **The suite:** after your two fixes, 900 tests, OK, exit code 0, 1,793 s (29.9 min); before them, 899 tests, OK. No `aigm-*` folder left.
+
+## 22a — the cosmos tables (the fifth coding tab)
+
+On `docs/p2-build-22.md` 22a, `docs/p2-tags.md` S1-S6, and the tag pass's rulings (the last section of `p2-tags.md`; the draft `docs/reports/p2-tags-draft.md`).
+
+**The approved tags.**
+- **`claims.yaml`:**
+  - the four new topics (`gods`, `gods_shown`, `casting`, `moon`) and `magic: running_out`;
+  - seven claim pairs (D1-D6, and C5 for the silent gods), so 14 in all;
+  - five new defaults (`pantheon_presence`, `moon`, `festivals`, `great_gods_count`, `greater_gods_count`), so 29 in all;
+  - one combine line for the great gods' raisers.
+- **The row-level pairs** sit on the P2 rows' `conflicts_with`:
+  - `pantheon_dead_gods`: the chosen, `power_god`, `family_god`;
+  - `presence_never`: the chosen;
+  - `presence_in_places`: holy ground;
+  - `regulator_nobody`: the licence;
+  - `taboo_healing_for_pay`: magic sold;
+  - `moon_none_stars`: the moon trades, night is safe, the moon-night weakness;
+  - `moon_dark`: night is safe, the moon trades.
+- **Requires R1-R12** as the draft's §4.1. R7 and R8 name the domain rows (`domain_knowledge`, `domain_light`, `domain_death`), which 22b must roll before magic.
+- **Fits** as `weight_by`: the gods-family ruins on the types; the nautical and underground eras on water, earth and maritime; the mirror, true-name and dream fits; the caste, blood, study, guild and dying-source fits; the pilgrim road on `church_pilgrimage` ×3.
+- **Overrides:**
+  - the dualist sets the two counts and the festivals;
+  - the dead, silent, ancestor and animist types set the folk festival's kind;
+  - `break_gods_among_mortals` → presence walking;
+  - `break_moon_trades` → the moon as a place;
+  - open point 7: the great gods' floor on `break_god_name_forbidden` and on the 16 contests with a religious role.
+
+**One new data form, for the design tab's eye.** The great gods' raisers are 18 rows, and the combine test asks a written line for every pair that may be rolled together, so pair-by-pair would be 153 lines. Instead a combine line may carry `any_two: true`: it holds for whichever two or more of its rows are rolled. `design_promises.override_promises` makes them one promise, and `test_claims` expands such a line into its pairs. It is one line in `claims.yaml`.
+
+**Layers** (S0 #1): `planes.yaml#baseline` and `calendar.yaml#climate` are stage; every other P2 sub-table is texture (file-level `layer`).
+
+**Rule 8:** `avoid_used` is true only on `magic#source`, `magic#taboo` and `history#age_template`; every other P2 sub-table repeats (`god_secret`, `constraint`, `visibility`, `regulator` as ruled; the calendar as S6).
+
+**Pantheon** (S1, S2):
+- `pantheon_animist` is added.
+- The dualist's counts, as above.
+- The polytheist hook is rewritten to W1. The dead gods' answer is discoverable.
+- The silent gods' "why" is a discoverable story.
+- `presence_omens`' readers are a service only.
+- Light's church shape loses the lamplighters and gains "a sun temple on a height".
+- The seven secret god secrets are deleted, and `secret_tendency` keeps only the five discoverable rows; three domains are left with none: Light, Nature, War.
+- `godsecret_fading`, `rel_trial` and `rel_mirror`: as in G10 and S2.
+- The rules: the evil god, one god story, the church field on the great gods, and `premise_binding` on W1's pin (open point 9); `rank_greater`'s "be the villain's god" is reworded the same way.
+
+**Planes** (S3):
+- Three new rows, with the table's own labels: `baseline_fey_echo` ("The Fey Echo (the Bright Echo)"), `baseline_shadow_echo`, `baseline_beyond`.
+- `home_of` on every row as ruled, per creature for the genie and the deceiver fiend; `family_god` by alignment on the 17 outer rows.
+- `rules.sets`, `rules.named_planes` (the 15 P1 rows, `spine_two_worlds` and `ruin_star_kingdom` among them), `rules.moon_seat`.
+- One common hook in place of 17 copies.
+- `dev_secret_holds` deleted, `dev_is_this_world` reworded, `cost_name` reworded.
+- `rate_fast`'s hook moved to P8 as the price of entering.
+- `way_mirror` becomes a fit, and `way_phenomenon` gets R6.
+- `touch_bias` becomes `weight_by`; the tone's bias is deleted.
+
+**An SRD note:** S3 says the echo planes' names are not in the SRD 5.1, but the SRD's spells do name the Feywild and the Shadowfell (*dispel evil and good*, *forbiddance*, *creation*). The labels stay the table's own, as ruled. Each row's `srd` field says this, and `spells` lists those spells.
+
+**Magic** (S4): six constraints deleted and `constraint_law_and_folk` added; `source_the_sleeper` deleted; `source_the_gods` and `source_a_dying_thing` reworded; the principle line in `rules`; the taboo day seated by P2's calendar step; R1-R8 on their rows.
+
+**History** (S5):
+- Three divergences are deleted; the other secret-tier ones become discoverable.
+- `age_dimming`, `age_now_named_for_fear` and `age_golden` are reworded.
+- The rules name the seated events and the exact divergences.
+- `scale.yaml` history as ruled, with `divergences: 1 / 2 / 3`.
+
+**Calendar** (S6):
+- **The fixed year:** `year_shape` and `week` are deleted from the file. The rules give `month_length: 28`, `months: 12`, `week_days: 7`, `year_days: 336`, and an init call with `--month-length 28`. `calendar.py` itself is unchanged: a legacy calendar keeps its own length, and its init default stays 30 until the writer's call (22d) passes 28.
+- **The climate:** `requires` by era (underground only in the underground era), and the maritime fit.
+- **The moon:** claims and the pairs; `moon_one_thirty` relabelled to 28 days.
+- **Festivals:** the masked night's attitude is scoped to its site; `fest_naming` loses its P1 hook.
+- **The start anchors:** each requires its time row (R12); `anchor_days_before_doom` and `anchor_midwinter` reworded.
+- **The new table** `underground_count` (2 rows).
+
+**The fifteen P1-phase hooks**, each one's fate as the draft's §4.2:
+- four became `requires`: `way_phenomenon`, `source_the_phenomenon`, `taboo_the_phenomenon_unlicensed`, `wild_overflow`;
+- three became fits: `way_mirror`, `source_names`, `taboo_naming`;
+- the others were deleted; `godsecret_is_the_phenomenon` with its row.
+- `mem_the_dead` now points at the SRD's *speak with dead* (P5).
+
+**The P1 rows changed**, re-stamped in `reviewed.json`:
+- `break_gods_among_mortals` (its claim and the presence override), `break_casting_forbidden` (its claim), `break_moon_trades` (the moon override), `break_god_name_forbidden` (the floor);
+- the 16 religious contests (the floor);
+- `spine_two_worlds` and `ruin_star_kingdom` (their P2 hooks);
+- `scale.yaml`'s three rows.
+
+**References to deleted rows:**
+- `factions.yaml` `cultdoc_god_imprisoned`'s hook named `godsecret_bound`; reworded to "the pantheon's silence or an imprisoned god gives the belief its ground" (P4's tag pass may weigh it).
+- `designer.preroll_p2` rolled `year_shape` and `week`; they are gone.
+- The tests named them (below). No prompt or template named a deleted row.
+
+**`preroll_p2` until 22b replaces it:** it no longer rolls the year or the week, and the climate no longer avoids other campaigns' rows. The start anchor now requires P1's time row. A birth with no move time (a legacy birth, such as the fixture) draws the anchor with a plain die, recorded as forced with that reason. Without this, every fixture test that prerolls P2 found an empty pool.
+
+**Tests:**
+- **New `test_p2_tables.py`** (9 tests):
+  - the new and deleted rows, and nothing anywhere naming a deleted row;
+  - no P2 hook due at P1;
+  - the layers, rule 8, the approved claims and the row-level pairs;
+  - `home_of` (no home for `family_shadow`), the named planes (each resolves);
+  - the history amounts.
+- **Updated tests:**
+  - `test_design_tables`: the type list (animist), the five god secrets, the echo and beyond groups, the constraint floor, the divergence tiers, the 28-day calendar;
+  - `test_claims`: ten topics, 14 pairs, 29 defaults, the `any_two` expansion;
+  - `test_trope_claims`: the breaks' new claims and overrides;
+  - `test_root_cause_1`: its used-rows check moved from `pantheon.yaml#presence` (no longer unique) to `magic.yaml#source`.
+  - `test_general_themes`: the three new pairs on its rows (D18, D18b, D22).
+  - `test_foundation_tables`: the casters contest's third override.
+
+**Changed files:**
+- data: `pantheon.yaml`, `planes.yaml`, `magic.yaml`, `history.yaml`, `calendar.yaml`, `scale.yaml`, `claims.yaml`, `trope-breaks.yaml`, `foundation.yaml`, `factions.yaml`, `reviewed.json`;
+- scripts: `design_tables.py` (`REVIEWED_TABLES` gains the five P2 files), `designer.py` (`preroll_p2`), `design_promises.py` (`any_two`);
+- tests: `test_p2_tables.py` (new), `test_design_tables.py`, `test_claims.py`, `test_trope_claims.py`, `test_root_cause_1.py`, `test_general_themes.py`, `test_foundation_tables.py`.
+
+**The suite:** 909 tests, OK, exit code 0, 1,908 s (31.8 min). The first full run failed two tests that pinned the old pair list and the casters contest's overrides; they are updated above. Two `aigm-*` folders dated 17:01 sit in the temporary directory. My runs leave none, so they are from another process; I have not removed them.

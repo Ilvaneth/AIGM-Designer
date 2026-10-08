@@ -160,7 +160,11 @@ class Pairs(unittest.TestCase):
         new = set(RUINS) | set(CONTESTS) | set(BREAKS) | {"life_enchanters", "practice_enchanted_goods"}
         secret = dt.secret_row_ids()
         pairs = {frozenset((a, b)) for a in new for b in idx.get(a, ()) if b not in secret and not b.startswith(dt.CLAIM)}
-        self.assertEqual(pairs, {frozenset(("break_magic_sold", "ruin_dried_source"))}, "the one ruled clash that is a conflict line")
+        self.assertEqual(pairs, {frozenset(("break_magic_sold", "ruin_dried_source")),
+                                 # build item 22a: the P2 tag pass's pairs with these rows (D18, D18b, D22; the owner's rulings)
+                                 frozenset(("break_chosen_are_many", "pantheon_dead_gods")),
+                                 frozenset(("break_chosen_are_many", "presence_never")),
+                                 frozenset(("break_magic_sold", "taboo_healing_for_pay"))}, "the ruled clashes that are conflict lines")
         clash = dt.clash_map()
         self.assertEqual(set(clash.get("claim:magic=plentiful", ())), {"claim:magic=faded"}, "the claim's own clash, from the registry")
 
