@@ -914,8 +914,10 @@ def _cosmos_draw(rng, key: str, n: int, envs: dict, langs: dict, taken: list[str
                 w = _one_bag(rng, langs["common"], taken, seen, ok)
                 entry = {"name": w, "word": w, "pattern": "bag"} if w else None
             elif pid not in streams:                              # a word of the old tongue's bag
-                # (a ruin word is the word alone: the roller composes the age and the fall from it)
-                w = _one_bag(rng, langs["old"], taken, seen, ok) if langs.get("old") else None
+                # (a ruin word is the word alone: the roller composes the age and the fall from it); the pattern's own
+                # language: the old tongue's planes and ruins, the common tongue's moons (the 22d audit)
+                lang = langs.get(pats[pid].get("lang") or "old")
+                w = _one_bag(rng, lang, taken, seen, ok) if lang else None
                 entry = {"name": w, "word": w, "pattern": pid} if w else None
             else:
                 entry = None

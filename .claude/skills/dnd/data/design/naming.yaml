@@ -833,7 +833,7 @@ patterns:
     - {id: pattern_festival_folk, for: [folk_festival, unnamed_god_festival], lang: common, join: apart, parts: [{lit: "the "}, {word: folk_festival_words}, {lit: " of the "}, {root: head, adjective: false}]}
   moon:
     - {id: pattern_moon_word, lang: common, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {root: any, tags: [colour]}, {lit: " "}, {word: moon_words}]}
-    - {id: pattern_moon_fresh, lang: common, join: joined, parts: [{root: head, adjective: true}, {root: tail, natural: true}]}
+    - {id: pattern_moon_fresh, lang: common, join: apart, parts: [{bag_word: true}]}     # a person-like name of the common tongue (the 22d audit), never a place pattern
   age:
     - {id: pattern_age_name, for: [age_the_war_of], fills: "{Name}", lang: common, join: apart, parts: [{name: referent}]}
     - {id: pattern_age_thing, for: [age_of_thing], fills: "{Thing}", lang: common, join: apart, parts: [{root: head, adjective: false}]}

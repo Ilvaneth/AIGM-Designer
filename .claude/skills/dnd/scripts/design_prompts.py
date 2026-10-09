@@ -150,11 +150,16 @@ def rolls_for(manifest: dict, phase: str, entity_id: str | None) -> tuple[str, s
     assignments = (manifest["phases"].get(phase) or {}).get("assignments") or {}
     prefixes = [k for k, v in assignments.items() if v == entity_id] if entity_id else []
 
+    flagged = any("count" in r for r in phase_recs)          # build item 22d: a count record says so; a legacy log does not
+
     def line(r: dict) -> str:
-        if "value" in r and not r.get("row_id"):
+        if "value" in r and not r.get("row_id") and (r.get("count") or not flagged):
             # a count roll: the number to produce is `value`; the die face is only how it was rolled
             how = f" ({r.get('notation')} → {r.get('raw')})" if r.get("raw") is not None else ""
             return f"- `{r['label']}` = **{r['value']}** — produce exactly this many{how}"
+        if "value" in r and not r.get("row_id") and r["value"] is not None:
+            v = r["value"] if not isinstance(r["value"], (dict, list)) else json.dumps(r["value"], ensure_ascii=False)
+            return f"- `{r['label']}` = **{v}**"
         what = r.get("row_id") or (", ".join(r["items"]) if r.get("items") else r.get("raw"))
         extra = f" (forced: {r['forced_by']})" if r.get("forced_by") else ""
         return f"- `{r['label']}` → **{what}**{extra}"
@@ -186,14 +191,14 @@ def given_rubrics(phase: str, kind: str) -> set | None:
     return given | ({"rubric_wishes"} if kind == "phase" else set())
 
 
-def rubric_lines(phase: str, scope: str | None, order: int) -> str:
+def rubric_lines(phase: str, scope: str | None, order: int, sealed_p2: bool = False) -> str:
     rows = rubric_rows(phase, scope)
     if order == 2:
         rows = list(reversed(rows))
     out = []
-    craft = (dt.load("rubrics.yaml").get("tables") or {}).get("phase_rubric", {}).get("p1_craft_only")
-    if phase == "P1" and craft:
-        out.append(f"**Craft only.** {craft}")           # build item 14b: the critics never judge the rolls
+    craft = (dt.load("rubrics.yaml").get("tables") or {}).get("phase_rubric", {}).get(f"{phase.lower()}_craft_only")
+    if (phase == "P1" or (phase == "P2" and sealed_p2)) and craft:
+        out.append(f"**Craft only.** {craft}")           # build items 14b, 22d: the critics never judge the rolls
     for r in rows:
         out.append(f"- **{r['id']}** ({r['scope']}, effort {r['effort']}): {r['question']}\n  - fails when: {r['fails_when']}")
     return "\n".join(out)
@@ -243,7 +248,7 @@ def prior_campaigns_text(campaign: str) -> str:
 
 
 # the prompts that already read dm-only material: they are given the command that lists the secret promises
-SECRET_READERS = ("P1.premise", "P2.cosmos", "P4.skeleton", "P5.skeleton", "P6.skeleton", "P7.skeleton", "P9.thread", "phase_critic")
+SECRET_READERS = ("P1.premise", "P2.cosmos", "P2.cosmos.legacy", "P4.skeleton", "P5.skeleton", "P6.skeleton", "P7.skeleton", "P9.thread", "phase_critic")
 
 
 def promise_audience(name: str, role: str, phase: str, detail: bool) -> str | None:
@@ -278,12 +283,36 @@ P1_ROLLS = ("what was rolled, so that you judge what the writer made of it and n
             "Read every dm-only file with the Read tool, never with Bash")
 
 
+P2_ROLLS = ("what was rolled, so that you judge what the writer made of it and never the rolls: `design/design.json#cosmos` "
+            "(the counts, the pantheon, the planes, the afterlife, the history, magic and the calendar, every name from the pool) "
+            "and the script's frame `design/_staging/P2/doc_cosmology.frame.json`; P1's ground in `#foundation` and `#identity`; "
+            "when a rubric's scope is dm-only, the cosmos's secret half too (`design/dm-only/dice-log.json` under `cosmos`), which "
+            "never leaves dm-only. Read every dm-only file with the Read tool, never with Bash")
+
+
 def scripted_p1(manifest: dict, phase: str) -> bool:
     """P1 of a birth whose rolls the script made and sealed: its critics judge craft only and never ask for a reroll."""
     return phase == "P1" and bool(manifest.get("foundation")) and bool(manifest.get("p1_seal"))
 
 
+def scripted_p2(manifest: dict, phase: str) -> bool:
+    """Build item 22d: P2 of a birth whose cosmos the script rolled and sealed (design_cosmos_door.applies): its critics,
+    like P1's, judge craft only and never ask for a reroll."""
+    import design_cosmos_door as cd
+    return phase == "P2" and cd.applies(manifest)
+
+
 def critic_lines(manifest: dict, phase: str) -> dict:
+    if scripted_p2(manifest, phase):
+        return {
+            "critic_reads": f" Read also the cosmology's prose (`design/cosmology.md`, its mirror when your scope is dm-only) and {P2_ROLLS}.",
+            "phase_reads": ("P2 has no skeleton. You read the cosmology (`design/cosmology.md`), its mirror when a rubric's scope is "
+                            "dm-only, the premise, the P2 rows in the registry export (`registry.py export --public`), and "
+                            f"{P2_ROLLS}."),
+            "verdict_options": ("For each rubric row give a verdict: `pass`, `fix` (a targeted change would repair it) or `note`. There is "
+                                "no `rerun` here: the rolls are sealed and only the owner rerolls (the phase with a reseed); a "
+                                "cosmology that fails is rewritten on the same rolls, and a return that says `rerun` is refused."),
+            "verdict_overall": "The overall verdict is `fix` if any row says fix, else `pass`."}
     if scripted_p1(manifest, phase):
         return {
             "critic_reads": f" Read also {P1_ROLLS}.",
@@ -310,6 +339,8 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
     manifest = dm.load(campaign)
     if name == "P1.premise" and not manifest.get("foundation"):
         name = "P1.premise.legacy"       # a birth whose P1 predates the foundation keeps the prompt it was written by
+    if name == "P2.cosmos" and not scripted_p2(manifest, "P2"):
+        name = "P2.cosmos.legacy"        # build item 22d: a cosmos the script did not roll keeps the prompt it was written by
     fm, body = load(name)
     phase = str(fm.get("phase") or "")
     projection_early = (read_json(design_dir(campaign) / "entities.json") or {}).get("entities", {})
@@ -364,7 +395,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
         # build item 20a: the script's frame of P1's registry rows, beside the premise's fragment path
         "frame_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.frame.json",
         "notes_path": f"design/_staging/{staging_phase}/{entity_id or 'skeleton'}.notes.md",
-        "rubrics": rubric_lines(phase, scope, critic_order) if role in ("critic", "phase_critic") else "",
+        "rubrics": rubric_lines(phase, scope, critic_order, scripted_p2(manifest, phase)) if role in ("critic", "phase_critic") else "",
         "schema": schema_text(str(fm.get("schema") or "writer")),
         **critic_lines(manifest, phase),
         "agent_label": f"{phase}.{entity_id or role}.a{attempt}", "roster": ", ".join(ph.get("roster") or []) or "(none yet)",
@@ -384,7 +415,7 @@ def render(campaign: str, name: str, entity_id: str | None = None, attempt: int 
     # phase critic alone; "common" is filled first, so the name pool's placeholder inside it is filled after
     block = promises_text(campaign, name, role, phase, staging_phase == "detail")
     ctx = dict({"common": common_text() + ("\n\n" + block if block else "")}, **ctx)
-    if scripted_p1(manifest, phase) and role in ("critic", "phase_critic"):
+    if (scripted_p1(manifest, phase) or scripted_p2(manifest, phase)) and role in ("critic", "phase_critic"):
         ctx["schema"] = ctx["schema"].replace('"enum": ["pass", "fix", "rerun"]', '"enum": ["pass", "fix"]').replace(
             '"enum": ["pass", "fix", "rerun", "note"]', '"enum": ["pass", "fix", "note"]')
     text = body

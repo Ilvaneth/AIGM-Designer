@@ -5,7 +5,8 @@
 | Template | Produces | Phase |
 |---|---|---|
 | `premise.md` | `design/premise.md` + `design/dm-only/premise-secret.md` | P1 |
-| `cosmology.md` | `design/cosmology.md` (+ mirror) | P2 |
+| `cosmology.md` | `design/cosmology.md` (+ mirror), on the script's frame | P2 |
+| `cosmology.legacy.md` | the same, for a birth whose P1 predates the foundation | P2 |
 | `region.md` | `design/regions/<id>.md` (+ mirror), incl. the travel table | P3 |
 | `settlement.md` | `design/settlements/<id>.md` (+ mirror) | P3, `detail` |
 | `faction.md` | `design/factions/<id>.md` (+ mirror) | P4 |

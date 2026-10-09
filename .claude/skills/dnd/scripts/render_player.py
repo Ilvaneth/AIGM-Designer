@@ -240,7 +240,7 @@ def primer_text(campaign: str) -> tuple[str, dict]:
         # taught history
         lines.append("### Öğretildiği hâliyle tarih")
         for evid, ev in sorted(by_type(pub, "event"), key=lambda x: (x[1].get("year") if isinstance(x[1].get("year"), int) else -99999)):
-            lines.append(f"- {ev.get('year', '?')} — **{ev['name']}**: {ev.get('taught_tr', '')}")
+            lines.append(f"- {ev.get('year', '?')} — **{ev['name']}**: {text_field(ev, 'taught') or ''}")   # 22d: `taught`, a legacy row's `taught_tr`
         lines.append("")
         # dangerous places
         lines.append("### Herkesin tehlikeli dediği yerler")

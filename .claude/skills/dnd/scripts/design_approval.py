@@ -321,7 +321,7 @@ def map_lines(campaign: str) -> list[str]:
 
 GATE_LABELS = {"render": "the player files could not be rendered", "incomplete": "roster incomplete", "band": "outside the band", "critic_missing": "a critic did not run",
                "validator": "validator error", "seed": "seed error", "orphan_stub": "orphan stub",
-               "promise": "a due promise a script checks is not kept", "promise_unjudged": "a due promise has no verdict",
+               "promise": "a due promise a script checks is not kept", "promise_unjudged": "a due promise has no critic's verdict",
                "dnd_incomplete": "a D&D campaign's piece is missing", "phase_fix_due": "the phase critic's fix waits for its writer"}
 
 # the loop of the re-critique after a phase critic's fix (.claude/workflows/design-fanout.js: MAX_FIX_LOOPS + 2)
@@ -471,14 +471,14 @@ def gate_card_line(items: list[dict], proj: dict) -> str:
         return "- **Gate:** open ✓"
     parts = []
     for i in items:
-        if i["code"].startswith("promise"):         # a promise is no registry row: the count, and how many are secret
-            parts.append(f"{GATE_LABELS[i['code']]} ({len(i['ids'])}" + (f", {i['secret']} secret" if i.get("secret") else "") + ")")
+        if i["code"].startswith("promise"):         # a promise is no registry row: the public ones' count (the 22d audit:
+            public = len(i["ids"]) - int(i.get("secret") or 0)       # a secret one adds no number, only the closed gate)
+            parts.append(GATE_LABELS[i["code"]] + (f" ({public})" if public else ""))
             continue
         shown = [e for e in i["ids"] if e in proj and proj[e].get("type") not in SPOILER_TYPES
                  and proj[e].get("secrecy", "public") == "public"]
-        hidden = len(i["ids"]) - len(shown)
         ids = ", ".join(shown[:6]) + (f" +{len(shown) - 6}" if len(shown) > 6 else "")
-        extra = " · ".join(x for x in (ids, f"{hidden} hidden record(s)" if hidden else "") if x)
+        extra = ids                                 # the 22d audit: a hidden record adds no count to the line
         parts.append(GATE_LABELS.get(i["code"], i["code"]) + (f" ({extra})" if extra else ""))
     return ("- ⛔ **Gate closed:** " + " · ".join(parts)
             + " — approval is refused; passing needs `--force` and a reason.")
@@ -538,6 +538,9 @@ def build_card(campaign: str, phase: str) -> str:
     m = dm.load(campaign)
     if phase == "P1" and scripted_p1(m):
         return p1_card(campaign)
+    import design_cosmos_door as cd
+    if phase == "P2" and cd.applies(m):
+        return p2_card(campaign)            # build item 22d; a legacy birth's P2 card is built as before
     ph = m["phases"][phase]
     proj = projection(campaign)
     canon = canonical(campaign)
@@ -785,43 +788,179 @@ def p1_card(campaign: str) -> str:
         kinds[key] = [sum(1 for e in entries if not e.get("used_by")), len(entries)]
     L += ["## NAMES", "  " + (" · ".join(f"{dn.STOCK_WORDS.get(k, k)} {u} / {d}" for k, (u, d) in kinds.items() if d) or "—") + "   (unused / drawn)", ""]
 
-    c = dpr.counts(m["promises"], dpr.load_secret(campaign), "P1")
+    L += card_tail(campaign, "P1", m, ph, mine, files, attempt, rnd, proj, P1_MOVES,
+                   ["  D&D: " + " · ".join(("✓ " if ok else "✗ ") + k for k, ok in dnd_ticks(campaign, m))] if f.get("move") else [])
+    return "\n".join(L) + "\n"
+
+
+def card_tail(campaign: str, phase: str, m: dict, ph: dict, mine: dict, files: dict, attempt: int, rnd: int, proj: dict,
+              moves: tuple, extra_checks: list) -> list[str]:
+    """The promises, the checks, the changes and the owner's moves: the closing sections of a script-built card (P1's
+    since build item 14b, P2's since 22d)."""
+    import design_promises as dpr
+    c = dpr.counts(m["promises"], dpr.load_secret(campaign), phase)
     d = c["due"]
-    L += ["## PROMISES", f"  due at P1: {d['total']} — kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}" + (f", open {d['open']}" if d["open"] else "")]
-    L += [f"    not kept: {p['name']} → {p['text']}   (`{p['id']}`)" for p in m["promises"] if p["status"] == "not_kept"]
-    L += ["  open: " + (" · ".join(f"{k} {v}" for k, v in c["open_by_due"].items()) or "—"),
-          f"  secret: {c['secret']['open']} open, {c['secret']['kept']} kept, {c['secret']['not_kept']} not kept", ""]
+    L = ["## PROMISES", f"  due at {phase}: {d['total']} — kept {d['kept']}, not kept {d['not_kept']}, waived {d['waived']}" + (f", open {d['open']}" if d["open"] else "")]
+    L += [f"    not kept: {p['name']} → {p['text']}   (`{p['id']}`)" for p in m["promises"] if p["status"] == "not_kept" and p.get("due") == phase]
+    # the 22d audit (the owner): the secret layer as a status only, never a count
+    sec = dpr.load_secret(campaign)
+    if any(p.get("status") == "not_kept" for p in sec):
+        shut = any(i["code"].startswith("promise") and i.get("secret") for i in gate(campaign, phase))
+        status = "a secret promise is not kept" + (": the gate stays closed" if shut else " (a critic's verdict: the owner decides)")
+    elif any(p.get("status") == "open" and p.get("due") == phase for p in sec):
+        status = "not checked yet"
+    else:
+        status = "checked by script: all kept"
+    L += ["  open: " + (" · ".join(f"{k} {v}" for k, v in c["open_by_due"].items()) or "—"), f"  secret: {status}", ""]
 
     door = ph.get("door")          # build item 17: recorded by each merge the door ran; the report file is the fallback
     if door is None and "door" not in ph:
-        report = read_json(design_dir(campaign) / "_staging" / "P1" / "merge.report.json")
+        report = read_json(design_dir(campaign) / "_staging" / phase / "merge.report.json")
         door = None if report is None else {"refused": len(report.get("refused") or {})}
     door_line = "not run yet" if not door else "passed" if not door["refused"] else f"{door['refused']} unit(s) refused"
     validator_line = "not run yet" if not isinstance((ph.get("validator") or {}).get("errors"), int) else f"{ph['validator']['errors']} errors"
-    chains, phase_verdict, _, wishes_verdict, _ = critique_chains(dict(ph, id="P1"))
+    chains, phase_verdict, _, wishes_verdict, _ = critique_chains(dict(ph, id=phase))
     crit = ph.get("critique") or {}
-    val = ph.get("validator") or {}
-    per_module, findings = validator_summary(campaign, "P1")
-    closed = gate(campaign, "P1", findings=findings)
+    per_module, findings = validator_summary(campaign, phase)
+    closed = gate(campaign, phase, findings=findings)
     tokens_out = int((ph.get("tokens") or {}).get("out") or 0)
     L += ["## CHECKS", f"  door: {door_line} · critics: {crit.get('entity_loops_total') or 0} fix loop(s), "
           f"phase {phase_verdict}, wishes {wishes_verdict} · validator: {validator_line}",
-          *(["  D&D: " + " · ".join(("✓ " if ok else "✗ ") + k for k, ok in dnd_ticks(campaign, m))] if f.get("move") else []),
+          *extra_checks,
           "  " + gate_card_line(closed, proj).lstrip("- "),
           f"  cost: {f'{tokens_out:,}'.replace(',', '.') + ' tokens' if tokens_out else '—'}, {elapsed_minutes(ph)} min" + real_cost_text(ph), ""]
 
-    prev = previous_card(design_dir(campaign) / "_approval" / "P1.card.md")
+    prev = previous_card(design_dir(campaign) / "_approval" / f"{phase}.card.md")
     if prev and prev["attempt"] != attempt:
         L += [f"## CHANGES FROM THE PREVIOUS CARD (attempt {prev['attempt']} → {attempt})",
               f"  added: {', '.join(sorted(set(mine) - prev['ids'])) or '—'}", f"  removed: {', '.join(sorted(prev['ids'] - set(mine))) or '—'}",
               "  renamed: " + (", ".join(sorted(e for e in set(mine) & prev["ids"] if prev["names"].get(e, "") != (mine[e].get("name") or ""))) or "—"), ""]
     L += round_changes(prev, ph, mine, files, attempt, rnd, "## CHANGES FROM THE PREVIOUS CARD (correction round {a} → {b})")
 
-    L += ["## YOUR MOVES", "  " + " · ".join(what for what, _ in P1_MOVES)]
-    L += [f"    {what}: `{cmd.format(c=campaign)}`" for what, cmd in P1_MOVES]
+    L += ["## YOUR MOVES", "  " + " · ".join(what for what, _ in moves)]
+    L += [f"    {what}: `{cmd.format(c=campaign)}`" for what, cmd in moves]
     if m["_meta"].get("auto_approve"):
         L.append("  (a test birth: the card is approved automatically)")
     L.append(f"  produced: {now_iso()}")
+    return L
+
+
+# ── P2's card (build item 22d; docs/p2-tags.md S7 #4): English, built by script, no dice and no row id ──────────
+
+P2_MOVES = (("approve", 'designer.py -c {c} phase P2 approve --onay'),
+            ("rerun", 'designer.py -c {c} phase P2 rerun --reason "<why>" [--reseed]'),
+            ("waive a promise", 'designer.py -c {c} promise waive <id> "<one sentence>" --onay'))
+
+
+def p2_card(campaign: str) -> str:
+    """The cosmos in words: the gods with their ranks and domains, where the dead go, the touched planes, magic, the
+    ages and the dated events, the calendar and the start date. Built from the public records (`design.json#cosmos`)
+    and the rows' labels: no die, no row id, nothing of the cosmos's dm-only half (the threat's seats, its own home plane,
+    the mirror relation, a hidden name)."""
+    m = dm.load(campaign)
+    ph = m["phases"]["P2"]
+    cos = m["cosmos"]
+    proj = projection(campaign)
+    attempt = int(ph.get("attempt") or 1)
+    mine = {eid: e for eid, e in proj.items() if e.get("created_phase") == "P2" and e.get("type") not in SPOILER_TYPES
+            and e.get("secrecy", "public") != "secret"}
+    rnd, files = card_round(ph), public_file_digests(campaign, mine)
+    label = lambda ref, rid: (dt.row(ref, rid) or {}).get("label") or "—"
+    row = lambda lab, text: f"  {lab:<19} {text}"
+    P, PL, M, H, C = "pantheon.yaml#", "planes.yaml#", "magic.yaml#", "history.yaml#", "calendar.yaml#"
+    gods = {g["n"]: g for g in cos["gods"]}
+    gname = lambda n: (gods[n].get("name") or gods[n].get("epithet") or "—") if n in gods else "—"
+    domains = {r["id"]: r["label"] for r in dt.rows(P + "domain_scaffold")}
+    L = [f"# P2 — THE COSMOS            campaign: {campaign}   attempt {attempt}" + (f" · correction round {rnd}" if rnd else ""),
+         f"<!-- attempt: {attempt} -->", *round_marks(rnd, files), f"<!-- ids: {','.join(sorted(mine))} -->",
+         "<!-- names: " + "|".join(f"{eid}={e.get('name', '')}" for eid, e in sorted(mine.items())) + " -->", ""]
+
+    c = cos["counts"]
+    n_of = lambda n, one, many: f"{n} {one if n == 1 else many}"
+    L += ["## THE PANTHEON", row("The gods", f"{label(P + 'type', cos['type'])} · {label(P + 'presence', cos['presence'])}"),
+          row("", f"{n_of(c['gods'], 'god', 'gods')}: {c['greater']} greater, {c['lesser']} lesser, "
+                  f"{n_of(c['power'], 'power', 'powers')}; {c['great']} great")]
+    for g in cos["gods"]:
+        name = g.get("name") or "(its name is not spoken)"
+        great = ", great" if g.get("great") else ""
+        L.append(row("", f"{name}, \"{g.get('epithet') or '—'}\" — {g['rank']}{great}; "
+                         f"{', '.join(domains.get(d, d) for d in g['domains'])}; {g['alignment']}"))
+    after = cos.get("afterlife") or {}
+    dead = label(P + "afterlife", after.get("row"))
+    if after.get("judge") is not None:
+        dead += f" (the judge: {gname(after['judge'])})"
+    if after.get("plane") is not None:
+        dead += f" (the land: {next((pl.get('name') for pl in cos['planes'] if pl['n'] == after['plane']), '—')})"
+    L += [row("Where the dead go", dead), ""]
+
+    L += ["## THE PLANES"]
+    for pl in cos["planes"]:
+        keeper = pl.get("keeper") or {}
+        import design_cosmos as dcos
+        kept = gname(keeper["god"]) if "god" in keeper else dcos.creature_name(keeper["creature"]) if keeper.get("creature") else "—"
+        base = "the moon" if pl["baseline"] == "moon" else label(PL + "baseline", pl["baseline"])
+        dev = label(PL + "deviation", pl["deviation"]).lower()
+        if pl.get("merged_with"):
+            partner = label(PL + "baseline", pl["merged_with"])
+            partner = ("the " + partner[4:] if partner.startswith("The ")
+                       else "the plane " + partner[0].lower() + partner[1:] if partner.startswith("Between ") else partner)
+            dev += f" with {partner}"
+        L.append(row(pl.get("name") or "—", f"{base} — {dev}; time: "
+                                           f"{label(PL + 'time_rate', pl['rate']).lower()}; way in: {label(PL + 'way_in', pl['way']).lower()}; "
+                                           f"cost: {label(PL + 'cost', pl['cost']).lower()}; keeper: {kept}"))
+    L.append("")
+
+    mag = cos["magic"]
+    reg = mag.get("regulator") or {}
+    # the roller writes a church as "the church of god <n>": the card says the god's name
+    services = re.sub(r"\bgod (\d+)\b", lambda x: gname(int(x.group(1))), str(mag.get("services") or "—"))
+    # the 22d audit: the signature institution by its name; the services once, when the regulator gives them
+    inst = next((e.get("name") for e in proj.values() if e.get("type") == "signature" and e.get("slot") == "institution"), None)
+    who = inst if reg.get("row") == "regulator_signature_institution" and inst else str(reg.get("who") or "—")
+    if services in (str(reg.get("who")), who):
+        services = "the regulator itself"
+    L += ["## MAGIC", row("Source", label(M + "source", mag["source"])), row("Limits", label(M + "constraint", mag["constraint"])),
+          row("Casting looks", label(M + "visibility", mag["visibility"])),
+          row("Taboos", " · ".join(label(M + "taboo", t) for t in mag["taboos"])),
+          row("Regulator", f"{who} ({mag.get('strictness') or '—'}); the services: {readable(services, proj)}"),
+          row("Wild magic", label(M + "wild", mag["wild"])), ""]
+
+    cal = cos["calendar"]
+    year0 = int(cal["start_year"])
+    st = cal["start"]
+    L += ["## HISTORY", row("The ages", " → ".join(a.get("name") or "—" for a in cos["ages"]))]
+    for e in sorted(cos["events"], key=lambda e: -(e.get("years_ago") or 0)):
+        ago = e.get("years_ago")
+        to_come = f"to come, in {st['days_to_next_step']} days" if st.get("days_to_next_step") else "to come"
+        when = f"year {year0 - int(ago)}" if ago is not None else to_come if e.get("seat") == "move" else "—"
+        L.append(row("", f"{when}: {e.get('name') or '—'}"))
+    if cos.get("deep_events"):
+        L.append(row("Before the record", " · ".join(e.get("name") or "—" for e in cos["deep_events"])))
+    L.append("")
+
+    months = cal.get("month_names") or []
+    month = lambda n: months[n - 1] if months and 1 <= n <= len(months) else str(n)
+    fests = " · ".join(f"{f.get('name') or '—'} ({f['day']} {month(f['month'])})"
+                       for f in sorted((f for f in cal["festivals"] if f.get("month")), key=lambda f: (f["month"], f["day"])))
+    dated = []
+    for key, d in (cal.get("dated") or {}).items():
+        when = f"{month(d['month'])} {d['year']}" if "day" not in d else f"{d['day']} {month(d['month'])} {d['year']}"
+        dated.append(f"{key.replace('_', ' ')}: {when}")
+    L += ["## THE CALENDAR", row("The year", f"{cal['months']} months of {cal['month_length']} days, a {cal['week_days']}-day week"),
+          row("Months", ", ".join(months) or "—"), row("Days", ", ".join(cal.get("day_names") or []) or "—"),
+          row("Climate", label(C + "climate", cal["climate"])),
+          row("Moon", label(C + "moon", cal["moon"]) + (f": {', '.join(cal.get('moon_names') or [])}" if cal.get("moon_names") else "")),
+          *([row("Months counted by", label(C + "underground_count", cal["underground_count"]))] if cal.get("underground_count") else []),
+          row("Festivals", fests or "—")]
+    if dated:
+        L.append(row("Dated days", " · ".join(dated)))
+    # the anchor once, with its day count where it has one (the 22d re-audit)
+    anchor = (f"{st['after_move_days']} days after the move's last step" if st.get("after_move_days")
+              else f"{st['days_to_next_step']} days before the move's next step" if st.get("days_to_next_step")
+              else label(C + "start_anchor", cal["start_anchor"]).lower())
+    L += [row("The start", f"{st['day']} {month(st['month'])} {st['year']} — {anchor}"), ""]
+
+    L += card_tail(campaign, "P2", m, ph, mine, files, attempt, rnd, proj, P2_MOVES, [])
     return "\n".join(L) + "\n"
 
 
@@ -871,11 +1010,15 @@ def record_critique(campaign: str, phase: str, file: str, critic: int) -> int:
     if verdict not in VERDICTS or not isinstance(entity, str) or not SLUG.match(entity):
         print("design_approval: a critic return needs entity_id and a verdict of pass / fix / rerun", file=sys.stderr)
         return 1
-    # build item 14c: P1 of a birth whose rolls the script sealed has no `rerun`: only the owner rerolls
-    if phase == "P1" and scripted_p1(dm.load(campaign)) and (verdict == "rerun" or any(
-            isinstance(f, dict) and f.get("verdict") == "rerun" for f in ret.get("findings") or [])):
-        print("design_approval: a P1 critic return says `rerun`, refused: the rolls are sealed and only the owner rerolls; "
-              "the verdict is pass or fix (the premise is rewritten on the same rolls)", file=sys.stderr)
+    # build item 14c: P1 of a birth whose rolls the script sealed has no `rerun`: only the owner rerolls; build item 22d: nor
+    # has a script-rolled P2
+    import design_cosmos_door as cd
+    m_now = dm.load(campaign)
+    sealed = (phase == "P1" and scripted_p1(m_now)) or (phase == "P2" and cd.applies(m_now))
+    if sealed and (verdict == "rerun" or any(isinstance(f, dict) and f.get("verdict") == "rerun" for f in ret.get("findings") or [])):
+        what = "premise" if phase == "P1" else "cosmology"
+        print(f"design_approval: a {phase} critic return says `rerun`, refused: the rolls are sealed and only the owner rerolls; "
+              f"the verdict is pass or fix (the {what} is rewritten on the same rolls)", file=sys.stderr)
         return 1
     findings = []
     terms = None

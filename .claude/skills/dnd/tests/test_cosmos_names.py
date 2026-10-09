@@ -28,7 +28,7 @@ from test_cosmos_roll import pin_of, pools_of  # noqa: E402
 
 DOC = dt.load("naming.yaml")
 PATTERNS = {p["id"]: p for rows in DOC["patterns"].values() for p in rows}
-GOD_TYPES = {"evtype_silencing", "evtype_miracle", "evtype_heresy", "evtype_war"}
+GOD_TYPES = {"evtype_miracle", "evtype_heresy"}      # the 22d audit (the owner); a silencing only under `god_when`
 BIRTHS = 150           # every other one of the first 150: the scale turns every 45 births, so all three stand
 
 
@@ -78,7 +78,9 @@ class Tables(unittest.TestCase):
         # the 22n audit: the referent's kind is the type's table fact; a god only where the story is a god's
         refs = {r["id"]: r.get("name_referent") for r in dt.rows("history.yaml#event_type")}
         self.assertEqual({k for k, v in refs.items() if "god" in v}, GOD_TYPES)
-        self.assertEqual(refs["evtype_silencing"], ["god"])
+        self.assertEqual(refs["evtype_silencing"], ["person", "place"])
+        self.assertEqual(dt.row("history.yaml#event_type", "evtype_silencing")["god_when"], ["pantheon_silent_gods", "rel_silenced_one"])
+        self.assertEqual(refs["evtype_war"], ["place", "person"])
         self.assertEqual(refs["evtype_wreck_or_loss"], ["ship", "place"])
         for k in ("evtype_founding", "evtype_treaty", "evtype_disaster", "evtype_plague", "evtype_migration",
                   "evtype_vanishing", "evtype_naming", "evtype_building"):
@@ -159,7 +161,10 @@ class Corpus(unittest.TestCase):
                 self.assertEqual(ruin["name"].removeprefix("The Age of "), fall["name"].removeprefix("the Fall of "))
             move = next((e for e in pub["events"] if e.get("seat") == "move"), None)
             present = pub["ages"][-1]
-            if move:
+            if move and R1.ctx.has("time_coming") and ruin and present["from_ago"] > 30:
+                # the 22d re-audit: a present begun long before a move still to come is the age after the fall
+                self.assertEqual(present["name"], "The Age after " + ruin["name"].removeprefix("The Age of "))
+            elif move:
                 eve = "The Eve of the " if R1.ctx.has("time_coming") else "The Age of the "
                 self.assertEqual(present["name"], eve + move["name"].removeprefix("the "))
             gods_named = {g["name"] for g in pub["gods"] if g.get("name")}
@@ -169,7 +174,12 @@ class Corpus(unittest.TestCase):
                     self.assertTrue(e["name"].startswith("the Silencing of "), e["name"])
                 ref = e["name"].split(" of ", 1)[-1]
                 if ref in gods_named and e.get("seat") in (None, "origin"):
-                    self.assertIn(typ, GOD_TYPES, f"{R1.master}: a god referent outside the god types: {e['name']}")
+                    if typ == "evtype_silencing":       # a silent pantheon, or the silenced god of the web
+                        names = {g["n"]: g.get("name") for g in pub["gods"]}
+                        silenced = {names[r["b"]] for r in pub["relations"] if r["relation"] == "rel_silenced_one"}
+                        self.assertTrue(pub["type"] == "pantheon_silent_gods" or ref in silenced, f"{R1.master}: {e['name']}")
+                    else:
+                        self.assertIn(typ, GOD_TYPES, f"{R1.master}: a god referent outside the god types: {e['name']}")
                 if typ == "evtype_wreck_or_loss" and e.get("seat") is None:
                     self.assertTrue(e["name"].startswith(("the Wreck of the ", "the Loss of ")), e["name"])
                 if e["name"].startswith("the Fall of "):
@@ -177,6 +187,10 @@ class Corpus(unittest.TestCase):
             for pl in pub["planes"]:
                 if pl["baseline"] == dc.MOON:
                     self.assertEqual(pub["calendar"]["moon_names"], [pl["name"]])
+            # the 22d audit: a moon's second pattern is a person-like name of the common tongue, one word
+            for e in pool["cosmos"]["moons"]:
+                if e["pattern"] == "pattern_moon_fresh":
+                    self.assertTrue(e["name"].isalpha() and e["name"] == e["word"], e)
 
     def test_no_two_names_collide_and_none_is_blacklisted(self):
         bl, ok = registry.naming_blacklist(), dn.name_checker(set())

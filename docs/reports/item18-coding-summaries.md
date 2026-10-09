@@ -931,3 +931,144 @@ Tests added to `test_cosmos_names`: the referent kinds per type in the data; ove
 **The first suite** (before the audit round): 945 tests, OK, exit code 0, 2,552 s (42.5 min). No `aigm-*` folder left by my run (the two dated 17:01 on 2026-10-08 are the earlier ones).
 
 **The suite after the audit round:** 945 tests, OK, exit code 0, 2,575 s (42.9 min). No `aigm-*` folder left by my runs (the two dated 17:01 on 2026-10-08 are the earlier ones).
+
+## 22d — the cosmos writer, critics and card (the seventh coding tab)
+
+**What it does.** P2's writer now writes on the script's frame, as P1's does since 18e/20a: it copies every rolled field and every pooled name, fills only the fields `fill` names, checks its fragment with `registry.py check`, invents no proper noun and decides nothing a table decides. The rubrics are rewritten on the threat (S7 #2). A script-rolled P2's critics judge craft only. The owner reads a P2 card built by script: no die, no row id, nothing secret.
+
+**The design tab's answers** (2026-10-09, both as P1 does it):
+1. A script-rolled P2's critics give pass or fix only (`p2_craft_only` beside `p1_craft_only`); a rerun is the owner's reroll. P1's other critic guard holds as it already did at every phase: a fix on a rubric the critic was not given is refused (19a).
+2. The old prompt and template are kept unchanged as `P2.cosmos.legacy.md` / `templates/design/cosmology.legacy.md`, for a birth with no foundation. The legacy prompt gains one line naming its template.
+
+**The writer** (`prompts/design/P2.cosmos.md`, rewritten):
+- **What it is given:**
+  - `design.json#cosmos` (every part named);
+  - the rolls' lines (`{{phase_rolls}}`);
+  - P1's ground;
+  - the promises block;
+  - the secret layer, read with the Read tool (`dice-log.json` under `cosmos`, `threat`, `identity`).
+- **What it writes:**
+  - the pantheon, so that a cleric or paladin player can choose a god and a domain; the god story on its god; where the dead go; a villain's god only when the threat pins one, and then by its public face only;
+  - each touched plane, with one line on how the SRD's plane spells answer;
+  - magic in a native's words, with the services and their price. No line stops or changes a character's spells (S4);
+  - the history, with the frame's years; witness lists for the seated story events only;
+  - the calendar: the frame's names, one felt line per month (`calendar.seasons`), the festivals, the dated days and the start date;
+  - the mirror: the true layers, the pinned god's part and true name, the unnamed god's hidden name, the epic home of its own, a vulnerable time.
+- **The registry rows from the frame:** each row type's `fill` fields listed; the container carries `seeds` and `calendar` as framed.
+- **Gone:** "the big secret usually hides in this layer", "all months 30 days", the per-god secret with a tier, "name which god embodies the villain's answer".
+- **Template** `templates/design/cosmology.md` rewritten on the frame. It covers the pantheon (with the god story), where the dead go, the planes (with the primer's plane-spell line), magic (with the services and the 2014-rules line), history and the calendar (12 × 28, a seven-day week, felt months, festivals, dated days, the start date). The mirror carries the pinned god, the true events, the hidden name, the home plane and the vulnerable time.
+
+**Rubrics** (`rubrics.yaml`, not a stamped table):
+- `rubric_p2_gods_carry_question` is rewritten as "the cosmos carries the threat": a pinned god stands by its public face, its truth in the mirror only; the planes P1 names are touched and told; each side of the question has a god or a rite.
+- `rubric_p2_history_diverges` is rewritten as "the threat on the timeline": the move, the ruin's age and the villain's origin stand as the frame dates them, and only the rolled divergences differ, without a second secret.
+- `rubric_p2_calendar_felt` is kept.
+- `rubric_p2_dnd_legible` is new: a god and a domain to choose, the plane spells answered, no magic line breaking a class's rules, the threat's dates on the calendar.
+- `p2_craft_only` is new.
+
+**Code:**
+- **`design_prompts.py`:**
+  - `scripted_p2(manifest, phase)` is true for P2 when `design_cosmos_door.applies(manifest)`;
+  - the critics' lines for a scripted P2: they read the cosmology, the cosmos records and the frame (`P2_ROLLS`), pass or fix only, and the schema has no rerun;
+  - `rubric_lines(..., sealed_p2)` prints "Craft only" for a scripted P2;
+  - `P2.cosmos` renders as `P2.cosmos.legacy` for a birth with no foundation;
+  - `SECRET_READERS` gains the legacy prompt.
+- **`design_approval.py`:**
+  - `record_critique` refuses a `rerun` from a scripted P2's critic, as it does for P1;
+  - the new `p2_card(campaign)`, dispatched by `build_card` when the cosmos applies:
+    - the pantheon: type, presence, counts, each god with its name, epithet, rank, great, domains and alignment; the unnamed god "its name is not spoken";
+    - where the dead go: the judge or the land by name;
+    - the planes: each by its pooled name, with its baseline label, deviation, time, way in, cost and keeper;
+    - magic in words: a church's services name the god, not "god 3";
+    - the ages; the dated events by year, the move "to come" under `time_coming`; the deep past;
+    - the calendar: the year, the months, the days, the climate, the moon with its names, the festivals with their dates, the dated days, the start date with its anchor;
+    - then the promises, the checks and the moves.
+  - P1's closing sections (promises, checks, changes, moves) moved into `card_tail(...)`, shared by both cards. P1's output is unchanged; its "not kept" list now filters on promises due at the card's phase, which at P1 is the same set.
+  - A legacy birth's P2 card is built as before.
+- **`render_player.py`:** an event's taught line is read through `text_field(ev, "taught")` (22c's rows hold `taught`; a legacy row's `taught_tr` still loads). This was the 22c handoff's note for 22d.
+
+**Tests:**
+- **New `test_p2_writer.py`:**
+  - the prompt's words (the frame, fill, copy unchanged, no proper noun, decide nothing, `registry.py check`, the pinned god, the 2014 rules) and the gone words, in the prompt and the template; the rubrics' words and `p2_craft_only`;
+  - on an on-disk standard birth whose P1 pins a god (P2Walk, seed COSMOS-PIN-17), merged through the door:
+    - the writer's prompt renders on the frame;
+    - both critics' prompts say "Craft only" and offer no rerun;
+    - a P2 `rerun` return is refused, and so is a fix on a rubric the critic was not given;
+    - the card holds every god, domain, plane, age, month and day, "12 months of 28 days, a 7-day week", no die, no P2 row id, no hidden name and no word of the secret seats; `write_card` passes the leak scan;
+  - the legacy fixture: the legacy prompt and template, the old card, no "Craft only".
+- **Updated:** `test_design_templates` (the legacy template), `test_promises` (the legacy prompt's audience).
+
+**Seen while testing (22b's roller, for the design tab):** in 14 of 600 corpus births two festivals fall on the same day (2 of them on the holy day). The dates are drawn independently, so this is the birthday chance: five festivals over 336 days. A rule "festivals on distinct days" would be a small roller change.
+
+**Changed files:**
+- prompts: `P2.cosmos.md` (rewritten), `P2.cosmos.legacy.md` (new, the old one);
+- templates: `cosmology.md` (rewritten), `cosmology.legacy.md` (new, the old one), `README.md`;
+- data: `rubrics.yaml`;
+- scripts: `design_prompts.py`, `design_approval.py`, `render_player.py`;
+- tests: `test_p2_writer.py` (new), `test_design_templates.py`, `test_promises.py`.
+
+**The audit round** (the design tab walked three births on disk and read their cards; 14 fixes, plus 4 items the owner approved):
+1. **The door's prose scan at P2.** `CosmosDoor` runs `design_door.stray_capitals` on the public prose, on every public row's text fields, and on the mirror (there the words go to the dm-only door log, and the conductor sees a count). Known words:
+   - the pooled names (the cosmos section too);
+   - the registered rows' names and aliases, and the words of person and god names;
+   - a church composed as `<building word> of <god>`;
+   - the language labels;
+   - the closed list, the domain labels, the alignments, and the SRD's plane words (`PLANE_WORDS`: Astral, Ethereal, Material, Elemental, Plane(s), Inner, Outer, Air, Earth, Fire, Water, Border, Deep).
+2. **Divergences are discoverable.** A divergent unseated event carries a public `as_happened` field (in `fill`), written in the public file's Discoverable section. Only the villain's origin keeps `dm_only.happened`. The god story is in Discoverable only.
+3. **The mirror lists every god the threat seats** (the threat's god and a god behind it), not "the pinned god".
+4. **The underground count** is in the prompt's given list, the template's calendar and the card.
+5. **The two rubrics that judge the mirror** (`gods_carry_question`, `history_diverges`) take scope `dm-only`. The entity critic, which reads the mirror and the cosmos's secret half, gets them; the phase critic does not.
+6. **Churches** are called by the temple pattern ("the <building word> of <god>") or a common noun, never a new name (P4 names the factions). The regulator is called by its common noun or the signature institution's name.
+7. **The pilgrim road's god:** the writer writes its road, its holy place and its pilgrims.
+8. **Eras by the script** (`assign_eras`, step 5):
+   - the first age has no beginning; the deep-past events are its;
+   - the present begins at the move, or at a die for the eve of a coming move;
+   - the ruin's age ends at its fall, and the next age begins there. When that next age is the present, the present begins at the fall and the move falls inside it: at short the three ages are first, ruin, present, so the move cannot be the boundary;
+   - the other boundaries are rolled between their neighbours (`span.age_<n>.begins`), as far back as 1.5 × the years covered;
+   - an event on a boundary belongs to the age it begins; the ruin's fall belongs to the ruin's age;
+   - the frame sets an age's `span` ({from, to} years) and an event's `era`; neither is in `fill` now.
+9. **`dev_merged` rolls its partner** (`merge_partners`): an outer plane's two ring neighbours by alignment, else a plane of its own group (the realm beyond: any plane). It is a frame field `merged_with`, on the card too. A secret plane writes the label always (the swap test).
+10. **Festivals on distinct days.** A festival's day die counts its month's free days. The holy day's offset counts only the days no other festival holds.
+11. **Keepers:**
+   - a lower or upper plane that leans lawful takes devils (or lawful celestials), one that leans chaotic takes demons (or chaotic celestials); a purely neutral one takes any;
+   - a creature's other form (`<base>, <form> Form`, e.g. the vampire's bat form) is never a keeper;
+   - the card prints the index name (`creature_name`).
+12. **The card:**
+   - "1 power", never "power(s)";
+   - the regulator by the institution's name when it is the signature institution, and its services once ("the regulator itself");
+   - the coming move "to come, in N days";
+   - the anchor with its day count;
+   - the festivals in calendar order;
+   - "the Founding of the <institution>" with its article (the roller adds "the" unless the name has it or is a House).
+13. **The rolls block:** `Roller.count` marks its record `count: true`, and the prompt says "— produce exactly this many" after those only. Another value prints as "`label` = **value**". A legacy log without the mark reads as before.
+14. **One predicate for legacy:** `design_cosmos_door.applies` decides the prompt (`render` through `scripted_p2`), the critics, the card and the door.
+
+**The owner's four:**
+15. **Referents:**
+   - a god's name only for a miracle and a heresy;
+   - a silencing takes a god only under a silent pantheon (any god) or when the web holds `rel_silenced_one` (that relation's earlier god); else a person or a place (`god_when` on the row);
+   - a war takes a place or a person.
+16. **`dev_reachable_by_death`** stands only on an outer plane or the shadow echo (`on_planes` on the row; the roller excludes it elsewhere).
+17. **The moon's second pattern** is a person-like bag name of the common tongue (`pattern_moon_fresh` now a `bag_word` of its `lang`), never a place pattern.
+18. **No secret count on the P1 and P2 cards:** the card tail prints the secret layer as a status ("not checked yet", "checked by script: all kept", "a secret promise is not kept: the gate stays closed", or "… (a critic's verdict: the owner decides)" when the gate is open, as for a critic's verdict). The gate line names no hidden-record count and no secret promise count. Every check is unchanged.
+
+Tables re-stamped (`history.yaml`'s war and silencing rows, `planes.yaml`'s `dev_reachable_by_death`, `naming.yaml`'s `pattern_moon_fresh`). Tests:
+- `test_cosmos_roll`'s faults (over 3,000 births): festivals on distinct days, the merged plane's partner, no other form as keeper, the chaotic-leaning planes' keepers, reachable by dying only on outer planes and the shadow echo, the ages' spans in order, every event inside its age (the fall in the ruin's age, the move in the present, the deep past in the first age);
+- `test_cosmos_names`: the referent rules and the moon's bag name;
+- `test_cosmos_door`: an invented capital refused, the plane words, a domain, an alignment and a church passing;
+- `test_p2_writer`: the prompt's and the template's new words, the rubric scopes, the card's grammar, regulator and festival order, counts only on counts;
+- the P1 card's, the dry walk's and the promises' secret lines read the status.
+
+**The first suite** (before the audit round): 951 tests, OK, exit code 0, 3,732 s (62 min; slower than usual, a corpus probe of mine ran beside it). No `aigm-*` folder left by my run (the two dated 17:01 on 2026-10-08 are the earlier ones).
+
+**The suite after the audit round:** 952 tests, OK, exit code 0, 3,498 s (58 min). No `aigm-*` folder left by my runs.
+
+**The re-audit round** (the design tab re-rendered the three cards; six last fixes, its decisions inside the owner's rulings):
+1. **The silenced one is never a greater god:** `rel_silenced_one` is not drawn between two greater gods; when its earlier end (`b`) is greater, the relation's other end is the silenced one. So a silenced god keeps no great church and no named feast.
+2. **Divergences fit their events:** `fits_types` on each `history.yaml#divergence` row (`any` for "the date is wrong" and "two events were one"); the draw takes only the rows that fit the event's type. `div_two_events_were_one`'s hook now reads "the folk tell it as two events; the discoverable truth says it was one". Stamped.
+3. **No boundary at or below year 0; every age but the first and the present lasts at least 20 years** (`MIN_AGE`). The start year is rolled above the oldest boundary as well as the years covered (`oldest + 1` to `oldest + 300`), so every boundary falls in year 1 or later.
+4. **A present that began more than 30 years before a move still to come** (at short it begins at the ruin's fall) is "The Age after <W>", W being the ruin's old-tongue word, and not an eve.
+5. **The eight in-between outer planes** are labelled "Between Chaotic Evil and Neutral Evil (the Prison Orbs)" and so on (labels only; stamped).
+6. **The card:** "merged with the Elemental Chaos" (the article lower-cased mid-line; an in-between plane reads "the plane between …"); the anchor stated once with its count ("33 days before the move's next step"); the gate line says what its count counts ("a due promise has no critic's verdict (9)").
+Tests: `test_cosmos_roll`'s faults gained the boundary year, the 20-year ages, divergence fit and the silenced rank; `test_cosmos_names` checks the present's name, "The Age after <W>" included.
+
+**The suite after the re-audit round:** 952 tests, OK, exit code 0, 3,579 s (60 min). No `aigm-*` folder left by my runs.

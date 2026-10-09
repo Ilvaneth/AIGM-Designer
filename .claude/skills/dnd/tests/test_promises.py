@@ -353,7 +353,7 @@ class OnDisk(unittest.TestCase):
         due = [p for p in public if p["due"] == "P1"]
         self.assertIn(f"  due at P1: {len(due)} — kept 0, not kept 0, waived 0, open {len(due)}", card)
         self.assertIn("  open: P0 2 · P1 ", card)
-        self.assertIn(f"  secret: {len(secret)} open, 0 kept, 0 not kept", card)
+        self.assertIn("  secret: not checked yet", card)          # the 22d audit: a status, never a count
         design = (self.dir / "design/design.json").read_text(encoding="utf-8")
         for n, p in enumerate(secret):
             for where, text in (("design.json", design), ("the card", card), ("the preroll's printout", self.preroll.stdout)):
@@ -625,7 +625,7 @@ class Delivery(unittest.TestCase):
 
     def test_who_gets_the_block(self):
         import design_prompts as dpm
-        want = {"P1.premise": "writer", "P1.premise.legacy": "writer", "P2.cosmos": "writer", "P3.skeleton": "writer", "P4.skeleton": "writer", "P5.skeleton": "writer",
+        want = {"P1.premise": "writer", "P1.premise.legacy": "writer", "P2.cosmos": "writer", "P2.cosmos.legacy": "writer", "P3.skeleton": "writer", "P4.skeleton": "writer", "P5.skeleton": "writer",
                 "P6.skeleton": "writer", "P7.skeleton": "writer", "P8.primer": "writer", "P9.thread": "writer", "P9.session1": "writer",
                 "phase_critic": "critic"}
         got = {}
@@ -743,7 +743,7 @@ class Inspection(unittest.TestCase):
         card = da.build_card(self.name, "P1")
         self.assertRegex(card, r"due at P1: \d+ — kept \d+, not kept 1, waived 0")
         self.assertIn(f"    not kept: {first['name']} → {first['text']}   (`{first['id']}`)", card)
-        self.assertRegex(card, r"  secret: \d+ open, \d+ kept, 1 not kept")
+        self.assertIn("  secret: a secret promise is not kept", card)
         design = (self.dir / "design/design.json").read_text(encoding="utf-8")
         report = designer_run("designer.py", "-c", self.name, "phase", "P1", "report").stdout
         self.assertIn(f"judged not kept 1 [{first['id']}]", report)
@@ -788,7 +788,7 @@ class Inspection(unittest.TestCase):
         self.assertIn(hidden["id"], design, "the revision log names it by id")
         self.assertNotIn(json.dumps(hidden["text"], ensure_ascii=False)[1:-1], design)
         self.assertEqual(next(p for p in dp.load_secret(self.name) if p["id"] == hidden["id"])["status"], "waived")
-        self.assertRegex(da.build_card(self.name, "P1"), r"  secret: \d+ open, \d+ kept, 0 not kept")
+        self.assertNotIn("a secret promise is not kept", da.build_card(self.name, "P1"))
         # outside a test birth it asks for the owner's word, and no prompt or workflow calls it
         import argparse
         ns = argparse.Namespace(step="waive", id=mine["id"], sentence="x", onay=False, phase=None, status=None, dm_only=False)

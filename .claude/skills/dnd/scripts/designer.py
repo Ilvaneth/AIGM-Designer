@@ -279,11 +279,12 @@ class Roller:
         lo, hi = band(value)
         if lo == hi:
             rec = self._record(label, None)
-            rec.update({"notation": "fixed", "raw": None, "value": lo})
+            rec.update({"notation": "fixed", "raw": None, "value": lo, "count": True})
             self._keep(rec, False)
             return lo
         rec = self.notation(label, f"d{hi - lo + 1}")
         rec["value"] = lo + int(rec["raw"]) - 1
+        rec["count"] = True             # build item 22d: the prompt says "produce exactly this many" for counts only
         return rec["value"]
 
     def flush(self) -> tuple[int, int]:

@@ -219,6 +219,19 @@ class Door(unittest.TestCase):
         names += [f["name"].lower() for f in block["festivals"]] + [n.lower() for n in block["moon"]["names"]]
         self.assertEqual(len(names), len(set(names)), "no two names of the campaign collide")
 
+    def test_an_invented_proper_noun_is_refused_and_the_plane_words_pass(self):
+        """The 22d audit: P1's prose scan at P2 too. A capitalised word no pool holds is refused; the SRD's plane words,
+        a domain, an alignment and a church by the temple pattern pass."""
+        god = next(e["registry"]["name"] for e in self.p2.frame["rows"].values() if e["registry"]["type"] == "god" and e["registry"]["name"])
+        dom = next(e["registry"]["domains"][0] for e in self.p2.frame["rows"].values() if e["registry"]["type"] == "god")
+        self.p2.write(prose_extra=f"the Astral Plane and the Ethereal answer plane shift; the Temple of {god} keeps the {dom} rites, LN by creed.")
+        proc = self.p2.merge()
+        self.assertNotIn("capitalised word", proc.stderr, proc.stderr[-1500:])
+        self.setUp()
+        self.p2.write(prose_extra="the folk of the Gloamreach Kingdom pray here.")
+        err = self.refused(self.p2.merge())
+        self.assertIn("the capitalised word 'Gloamreach' is no pooled or registered name", err)
+
     def test_an_edited_cosmos_breaks_the_seal(self):
         m = dm.load(self.p2.w.name)
         m["cosmos"]["counts"]["gods"] += 1

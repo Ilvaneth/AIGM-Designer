@@ -158,13 +158,14 @@ class Card(unittest.TestCase):
         card = da.build_card(self.name, "P1")
         self.assertIn(f"  due at P1: {c['due']['total']} — kept 0, not kept 0, waived 0, open {c['due']['open']}", card)
         self.assertIn("  open: " + " · ".join(f"{k} {v}" for k, v in c["open_by_due"].items()), card)
-        self.assertIn(f"  secret: {len(secret)} open, 0 kept, 0 not kept", card)
+        self.assertIn("  secret: not checked yet", card)          # the 22d audit: a status, never a count
         mine = next(p for p in public if p["due"] == "P1" and p["check"] == "critic")
         hidden = next(p for p in secret if p["due"] == "P1" and p["check"] == "critic")
         dp.judge(self.name, "P1", [{"id": mine["id"], "verdict": "not_kept"}, {"id": hidden["id"], "verdict": "not_kept"}])
         card = da.build_card(self.name, "P1")
         self.assertIn(f"    not kept: {mine['name']} → {mine['text']}", card)
-        self.assertRegex(card, r"  secret: \d+ open, 0 kept, 1 not kept")
+        self.assertIn("  secret: a secret promise is not kept (a critic's verdict: the owner decides)", card)
+        self.assertNotRegex(card, r"secret: \d|\d+ secret\)|hidden record")
         self.assertNotIn(hidden["text"], card)
         self.assertNotIn(hidden["id"], card)
 

@@ -43,6 +43,7 @@ records allow: no seats, no named planes, no seated events.
 from __future__ import annotations
 
 import os
+import re
 import sys
 from functools import lru_cache
 
@@ -523,7 +524,7 @@ def dn_take(pool: dict | None, key: str, eid: str, where=None) -> dict | None:
     return dn.cosmos_take(pool, key, eid, where)
 
 
-HOME_LABELS = ("home.deviation", "home.rate", "home.way", "home.cost", "home.keeper")
+HOME_LABELS = ("home.deviation", "home.rate", "home.way", "home.cost", "home.merged_with", "home.keeper")
 
 
 def bind_home(R, dials: dict, out: dict, secret: dict, gods: list[dict], names: dict | None = None) -> None:
@@ -593,7 +594,12 @@ def roll_plane(R, base: str, k, pid: str, named_by: list[str], on_this: bool, se
         dev = R.forced(f"{base}.deviation", PL + "deviation", "dev_is_this_world", "the moon is a place in this world (planes.yaml rules.moon_seat)",
                        secret=secret)["row_id"]
     else:
-        dev = R.table(f"{base}.deviation", PL + "deviation", avoid=False, exclude={"dev_removed"}, secret=secret)["row_id"]
+        # a deviation row's `on_planes` names the planes it may stand on (the 22d audit: reachable by dying only on an
+        # outer plane or the shadow echo)
+        prow = dt.row(PL + "baseline", pid) or {}
+        off = {r["id"] for r in dt.rows(PL + "deviation") if r.get("on_planes")
+               and prow.get("group") not in (r["on_planes"].get("groups") or []) and pid not in (r["on_planes"].get("rows") or [])}
+        dev = R.table(f"{base}.deviation", PL + "deviation", avoid=False, exclude={"dev_removed"} | off, secret=secret)["row_id"]
     rate = R.table(f"{base}.rate", PL + "time_rate", avoid=False, weigh=rate_weigh(on_this), secret=secret)["row_id"]
     way = R.table(f"{base}.way", PL + "way_in", avoid=False, secret=secret)["row_id"]
     if dev == "dev_reachable_by_death":
@@ -601,8 +607,27 @@ def roll_plane(R, base: str, k, pid: str, named_by: list[str], on_this: bool, se
                        why="a plane reachable by dying (the row's own hook)", secret=secret)["row_id"]
     else:
         cost = R.table(f"{base}.cost", PL + "cost", avoid=False, secret=secret)["row_id"]
+    # the 22d audit: a merged plane is one with a partner, rolled: a ring neighbour of an outer plane, else a plane of its
+    # own group (the hub any outer plane; the realm beyond any plane)
+    partner = choose(R, f"{base}.merged_with", merge_partners(pid), secret=secret) if dev == "dev_merged" else None
+    if secret and partner is None:          # every secret label stands in every birth (the swap test)
+        note(R, f"{base}.merged_with", None, "the plane is not merged", secret=True)
     return {"n": k, "baseline": pid, "named_by": list(named_by), "deviation": dev, "rate": rate, "way": way, "cost": cost,
-            "keeper": None, "name": None}
+            "keeper": None, "name": None, "merged_with": partner}
+
+
+def merge_partners(pid: str) -> list[str]:
+    """The planes a merged plane may be one with (planes.yaml dev_merged): the two neighbours on the outer ring by
+    alignment, else the other planes of its group (the realm beyond, alone in its group, any plane but the Material and
+    the demiplanes)."""
+    rows = [r for r in dt.rows(PL + "baseline") if r["id"] not in ("baseline_material", "baseline_demiplane", pid)]
+    row = dt.row(PL + "baseline", pid) or {}
+    ring = [r["id"] for r in dt.rows(PL + "baseline") if r.get("group") == "outer" and r.get("alignment") not in (None, "N")]
+    if pid in ring:
+        i = ring.index(pid)
+        return [ring[i - 1], ring[(i + 1) % len(ring)]]
+    same = [r["id"] for r in rows if r.get("group") == row.get("group")]
+    return same or [r["id"] for r in rows]
 
 
 # ── 4. the pantheon ──────────────────────────────────────────────────────────────────────────────────────────
@@ -845,12 +870,17 @@ def roll_relations(R, out: dict, secret: dict, gods: list[dict]) -> None:
             edges.append((g["n"], choose(R, f"rel.extra.{g['n']}.to", others)))
     need = {"rel_rivalry", "rel_alliance"} if out["type"] == "pantheon_polytheist" else set()
     rels = []
+    rank = {g["n"]: g["rank"] for g in gods}
     for k, (a, b) in enumerate(edges, 1):
         left = len(edges) - k
         missing = need - {r["relation"] for r in rels}
         where = (lambda r, missing=missing: r["id"] in missing) if len(missing) > left else None
-        rid = R.table(f"rel.{k}", P + "relationship", avoid=False, exclude={"rel_mirror"}, where=where,
+        # the 22d re-audit: the silenced one is never a greater god (it keeps no great church and no named feast)
+        excl = {"rel_mirror"} | ({"rel_silenced_one"} if rank[a] == rank[b] == "greater" else set())
+        rid = R.table(f"rel.{k}", P + "relationship", avoid=False, exclude=excl, where=where,
                       why="the polytheist web's rivalry and alliance")["row_id"]
+        if rid == "rel_silenced_one" and rank[b] == "greater":
+            a, b = b, a                     # the relation's other end is the silenced one (`b`)
         rels.append({"a": a, "b": b, "relation": rid})
     out["relations"] = rels
     pinned = secret["seats"]["threat_god"] or secret["seats"]["power_god"]
@@ -901,11 +931,12 @@ def _keepers(pid: str, level_band) -> tuple:
         if pid == "baseline_ethereal":
             return key == "ghost"
         return bool(hab & set(PLANAR_HABITATS))
-    cands = sorted(k for k, m in idx.items() if fits(k, m))
-    if group == "outer" and tier in ("lower", "upper") and len(axis) == 1 and axis != {"N"}:
-        # the 22b audit: a lawful evil plane is the devils', a chaotic evil one the demons' (by the index's alignment),
-        # a neutral or mixed one any fiend; the celestials split the same way
-        word = {"L": "lawful", "C": "chaotic"}[next(iter(axis))]
+    cands = sorted(k for k, m in idx.items() if fits(k, m) and not is_alt_form(m))
+    lean = ("L" if "L" in axis and "C" not in axis else "C" if "C" in axis and "L" not in axis else None)
+    if group == "outer" and tier in ("lower", "upper") and lean:
+        # the 22b audit, sharpened at 22d's: a plane that leans lawful is the devils', one that leans chaotic the demons'
+        # (by the index's alignment), a purely neutral one any fiend; the celestials split the same way
+        word = {"L": "lawful", "C": "chaotic"}[lean]
         sided = [k for k in cands if str(idx[k].get("alignment") or "").startswith(word)]
         cands = sided or cands
     if not cands:
@@ -916,6 +947,24 @@ def _keepers(pid: str, level_band) -> tuple:
         return tuple(inside)
     near = min(min(abs(float(idx[k]["cr"]) - lo), abs(float(idx[k]["cr"]) - hi)) for k in cands)
     return tuple(k for k in cands if min(abs(float(idx[k]["cr"]) - lo), abs(float(idx[k]["cr"]) - hi)) == near)
+
+
+FORM = re.compile(r"^(?P<base>[^,]+), (?P<form>[\w ]+) Form$")
+
+
+def is_alt_form(m: dict) -> bool:
+    """An SRD index entry that is a creature's other form (the 22d audit: "Vampire, Bat Form" kept a plane), not the
+    creature: its name is `<base>, <form> Form` and the form is not the base's own nor a hybrid's."""
+    x = FORM.match(str(m.get("name") or ""))
+    return bool(x) and x.group("form").lower() not in (x.group("base").lower(), "hybrid")
+
+
+def creature_name(key: str) -> str:
+    """A keeper's SRD index name, as the card prints it (`Vampire, Vampire Form` reads `Vampire`)."""
+    import design_threat as dth
+    name = str((dth.srd_index().get(key) or {}).get("name") or key.replace("-", " "))
+    x = FORM.match(name)
+    return x.group("base") if x else name
 
 
 def keeper_of(R, dials: dict, label: str, pid: str, gods: list[dict], secret: bool = False) -> dict | None:
@@ -988,7 +1037,11 @@ def roll_history(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict, na
         label = f"divergence.{n}" if kind == "event" else f"deep.{n}.divergence"
         target = next(e for e in (events if kind == "event" else deep) if e["n"] == n)
         if (kind, n) in chosen:
-            target["divergence"] = R.table(label, H + "divergence", avoid=False, exclude={"div_none"})["row_id"]
+            # the 22d re-audit: a divergence row fits its event's type (`fits_types`; `any` fits every type)
+            typ = target["type"]
+            target["divergence"] = R.table(label, H + "divergence", avoid=False, exclude={"div_none"},
+                                           where=lambda r, typ=typ: r.get("fits_types") in (None, "any") or typ in r["fits_types"],
+                                           why="the divergence fits the event's type")["row_id"]
         else:
             target["divergence"] = R.forced(label, H + "divergence", "div_none", "the scale's divergences are spent elsewhere (S5)")["row_id"]
     for e in events:
@@ -1021,7 +1074,58 @@ def roll_history(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict, na
     out["ages"] = rows
     out["events"] = events
     out["deep_events"] = deep
+    assign_eras(R, out, years)
     name_history(R, out, p1, names_pool)
+
+
+MIN_AGE = 20            # the 22d re-audit: the shortest age but the present, in years
+
+
+def assign_eras(R, out: dict, years: int) -> None:
+    """The 22d audit: each age's span and each event's age are the script's. In years before the start: the first age
+    has no beginning (before the record; the deep-past events are its); the present begins at the move, or is the eve
+    of a move to come (begun on its own die); the ruin's age ends at its fall, and the age after it begins there (when
+    that is the present, it begins at the fall and the move falls inside it); every other boundary is rolled between
+    its neighbours, as far back as half again the years covered. An event belongs to the age it falls in; one on a
+    boundary to the age it begins (the move to the present), the ruin's fall to the ruin's age."""
+    ages, events = out["ages"], out["events"]
+    count = len(ages)
+    move = next((e for e in events if e.get("seat") == "move"), None)
+    fall = next((e for e in events if e.get("seat") == "ruin"), None)
+    r = next((a["n"] for a in ages if a["ruin"]), None)
+    cap = years + years // 2
+    start: dict = {1: None}                             # age n → the years before the start at which it begins
+    if r is not None and r + 1 == count:
+        start[count] = int(fall["years_ago"])
+    elif move is not None and move.get("years_ago") is not None:
+        start[count] = int(move["years_ago"])
+    else:                                               # the eve of a move to come
+        top = (int(fall["years_ago"]) - MIN_AGE * (count - 1 - r)) if r is not None else years
+        start[count] = between(R, "span.present.begins", 1, max(1, min(top, years // 4 or 1)))
+    if r is not None and r + 1 < count:
+        start[r + 1] = int(fall["years_ago"])
+    hi = cap
+    for n in range(2, count):                           # the free boundaries, from the oldest down
+        if n in start:
+            hi = start[n] - MIN_AGE
+            continue
+        below = next(m for m in range(n + 1, count + 1) if m in start)
+        lo = start[below] + MIN_AGE * (below - n)       # the 22d re-audit: every age but the present lasts 20 years
+        start[n] = between(R, f"span.age_{n}.begins", lo, max(lo, hi))
+        hi = start[n] - MIN_AGE
+    for a in ages:
+        a["from_ago"] = start[a["n"]]
+        a["to_ago"] = start[a["n"] + 1] if a["n"] < count else 0
+        R.by_label[f"age.{a['n']}"]["span_ago"] = [a["from_ago"], a["to_ago"]]
+
+    def era_of(ago) -> int:
+        if ago is None:
+            return count
+        return max((n for n in range(1, count + 1) if start[n] is None or start[n] >= ago), default=1)
+    for e in events:
+        e["era"] = r if e.get("seat") == "ruin" else era_of(e.get("years_ago"))
+    for e in out["deep_events"]:
+        e["era"] = 1
 
 
 def move_word(p1: dict) -> str | None:
@@ -1043,7 +1147,7 @@ def name_history(R, out: dict, p1: dict, pool: dict | None) -> None:
     present `The Age of the <move's word>` (`The Eve of the <word>` while the move is still to come) and the move `the
     <word>`; the founding `the Founding of <the institution>`;
     every other event `the <its type's word> of <a referent or a counted god's public name>`, the referent's kind drawn
-    among its type's `name_referent` (a god only for the Silencing, always, and a miracle, a heresy or a war; a wreck a
+    among its type's `name_referent` (a god only for a miracle or a heresy, and a silencing under a silent pantheon or the silenced one; a wreck a
     ship of the common tongue's ships, `the Loss of <place>` where there is none). The choices come from
     the names' own die, which reads nothing secret. No pool, no names."""
     if not pool or not pool.get("cosmos"):
@@ -1053,6 +1157,7 @@ def name_history(R, out: dict, p1: dict, pool: dict | None) -> None:
     rng = dd.derive(R.master, R.phase, "names", "cosmos.history", R.attempt)
     taken = dn._all_names(pool)
     gods = [g["name"] for g in out.get("gods") or [] if g.get("name")]
+    gname_of = {g["n"]: g.get("name") for g in out.get("gods") or []}
     word = move_word(p1)
 
     def referent(eid: str, kinds=("person", "place")) -> str | None:
@@ -1079,7 +1184,11 @@ def name_history(R, out: dict, p1: dict, pool: dict | None) -> None:
             name = f"The Age of {ruin_w['name']}" if ruin_w else None
         elif a["row"] == "age_now_named_for_fear":
             # the owner (22n): under `time_coming` the move is still to come, and the present is its eve
-            name = (f"The Eve of the {word}" if R.ctx.has("time_coming") else f"The Age of the {word}") if word else None
+            if R.ctx.has("time_coming") and ruin_w and int(a.get("from_ago") or 0) > 30:
+                # the 22d re-audit: a present that began long before a move still to come is no eve: the age after the fall
+                name = f"The Age after {ruin_w['name']}"
+            else:
+                name = (f"The Eve of the {word}" if R.ctx.has("time_coming") else f"The Age of the {word}") if word else None
         elif "{Name}" in label:
             ref = referent(eid)
             name = label.replace("{Name}", ref) if ref else None
@@ -1099,7 +1208,12 @@ def name_history(R, out: dict, p1: dict, pool: dict | None) -> None:
             if seat == "move":
                 name = f"the {word}" if word else None
             elif seat == "founding":
-                inst = p1.get("institution_name") or referent(eid, ("place",))
+                inst = p1.get("institution_name")
+                if inst and inst.startswith("The "):
+                    inst = "the " + inst[4:]
+                elif inst and not inst.startswith(("the ", "House ")):
+                    inst = "the " + inst            # the 22d audit: "the Founding of the Order of the Salt", with its article
+                inst = inst or referent(eid, ("place",))
                 name = f"the Founding of {inst}" if inst else None
             elif seat == "ruin":
                 name = f"the Fall of {ruin_w['name']}" if ruin_w else None
@@ -1112,6 +1226,17 @@ def name_history(R, out: dict, p1: dict, pool: dict | None) -> None:
                 # the referent's kind is the type's table fact (`name_referent`): a god only where the story is a god's
                 kinds = list(row.get("name_referent") or ["place", "person"])
                 choices = [g for g in gods if f"the {w} of {g}".lower() not in taken]
+                # the 22d audit (the owner): a silencing names a god only under a silent pantheon (any god) or a web
+                # that holds the silenced one (that god: the relation's earlier god)
+                when = row.get("god_when") or []
+                if when:
+                    if out.get("type") in when:
+                        kinds = ["god"]
+                    else:
+                        silenced = [gname_of[r["b"]] for r in out.get("relations") or [] if r["relation"] in when and gname_of.get(r["b"])]
+                        silenced = [g for g in silenced if f"the {w} of {g}".lower() not in taken]
+                        if silenced:
+                            kinds, choices = ["god"], silenced[:1]
                 ships = ((pool["languages"].get(ships_lid) or {}).get("ships") or []) if ships_lid else []
                 ship = next((s for s in ships if not s.get("used_by")), None)
                 if not choices:
@@ -1270,13 +1395,19 @@ def roll_calendar(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict, p
     if dials.get("era") == "underground":
         cal["underground_count"] = R.table("underground_count", C + "underground_count", avoid=False)["row_id"]
     roll_festivals(R, out, cal)
+    taken_days: set = set()                    # the 22d audit: festivals on distinct days
     for x in cal["festivals"]:                 # the holy day's festival is dated inside the span, below
         if x["n"] != cal.get("holy_day"):
             x["month"] = between(R, f"festival.{x['n']}.month", 1, cal["months"])
-            x["day"] = between(R, f"festival.{x['n']}.day", 1, cal["month_length"])
+            free = [d for d in range(1, cal["month_length"] + 1) if (x["month"], d) not in taken_days]
+            x["day"] = free[between(R, f"festival.{x['n']}.day", 1, len(free)) - 1]
+            R.by_label[f"festival.{x['n']}.day"]["day"] = x["day"]      # the die counts the month's free days
+            taken_days.add((x["month"], x["day"]))
     # the start year, the anchor and the start date
     years = int(sc["history"]["years_covered"])
-    cal["start_year"] = between(R, "start_year", years + 1, years + 300)
+    # no dated event and no age boundary reaches year 0 (the 22b ruling 11; the 22d re-audit: the oldest boundary too)
+    oldest = max([years] + [int(a["from_ago"]) for a in out.get("ages") or [] if a.get("from_ago") is not None])
+    cal["start_year"] = between(R, "start_year", oldest + 1, oldest + 300)
     time_row = next((t for t in TIME_ROWS if R.ctx.has(t)), None)
     if time_row:
         anchor = R.table("start_anchor", C + "start_anchor", avoid=False)["row_id"]
@@ -1323,7 +1454,11 @@ def roll_calendar(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict, p
     if R.ctx.has("break_lawless_day") and not R.ctx.secret_of("break_lawless_day"):
         dated["lawless_day"] = add_days(start, between(R, "dated.lawless_day", 1, lo), cal)
     if holy is not None:
-        d = add_days(start, between(R, "dated.holy_day", 1, lo), cal)
+        # the holy day is its god's festival; it falls on no other festival's day (the 22d audit)
+        offsets = [k for k in range(1, lo + 1) if (lambda d: (d["month"], d["day"]) not in taken_days)(add_days(start, k, cal))]
+        k = offsets[between(R, "dated.holy_day", 1, len(offsets)) - 1]
+        R.by_label["dated.holy_day"]["offset"] = k
+        d = add_days(start, k, cal)
         fx = next(x for x in fests if x["n"] == holy)
         fx.update({"month": d["month"], "day": d["day"]})
         dated["holy_day"] = dict(d, festival=holy)

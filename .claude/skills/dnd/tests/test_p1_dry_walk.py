@@ -246,7 +246,7 @@ class Walk(Base):
         c = dp.counts(m["promises"], dp.load_secret(w.name), "P1")
         self.assertIn(f"  due at P1: {c['due']['total']} — kept {c['due']['kept']}, not kept 0, waived 0", card)
         self.assertEqual(c["due"]["open"], 0, "nothing due at P1 is left open")
-        self.assertIn(f"  secret: {c['secret']['open']} open, {c['secret']['kept']} kept, 0 not kept", card)
+        self.assertIn("  secret: checked by script: all kept", card)     # the 22d audit: a status, never a count
         self.assertIn("  door: passed · ", card)
         leaked = [n for n in w.secret_names() if re.search(rf"(?<!\w){re.escape(n)}(?!\w)", card)]
         self.assertEqual(len(leaked), 0, "a secret-stock name is on the card")

@@ -258,6 +258,54 @@ def faults(d: dict, R1, R, pub: dict, sec: dict) -> list[str]:
     for brk in ("break_dead_month", "break_lawless_day"):
         if R1.ctx.has(brk) and {"break_dead_month": "empty_month", "break_lawless_day": "lawless_day"}[brk] not in cal["dated"]:
             out.append(f"{brk} without its dated day")
+    # the 22d audit: festivals on distinct days; a merged plane's partner; keepers by the index, no other form; the ages'
+    # spans and every event's age
+    days = [(f["month"], f["day"]) for f in cal["festivals"]]
+    if len(days) != len(set(days)):
+        out.append("two festivals on one day")
+    import design_threat as dth
+    idx = dth.srd_index()
+    for pl in pub["planes"]:
+        if (pl["deviation"] == "dev_merged") != bool(pl.get("merged_with")) or (
+                pl.get("merged_with") and pl["merged_with"] not in dc.merge_partners(pl["baseline"])):
+            out.append(f"the merged plane {pl['baseline']} without its partner")
+        if pl["deviation"] == "dev_reachable_by_death" and not (
+                (dt.row("planes.yaml#baseline", pl["baseline"]) or {}).get("group") == "outer" or pl["baseline"] == "baseline_shadow_echo"):
+            out.append(f"the plane {pl['baseline']} reachable by dying")
+        creature = (pl.get("keeper") or {}).get("creature")
+        if creature and dc.is_alt_form(idx[creature]):
+            out.append(f"the keeper {creature} is another form of a creature")
+        if creature and pl["baseline"] in ("baseline_cn_ce", "baseline_ce_ne") and not str(idx[creature].get("alignment")).startswith("chaotic"):
+            out.append(f"the chaotic-leaning plane {pl['baseline']} kept by {creature}")
+    ages = pub["ages"]
+    froms = [a["from_ago"] for a in ages]
+    if froms[0] is not None or ages[-1]["to_ago"] != 0 or any(b >= a for a, b in zip(froms[1:], froms[2:])):
+        out.append("the ages' spans out of order")
+    for e in pub["events"]:
+        a = ages[e["era"] - 1]
+        ago = e.get("years_ago")
+        if e.get("seat") == "ruin":
+            if not a["ruin"]:
+                out.append("the ruin's fall outside the ruin's age")
+        elif e.get("seat") == "move" and e["era"] != len(ages):
+            out.append("the move outside the present")
+        elif ago is not None and not ((a["from_ago"] is None or ago <= a["from_ago"]) and ago >= a["to_ago"]):
+            out.append("an event outside its age's span")
+    if any(e["era"] != 1 for e in pub["deep_events"]):
+        out.append("a deep-past event after the first age")
+    # the 22d re-audit: no boundary at or below year 0; every age but the first and the present lasts 20 years; a
+    # divergence fits its event's type; the silenced one is never a greater god
+    if any(a["from_ago"] is not None and cal["start_year"] - a["from_ago"] < 1 for a in ages):
+        out.append("an age boundary at or below year 0")
+    if any(a["from_ago"] - a["to_ago"] < 20 for a in ages[1:-1]):
+        out.append("an age shorter than 20 years")
+    for e in pub["events"] + pub["deep_events"]:
+        fits = (dt.row("history.yaml#divergence", e.get("divergence")) or {}).get("fits_types")
+        if e.get("divergence") not in (None, "div_none") and fits not in (None, "any") and e.get("type") not in fits:
+            out.append(f"the divergence {e['divergence']} on a {e.get('type')}")
+    ranks = {g["n"]: g["rank"] for g in pub["gods"]}
+    if any(r["relation"] == "rel_silenced_one" and ranks[r["b"]] == "greater" for r in pub["relations"]):
+        out.append("a greater god is the silenced one")
     if d["era"] == "underground" and (cal["climate"] != "climate_underground" or not cal.get("underground_count")):
         out.append("the underground era without its climate and count")
     if d["era"] != "underground":

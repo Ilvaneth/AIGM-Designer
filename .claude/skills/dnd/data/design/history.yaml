@@ -102,7 +102,8 @@ tables:
     roll: {avoid_used: false}
     # build item 22n: an event is named `the <name_word> of <referent>`; `name_referent` lists the kinds its referent may
     # be (place, person, god: a counted god's public name; ship: a ship of the common tongue, else `the Loss of <place>`),
-    # one drawn per event; a god only where the type's story is a god's (the owner, at the 22n audit)
+    # one drawn per event; a god only for a miracle and a heresy, and for a silencing when `god_when` holds (the owner,
+    # at the 22n and 22d audits)
     rows:
       - id: evtype_founding
         label: A founding
@@ -125,7 +126,7 @@ tables:
       - id: evtype_war
         label: A war
         name_word: War
-        name_referent: [god, place, person]
+        name_referent: [place, person]
         hooks:
           - {phase: P4, must: "the war's sides are factions or their ancestors; a veteran is an NPC"}
       - id: evtype_succession
@@ -189,7 +190,8 @@ tables:
       - id: evtype_silencing
         label: A silencing
         name_word: Silencing
-        name_referent: [god]
+        name_referent: [person, place]
+        god_when: [pantheon_silent_gods, rel_silenced_one]     # a god only here: any god of a silent pantheon, else the silenced one
         hooks:
           - {phase: P2, must: "the silenced thing is a god, a people or an institution with a rel_silenced_one row"}
       - id: evtype_building
@@ -202,7 +204,7 @@ tables:
   divergence:
     notation: d9
     roll: {avoid_used: false}
-    note: "how the as_taught and as_happened layers differ; exactly scale.yaml history.divergences of them per campaign (S5), every tier public or discoverable: the campaign's secret comes from P1's chain alone"
+    note: "how the as_taught and as_happened layers differ; exactly scale.yaml history.divergences of them per campaign (S5), every tier public or discoverable: the campaign's secret comes from P1's chain alone; a row's `fits_types` names the event types it fits (`any`: every type; the 22d re-audit)"
     rows:
       - id: div_none
         label: The layers agree
@@ -212,41 +214,49 @@ tables:
           - {phase: P2, must: "the event has one line; the validator does not expect a dm-only mirror"}
       - id: div_winner_was_loser
         label: The winner was the loser
+        fits_types: [evtype_war]
         tier: discoverable
         hooks:
           - {phase: P2, must: "the other side's account exists somewhere as a clue"}
       - id: div_hero_was_many
         label: The hero was several people
+        fits_types: [evtype_founding, evtype_war, evtype_miracle, evtype_discovery]
         tier: discoverable
         hooks:
           - {phase: P5, must: "one of the several has descendants in the roster"}
       - id: div_disaster_was_caused
         label: The disaster was caused
+        fits_types: [evtype_disaster, evtype_plague]
         tier: discoverable
         hooks:
           - {phase: P4, must: "the cause is a faction's ancestor"}
       - id: div_treaty_was_surrender
         label: The treaty was a surrender
+        fits_types: [evtype_treaty]
         tier: discoverable
         hooks:
           - {phase: P4, must: "the surrendered thing is an asset the other side still holds"}
       - id: div_date_is_wrong
         label: The date is wrong
+        fits_types: any
         tier: discoverable
         hooks:
           - {phase: P2, must: "the calendar or a grave shows the true date"}
       - id: div_villain_was_victim
         label: The villain of the story was the victim
+        fits_types: [evtype_war, evtype_heresy, evtype_exile]
         tier: discoverable
         hooks:
           - {phase: P5, must: "the victim's line still exists and knows"}
       - id: div_two_events_were_one
         label: Two events were one
+        fits_types: any
         tier: discoverable
         hooks:
-          - {phase: P2, must: "the two taught events are both entities; the true one is the dm-only mirror"}
+          - {phase: P2, must: "the folk tell it as two events; the discoverable truth says it was one"}
       - id: div_someone_survived
         label: Someone survived who should not have
+        fits_types: [evtype_disaster, evtype_war, evtype_plague, evtype_wreck_or_loss]
         tier: discoverable
         hooks:
           - {phase: P5, must: "the survivor is an NPC whose survival is discoverable"}

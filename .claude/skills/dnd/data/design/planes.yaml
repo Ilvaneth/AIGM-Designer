@@ -130,7 +130,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_lg_ng
-        label: "The Lawful-Neutral Good Plane (the Twin Lands)"
+        label: "Between Lawful Good and Neutral Good (the Twin Lands)"
         group: outer
         alignment: "LG/NG"
         tier: upper
@@ -148,7 +148,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_ng_cg
-        label: "The Neutral-Chaotic Good Plane (the Beast Wilds)"
+        label: "Between Neutral Good and Chaotic Good (the Beast Wilds)"
         group: outer
         alignment: "NG/CG"
         tier: upper
@@ -166,7 +166,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [family_fallen_celestial, {family: family_god, by: alignment}]
       - id: baseline_cg_cn
-        label: "The Chaotic Good-Neutral Plane (the Fields of Contest)"
+        label: "Between Chaotic Good and Chaotic Neutral (the Fields of Contest)"
         group: outer
         alignment: "CG/CN"
         tier: upper
@@ -184,7 +184,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [{family: family_god, by: alignment}]
       - id: baseline_cn_ce
-        label: "The Chaotic Neutral-Evil Plane (the Howling Caverns)"
+        label: "Between Chaotic Neutral and Chaotic Evil (the Howling Caverns)"
         group: outer
         alignment: "CN/CE"
         tier: lower
@@ -202,7 +202,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [family_demon, {family: family_deceiver_fiend, creatures: [succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_ce_ne
-        label: "The Chaotic-Neutral Evil Plane (the Prison Orbs)"
+        label: "Between Chaotic Evil and Neutral Evil (the Prison Orbs)"
         group: outer
         alignment: "CE/NE"
         tier: lower
@@ -220,7 +220,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [{family: family_deceiver_fiend, creatures: [night-hag, succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_ne_le
-        label: "The Neutral-Lawful Evil Plane (the Furnace Mountains)"
+        label: "Between Neutral Evil and Lawful Evil (the Furnace Mountains)"
         group: outer
         alignment: "NE/LE"
         tier: lower
@@ -238,7 +238,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [family_devil, {family: family_deceiver_fiend, creatures: [rakshasa, succubus-incubus]}, {family: family_god, by: alignment}]
       - id: baseline_le_ln
-        label: "The Lawful Evil-Neutral Plane (the Colliding Iron)"
+        label: "Between Lawful Evil and Lawful Neutral (the Colliding Iron)"
         group: outer
         alignment: "LE/LN"
         tier: lower
@@ -256,7 +256,7 @@ tables:
         spells: [plane shift, gate, banishment]
         home_of: [{family: family_god, by: alignment}]
       - id: baseline_ln_lg
-        label: "The Lawful Neutral-Good Plane (the Ordered Orchards)"
+        label: "Between Lawful Neutral and Lawful Good (the Ordered Orchards)"
         group: outer
         alignment: "LN/LG"
         tier: upper
@@ -343,6 +343,8 @@ tables:
       - id: dev_reachable_by_death
         label: Reachable by dying
         rule: "the plane is where the dead go and the living can follow, at a cost"
+        on_planes: {groups: [outer], rows: [baseline_shadow_echo]}     # the 22d audit (the owner): never an inner or a
+                                                                       # transitive plane
         overrides: [{default: afterlife, to: afterlife_one_land}]     # docs/p2-tags.md "Where the dead go"
         hooks:
           - {phase: P2, must: "the cost row is cost_the_way_back or cost_years (the roller narrows this plane's cost); the afterlife's truth is discoverable"}

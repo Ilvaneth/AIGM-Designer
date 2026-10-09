@@ -105,6 +105,10 @@ def plane_id(baseline: str) -> str:
     return "plane_" + (baseline.removeprefix("baseline_") if baseline != "moon" else "moon")
 
 
+# the 22d audit: the SRD's plane words a cosmology names the untouched planes and the plane spells by
+PLANE_WORDS = ("Astral", "Ethereal", "Material", "Elemental", "Plane", "Planes", "Inner", "Outer", "Air", "Earth", "Fire",
+               "Water", "Border", "Deep")
+ALIGNMENTS = ("LG", "NG", "CG", "LN", "N", "CN", "LE", "NE", "CE")
 HOME_ID = "plane_s01"           # the 22c audit: a secret row's id never names its content (registry.py, as npc_s01)
 
 
@@ -118,7 +122,7 @@ def _plane(pl: dict, gods: dict, lang, secrecy: str = "public", file: str = PROS
     keeper = {"god": gods.get(keeper["god"])} if "god" in keeper else ({"creature": keeper["creature"]} if keeper else None)
     return _row(eid or plane_id(pl["baseline"]), "plane", pl.get("name") or EMPTY, lang, secrecy, file, baseline=pl["baseline"], touched=True,
                 named_by=list(pl.get("named_by") or []), deviation=pl["deviation"], time_rate=_rate(pl["rate"]),
-                way_in=pl["way"], cost=pl["cost"], keeper=keeper, entry_site=None,
+                way_in=pl["way"], cost=pl["cost"], keeper=keeper, entry_site=None, merged_with=pl.get("merged_with"),
                 stamped={"baseline": pl["baseline"], "touched": True})
 
 
@@ -164,10 +168,13 @@ def build(campaign: str, manifest: dict | None = None) -> dict | None:
         row["dm_only"] = {"home_of_the_threat": True}
         secret_rows[row["id"]] = {"registry": row, "fill": ["aliases", "summary", "refs"]}
     # the ages and the events
-    for a in cos["ages"]:
-        put(_row(f"era_{a['n']}", "era", a.get("name") or EMPTY, common, order=a["n"], row=a["row"], ruin=bool(a["ruin"]), span=EMPTY,
-                 stamped={"order": a["n"]}), ["aliases", "summary", "span", "refs"])
     start_year = cos["calendar"]["start_year"]
+    for a in cos["ages"]:
+        # the 22d audit: the span is the script's (years; the first age has no beginning)
+        span = {"from": None if a.get("from_ago") is None else start_year - int(a["from_ago"]),
+                "to": start_year - int(a.get("to_ago") or 0)} if "to_ago" in a else EMPTY
+        put(_row(f"era_{a['n']}", "era", a.get("name") or EMPTY, common, order=a["n"], row=a["row"], ruin=bool(a["ruin"]), span=span,
+                 stamped={"order": a["n"]}), ["aliases", "summary", "refs"] + ([] if span else ["span"]))
     st0 = cos["calendar"]["start"]
     for e in cos["events"]:
         ago = e.get("years_ago")
@@ -176,26 +183,31 @@ def build(campaign: str, manifest: dict | None = None) -> dict | None:
         if e.get("seat") == "move":         # the move's own day: its last step before the start, or its next step after
             year = start_year if year is None else year
             day = int(st0.get("days_to_next_step") or 0) if ago is None else -int(st0.get("after_move_days") or 0) - int(ago) * DAYS_A_YEAR
-        dm_only = {"happened": EMPTY}
-        if e.get("seat") == "origin":
-            dm_only["origin"] = (secret.get("origin") or {}).get("row")
+        # the 22d audit: a divergence is discoverable (its truth a public field, `as_happened`); only the villain's
+        # origin keeps its true layer in dm-only
+        extra = {"dm_only": {"happened": EMPTY, "origin": (secret.get("origin") or {}).get("row")}} if e.get("seat") == "origin" else {}
+        diverges = e.get("seat") is None and e.get("divergence") not in (None, "div_none")
+        if diverges:
+            extra["as_happened"] = EMPTY
+        era = f"era_{e['era']}" if e.get("era") else EMPTY
         row = _row(f"event_{e['n']}", "event", e.get("name") or EMPTY, common, seat=e.get("seat"), event_type=e.get("type"),
                    divergence=e.get("divergence"), memory=e.get("memory"), years_ago=ago, year=year,
-                   day=day, witness_list=bool(e.get("witnesses")), era=EMPTY,
-                   taught=EMPTY, witnesses=[], stamped={"year": year}, dm_only=dm_only)
+                   day=day, witness_list=bool(e.get("witnesses")), era=era,
+                   taught=EMPTY, witnesses=[], stamped={"year": year}, **extra)
         if e.get("seat") == "move":
             row["aliases"] = ["the move"]          # the premise's pin names the move (design_promises: event_dated)
         if e.get("taught_type"):
             row["taught_type"] = e["taught_type"]          # build item 22n: the type the folk remember it by
-        fill = ["summary", "era", "taught", "refs"] + (["aliases"] if e.get("seat") != "move" else [])
-        if e.get("seat") == "origin" or e.get("divergence") not in (None, "div_none"):
-            fill.append("dm_only.happened")
+        fill = ["summary", "taught", "refs"] + ([] if era else ["era"]) + (["aliases"] if e.get("seat") != "move" else [])
+        fill += ["dm_only.happened"] if e.get("seat") == "origin" else ["as_happened"] if diverges else []
         put(row, fill)
     for e in cos["deep_events"]:
+        diverges = e["divergence"] != "div_none"
+        era = f"era_{e['era']}" if e.get("era") else EMPTY
         put(_row(f"event_deep_{e['n']}", "event", e.get("name") or EMPTY, common, seat=None, event_type=e["type"], divergence=e["divergence"],
-                 memory=e["memory"], years_ago=None, year=None, day=None, deep=True, witness_list=False, era=EMPTY,
-                 taught=EMPTY, witnesses=[], stamped={}, dm_only={"happened": EMPTY}),
-            ["aliases", "summary", "era", "taught", "refs"] + (["dm_only.happened"] if e["divergence"] != "div_none" else []))
+                 memory=e["memory"], years_ago=None, year=None, day=None, deep=True, witness_list=False, era=era,
+                 taught=EMPTY, witnesses=[], stamped={}, **({"as_happened": EMPTY} if diverges else {})),
+            ["aliases", "summary", "taught", "refs"] + ([] if era else ["era"]) + (["as_happened"] if diverges else []))
     # the calendar: the seed calendar.py takes and the container's block
     cal = cos["calendar"]
     months, days = cal.get("month_names") or [], cal.get("day_names") or []
@@ -340,8 +352,22 @@ class CosmosDoor:
         # P2's own secret words: the mirror relation; the threat's own home plane (its id and its baseline row; a linked
         # home is a public plane and says nothing by itself)
         self.secret_words = ["rel_mirror"] + ([home["baseline"], HOME_ID] if home.get("own") else [])
-        self.secret_names = sorted(set(str(v) for v in (secret.get("hidden_names") or {}).values()) | door.Names(campaign).secret_all())
+        names = door.Names(campaign)
+        self.secret_names = sorted(set(str(v) for v in (secret.get("hidden_names") or {}).values()) | names.secret_all())
         self.whole = seal_errors(campaign, self.m) + name_errors(self.frame)
+        # the 22d audit: the prose scan of P1's door (13b) at P2 too: a capitalised word belongs to a pooled or
+        # registered name, a church composed from pooled parts, the SRD's plane words, or the closed list
+        self.common = set(dt.load("naming.yaml")["rules"]["capitalised_common"]) | set(PLANE_WORDS)
+        self.common |= {r["label"] for r in dt.rows("pantheon.yaml#domain_scaffold")} | set(ALIGNMENTS)
+        public_rows = [r for r in self.rows.values() if r.get("secrecy") != "secret"]
+        gods = [str(r.get("name")) for r in public_rows if r.get("type") == "god" and r.get("name")]
+        known = names.public() | {str(n) for r in public_rows for n in [r.get("name")] + list(r.get("aliases") or []) if n}
+        known |= {w for r in public_rows if r.get("type") in ("npc", "god", "pc") for w in str(r.get("name") or "").split() if w[:1].isupper()}
+        known |= {f"{w} of {g}" for w in dt.load("naming.yaml")["words"]["building_words"] for g in gods}
+        known |= {str(L.get("label")) for L in (names.naming.get("languages") or {}).values() if L.get("label")}
+        self.known_public = known | {door.bare(n) for n in known}
+        every = self.known_public | names.secret_all() | set(self.secret_names) | {str(r.get("name")) for r in self.rows.values() if r.get("name")}
+        self.known_all = every | {door.bare(n) for n in every}
 
     def leak_errors(self, where: str, text: str) -> list[str]:
         """A secret seat's id or fact in a public text: the threat's own home plane's id, a hidden god's name, a secret
@@ -396,10 +422,27 @@ class CosmosDoor:
             if row.get("secrecy") != "secret":
                 for path, value in door.prose_strings({k: v for k, v in row.items() if k != "dm_only"}):
                     errs += self.leak_errors(f"{eid}: field {path}", value)
-        rel = (frag.get("prose") or {}).get("file") if isinstance(frag.get("prose"), dict) else frag.get("prose")
-        f = self.root / str(rel) if rel else None
-        if f is not None and f.is_file() and not str(rel).startswith("design/dm-only/"):
-            errs += self.leak_errors(f"{uid}: {rel}", f.read_text(encoding="utf-8", errors="replace"))
+                    for _, word in door.stray_capitals(value, self.known_public, self.common)[:4]:
+                        errs.append(f"{eid}: field {path}: the capitalised word {word!r} is no pooled or registered name")
+
+        def file_of(key):
+            v = frag.get(key)
+            rel = v.get("file") if isinstance(v, dict) else v if isinstance(v, str) else None
+            f = self.root / str(rel) if rel else None
+            return (rel, f.read_text(encoding="utf-8", errors="replace")) if f is not None and f.is_file() else (None, None)
+        rel, text = file_of("prose")
+        if text is not None and not str(rel).startswith("design/dm-only/"):
+            errs += self.leak_errors(f"{uid}: {rel}", text)
+            for no, word in door.stray_capitals(text, self.known_public, self.common)[:12]:
+                errs.append(f"{uid}: {rel} line {no}: the capitalised word {word!r} is no pooled or registered name; write a common "
+                            "noun in lower case, or take a name from the pools")
+        mrel, mtext = file_of("dm_only_prose")
+        if mtext is not None:
+            stray = door.stray_capitals(mtext, self.known_all, self.common)
+            if stray:           # the words go to the dm-only door log; the conductor sees a count
+                self.hidden.append({"kind": "capitalised", "unit": uid, "file": mrel, "words": [{"line": no, "word": w} for no, w in stray]})
+                errs.append(f"{uid}: {len(stray)} capitalised word(s) in the dm-only prose are no pooled or registered name "
+                            "(the words and their lines are in the dm-only door log)")
         return errs, []
 
     def close(self) -> None:

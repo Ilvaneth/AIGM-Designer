@@ -17,7 +17,8 @@ TEMPLATES = SKILL / "templates" / "design"
 
 EXPECTED = {"README.md", "premise.md", "cosmology.md", "region.md", "settlement.md",
             "faction.md", "npc.md", "site-skeleton.md", "site-detailed.md", "chapter.md",
-            "arc.md", "consequence-calculus.md", "thread.md", "primer.md", "report.md"}
+            "arc.md", "consequence-calculus.md", "thread.md", "primer.md", "report.md",
+            "cosmology.legacy.md"}          # build item 22d: a birth with no foundation keeps the cosmos it was written by
 ENTITY_TEMPLATES = EXPECTED - {"README.md"}
 THREE_HEADINGS = ("## Public", "## Discoverable", "## Secret")
 TRAVEL_CATEGORIES = ("Quiet/Texture", "Social", "Environmental", "Combat", "Discovery",
