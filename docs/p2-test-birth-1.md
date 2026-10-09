@@ -1,8 +1,8 @@
-# Test birth P2-1 — P0, P1 and P2 at the standard scale, after items 21 and 22 (the protocol for the Opus tab)
+# Test birth P2-1 — P0, P1 and P2 at the epic scale for a party of four, after items 21 and 22 (the protocol for the Opus tab)
 
 *Written by the design and review tab, 2026-10-09, after build items 21 (the short question, the named sides, the guard, the pitch) and 22 (P2 bound to the foundation: the cosmos rolled in the threat's order, the ledger, the frame and the door, the names, the writer, critics and card). The Opus tab runs it; the design tab never does. It stands on `docs/p1-test-birth-4.md` and `docs/tuning-births.md` where this file says nothing; where they differ, this file holds.*
 
-**What it is for.** The first birth that runs P2 on the new machinery, and the first look at item 21's fixes in a real birth. P0 and P1 run as in birth 4 (with their review stops); then P2: the cosmos the script rolled (the gods, the planes, magic, history, the calendar, where the dead go), written by the model on the frame, judged by the new critics, shown on the new P2 card. It measures whether the writer builds on the frame without inventing, whether the door and the critics catch what they should, and whether the card reads as a D&D cosmos a player could use. Standard scale: the most common birth and a moderate cost (the weekly limit is near its top). P0, P1 and P2 only; the campaign is kept for P3.
+**What it is for.** The first birth that runs P2 on the new machinery, and the first look at item 21's fixes in a real birth. P0 and P1 run as in birth 4 (with their review stops); then P2: the cosmos the script rolled (the gods, the planes, magic, history, the calendar, where the dead go), written by the model on the frame, judged by the new critics, shown on the new P2 card. It measures whether the writer builds on the frame without inventing, whether the door and the critics catch what they should, and whether the card reads as a D&D cosmos a player could use. **Epic scale, a party of four** (the owner's choice, 2026-10-09): two contests and two questions at P1; at P2 the largest pantheon (9-14 gods, 2-4 great), 3-6 touched planes plus the magic dial's, an epic secret home plane when the threat's family has one, 4-6 ages and 10-14 events; the largest name stocks. Watch them. P0, P1 and P2 only; the campaign is kept for P3.
 
 **Nothing is hidden from the owner for now** (owner, 2026-10-05): the conductor may show him the cards and the report; it still never reads dm-only itself (the guard refuses it), and a refused read is recorded, never worked around.
 
@@ -17,7 +17,7 @@ Everything in `docs/p1-test-birth-4.md` "Before the first command" holds (read `
 ## P0 and P1
 
 ```bash
-py .claude/skills/dnd/scripts/designer.py new _test-p2-1 --scale standard --party-size 1 --seed P2T-0001 --lang tr --ask-approval
+py .claude/skills/dnd/scripts/designer.py new _test-p2-1 --scale epic --party-size 4 --seed P2T-0001 --lang tr --ask-approval
 ```
 
 Run P0 and P1 exactly as `docs/p1-test-birth-4.md` "The birth", "The stop check" and "The review stop" say, with `_test-p2-1` for the campaign: the P0 review stop, then `preroll --phase P1`, `begin --json`, the Workflow, the merge with `--run-dir`, check, card, report, the P1 review stop. **The P1 review block also carries the premise's question and pitch verbatim** (item 21: one sentence per contest, at most about 35 words; three short pitch sentences; the sides named by their seats in the story sentence).
