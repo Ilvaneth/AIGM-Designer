@@ -338,8 +338,9 @@ class WrongTurns(Base):
         w.write(public_extra=f"\nNobody speaks of {name} on the road.\n")
         out, refused = self.refused(w)
         self.assertTrue(any("of the secret stock" in l for l in refused[w.premise_id]))
-        self.assertFalse(name in out.replace(f"capitalised word '{name}'", ""), "the line names no name")
-        self.assertFalse(name in json.dumps(refused).replace(f"capitalised word '{name}'", ""), "the report names no name")
+        # build item 22e: no line names it, the stray-capital line neither (the leak check names the kind)
+        self.assertFalse(name in out, "the line names no name")
+        self.assertFalse(name in json.dumps(refused), "the report names no name")
 
     def test_a_signature_without_a_note_for_a_promised_floor(self):
         w = self.walker()

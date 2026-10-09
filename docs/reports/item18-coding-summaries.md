@@ -1072,3 +1072,61 @@ Tables re-stamped (`history.yaml`'s war and silencing rows, `planes.yaml`'s `dev
 Tests: `test_cosmos_roll`'s faults gained the boundary year, the 20-year ages, divergence fit and the silenced rank; `test_cosmos_names` checks the present's name, "The Age after <W>" included.
 
 **The suite after the re-audit round:** 952 tests, OK, exit code 0, 3,579 s (60 min). No `aigm-*` folder left by my runs.
+
+## 22e — the dry walk of P2 and the measurement (the seventh coding tab)
+
+**The dry walk** (`tests/test_p2_dry_walk.py`, new; model-free, the real commands, `_test-` campaigns whose P1 the P1 dry walk's stand-ins wrote and approved):
+- **The walk at each scale** (short WALK-P2-SHORT; standard COSMOS-PIN-17, which pins a god; epic COSMOS-HOME-1, whose threat has a home plane of its own):
+  1. the preroll: the cosmos, the seal and the frame, every framed row, festival and moon named;
+  2. begin: the prompt holds the frame and the promises block;
+  3. the stand-in writer on the frame; the merge passes the door, the framed rows are merged and the seal is unbroken;
+  4. check: the validator reports 0 errors, and every script promise due at P2 is kept;
+  5. the stand-in critics: the entity critic on every rubric it is given, the phase critic with a verdict for every critic-judged promise, the wishes critic; every promise due at P2 is closed;
+  6. the card: the gate is open, the secret is a status, the door passed, no hidden name;
+  7. approve: P2 is approved and its usage-recording tables are in used.json.
+- **The wrong turns**, from the state after begin, on WALK-P2-STANDARD-1 (a standard birth whose P1 names a plane, a ruin's). The good write passes; each wrong turn is refused by name:
+  - a frame field changed (a god's alignment);
+  - a P1-named plane left untouched (`named_by` emptied: refused as a changed field and by the set check);
+  - a festival missing for a greater god;
+  - a dated day outside the span;
+  - a secret-stock name in the public prose: refused by its kind, the name in no refusal.
+- **Two door fixes the walk found:**
+  - `container_errors` did not see a dated day the frame does not hold, because the diff reads only the frame's own keys. `calendar.dated` must now hold exactly the frame's dated days.
+  - The P2 prose scan's stray-capital line printed a secret name the writer had put in public prose. The scan (`CosmosDoor.strays`) now leaves a secret name's words to the leak check, which names only the kind.
+
+**The whole-P2 measurement** (`docs/reports/p2-tags-draft/measure_p2_after.py`, new; it reuses `measure_p2.py`'s tables and adds the arbiter's own check; 3,000 corpus births, the 22b-22d roller on each birth's P1 records):
+
+| | short | standard | epic |
+|---|---|---|---|
+| gods | 3×336, 4×344, 5×340 | 6×236, 7×259, 8×252, 9×243 | 9×156 … 14×172 (six values, 143-187 each) |
+| greater | 1×419, 2×601 | 2×539, 3×451 | 2×104, 3×348, 4×538 |
+| lesser | 1×333, 2×407, 3×280 | 2×299, 3×362, 4×329 | 2×54, 3×319, 4×202, 5×206, 6×196, 7×13 |
+| powers | 0×544, 1×476 | 1×302, 2×365, 3×323 | 3×454, 4×277, 5×248, 6×11 |
+| great | 0×289, 1×564, 2×167 | 1×466, 2×524 | 2×388, 3×322, 4×280 |
+| touched planes | 1×687, 2×333 | 1×311, 2×493, 3×186 | 3×156, 4×241, 5×242, 6×279, 7×72 |
+| divergences | 1 in all 1,020 | 2 in all 990 | 3 in all 990 |
+
+- **Type:** polytheist 1,023, silent 605, ancestors 475, dualist 313, animist 301, dead 283.
+- **Presence:** omens 683, clergy only 642, in places 607, never 598, walking 280, through the phenomenon 190.
+- **Domains:** all 8 reached (4,205-4,687 each).
+- **The evil god at standard and epic:** held in all 1,980 births.
+- The planes above the band (short 2, epic 7) are the magic dial's +1.
+- **P1's promises to P2:** closed in every dry walk (all three scales) and in `test_cosmos_door`. The ledger is per campaign on disk, so it is measured on the walks, not over the in-memory corpus.
+
+**The measurement after:**
+
+| | Before (`measure_p2.py`, 22a-0) | After |
+|---|---|---|
+| A declared clash (D) | 53.4 % | 0 |
+| An override no roll applies (O) | counted in "any" | 0 |
+| A requires left unmet (Q) | counted in "any" | 0 |
+| A pair the arbiter rules out among the P0-P2 rolls | not measured | 0 |
+| Any of them | 91.5 % | 0 of 3,000 |
+
+**Changed files:** tests `test_p2_dry_walk.py` (new); scripts `design_cosmos_door.py`; docs `docs/reports/p2-tags-draft/measure_p2_after.py` (new), this summary.
+
+**The suite:** 961 tests, OK, exit code 0, 3,117 s (52 min). No `aigm-*` folder left by my run.
+
+**The audit's addition** (the design tab, 2026-10-09): P1's door follows fix (b). A stray-capital line that prints a secret name leaks to the conductor and to the retry prompt at any phase, so `design_door.Door.strays` leaves a secret-stock name's words to the leak check, which names the kind only. `test_p1_dry_walk`'s secret-name wrong turn now refuses the name in every line and in the report (it accepted the stray line's word before).
+
+**The suite after the addition:** 961 tests, OK, exit code 0, 2,719 s (45 min). No `aigm-*` folder left by my run.

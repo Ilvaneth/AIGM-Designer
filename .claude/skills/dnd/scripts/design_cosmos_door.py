@@ -280,6 +280,10 @@ def container_errors(frame: dict, uid: str, frag: dict) -> list[str]:
         fill = {f.removeprefix("calendar.") for f in c["fill"]}
         errs += [f"{uid}: `calendar.{p}` differs from the script's frame or is missing (copy it unchanged from {frame_rel()})"
                  for _, p in dfr._diff(c["calendar"], got, fill)]
+        # 22e: a dated day the frame does not hold (one moved or added outside the span) is refused too
+        if set((got.get("dated") or {})) != set(c["calendar"].get("dated") or {}):
+            errs.append(f"{uid}: `calendar.dated` differs from the script's frame: the dated days are rolled inside the span "
+                        f"(copy them unchanged from {frame_rel()})")
         if not str(got.get("seasons") or "").strip():
             errs.append(f"{uid}: `calendar.seasons` is empty; write one felt line per month from the climate's seasons")
     return errs
@@ -369,6 +373,13 @@ class CosmosDoor:
         every = self.known_public | names.secret_all() | set(self.secret_names) | {str(r.get("name")) for r in self.rows.values() if r.get("name")}
         self.known_all = every | {door.bare(n) for n in every}
 
+    def strays(self, text: str) -> list[tuple[int, str]]:
+        """The prose scan's stray capitals, without a secret name's words: the leak check names that one by its kind,
+        and a refusal never prints a secret name (22e)."""
+        import design_door as door
+        hidden = {w for n in self.secret_names for w in str(n).split()}
+        return [(no, w) for no, w in door.stray_capitals(text, self.known_public, self.common) if w not in hidden]
+
     def leak_errors(self, where: str, text: str) -> list[str]:
         """A secret seat's id or fact in a public text: the threat's own home plane's id, a hidden god's name, a secret
         stock name, a secretly rolled row's id. The line names the kind, never the word."""
@@ -422,7 +433,7 @@ class CosmosDoor:
             if row.get("secrecy") != "secret":
                 for path, value in door.prose_strings({k: v for k, v in row.items() if k != "dm_only"}):
                     errs += self.leak_errors(f"{eid}: field {path}", value)
-                    for _, word in door.stray_capitals(value, self.known_public, self.common)[:4]:
+                    for _, word in self.strays(value)[:4]:
                         errs.append(f"{eid}: field {path}: the capitalised word {word!r} is no pooled or registered name")
 
         def file_of(key):
@@ -433,7 +444,7 @@ class CosmosDoor:
         rel, text = file_of("prose")
         if text is not None and not str(rel).startswith("design/dm-only/"):
             errs += self.leak_errors(f"{uid}: {rel}", text)
-            for no, word in door.stray_capitals(text, self.known_public, self.common)[:12]:
+            for no, word in self.strays(text)[:12]:
                 errs.append(f"{uid}: {rel} line {no}: the capitalised word {word!r} is no pooled or registered name; write a common "
                             "noun in lower case, or take a name from the pools")
         mrel, mtext = file_of("dm_only_prose")

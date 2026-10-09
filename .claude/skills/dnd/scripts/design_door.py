@@ -627,6 +627,12 @@ class Door:
             errs.append(f"{where}: carries {named} name(s) of the secret stock; a secret entity's name never stands in a public text")
         return errs
 
+    def strays(self, text: str) -> list[tuple[int, str]]:
+        """The prose scan's stray capitals, without a secret name's words: the leak check names that one by its kind,
+        and a refusal never prints a secret name to the conductor or the retry prompt (build item 22e)."""
+        hidden = {w for n in self.names.secret_all() for w in str(n).split()}
+        return [(no, w) for no, w in stray_capitals(text, self.known_public, self.common) if w not in hidden]
+
     def never_warnings(self, where: str, text: str) -> list[str]:
         out = []
         for row in dt.rows("forbidden.yaml"):
@@ -645,7 +651,7 @@ class Door:
             return (rel, f.read_text(encoding="utf-8", errors="replace")) if f is not None and f.is_file() else (None, None)
         rel, text = file_of("prose")
         if text is not None and not str(rel).startswith("design/dm-only/"):
-            for no, word in stray_capitals(text, self.known_public, self.common)[:12]:
+            for no, word in self.strays(text)[:12]:
                 errs.append(f"{uid}: {rel} line {no}: the capitalised word {word!r} is no pooled or registered name; write a common "
                             "noun in lower case, or take a name from the pools")
             errs += self.leak_errors(f"{uid}: {rel}", text)
@@ -662,7 +668,7 @@ class Door:
             if row.get("secrecy") == "secret":
                 continue
             for path, value in prose_strings(row):
-                for _, word in stray_capitals(value, self.known_public, self.common)[:4]:
+                for _, word in self.strays(value)[:4]:
                     errs.append(f"{eid}: field {path}: the capitalised word {word!r} is no pooled or registered name")
                 for _, name in planes_in(value)[:2]:
                     errs.append(f"{eid}: field {path}: names a plane ({name}); no plane is named at P1: the thin place's plane is chosen at P2")
