@@ -852,3 +852,82 @@ On `docs/p2-build-22.md` 22c and the design tab's answers during the build (the 
 **Notes for 22d:** the writer's prompt must say: copy the frame, fill only `fill`, run `registry.py check`, and `name` is the writer's only until 22n. `render_player.py` reads an event's `taught_tr` (legacy); the new rows hold `taught`.
 
 **The suite:** first round 930 tests OK; after the audit round 932 tests, OK, exit code 0, 2,474 s (41.2 min). No `aigm-*` folder left by my runs (the two dated 17:01 are the earlier ones).
+
+## 22n — the cosmos's names (the seventh coding tab)
+
+**What it does.** Every proper noun P2 makes now comes from the pool. The planes, the moon, the festivals, the ages and the events had no name in 22b/22c (their records held `name: ""` and the frame left `name` to the writer); now the P2 roller names each of them from a new `cosmos` section of the name pool and reserves the name under the id the frame gives it. The threat's own home plane (`plane_s01`) takes its name from the secret stock.
+
+**The design tab's answers to my six questions** (2026-10-09; the move's words went to the owner):
+- **The seated events:** the founding is "the Founding of <the signature institution's name>"; the ruin's age is "The Age of <W>" and its seated event "the Fall of <W>" (one old-tongue word W, so the two read together and never collide); the move is "the <the action's word>" alone; the villain's origin takes a public "taught type" die among the event types and is named like any event (its true layer stays in dm-only).
+- **The unnamed god's festival** takes the folk pattern.
+- **A wreck with no ships stock** (a landlocked palette) is "the Loss of <referent>".
+- **The ages:** a template whose label is a name keeps it (The Golden Age, The Silence); `age_before` reads "The Time Before"; the present is "The Age of the <move's word>", and, on the owner's word, "The Eve of the <move's word>" under `time_coming` (the move has not happened yet).
+- **The referents** (an event's "of <...>", an age's `{Name}`) come from a stock of their own (fresh common-tongue persons and places), so 10-14 epic events do not drain the NPC and settlement stocks; a god referent is a counted god's public name; the Silencing always takes a god.
+- **Where:** a `cosmos` section in `name-pool.json`, drawn after every existing stock; a `plane` kind in the secret stock.
+
+**The move's words** (the owner approved the draft with six changes: Dividing, not Sundering; Expulsion; Curse; Replacement; Overrunning; Spawning), `name_word` on all 31 `foundation.yaml#action` rows (the 8 retired ones too, for legacy births):
+
+| Row | Word | Row | Word | Row | Word |
+|---|---|---|---|---|---|
+| act_vanished | Taking | act_burned | Burning | act_possessed | Possession |
+| act_seized | Seizing | act_rose | Rising | act_enslaved | Chaining |
+| act_split | Dividing | act_sank | Drowning | act_betrayed | Betrayal |
+| act_corrupted | Corruption | act_killed | Slaying | act_reversed | Unwinding |
+| act_awakened | Waking | act_poisoned | Poisoning | act_fell_from_sky | Starfall |
+| act_stopped | Siege | act_cursed | Curse | act_true_face | Unmasking |
+| act_opened | Opening | act_plundered | Sack | act_turned_on_keepers | Turning |
+| act_closed | Sealing | act_summoned | Summoning | act_spread_unbounded | Overrunning |
+| act_merged_with_plane | Unmooring | act_plague | Plague | act_twinned | Twinning |
+| act_migrated | Expulsion | act_replaced | Replacement | act_forgotten | Forgetting |
+| | | | | act_gave_birth | Spawning |
+
+**Tables:**
+- `naming.yaml#words`: `plane_words`, `moon_words`, `festival_words`, `folk_festival_words`, `ruler_words` (the owner's lists of 2026-10-08).
+- `naming.yaml#patterns`: five new groups in the part grammar, 18 rows, no finished name:
+  - `plane`: `the <head root> <plane word>` (common tongue) or one word of the old tongue's bag, one pattern rolled per name;
+  - `festival`: `<god>'s <Feast | Night | Day | Vigil>` (the gods' language) and the folk `the <Feast | Night | Day | Vigil | Fair> of the <noun root>`;
+  - `moon`: `the <colour root> <moon word>` or a fresh common-tongue name drawn like a natural place (head + natural tail);
+  - `age`: `{Name}` a referent, `{Thing}` a noun root, `{Rulers}` `the <noun root> <Kings | Queens | Lords | Princes>`, the ruin's `The Age of <old word>`, the present `The Age of the <word>` / `The Eve of the <word>`;
+  - `event`: `the <type word> of <referent | god>`, the Silencing, the Wreck, the Loss, the founding, the ruin's fall and the move as above. The patterns marked `composed_by: script` are composed by the roller from what it rolled.
+- `history.yaml#event_type`: a `name_word` on each of the 16 rows (the disaster's is a list: Burning, Drowning, Ruin) and a `name_referent`, the kinds its referent may be (the audit round, below); `age_before`'s label is "The Time Before".
+- `foundation.yaml#action`: the 31 words above.
+- Stamped (`design_tables.py stamp`): the 5 word lists, 18 patterns, 16 event types, `age_before` and the 23 live action rows; `unreviewed()` is empty.
+
+**Code:**
+- **`design_names.py`:**
+  - `fill_cosmos(pool, naming, master, dials, foundation, phase, attempt, secret=, registered=)` draws the cosmos stocks: planes (the band's top + 4: the magic dial's +1, the moon's seat, two spare), moons (2), folk festivals (3: two and the unnamed god's), things (2), rulers (2), ruin words (2), referent places and persons (the dated and deep-past events' tops + 1 each), a festival per god name of the gods' language (word rolled per name, so a top-up of the god stock adds its festivals); and one secret plane name in the secret stock.
+  - It runs **after** `fill_pool` and `fill_secret` (`ensure_pool` calls it last), with derived rngs of its own: no earlier name of a seed moves, public or secret. An on-disk birth prerolled before 22n gets its cosmos section at its P2 preroll (a top-up).
+  - `cosmos_take(pool, key, eid, where)` takes and reserves. `_all_names` and `_bag_entries` include the cosmos section, so a later top-up of any stock avoids its names; `reserve_named` reads the cosmos section too.
+  - Compounds are checked by `name_checker` (the blacklists, the door's naming rules, other campaigns' names), bag words by `acceptable()` (near-typo 1, as the old tongue's sites).
+- **`design_cosmos.py`:**
+  - step 3: each public touched plane takes the next plane name (the moon's seat a moon name), reserved under `plane_<short>` / `plane_moon`; the name rides on the plane's public record;
+  - step 4 (`bind_home`): the home of its own takes the secret stock's plane name under `plane_s01`;
+  - step 5: the origin's taught type (`event.<k>.taught`, public); `name_history` names the ages and the events, reserved under `era_<n>` / `event_<n>` / `event_deep_<n>`; its choices (a referent's kind, a god referent, the disaster's word) come from a names rng that reads nothing secret;
+  - step 7: `name_calendar` names the festivals (`calendar.festival.<n>`) and the moon(s) (`calendar.moon`; the plane's name when the moon is a touched seat; two for two moons; none with no moon);
+  - `load_p1` reads the signature institution's name (`institution_name`); without one (the in-memory corpus) the founding takes a referent place.
+- **`design_cosmos_door.py`:** the frame sets every name (`UNNAMED` is gone; `name` is in no `fill`); the origin row carries `taught_type`; the calendar block's moon holds `names` (a list) and each festival its `name`. New `name_errors(frame)`: a framed row, a festival or a moon left nameless is a whole-phase refusal ("rerun the P2 preroll").
+- **`design_door.Names`:** the cosmos names join `public()`, the secret stock's cosmos planes join the secret names (the leak check reads them).
+
+**Tests:**
+- **New `test_cosmos_names.py`:** the word lists, the five groups in the grammar, no finished name in a pattern, every event type's and every action's word, the self-naming ages, the stamps; over 75 corpus births of all three scales (every other one of the first 150), rolled with pools: no cosmos stock short, every record named, the shapes (a god's festival, the ruin's age and fall share W, the present follows the move with the Eve under `time_coming`, the Silencing takes a god, the moon seat's name is the moon's), no collision inside a campaign, no blacklisted or refused stock name, no secret plane name in a public stock, each name reserved under its id.
+- **`test_cosmos_roll`:** `SwapNames` extended (written first): every plane, age, event and festival named in both rolls, the public view (names included) identical whatever the secret records, an epic home's name from the secret stock and in no public record; `OnDisk` checks the names reserved under the frame ids.
+- **`test_cosmos_door`:** the stand-in writer fills no name; three new refusals (a plane renamed, an event left nameless, a festival renamed); a test of the frame's names, their reservations, `name_errors` on a nameless era and no collision; `EpicHome` checks the secret name and its reservation.
+- **Updated:** `test_name_tables` (the pattern and word counts), `test_door` (`name_word` is a name's word, not text).
+
+**Measured:** 300 corpus births rolled with pools: no stock short at any scale; before the move's words every record was named except the move and the present age (none after).
+
+**Notes for 22d:** the writer copies every name from the frame and fills none; the prompt should say that festival, moon and event names are in the frame, and that the present age's name follows the move. The 22c note "`name` is the writer's only until 22n" no longer holds.
+
+**Changed files:**
+- data: `naming.yaml`, `history.yaml`, `foundation.yaml`, `reviewed.json`;
+- scripts: `design_names.py`, `design_cosmos.py`, `design_cosmos_door.py`, `design_door.py`;
+- tests: `test_cosmos_names.py` (new), `test_cosmos_roll.py`, `test_cosmos_door.py`, `test_name_tables.py`, `test_door.py`.
+
+**The audit round** (the design tab read the names of corpus births; both fixes approved by the owner):
+1. **God referents:** about a quarter of the events took a god's name in any type ("the Founding of <god>", "the Sickness of <god>"), stories about gods no roll decided. The referent's kind is now a table fact, `name_referent` on each event type, stamped: a god only for the Silencing (always), a miracle, a heresy or a war (god, place or person); a place for founding, treaty, disaster, plague, migration, vanishing, naming, building; a person for succession, discovery, exile; a wreck takes a ship of the common tongue while one is left, else "the Loss of <place>".
+2. **"Fall"** as a disaster word collided in kind with the ruin's seated "the Fall of <W>": the disaster's words are Burning, Drowning, Ruin.
+Tests added to `test_cosmos_names`: the referent kinds per type in the data; over the corpus, no god referent outside the four types, no event but the ruin's is "the Fall of", a wreck is a Wreck or a Loss.
+
+**The first suite** (before the audit round): 945 tests, OK, exit code 0, 2,552 s (42.5 min). No `aigm-*` folder left by my run (the two dated 17:01 on 2026-10-08 are the earlier ones).
+
+**The suite after the audit round:** 945 tests, OK, exit code 0, 2,575 s (42.9 min). No `aigm-*` folder left by my runs (the two dated 17:01 on 2026-10-08 are the earlier ones).

@@ -404,6 +404,7 @@ def pools_of(d: dict, R1) -> tuple[dict, dict]:
     secret = {"_meta": {}, "rolled": True, "languages": {}}
     dn.fill_pool(pool, R1.naming, R1.master, d, R1.foundation, "P1", 1, secret=secret, registered=set())
     dn.fill_secret(secret, R1.naming, R1.master, d, "P1", 1, pool, registered=set())
+    dn.fill_cosmos(pool, R1.naming, R1.master, d, R1.foundation, "P1", 1, secret=secret, registered=set())
     return pool, secret
 
 
@@ -423,7 +424,7 @@ class SwapNames(unittest.TestCase):
         by_scale: dict = {}
         for d, R1 in _corpus.births(150):
             by_scale.setdefault(d["scale"], []).append((d, R1))
-        pinned = 0
+        pinned = homes = 0
         for scale, rows in by_scale.items():
             for i, (d, R1) in enumerate(rows):
                 _, R2 = rows[(i + 1) % len(rows)]
@@ -436,6 +437,15 @@ class SwapNames(unittest.TestCase):
                     p1 = dict(dc.p1_of(R1), threat=threat_of.threat, secret=threat_of.identity_secret, pinned_god=pin_of(threat_of, sp))
                     pub, sec = dc.roll(S, d, p1, pl, sp)
                     outs.append(public_view(S, pub))
+                    # build item 22n: the cosmos's names; a secret home plane from the secret stock, in no public record
+                    named = pub["planes"] + pub["ages"] + pub["calendar"]["festivals"]
+                    named += pub["events"] + pub["deep_events"]
+                    self.assertTrue(all(x.get("name") for x in named), f"{R1.master}: every plane, age, event and festival named")
+                    own = (sec.get("home_plane") or {}).get("own")
+                    if own:
+                        homes += 1
+                        self.assertIn(own["name"], {e["name"] for e in sp["cosmos"]["planes"]}, "the home's name is the secret stock's")
+                        self.assertNotIn(own["name"], json.dumps(pub) + json.dumps(pl), "the home's name is in no public record")
                     seat = sec["seats"]["threat_god"] or sec["seats"]["power_god"]
                     if p1["pinned_god"] and seat is not None:
                         pinned += 1
@@ -444,6 +454,7 @@ class SwapNames(unittest.TestCase):
                 self.assertTrue(all(g["id"] for g in json.loads(outs[0])["cosmos"]["gods"]), "every god named from the pool")
                 self.assertEqual(outs[0], outs[1], f"{R1.master}: the public names moved with {R2.master}'s secret")
         self.assertTrue(pinned, "some births pin a god")
+        self.assertTrue(homes, "some epic births have a home plane of their own")
 
 
 class OnDisk(unittest.TestCase):
@@ -495,8 +506,15 @@ class OnDisk(unittest.TestCase):
         self.assertNotIn("seats", json.dumps(cosmos))
         public = [r for r in m["dice_log"] if r["phase"] == "P2"]
         self.assertFalse([r for r in public if r["label"].startswith(SECRET_LABELS)])
+        # build item 22n: the planes, ages, events, festivals and the moon are named from the pool's cosmos section,
+        # each name reserved there under the id the frame gives it
+        held = {e["name"]: e.get("used_by") for v in pool["cosmos"].values() for e in v}
         for pl in cosmos["planes"]:
-            self.assertIsNone(pl["name"], "a plane is named in 22n, not here")
+            self.assertEqual(held.get(pl["name"]), "plane_" + pl["baseline"].removeprefix("baseline_"))
+        for a in cosmos["ages"]:
+            self.assertTrue(a["name"], a)
+        for f in cosmos["calendar"]["festivals"]:
+            self.assertEqual(held.get(f["name"]), f"calendar.festival.{f['n']}")
 
     def test_the_legacy_fixture_still_prerolls(self):
         c = TestCampaign("cosmos")

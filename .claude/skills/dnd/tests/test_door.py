@@ -78,7 +78,7 @@ class Tables(unittest.TestCase):
     public P0 or P1 row's own text is on the closed list, so no later row sets the trap."""
 
     EXEMPT = {"PC"}                                     # stands only in the rows' table notes (`at_table`), never in world text
-    NOT_TEXT = ("id", "hooks", "name_words")            # ids; instructions to the floors (the ledger's sentences); words of a name
+    NOT_TEXT = ("id", "hooks", "name_words", "name_word")   # ids; instructions to the floors (the ledger's sentences); words of a name
 
     def strings(self, node):
         if isinstance(node, str):

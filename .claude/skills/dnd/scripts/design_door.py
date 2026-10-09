@@ -200,12 +200,15 @@ class Names:
         stock = lambda key: {e["name"] for L in (self.pool.get("languages") or {}).values() for e in L.get(key, [])}
         self.stocks = {key: stock(key) for key in ("person", "god", "places", "regions", "inns", "buildings", "ships", "epithets", "sites")}
         self.calendar = {e["name"] for v in (self.pool.get("calendar") or {}).values() for e in v}
+        # build item 22n: the cosmos's names (planes, moons, festivals, the ages' parts, the referents)
+        self.cosmos = {e["name"] for v in (self.pool.get("cosmos") or {}).values() for e in v}
         self.candidates = {slot: [c["name"] for c in s.get("names", [])] for slot, s in (self.naming.get("candidates") or {}).items()}
         sec = lambda *keys: {e["name"] for L in (self.secret_pool.get("languages") or {}).values() for k in keys for e in L.get(k, [])}
-        self.secret = {"person": sec("person"), "god": sec("god"), "place": sec("place", "site")}
+        self.secret = {"person": sec("person"), "god": sec("god"), "place": sec("place", "site")
+                       | {e["name"] for v in (self.secret_pool.get("cosmos") or {}).values() for e in v}}
 
     def public(self) -> set:
-        out = set(self.calendar)
+        out = set(self.calendar) | set(self.cosmos)
         for names in self.stocks.values():
             out |= names
         for names in self.candidates.values():

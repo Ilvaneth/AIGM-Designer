@@ -33,9 +33,6 @@ def fill(entry: dict) -> dict:
         head, _, rest = f.partition(".")
         if f in ("aliases", "refs") or head in ("aliases", "refs"):
             continue
-        if f == "name":             # until build item 22n names it from the pools
-            row["name"] = "Stand In " + row["id"].replace("_", " ").title().replace(" ", "")
-            continue
         if rest:
             row.setdefault(head, {})[rest] = TEXT
         else:
@@ -170,6 +167,7 @@ class Door(unittest.TestCase):
         frame = self.p2.frame
         god = next(e for e in frame["rows"] if e.startswith("god_"))
         event_move = next(e for e, x in frame["rows"].items() if x["registry"].get("seat") == "move")
+        plane = next(e for e in frame["rows"] if e.startswith("plane_"))
         cases = {
             "a frame field changed": (lambda f: next(r for r in f["rows"] if r["id"] == god).update(rank="power"), "`rank` differs"),
             "a framed row left out": (lambda f: f.__setitem__("rows", [r for r in f["rows"] if r["id"] != event_move]), f"the framed row {event_move} is missing"),
@@ -178,6 +176,10 @@ class Door(unittest.TestCase):
             "the month changed": (lambda f: f["seeds"][0]["args"].__setitem__("month_length", 30), "`seeds` must be the calendar seed"),
             "a reshaped stamp": (lambda f: next(r for r in f["rows"] if r["id"] == god).__setitem__("stamped", "rank"), "`stamped` must be an object"),
             "an extra god": (lambda f: f["rows"].append(dict(next(r for r in f["rows"] if r["id"] == god), id="god_extra")), "no such god"),
+            # build item 22n: every name comes from the pool; the writer neither blanks nor renames one
+            "a plane renamed": (lambda f: next(r for r in f["rows"] if r["id"] == plane).update(name="the Invented Realm"), "`name` differs"),
+            "an event left nameless": (lambda f: next(r for r in f["rows"] if r["id"] == event_move).update(name=""), "`name` differs"),
+            "a festival renamed": (lambda f: f["calendar"]["festivals"][0].update(name="the Invented Feast"), "`calendar.festivals"),
         }
         for what, (change, words) in cases.items():
             with self.subTest(what):
@@ -192,6 +194,30 @@ class Door(unittest.TestCase):
         err = self.refused(self.p2.merge())
         self.assertIn("a secretly rolled row's id", err)
         self.assertNotIn(p1_secret, err, "the refusal names the kind, never the row")
+
+    def test_every_name_comes_from_the_pool_and_is_reserved_under_its_id(self):
+        """Build item 22n: the frame names every plane, age, event, festival and the moon from the pool's cosmos section;
+        each name is reserved there under the id that carries it; a frame with a nameless row is refused."""
+        frame = self.p2.frame
+        pool = self.p2.w.json("design/dm-only/name-pool.json")
+        held = {e["name"]: e.get("used_by") for v in pool["cosmos"].values() for e in v}
+        for eid, entry in frame["rows"].items():
+            name = entry["registry"]["name"]
+            self.assertTrue(name, f"{eid} is named")
+            self.assertNotIn("name", entry["fill"], f"{eid}: the writer fills no name")
+            if eid.startswith("plane_"):
+                self.assertEqual(held.get(name), eid, f"{eid}'s name is reserved under its id")
+        block = frame["container"]["calendar"]
+        for f in block["festivals"]:
+            self.assertEqual(held.get(f["name"]), f"calendar.festival.{f['n']}")
+        self.assertEqual(cd.name_errors(frame), [])
+        nameless = copy.deepcopy(frame)
+        eid = next(e for e in nameless["rows"] if e.startswith("era_"))
+        nameless["rows"][eid]["registry"]["name"] = ""
+        self.assertEqual(cd.name_errors(nameless), [f"{eid}: the pool gave it no name; rerun the P2 preroll (every name P2 makes comes from the pool)"])
+        names = [entry["registry"]["name"].lower() for entry in frame["rows"].values() if not entry["registry"]["id"].startswith("god_")]
+        names += [f["name"].lower() for f in block["festivals"]] + [n.lower() for n in block["moon"]["names"]]
+        self.assertEqual(len(names), len(set(names)), "no two names of the campaign collide")
 
     def test_an_edited_cosmos_breaks_the_seal(self):
         m = dm.load(self.p2.w.name)
@@ -241,6 +267,11 @@ class EpicHome(unittest.TestCase):
         self.assertNotIn(f"plane_{short}", outputs.replace(f"plane_{short}_", ""), "the home's id names nothing")
         public = json.dumps(dm.load(w.name)) + (w.dir / cd.PROSE).read_text(encoding="utf-8")
         self.assertNotIn(home["baseline"], public, "the opaque id may stand in public; what it is may not")
+        # build item 22n: its name comes from the secret stock, reserved under its opaque id, and stands nowhere public
+        name = self.p2.frame["secret_rows"][cd.HOME_ID]["registry"]["name"]
+        secret = {e["name"]: e["used_by"] for e in w.json("design/dm-only/name-pool-secret.json")["cosmos"]["planes"]}
+        self.assertEqual(secret.get(name), cd.HOME_ID)
+        self.assertNotIn(name, public + json.dumps(w.json("design/dm-only/name-pool.json")))
 
 
 class Reserve(unittest.TestCase):

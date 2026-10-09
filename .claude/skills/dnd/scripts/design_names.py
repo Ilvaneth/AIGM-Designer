@@ -18,7 +18,9 @@ design/naming.json (public, stamped; no agent writes it), the four candidates of
 (`naming.json#candidates`) and the stocks.
 
 The pool lives in design/dm-only/name-pool.json (the conductor never reads it): per living language persons, gods,
-places, regions, inns, buildings, ships and god epithets; the old tongue's sites; the calendar's months and days. Every
+places, regions, inns, buildings, ships and god epithets; the old tongue's sites; the calendar's months and days; the
+cosmos's planes, moons, festivals, the ages' parts and the referents an age or an event is named for (build item 22n,
+drawn after every other stock; the P2 roller takes and reserves them). Every
 rendered prompt lists the unused names; the registry door refuses a new public person or god whose given name is not
 on its language's list, marks a used name, and refuses a secret entity a pool name (the lists are printed in
 conductor-readable prompts). A secret entity is named from the secret stock, design/dm-only/name-pool-secret.json:
@@ -671,13 +673,16 @@ def has_water(foundation: dict) -> bool:
 
 
 def _bag_entries(pool: dict) -> list[str]:
-    return [e["word"] if "word" in e else e["name"] for L in (pool.get("languages") or {}).values()
-            for k in ("person", "god", "sites", "site") for e in L.get(k, [])]
+    out = [e["word"] if "word" in e else e["name"] for L in (pool.get("languages") or {}).values()
+           for k in ("person", "god", "sites", "site") for e in L.get(k, [])]
+    # build item 22n: the cosmos's bag words (referent persons, the old tongue's plane and ruin words)
+    return out + [e["word"] for v in (pool.get("cosmos") or {}).values() for e in v if e.get("word")]
 
 
 def _all_names(pool: dict) -> set:
     out = {e["name"].lower() for L in (pool.get("languages") or {}).values() for v in L.values() for e in v}
-    return out | {e["name"].lower() for v in (pool.get("calendar") or {}).values() for e in v}
+    out |= {e["name"].lower() for v in (pool.get("calendar") or {}).values() for e in v}
+    return out | {e["name"].lower() for v in (pool.get("cosmos") or {}).values() for e in v}
 
 
 def fill_pool(pool: dict, naming: dict, master: str, dials: dict, foundation: dict, phase: str, attempt: int = 1,
@@ -821,6 +826,191 @@ def fill_secret(secret: dict, naming: dict, master: str, dials: dict, phase: str
             entries += stamp(fresh)
             changed = changed or bool(fresh)
     return changed
+
+
+# ── build item 22n: the cosmos's names, drawn after every other stock (public and secret) ───────────────────
+
+COSMOS = "cosmos"
+# stock → the patterns (naming.yaml#patterns) its names are drawn with; `referent_persons` are bag names of the common
+# tongue (a person an age or an event is named for), `ruin_words` and the planes' old pattern words of the old tongue
+COSMOS_STOCKS = {"planes": ("pattern_plane_word", "pattern_plane_old"), "moons": ("pattern_moon_word", "pattern_moon_fresh"),
+                 "folk_festivals": ("pattern_festival_folk",), "things": ("pattern_age_thing",),
+                 "rulers": ("pattern_age_rulers",), "ruin_words": ("pattern_age_ruin",),
+                 "referent_places": ("pattern_place_settlement", "pattern_place_natural"), "referent_persons": ()}
+BAG_STOCKS = ("ruin_words", "referent_persons")          # their entries are bag words (`word`)
+
+
+def cosmos_language(naming: dict) -> str | None:
+    """The language the cosmos's names are drawn in: the common tongue, else the other side's, else the people's."""
+    langs = naming.get("languages") or {}
+    return next((lid for lid in ("common", "other_side", "people") if lid in langs), None)
+
+
+def gods_language(naming: dict) -> str | None:
+    """The gods' language (the 22b ruling 1; design_cosmos.god_language): the common tongue, else the people's, else
+    the first living language."""
+    langs = naming.get("languages") or {}
+    for lid in ("common", "people"):
+        if lid in langs:
+            return lid
+    living = [lid for lid, L in langs.items() if L.get("owner") != "old"]
+    return living[0] if living else None
+
+
+def old_language(naming: dict) -> str | None:
+    return next((lid for lid, L in (naming.get("languages") or {}).items() if L.get("owner") == "old"), None)
+
+
+def cosmos_sizes(scale: str) -> dict:
+    """The cosmos stocks (docs/p2-build-22.md part 22n): the planes the scale can touch (the band's top, the magic
+    dial's +1, the moon's seat, two spare), two moons, the folk festivals (two and the unnamed god's), the ages' parts,
+    one referent of each kind per dated and deep-past event and one more for an age."""
+    sc = dt.scale_row(scale)
+    hist = sc["history"]
+    events = dt.band(hist["dated_events"])[1] + dt.band(hist["deep_past_events"])[1] + 1
+    return {"planes": dt.band(sc["planes_touched"])[1] + 4, "moons": 2, "folk_festivals": 3, "things": 2, "rulers": 2,
+            "ruin_words": 2, "referent_places": events, "referent_persons": events}
+
+
+def _cosmos_names(pool: dict | None) -> set:
+    out: set = set()
+    for key, entries in ((pool or {}).get(COSMOS) or {}).items():
+        for e in entries:
+            out.add(e["name"].lower())
+            if e.get("word"):
+                out.add(e["word"].lower())
+    return out
+
+
+def _one_bag(rng, lang: dict, taken: list[str], seen: set, ok) -> str | None:
+    """The next bag word of a language that no name of the campaign holds (near-typo 1, as the old tongue's sites)."""
+    for _ in range(40):
+        got = draw_names(rng, lang, 1, taken, "person", near=1)
+        if not got:
+            return None
+        w = got[0]
+        taken.append(w)
+        if w.lower() not in seen and ok(w):
+            return w
+    return None
+
+
+def _cosmos_draw(rng, key: str, n: int, envs: dict, langs: dict, taken: list[str], seen: set, ok, cap: int) -> list[dict]:
+    """n names of one cosmos stock. With two patterns one is rolled per name (a d2); a bag pattern takes a bag word."""
+    pats = {p["id"]: p for rows in dt.load("naming.yaml")["patterns"].values() for p in rows}
+    max_letters = int(draw_rules()["compound_max_letters"])
+    pids = COSMOS_STOCKS[key]
+    uses: Counter = Counter()
+    streams = {pid: _names(pats[pid], envs["common"], rng, max_letters) for pid in pids
+               if not any(p.get("bag_word") for p in pats[pid]["parts"])}
+    out: list[dict] = []
+    for _ in range(n):
+        order = list(pids) if pids else [None]
+        if len(order) > 1:
+            first = order.pop(rng.randint(1, len(order)) - 1)
+            order.insert(0, first)
+        for pid in order:
+            if pid is None:                                       # a referent person: a common-tongue bag name
+                w = _one_bag(rng, langs["common"], taken, seen, ok)
+                entry = {"name": w, "word": w, "pattern": "bag"} if w else None
+            elif pid not in streams:                              # a word of the old tongue's bag
+                # (a ruin word is the word alone: the roller composes the age and the fall from it)
+                w = _one_bag(rng, langs["old"], taken, seen, ok) if langs.get("old") else None
+                entry = {"name": w, "word": w, "pattern": pid} if w else None
+            else:
+                entry = None
+                for name, head in streams[pid]:
+                    if name.lower() in seen or (head and uses[head] >= cap) or not ok(name):
+                        continue
+                    if head:
+                        uses[head] += 1
+                    entry = {"name": name, "head": head, "pattern": pid}
+                    break
+            if entry:
+                seen.add(entry["name"].lower())
+                if entry.get("word"):
+                    seen.add(entry["word"].lower())
+                out.append(entry)
+                break
+    return out
+
+
+def _god_festivals(naming: dict, pool: dict, master: str, phase: str, attempt: int, seen: set, ok) -> list[dict]:
+    """A festival name for each god name of the gods' language not yet given one: `<god>'s <Feast | Night | Day |
+    Vigil>`, the word rolled per name."""
+    lid = gods_language(naming)
+    have = {e["god"] for e in (pool.get(COSMOS) or {}).get("god_festivals") or []}
+    words = list(dt.load("naming.yaml")["words"]["festival_words"])
+    out = []
+    for g in ((pool.get("languages") or {}).get(lid) or {}).get("god") or []:
+        if g["name"] in have:
+            continue
+        rng = dd.derive(master, phase, "names", f"cosmos.god_festival.{g['name']}", attempt)
+        order = list(words)
+        rng.shuffle(order)
+        for w in order:
+            name = f"{g['name']}'s {w}"
+            if name.lower() not in seen and ok(name):
+                seen.add(name.lower())
+                out.append({"name": name, "god": g["name"], "festival_word": w, "pattern": "pattern_festival_god"})
+                break
+    return out
+
+
+def fill_cosmos(pool: dict, naming: dict, master: str, dials: dict, foundation: dict, phase: str, attempt: int = 1,
+                secret: dict | None = None, registered: set | None = None) -> bool:
+    """The cosmos's stocks (build item 22n), drawn after every public and secret stock so no earlier name of a seed
+    moves: planes, moons, folk festivals, the ages' things, rulers and ruin words, the referents (common-tongue persons
+    and places an age or an event is named for), a festival per god name; in the secret stock, the planes a secret
+    plane takes (the threat's own home). A legacy pool has none. True when something was drawn."""
+    import registry
+    lid, old = cosmos_language(naming), old_language(naming)
+    if not lid:
+        return False
+    registered = registry.registered_elsewhere("") if registered is None else registered
+    ok = name_checker(registered)
+    L = naming["languages"][lid]
+    whole = lexicon_roots()
+    by_root = {r["root"]: r for r in whole}
+    envs = {"common": {"roots": [by_root[r] for r in L["roots"]], "tails": L["settlement_tails"], "whole": whole,
+                       "kinds": list(foundation["palette"]) + list(foundation["palette_extra"])}}
+    langs = {"common": L, "old": naming["languages"].get(old) if old else None}
+    seen = _all_names(pool) | (_all_names(secret) if secret else set())
+    taken = _bag_entries(pool) + (_bag_entries(secret) if secret else [])
+    cap = int(draw_rules()["head_uses_max"])
+    stamp = lambda fresh: [dict(e, used_by=None, drawn=phase) for e in fresh]
+    sizes = cosmos_sizes(dials["scale"])
+    changed = False
+    cos = pool.setdefault(COSMOS, {})
+    for key in COSMOS_STOCKS:
+        entries = cos.setdefault(key, [])
+        n = _want(entries, sizes[key])
+        if n > 0:
+            rng = dd.derive(master, phase, "names", f"cosmos.{key}.{len(entries)}", attempt)
+            fresh = _cosmos_draw(rng, key, n, envs, langs, taken, seen, ok, cap)
+            entries += stamp(fresh)
+            changed = changed or bool(fresh)
+    fresh = _god_festivals(naming, pool, master, phase, attempt, seen, ok)
+    cos.setdefault("god_festivals", []).extend(stamp(fresh))
+    changed = changed or bool(fresh)
+    if secret is not None:
+        mine = secret.setdefault(COSMOS, {}).setdefault("planes", [])
+        n = _want(mine, 1)
+        if n > 0:
+            rng = dd.derive(master, phase, "names-secret", f"cosmos.planes.{len(mine)}", attempt)
+            fresh = _cosmos_draw(rng, "planes", n, envs, langs, taken, seen, ok, cap)
+            mine += stamp(fresh)
+            changed = changed or bool(fresh)
+    return changed
+
+
+def cosmos_take(pool: dict | None, key: str, eid: str, where=None) -> dict | None:
+    """The next unused entry of a cosmos stock (that `where` accepts), reserved under `eid`."""
+    for e in ((pool or {}).get(COSMOS) or {}).get(key) or []:
+        if not e.get("used_by") and (where is None or where(e)):
+            e["used_by"] = eid
+            return e
+    return None
 
 
 def slot_language(slot: str, naming: dict) -> str:
@@ -989,6 +1179,11 @@ def ensure_pool(campaign: str, phase: str, attempt: int = 1, fresh: bool = False
     if fill_secret(secret, naming, master, m["dials"], phase, attempt, pool) or fresh:
         stamp_meta(secret, campaign, f"design_names.py pool --phase {phase} (secret stock)")
         write_json_atomic(secret_path(campaign), secret)
+    # build item 22n: the cosmos's stocks last, so no earlier name of the seed moves
+    if fill_cosmos(pool, naming, master, m["dials"], m["foundation"], phase, attempt, secret=secret):
+        save_pool(campaign, pool, f"design_names.py pool --phase {phase} (the cosmos)")
+        stamp_meta(secret, campaign, f"design_names.py pool --phase {phase} (the cosmos, secret stock)")
+        write_json_atomic(secret_path(campaign), secret)
     return pool
 
 
@@ -1040,12 +1235,13 @@ def reserve_named(pool: dict | None, secret: dict | None, row: dict, eid: str) -
     values = _string_values(row)
     n = 0
     for stock in (pool, secret):
-        for L in ((stock or {}).get("languages") or {}).values():
-            for entries in L.values():
-                for e in entries:
-                    if not e.get("used_by") and e.get("name") in values:
-                        e["used_by"], e["used_at"] = eid, now_iso()
-                        n += 1
+        lists = [entries for L in ((stock or {}).get("languages") or {}).values() for entries in L.values()]
+        lists += list(((stock or {}).get("cosmos") or {}).values())          # build item 22n
+        for entries in lists:
+            for e in entries:
+                if not e.get("used_by") and e.get("name") in values:
+                    e["used_by"], e["used_at"] = eid, now_iso()
+                    n += 1
     return n
 
 

@@ -1977,6 +1977,7 @@ tables:
     rows:
       - id: act_vanished
         label: Carried off
+        name_word: Taking
         targets: [remnant, role, heart]
         fits: {remnant: [object], role: [group, settlement, person]}
         phrases:
@@ -1986,12 +1987,14 @@ tables:
           - {for: [heart], past: "carried off the ruler of {target}", present: "{be} carrying off the leaders of {target}", imminent: "{be} about to carry off the ruler of {target}"}
       - id: act_seized
         label: Seized
+        name_word: Seizing
         targets: [heart, key_place, remnant, thin_place]
         fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark], remnant: [network, structure, city, body, wasteland, machine, object, source, rift]}
         phrases:
           - {for: [heart, key_place, remnant, thin_place], past: "seized {target}", present: "{be} seizing {target}", imminent: "{be} about to seize {target}"}
       - id: act_split
         label: Divided
+        name_word: Dividing
         targets: [role, heart]
         fits: {role: [group, settlement]}
         destroys: [role]
@@ -2002,6 +2005,7 @@ tables:
       - id: act_corrupted
         leaves_ruins: true
         label: Corrupted
+        name_word: Corruption
         targets: [remnant, key_place, heart]
         fits: {key_place: [crossing, water, gate, network, landmark], remnant: [network, structure, city, body, wasteland, source, rift]}
         phrases:
@@ -2009,6 +2013,7 @@ tables:
         by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_druid_circle, hand_hag_coven, hand_risen_dead, hand_ruin_power, hand_dragon, hand_fey_court, hand_werewolves]
       - id: act_awakened
         label: Woke
+        name_word: Waking
         targets: [remnant, key_place]
         fits: {key_place: [bridge, gate, descent, landmark], remnant: [body, machine, structure, object, network]}
         phrases:
@@ -2018,6 +2023,7 @@ tables:
         by: [hand_villain_itself, hand_cult, hand_ruin_power, hand_from_beyond, hand_fiends, hand_druid_circle, hand_bound_elemental, hand_risen_dead, hand_hag_coven, hand_zealous_order, hand_rival_band]
       - id: act_stopped
         label: Besieged / cut off
+        name_word: Siege
         targets: [key_place, heart]
         fits: {key_place: [crossing, water, crossroad, network]}
         phrases:
@@ -2025,12 +2031,14 @@ tables:
           - {for: [heart], past: "besieged {target}", present: "{be} besieging {target}", imminent: "{be} about to besiege {target}"}
       - id: act_opened
         label: Opened
+        name_word: Opening
         targets: [remnant, key_place, thin_place]
         fits: {key_place: [gate, descent, network], remnant: [city, structure, body, source, rift]}
         phrases:
           - {for: [remnant, key_place, thin_place], past: "opened {target}", present: "{be} opening {target}", imminent: "{be} about to open {target}"}
       - id: act_closed
         label: Sealed
+        name_word: Sealing
         bars_scars_on_target: {thin_place: [scar_plane_thinned]}
         targets: [key_place, thin_place]
         fits: {key_place: [crossing, bridge, gate, descent, network]}
@@ -2038,6 +2046,7 @@ tables:
           - {for: [key_place, thin_place], past: "sealed {target}", present: "{be} sealing {target}", imminent: "{be} about to seal {target}"}
       - id: act_merged_with_plane
         label: Dragged into another plane
+        name_word: Unmooring
         targets: [heart, key_place, thin_place]
         fits: {key_place: [gate, descent, crossroad, network, landmark]}
         phrases:
@@ -2047,6 +2056,7 @@ tables:
         by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_fey_court, hand_ruin_power, hand_bound_elemental, hand_hag_coven]
       - id: act_migrated
         label: Drove out
+        name_word: Expulsion
         targets: [role, heart]
         fits: {role: [group, settlement, person, creature]}
         destroys: [heart]
@@ -2056,6 +2066,7 @@ tables:
       - id: act_burned
         leaves_ruins: true
         label: Burned
+        name_word: Burning
         targets: [key_place, heart]
         fits: {key_place: [bridge, crossroad]}
         destroys: [heart]
@@ -2063,6 +2074,7 @@ tables:
           - {for: [key_place, heart], past: "burned {target}", present: "{be} burning {target}", imminent: "{be} about to burn {target}"}
       - id: act_rose
         label: Raised in revolt
+        name_word: Rising
         winner_is_target_role: true
         targets: [role, heart]
         fits: {role: [group, settlement]}
@@ -2072,6 +2084,7 @@ tables:
       - id: act_sank
         leaves_ruins: true
         label: Drowned
+        name_word: Drowning
         targets: [remnant, key_place, heart]
         fits: {key_place: [gate, crossroad], remnant: [network, structure, city]}
         destroys: [heart]
@@ -2080,6 +2093,7 @@ tables:
         by: [hand_villain_itself, hand_sea_raiders, hand_bound_elemental, hand_monstrous_beast, hand_ruin_power, hand_from_beyond, hand_dragon, hand_giants, hand_fiends, hand_cult, hand_druid_circle]
       - id: act_killed
         label: Killed
+        name_word: Slaying
         targets: [role, heart]
         fits: {role: [group, settlement, person, creature]}
         phrases:
@@ -2088,6 +2102,7 @@ tables:
           - {for: [heart], past: "killed the ruler of {target}", present: "{be} killing the leaders of {target}", imminent: "{be} about to kill the ruler of {target}"}
       - id: act_poisoned
         label: Poisoned
+        name_word: Poisoning
         targets: [heart, role]
         fits: {role: [group, settlement, person, creature]}
         phrases:
@@ -2097,6 +2112,7 @@ tables:
         by: [hand_villain_itself, hand_cult, hand_thieves_guild, hand_traitor, hand_druid_circle, hand_dragon, hand_hag_coven, hand_fiends, hand_shapechangers]
       - id: act_cursed
         label: Cursed
+        name_word: Curse
         targets: [heart, key_place, role]
         fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark], role: [group, settlement, person, creature]}
         phrases:
@@ -2104,12 +2120,14 @@ tables:
         by: [hand_villain_itself, hand_cult, hand_hag_coven, hand_fiends, hand_fey_court, hand_druid_circle, hand_risen_dead, hand_ruin_power, hand_werewolves, hand_from_beyond]
       - id: act_plundered
         label: Plundered
+        name_word: Sack
         targets: [remnant]
         fits: {remnant: [structure, city, body, machine, wasteland]}
         phrases:
           - {for: [remnant], past: "plundered {target}", present: "{be} plundering {target}", imminent: "{be} about to plunder {target}"}
       - id: act_summoned
         label: Summoned
+        name_word: Summoning
         targets: [thin_place, heart, key_place]
         fits: {key_place: [crossing, bridge, water, gate, descent, crossroad, network, landmark]}
         phrases:
@@ -2118,6 +2136,7 @@ tables:
         by: [hand_villain_itself, hand_cult, hand_fiends, hand_from_beyond, hand_hag_coven, hand_druid_circle, hand_ruin_power, hand_bound_elemental, hand_fey_court]
       - id: act_plague
         label: Spread a plague
+        name_word: Plague
         targets: [heart, role]
         fits: {role: [group, settlement]}
         phrases:
@@ -2126,6 +2145,7 @@ tables:
         by: [hand_villain_itself, hand_risen_dead, hand_cult, hand_druid_circle, hand_fiends, hand_from_beyond, hand_hag_coven, hand_ruin_power, hand_werewolves]
       - id: act_replaced
         label: Replaced
+        name_word: Replacement
         targets: [role, heart]
         fits: {role: [group, settlement, person]}
         phrases:
@@ -2135,6 +2155,7 @@ tables:
         by: [hand_villain_itself, hand_shapechangers, hand_fey_court, hand_hag_coven, hand_fiends, hand_cult, hand_traitor]
       - id: act_possessed
         label: Possessed
+        name_word: Possession
         targets: [role, heart]
         fits: {role: [group, settlement, person, creature]}
         phrases:
@@ -2144,6 +2165,7 @@ tables:
         by: [hand_villain_itself, hand_fiends, hand_from_beyond, hand_cult]
       - id: act_enslaved
         label: Enslaved / took hostage
+        name_word: Chaining
         targets: [role]
         fits: {role: [group, settlement, person, creature]}
         phrases:
@@ -2153,6 +2175,7 @@ tables:
         by: [hand_villain_itself, hand_slavers, hand_from_beyond, hand_fiends, hand_giants, hand_war_band, hand_dragon, hand_foreign_army, hand_sea_raiders, hand_fey_court, hand_hag_coven]
       - id: act_betrayed
         label: Betrayed
+        name_word: Betrayal
         targets: [role, heart]
         fits: {role: [group, settlement, person, creature]}
         phrases:
@@ -2161,6 +2184,7 @@ tables:
     retired:                          # build item 18c: deleted verbs, readable by id for legacy births
       - id: act_reversed
         label: Turned backwards
+        name_word: Unwinding
         targets: [key_place]
         fits: {key_place: [water, descent, network]}
         forms: {imminent: is about to turn backwards, past: turned backwards, present: is turning backwards}
@@ -2169,32 +2193,38 @@ tables:
         leaves_ruins: true
         concretise: true
         label: Crushed by what fell from the sky
+        name_word: Starfall
         targets: [key_place, heart]
         fits: {key_place: [crossing, bridge, water, gate, crossroad, landmark]}
         destroys: [heart]
         forms: {imminent: is about to be crushed by something that will fall from the sky, past: was crushed by something that fell from the sky, present: is being crushed by something falling from the sky}
       - id: act_true_face
         label: Showed its true face
+        name_word: Unmasking
         targets: [remnant, key_place]
         fits: {key_place: [bridge, water, gate, descent, landmark], remnant: [network, structure, city, body, wasteland, machine, object, source, rift]}
         forms: {imminent: is about to show its true face, past: showed its true face, present: is showing its true face}
       - id: act_turned_on_keepers
         label: Turned on its keepers
+        name_word: Turning
         targets: [remnant, role]
         fits: {remnant: [network, structure, body, machine, object]}
         forms: {imminent: is about to turn on its keepers, past: turned on its keepers, present: is turning on its keepers}
       - id: act_spread_unbounded
         label: Spread without bound
+        name_word: Overrunning
         targets: [remnant, thin_place]
         fits: {remnant: [wasteland, source, rift]}
         forms: {imminent: is about to spread without bound, past: spread without bound, present: is spreading without bound}
       - id: act_twinned
         label: Was twinned
+        name_word: Twinning
         targets: [heart, thin_place]
         fits: {}
         forms: {imminent: is about to be twinned, past: was twinned, present: is being twinned}
       - id: act_forgotten
         label: Was forgotten
+        name_word: Forgetting
         targets: [remnant, heart, role]
         fits: {remnant: [network, structure, city, object, source]}
         destroys: [heart, role]
@@ -2202,6 +2232,7 @@ tables:
       - id: act_gave_birth
         concretise: true
         label: Gave birth to something new
+        name_word: Spawning
         targets: [remnant, thin_place]
         fits: {remnant: [body, wasteland, source, rift]}
         forms: {imminent: is about to give birth to something new, past: gave birth to something new, present: is giving birth to something new}

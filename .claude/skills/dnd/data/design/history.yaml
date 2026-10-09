@@ -92,7 +92,7 @@ tables:
         hooks:
           - {phase: P2, must: "the present age is named for what the folk fear of the threat's public face, never its hidden part"}
       - id: age_before
-        label: Before
+        label: The Time Before
         span_hint: "an unnamed deep age; ruins older than the record"
         hooks:
           - {phase: P6, must: "one major site predates the record"}
@@ -100,67 +100,102 @@ tables:
   event_type:
     notation: d16
     roll: {avoid_used: false}
+    # build item 22n: an event is named `the <name_word> of <referent>`; `name_referent` lists the kinds its referent may
+    # be (place, person, god: a counted god's public name; ship: a ship of the common tongue, else `the Loss of <place>`),
+    # one drawn per event; a god only where the type's story is a god's (the owner, at the 22n audit)
     rows:
       - id: evtype_founding
         label: A founding
+        name_word: Founding
+        name_referent: [place]
         hooks:
           - {phase: P3, must: "the founded thing is a settlement, an institution or a polity on the map"}
       - id: evtype_treaty
         label: A treaty
+        name_word: Treaty
+        name_referent: [place]
         hooks:
           - {phase: P4, must: "the treaty's terms are a stance edge; its breach is a front step"}
       - id: evtype_disaster
         label: A disaster
+        name_word: [Burning, Drowning, Ruin]
+        name_referent: [place]
         hooks:
           - {phase: P3, must: "the disaster left a landmark; a list of who was saved exists"}
       - id: evtype_war
         label: A war
+        name_word: War
+        name_referent: [god, place, person]
         hooks:
           - {phase: P4, must: "the war's sides are factions or their ancestors; a veteran is an NPC"}
       - id: evtype_succession
         label: A succession
+        name_word: Crowning
+        name_referent: [person]
         hooks:
           - {phase: P4, must: "the succession's loser has heirs; one is the betrayal candidate"}
       - id: evtype_discovery
         label: A discovery
+        name_word: Finding
+        name_referent: [person]
         hooks:
           - {phase: P2, must: "what was discovered touches the magic system or the phenomenon"}
       - id: evtype_plague
         label: A sickness
+        name_word: Sickness
+        name_referent: [place]
         hooks:
           - {phase: P5, must: "at least one NPC is marked by it"}
       - id: evtype_miracle
         label: A miracle
+        name_word: Miracle
+        name_referent: [god, place, person]
         hooks:
           - {phase: P2, must: "the god credited has a discoverable story about it"}
       - id: evtype_heresy
         label: A heresy
+        name_word: Heresy
+        name_referent: [god, place, person]
         hooks:
           - {phase: P4, must: "the heretics survive as a faction, a cell or a rite"}
       - id: evtype_exile
         label: An exile
+        name_word: Exile
+        name_referent: [person]
         hooks:
           - {phase: P5, must: "the exiles' descendants are in the demographic table"}
       - id: evtype_migration
         label: A migration
+        name_word: Crossing
+        name_referent: [place]
         hooks:
           - {phase: P3, must: "the migrants' route is a map route; their settlement is a district or a village"}
       - id: evtype_vanishing
         label: A vanishing
+        name_word: Vanishing
+        name_referent: [place]
         hooks:
           - {phase: P6, must: "where the vanished went is a site"}
       - id: evtype_naming
         label: A naming or renaming
+        name_word: Naming
+        name_referent: [place]
       - id: evtype_wreck_or_loss
         label: A wreck or a loss
+        name_word: Wreck
+        name_referent: [ship, place]
         hooks:
           - {phase: P6, must: "what was lost is an item_ or a site payoff"}
       - id: evtype_silencing
         label: A silencing
+        name_word: Silencing
+        name_referent: [god]
         hooks:
           - {phase: P2, must: "the silenced thing is a god, a people or an institution with a rel_silenced_one row"}
       - id: evtype_building
         label: A building
+        name_word: Raising
+        name_referent: [place]
         hooks:
           - {phase: P3, must: "the built thing is a landmark or an anchor; who paid is discoverable"}
 

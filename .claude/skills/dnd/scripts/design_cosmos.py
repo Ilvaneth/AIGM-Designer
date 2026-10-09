@@ -32,6 +32,9 @@ never changes an earlier record:
    climate among the palette's climates, the moon, the underground count, the festivals (one per greater god and one or
    two folk festivals), the start year and date from the move's time, the dated days inside the campaign's span.
 
+Build item 22n: every plane, age, event, festival and moon takes its name from the pool's cosmos section (design_names
+`fill_cosmos`), reserved under the id the frame gives it; the threat's own home plane from the secret stock.
+
 The return is `(public, secret)`: the public half goes to design.json#cosmos, the secret half to
 dm-only/dice-log.json#cosmos; the records themselves are on R. A legacy birth (a P1 with no foundation) rolls what its
 records allow: no seats, no named planes, no seated events.
@@ -90,9 +93,11 @@ def load_p1(campaign: str) -> dict:
     canon = (read_json(dm_only_dir(campaign) / "entities.json") or {}).get("entities") or {}
     premise = next((r for r in canon.values() if r.get("type") == "premise"), None) or {}
     pinned = ((premise.get("dm_only") or {}).get("pinned") or {}).get("god")
+    inst = next((r.get("name") for r in canon.values() if r.get("type") == "signature" and r.get("slot") == "institution"), None)
     return {"foundation": m.get("foundation"), "identity": m.get("identity"), "secret": log.get("identity"),
             "threat": log.get("threat"), "naming": read_json(design_dir(campaign) / "naming.json"),
-            "pinned_god": {"name": pinned, "premise": premise.get("id")} if pinned else None}
+            "pinned_god": {"name": pinned, "premise": premise.get("id")} if pinned else None,
+            "institution_name": inst}           # build item 22n: the founding is `the Founding of <it>`
 
 
 def p1_of(R1) -> dict:
@@ -463,7 +468,7 @@ def draw_free(R, label: str, touched: list[str]) -> str:
     return R.table(label, PL + "baseline", avoid=False, exclude=excl, secret=True)["row_id"]
 
 
-def seat_planes(R, dials: dict, out: dict, secret: dict) -> None:
+def seat_planes(R, dials: dict, out: dict, secret: dict, pool: dict | None = None) -> None:
     """Step 3: the touched planes, rolled the same whatever the threat is (the threat's home is a secret record of its
     own: `bind_home`). Every seat's draw is secret (the design tab, 22b audit): the public sees each touched plane and
     its seat; the planes P1 names first, with their rows, the rest in the baseline's order."""
@@ -496,17 +501,38 @@ def seat_planes(R, dials: dict, out: dict, secret: dict) -> None:
     out["planes"] = [roll_plane(R, f"plane.{k}", k, pid, seated_by.get(pid, []), not ruin_or_scar or pid in ruin_or_scar)
                      for k, pid in enumerate(order, 1)]
     out["moon_seated"] = MOON in touched
+    # build item 22n: each touched plane its name from the pool, in the public order; the moon's seat the moon's name
+    for pl in out["planes"]:
+        eid = plane_id(pl["baseline"])
+        e = dn_take(pool, "moons" if pl["baseline"] == MOON else "planes", eid)
+        if e:
+            pl["name"] = e["name"]
+            R.by_label[f"plane.{pl['n']}"]["name"] = e["name"]
+
+
+def plane_id(baseline: str) -> str:
+    """A touched plane's registry id (design_cosmos_door builds the frame with it)."""
+    return "plane_" + (baseline.removeprefix("baseline_") if baseline != MOON else "moon")
+
+
+def dn_take(pool: dict | None, key: str, eid: str, where=None) -> dict | None:
+    """The next unused name of a cosmos stock, reserved under `eid` (none without a pool: the in-memory corpus)."""
+    if not pool:
+        return None
+    import design_names as dn
+    return dn.cosmos_take(pool, key, eid, where)
 
 
 HOME_LABELS = ("home.deviation", "home.rate", "home.way", "home.cost", "home.keeper")
 
 
-def bind_home(R, dials: dict, out: dict, secret: dict, gods: list[dict]) -> None:
+def bind_home(R, dials: dict, out: dict, secret: dict, gods: list[dict], names: dict | None = None) -> None:
     """The end of step 4, at epic (option d of the 22b audit): the threat's home, a secret plane record outside the
     public touched planes and count. A touched plane that fits the home is only linked; otherwise the home is a secret
     touched plane of its own, its deviation, rate, way in, cost and keeper on the secret log, and a P6 site reserved
     for it. The god's home is the outer plane of the alignment it rolled in public. Every label stands in every epic
     birth (null when the home only links, or there is none)."""
+    names = names or {}
     if dials["scale"] != "epic":
         return
     seats = secret["seats"]
@@ -523,6 +549,9 @@ def bind_home(R, dials: dict, out: dict, secret: dict, gods: list[dict]) -> None
     elif fits:
         pid = choose(R, "seat.home_plane.bound", fits, secret=True)
         own = roll_plane(R, "home", None, pid, [], True, secret=True)
+        # build item 22n: its name from the secret stock, never a public one (design_cosmos_door.HOME_ID)
+        e = dn_take(names.get("secret_pool"), "planes", "plane_s01")
+        own["name"] = e["name"] if e else None
         own["keeper"] = keeper_of(R, dials, "home.keeper", pid, gods, secret=True)
         if own["keeper"] is None:
             note(R, "home.keeper", None, "no SRD creature keeps the plane", secret=True)
@@ -784,7 +813,7 @@ def roll_pantheon(R, dials: dict, p1: dict, slots: list[dict], out: dict, secret
         out["god_story"] = None
     roll_afterlife(R, out, gods)
     roll_keepers(R, dials, out, gods)
-    bind_home(R, dials, out, secret, gods)
+    bind_home(R, dials, out, secret, gods, names)
 
 
 def roll_afterlife(R, out: dict, gods: list[dict]) -> None:
@@ -907,7 +936,7 @@ def roll_keepers(R, dials: dict, out: dict, gods: list[dict]) -> None:
 
 # ── 5. the history ───────────────────────────────────────────────────────────────────────────────────────────
 
-def roll_history(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict) -> None:
+def roll_history(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict, names_pool: dict | None = None) -> None:
     hist = sc["history"]
     years = int(hist["years_covered"])
     f, threat = p1.get("foundation") or {}, p1.get("threat") or {}
@@ -937,6 +966,9 @@ def roll_history(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict) ->
         rec = note(R, f"event.{k}", ev["seat"], "seated by the script (S5)", table="history.seated")
         rec["years_ago"] = ev["years_ago"]
         events.append(dict(ev, n=k, type=None, divergence=None, witnesses=True))
+        if ev["seat"] == "origin":
+            # build item 22n: the type the folk remember it by (public; its true layer stays in dm-only), which names it
+            events[-1]["taught_type"] = R.table(f"event.{k}.taught", H + "event_type", avoid=False)["row_id"]
     for k in range(len(seated) + 1, total + 1):
         typ = R.table(f"event.{k}", H + "event_type", avoid=False)["row_id"]
         events.append({"n": k, "seat": None, "type": typ, "years_ago": between(R, f"event.{k}.years_ago", 1, years),
@@ -989,6 +1021,115 @@ def roll_history(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict) ->
     out["ages"] = rows
     out["events"] = events
     out["deep_events"] = deep
+    name_history(R, out, p1, names_pool)
+
+
+def move_word(p1: dict) -> str | None:
+    """The move's word (foundation.yaml#action `name_word`): the move's event is `the <word>`, the present age `The Age
+    of the <word>` (`The Eve of the <word>` under time_coming)."""
+    act = (((p1.get("foundation") or {}).get("break") or {}).get("action"))
+    return (dt.row("foundation.yaml#action", act) or {}).get("name_word") if act else None
+
+
+def common_of(pool: dict) -> str | None:
+    langs = pool.get("languages") or {}
+    return next((lid for lid in ("common", "other_side", "people") if lid in langs), None)
+
+
+def name_history(R, out: dict, p1: dict, pool: dict | None) -> None:
+    """Build item 22n: the ages and the events named from the pool's cosmos section (naming.yaml#patterns age, event),
+    each name reserved under its frame id. A label that is a name stays (The Golden Age); `{Name}` a referent, `{Thing}`
+    and `{Rulers}` their stocks; the ruin's age `The Age of <W>` and its fall `the Fall of <W>` (one old-tongue word); the
+    present `The Age of the <move's word>` (`The Eve of the <word>` while the move is still to come) and the move `the
+    <word>`; the founding `the Founding of <the institution>`;
+    every other event `the <its type's word> of <a referent or a counted god's public name>`, the referent's kind drawn
+    among its type's `name_referent` (a god only for the Silencing, always, and a miracle, a heresy or a war; a wreck a
+    ship of the common tongue's ships, `the Loss of <place>` where there is none). The choices come from
+    the names' own die, which reads nothing secret. No pool, no names."""
+    if not pool or not pool.get("cosmos"):
+        return
+    import design_dice as dd
+    import design_names as dn
+    rng = dd.derive(R.master, R.phase, "names", "cosmos.history", R.attempt)
+    taken = dn._all_names(pool)
+    gods = [g["name"] for g in out.get("gods") or [] if g.get("name")]
+    word = move_word(p1)
+
+    def referent(eid: str, kinds=("person", "place")) -> str | None:
+        order = list(kinds)
+        rng.shuffle(order)
+        for kind in order:
+            e = dn_take(pool, f"referent_{kind}s", eid)
+            if e:
+                return e["name"]
+        return None
+
+    def fresh(name: str | None) -> str | None:
+        if name and name.lower() not in taken:
+            taken.add(name.lower())
+            return name
+        return None
+
+    ruin_age = next((a for a in out["ages"] if a["ruin"]), None)
+    ruin_w = dn_take(pool, "ruin_words", f"era_{ruin_age['n']}") if ruin_age else None
+    for a in out["ages"]:
+        eid = f"era_{a['n']}"
+        label = str((dt.row(H + "age_template", a["row"]) or {}).get("label") or "")
+        if a["ruin"]:
+            name = f"The Age of {ruin_w['name']}" if ruin_w else None
+        elif a["row"] == "age_now_named_for_fear":
+            # the owner (22n): under `time_coming` the move is still to come, and the present is its eve
+            name = (f"The Eve of the {word}" if R.ctx.has("time_coming") else f"The Age of the {word}") if word else None
+        elif "{Name}" in label:
+            ref = referent(eid)
+            name = label.replace("{Name}", ref) if ref else None
+        elif "{Thing}" in label or "{Rulers}" in label:
+            e = dn_take(pool, "things" if "{Thing}" in label else "rulers", eid)
+            name = label.replace("{Thing}", e["name"]).replace("{Rulers}", e["name"]) if e else None
+        else:
+            name = label
+        a["name"] = fresh(name)
+        R.by_label[f"age.{a['n']}"]["name"] = a["name"]
+    ships_lid = common_of(pool)
+    for kind, rows in (("event", out["events"]), ("deep", out["deep_events"])):
+        for e in rows:
+            eid = f"event_{e['n']}" if kind == "event" else f"event_deep_{e['n']}"
+            seat = e.get("seat")
+            name = None
+            if seat == "move":
+                name = f"the {word}" if word else None
+            elif seat == "founding":
+                inst = p1.get("institution_name") or referent(eid, ("place",))
+                name = f"the Founding of {inst}" if inst else None
+            elif seat == "ruin":
+                name = f"the Fall of {ruin_w['name']}" if ruin_w else None
+            else:
+                typ = e.get("type") or e.get("taught_type")
+                row = dt.row(H + "event_type", typ) or {}
+                w = row.get("name_word")
+                if isinstance(w, list):
+                    w = rng.choice(w)
+                # the referent's kind is the type's table fact (`name_referent`): a god only where the story is a god's
+                kinds = list(row.get("name_referent") or ["place", "person"])
+                choices = [g for g in gods if f"the {w} of {g}".lower() not in taken]
+                ships = ((pool["languages"].get(ships_lid) or {}).get("ships") or []) if ships_lid else []
+                ship = next((s for s in ships if not s.get("used_by")), None)
+                if not choices:
+                    kinds = [k for k in kinds if k != "god"] or ["person"]
+                if ship is None:
+                    kinds = [k for k in kinds if k != "ship"] or ["place"]
+                ref_kind = "ship" if "ship" in kinds else rng.choice(kinds)     # a wreck takes its ship while one is left
+                if ref_kind == "ship":
+                    ship["used_by"] = eid
+                    name = f"the Wreck of {ship['name']}"
+                elif typ == "evtype_wreck_or_loss":
+                    ref = referent(eid, (ref_kind,))
+                    name = f"the Loss of {ref}" if ref else None
+                elif w:
+                    ref = rng.choice(choices) if ref_kind == "god" else referent(eid, (ref_kind,))
+                    name = f"the {w} of {ref}" if ref else None
+            e["name"] = fresh(name)
+            R.by_label[f"event.{e['n']}" if kind == "event" else f"deep.{e['n']}"]["name"] = e["name"]
 
 
 # ── 6. magic ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -1192,7 +1333,33 @@ def roll_calendar(R, dials: dict, sc: dict, p1: dict, out: dict, secret: dict, p
     else:
         note(R, "dated.vulnerable_time", None, "the weakness keeps no dated time", secret=True)
     cal["dated"] = dated
+    name_calendar(out, cal, pool)
     out["calendar"] = cal
+
+
+def name_calendar(out: dict, cal: dict, pool: dict | None) -> None:
+    """Build item 22n: the festivals and the moon named from the pool's cosmos section. A greater god's festival is its
+    public name's (`<god>'s <word>`, drawn per god name); the unnamed god's and the folk festivals take the folk pattern;
+    the moon the plane's name when it is a touched seat, else one name (two for two moons), none with no moon."""
+    cal["moon_names"] = []
+    for f in cal["festivals"]:
+        f["name"] = None
+    if not pool or not pool.get("cosmos"):
+        return
+    if cal["moon"] == MOON_ROW and out.get("moon_seated"):
+        cal["moon_names"] = [pl["name"] for pl in out["planes"] if pl["baseline"] == MOON and pl.get("name")]
+    elif cal["moon"] != "moon_none_stars":
+        for _ in range(2 if cal["moon"] == "moon_two" else 1):
+            e = dn_take(pool, "moons", "calendar.moon")
+            if e:
+                cal["moon_names"].append(e["name"])
+    names = {g["n"]: g.get("name") for g in out["gods"]}
+    for f in cal["festivals"]:
+        eid = f"calendar.festival.{f['n']}"
+        god = names.get(f["god"]) if f["god"] is not None else None
+        e = dn_take(pool, "god_festivals", eid, where=lambda x, god=god: x["god"] == god) if god else None
+        e = e or dn_take(pool, "folk_festivals", eid)
+        f["name"] = e["name"] if e else None
 
 
 def roll_festivals(R, out: dict, cal: dict) -> None:
@@ -1269,8 +1436,8 @@ def roll(R, dials: dict, p1: dict, pool: dict | None = None, secret_pool: dict |
         roll_pantheon(R, dials, p1, slots, out, secret, pool, names)
         if names.get("hidden"):
             secret["hidden_names"] = names["hidden"]
-    steps = (counts, lambda: roll_seats(R, dials, p1, slots, out, secret), lambda: seat_planes(R, dials, out, secret),
-             pantheon, lambda: roll_history(R, dials, sc, p1, out, secret), lambda: roll_magic(R, dials, out),
+    steps = (counts, lambda: roll_seats(R, dials, p1, slots, out, secret), lambda: seat_planes(R, dials, out, secret, pool),
+             pantheon, lambda: roll_history(R, dials, sc, p1, out, secret, pool), lambda: roll_magic(R, dials, out),
              lambda: roll_calendar(R, dials, sc, p1, out, secret, pool))
     for n, (name, step) in enumerate(zip(STEPS, steps), 1):
         step()

@@ -7,16 +7,17 @@ docs/p2-tags.md S7 #3). P1's are design_frame.py and design_door.py; this module
 `design.json#cosmos`), so the script writes it: at `phase P2 begin` the frame of every row the writer owes goes to
 `design/_staging/P2/doc_cosmology.frame.json`: each `god_`, `plane_`, `era_` and `event_` row with its rolled fields and
 an object `stamped`, its prose fields empty and named under `fill`, and the container's own parts (the calendar seed
-`calendar.py init` takes, the calendar's festivals, moon, start and dated days). The names a pool gives a god are set;
-the planes, festivals, the moon, the ages and the events stand nameless until build item 22n fills their name. The
-threat's own home plane (option d of 22b) is a secret row of the frame.
+`calendar.py init` takes, the calendar's festivals, moon, start and dated days). Every name is set: the pool gives the gods theirs (22b) and the
+planes, the festivals, the moon, the ages and the events theirs (build item 22n). The threat's own home plane (option d
+of 22b) is a secret row of the frame, named from the secret stock.
 
 **The seal.** P2's preroll stamps `design.json#p2_seal`: the hashes of the public cosmos and its dm-only half. The door
 refuses a merge when either changed.
 
 **The door** (`registry.py merge --phase P2` and `check` ask it about every unit of a birth whose P2 the script rolled):
   frame   every framed row present, its frame fields unchanged (a changed or missing field refused by its name), no
-          god, plane, era or event row beside them; the calendar seed and block as framed
+          god, plane, era or event row beside them; the calendar seed and block as framed; every framed row, festival
+          and moon named from the pool (build item 22n)
   S7 #3   the god count and the domain coverage; at least one evil god at standard and epic; a festival per greater
           god; the four seated story events; every plane P1 names touched; twelve months of 28 days and a seven-day
           week; a secret seat's id or fact in no public file (the threat's own home plane, a hidden god name, a
@@ -51,9 +52,8 @@ P2_TYPES = ("god", "plane", "era", "event")
 DAYS_A_YEAR = 336
 SEATED = ("move", "origin", "founding", "ruin")
 EVIL = ("NE", "CE", "LE")
-# until build item 22n gives the planes, the ages and the events their names from the pools, the registry's own check
-# (a row has a name) makes the name a field the writer fills; 22n sets it in the frame and takes it out of `fill`
-UNNAMED = ["name"]
+# build item 22n: the planes, the ages and the events take their names from the pool's cosmos section (the roller
+# reserves each under its frame id), so `name` is a frame field like any rolled one, never the writer's to fill
 
 
 def frame_rel() -> str:
@@ -116,7 +116,7 @@ def _rate(row_id: str) -> dict:
 def _plane(pl: dict, gods: dict, lang, secrecy: str = "public", file: str = PROSE, eid: str | None = None) -> dict:
     keeper = pl.get("keeper") or {}
     keeper = {"god": gods.get(keeper["god"])} if "god" in keeper else ({"creature": keeper["creature"]} if keeper else None)
-    return _row(eid or plane_id(pl["baseline"]), "plane", EMPTY, lang, secrecy, file, baseline=pl["baseline"], touched=True,
+    return _row(eid or plane_id(pl["baseline"]), "plane", pl.get("name") or EMPTY, lang, secrecy, file, baseline=pl["baseline"], touched=True,
                 named_by=list(pl.get("named_by") or []), deviation=pl["deviation"], time_rate=_rate(pl["rate"]),
                 way_in=pl["way"], cost=pl["cost"], keeper=keeper, entry_site=None,
                 stamped={"baseline": pl["baseline"], "touched": True})
@@ -156,17 +156,17 @@ def build(campaign: str, manifest: dict | None = None) -> dict | None:
             ["aliases", "summary", "symbol", "disposition", "as_worshipped", "refs"])
     # the touched planes; the threat's own home plane is secret
     for pl in cos["planes"]:
-        put(_plane(pl, gid, common), UNNAMED + ["aliases", "summary", "refs"])
+        put(_plane(pl, gid, common), ["aliases", "summary", "refs"])
     home = secret.get("home_plane") or {}
     secret_rows: dict = {}
     if home.get("own"):
         row = _plane(dict(home["own"], baseline=home["baseline"], named_by=[]), gid, common, "secret", DM_PROSE, HOME_ID)
         row["dm_only"] = {"home_of_the_threat": True}
-        secret_rows[row["id"]] = {"registry": row, "fill": UNNAMED + ["aliases", "summary", "refs"]}
+        secret_rows[row["id"]] = {"registry": row, "fill": ["aliases", "summary", "refs"]}
     # the ages and the events
     for a in cos["ages"]:
-        put(_row(f"era_{a['n']}", "era", EMPTY, common, order=a["n"], row=a["row"], ruin=bool(a["ruin"]), span=EMPTY,
-                 stamped={"order": a["n"]}), UNNAMED + ["aliases", "summary", "span", "refs"])
+        put(_row(f"era_{a['n']}", "era", a.get("name") or EMPTY, common, order=a["n"], row=a["row"], ruin=bool(a["ruin"]), span=EMPTY,
+                 stamped={"order": a["n"]}), ["aliases", "summary", "span", "refs"])
     start_year = cos["calendar"]["start_year"]
     st0 = cos["calendar"]["start"]
     for e in cos["events"]:
@@ -179,21 +179,23 @@ def build(campaign: str, manifest: dict | None = None) -> dict | None:
         dm_only = {"happened": EMPTY}
         if e.get("seat") == "origin":
             dm_only["origin"] = (secret.get("origin") or {}).get("row")
-        row = _row(f"event_{e['n']}", "event", EMPTY, common, seat=e.get("seat"), event_type=e.get("type"),
+        row = _row(f"event_{e['n']}", "event", e.get("name") or EMPTY, common, seat=e.get("seat"), event_type=e.get("type"),
                    divergence=e.get("divergence"), memory=e.get("memory"), years_ago=ago, year=year,
                    day=day, witness_list=bool(e.get("witnesses")), era=EMPTY,
                    taught=EMPTY, witnesses=[], stamped={"year": year}, dm_only=dm_only)
         if e.get("seat") == "move":
             row["aliases"] = ["the move"]          # the premise's pin names the move (design_promises: event_dated)
-        fill = UNNAMED + ["summary", "era", "taught", "refs"] + (["aliases"] if e.get("seat") != "move" else [])
+        if e.get("taught_type"):
+            row["taught_type"] = e["taught_type"]          # build item 22n: the type the folk remember it by
+        fill = ["summary", "era", "taught", "refs"] + (["aliases"] if e.get("seat") != "move" else [])
         if e.get("seat") == "origin" or e.get("divergence") not in (None, "div_none"):
             fill.append("dm_only.happened")
         put(row, fill)
     for e in cos["deep_events"]:
-        put(_row(f"event_deep_{e['n']}", "event", EMPTY, common, seat=None, event_type=e["type"], divergence=e["divergence"],
+        put(_row(f"event_deep_{e['n']}", "event", e.get("name") or EMPTY, common, seat=None, event_type=e["type"], divergence=e["divergence"],
                  memory=e["memory"], years_ago=None, year=None, day=None, deep=True, witness_list=False, era=EMPTY,
                  taught=EMPTY, witnesses=[], stamped={}, dm_only={"happened": EMPTY}),
-            UNNAMED + ["aliases", "summary", "era", "taught", "refs"] + (["dm_only.happened"] if e["divergence"] != "div_none" else []))
+            ["aliases", "summary", "era", "taught", "refs"] + (["dm_only.happened"] if e["divergence"] != "div_none" else []))
     # the calendar: the seed calendar.py takes and the container's block
     cal = cos["calendar"]
     months, days = cal.get("month_names") or [], cal.get("day_names") or []
@@ -201,10 +203,10 @@ def build(campaign: str, manifest: dict | None = None) -> dict | None:
     date = f"{st['day']} {months[st['month'] - 1]} {st['year']}" if months else EMPTY
     seed = {"store": "calendar", "op": "init", "args": {"date": date, "months": list(months), "month_length": cal["month_length"],
                                                          "day_names": list(days)}}
-    block = {"climate": cal["climate"], "moon": {"row": cal["moon"], "name": EMPTY},
+    block = {"climate": cal["climate"], "moon": {"row": cal["moon"], "names": list(cal.get("moon_names") or [])},
              "underground_count": cal.get("underground_count"),
              "festivals": [{"n": f["n"], "row": f["row"], "god": gid.get(f["god"]) if f["god"] is not None else None,
-                            "month": f["month"], "day": f["day"], "name": EMPTY} for f in cal["festivals"]],
+                            "month": f["month"], "day": f["day"], "name": f.get("name") or EMPTY} for f in cal["festivals"]],
              "start": dict(st), "start_anchor": cal["start_anchor"], "dated": dict(cal.get("dated") or {}),
              "span": list(cal["span"]), "seasons": EMPTY}
     return {"_meta": {"schema_version": 1, "campaign": campaign, "written_by": "design_cosmos_door.py", "written_at": now_iso(),
@@ -273,6 +275,24 @@ def container_errors(frame: dict, uid: str, frag: dict) -> list[str]:
 
 # ── the door's checks of the whole set (S7 #3) ──────────────────────────────────────────────────────────────
 
+def name_errors(frame: dict | None) -> list[str]:
+    """Build item 22n: every name P2 makes comes from the pool, so a framed row, a festival or a moon the preroll left
+    nameless (a stock that ran dry, a P2 prerolled before 22n) is the preroll's fault: rerun it."""
+    if frame is None:
+        return []
+    errs = [f"{eid}: the pool gave it no name; rerun the P2 preroll (every name P2 makes comes from the pool)"
+            for eid, entry in sorted(frame["rows"].items()) if not str(entry["registry"].get("name") or "").strip()]
+    if any(not str(entry["registry"].get("name") or "").strip() for entry in frame["secret_rows"].values()):
+        errs.append("a secret row of the frame has no name; rerun the P2 preroll")
+    block = frame["container"]["calendar"]
+    errs += [f"festival {f['n']}: the pool gave it no name; rerun the P2 preroll" for f in block["festivals"] if not f.get("name")]
+    want = {"moon_none_stars": 0, "moon_two": 2}.get(block["moon"]["row"], 1)
+    if len(block["moon"].get("names") or []) != want:
+        errs.append(f"the moon ({block['moon']['row']}) carries {len(block['moon'].get('names') or [])} name(s) of {want}; "
+                    "rerun the P2 preroll")
+    return errs
+
+
 def set_errors(cos: dict, rows: dict, scale: str) -> tuple[list[str], set]:
     """The cosmos's script checks over the merged set (the canonical rows and this merge's): the faults, and the
     greater gods' ids (each owes a festival)."""
@@ -321,7 +341,7 @@ class CosmosDoor:
         # home is a public plane and says nothing by itself)
         self.secret_words = ["rel_mirror"] + ([home["baseline"], HOME_ID] if home.get("own") else [])
         self.secret_names = sorted(set(str(v) for v in (secret.get("hidden_names") or {}).values()) | door.Names(campaign).secret_all())
-        self.whole = seal_errors(campaign, self.m)
+        self.whole = seal_errors(campaign, self.m) + name_errors(self.frame)
 
     def leak_errors(self, where: str, text: str) -> list[str]:
         """A secret seat's id or fact in a public text: the threat's own home plane's id, a hidden god's name, a secret

@@ -768,6 +768,12 @@ words:
   building_words: [Market, Hall, Gate, Bridge, Cross, Wharf, Stair, Well, Mill, Tower, Shrine, Temple]
   phenomenon_tails: [fall, song, call, turn, rise, bloom, mark, gift, shift, wane, sight, bind]
   site_words: [Vault, Deep, Hall, Gate, Stair, Spire, Tomb, Well]
+  # build item 22n (owner-approved 2026-10-08): the cosmos's words
+  plane_words: [Realm, Reach, Deep, Expanse, Hollow, Vault, Wild, Shore, Court, Gulf]
+  moon_words: [Watcher, Eye, Wanderer, Hound, Shield, Maiden, Sickle, Crown]
+  festival_words: [Feast, Night, Day, Vigil]
+  folk_festival_words: [Feast, Night, Day, Vigil, Fair]
+  ruler_words: [Kings, Queens, Lords, Princes]
 
 patterns:
   # Structured rows a script fills; nothing here shows a finished name (a shown name anchored four births). `parts` in order:
@@ -813,6 +819,35 @@ patterns:
   ship:
     - {id: pattern_ship_root, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {one_of: [{root: any, tags: [animal], creature: true}, {root: any, only: [wave, pearl, star, dawn, comet]}]}]}
     - {id: pattern_ship_colour_animal, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {root: any, tags: [colour]}, {lit: " "}, {root: any, tags: [animal]}]}
+  # build item 22n (owner-approved 2026-10-08): the cosmos's names, drawn into the pool's `cosmos` section after every
+  # other stock. `lang`: common (the common tongue; else the other side's, else the people's), old (the old tongue's
+  # bag), god (the gods' language). `{name: referent}` is a name of the cosmos's own referent stock (fresh common-tongue
+  # persons and places, so the NPC and settlement stocks are not drained); `{name: god}` a counted god's public name;
+  # `{name: ship}` a name of the ships stock; `{name_word: true}` the rolled row's `name_word` (history.yaml#event_type,
+  # foundation.yaml#action). `composed_by: script` patterns are composed by the P2 roller from what it rolled.
+  plane:
+    - {id: pattern_plane_word, lang: common, join: apart, parts: [{lit: "the "}, {root: head, adjective: true}, {lit: " "}, {word: plane_words}]}
+    - {id: pattern_plane_old, lang: old, join: apart, parts: [{bag_word: true}]}
+  festival:
+    - {id: pattern_festival_god, for: [god_festival], lang: god, join: apart, parts: [{name: god}, {lit: "'s "}, {word: festival_words}]}
+    - {id: pattern_festival_folk, for: [folk_festival, unnamed_god_festival], lang: common, join: apart, parts: [{lit: "the "}, {word: folk_festival_words}, {lit: " of the "}, {root: head, adjective: false}]}
+  moon:
+    - {id: pattern_moon_word, lang: common, join: apart, whole_lexicon: true, parts: [{lit: "the "}, {root: any, tags: [colour]}, {lit: " "}, {word: moon_words}]}
+    - {id: pattern_moon_fresh, lang: common, join: joined, parts: [{root: head, adjective: true}, {root: tail, natural: true}]}
+  age:
+    - {id: pattern_age_name, for: [age_the_war_of], fills: "{Name}", lang: common, join: apart, parts: [{name: referent}]}
+    - {id: pattern_age_thing, for: [age_of_thing], fills: "{Thing}", lang: common, join: apart, parts: [{root: head, adjective: false}]}
+    - {id: pattern_age_rulers, for: [age_kings], fills: "{Rulers}", lang: common, join: apart, parts: [{lit: "the "}, {root: head, adjective: false}, {lit: " "}, {word: ruler_words}]}
+    - {id: pattern_age_ruin, for: [ruin_age], lang: old, join: apart, parts: [{lit: "The Age of "}, {bag_word: true}]}
+    - {id: pattern_age_present, for: [age_now_named_for_fear], composed_by: script, join: apart, parts: [{one_of: [{lit: "The Age of the "}, {lit: "The Eve of the "}]}, {name_word: true}]}   # the Eve under time_coming (the owner, 22n)
+  event:
+    - {id: pattern_event, for: [event], lang: common, composed_by: script, join: apart, parts: [{lit: "the "}, {name_word: true}, {lit: " of "}, {one_of: [{name: referent}, {name: god}]}]}
+    - {id: pattern_event_silencing, for: [evtype_silencing], lang: common, composed_by: script, join: apart, parts: [{lit: "the Silencing of "}, {name: god}]}
+    - {id: pattern_event_wreck, for: [evtype_wreck_or_loss], lang: common, composed_by: script, join: apart, parts: [{lit: "the Wreck of "}, {name: ship}]}
+    - {id: pattern_event_loss, for: [evtype_wreck_or_loss_landlocked], lang: common, composed_by: script, join: apart, parts: [{lit: "the Loss of "}, {name: referent}]}
+    - {id: pattern_event_founding, for: [seat_founding], composed_by: script, join: apart, parts: [{lit: "the Founding of "}, {name: institution}]}
+    - {id: pattern_event_ruin, for: [seat_ruin], lang: old, composed_by: script, join: apart, parts: [{lit: "the Fall of "}, {bag_word: true}]}
+    - {id: pattern_event_move, for: [seat_move], composed_by: script, join: apart, parts: [{lit: "the "}, {name_word: true}]}
 
 blacklist:
   # brand and real-world names a generated name may never equal (whole name, case-insensitive)

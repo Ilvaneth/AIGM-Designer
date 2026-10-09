@@ -137,7 +137,9 @@ class Patterns(unittest.TestCase):
         pats = DOC["patterns"]
         self.assertEqual({k: len(v) for k, v in pats.items()},
                          {"place": 7, "institution": 4, "people": 3, "phenomenon": 2, "month": 4, "day": 1, "old_tongue": 2,
-                          "god_epithet": 4, "ship": 2})
+                          "god_epithet": 4, "ship": 2,
+                          # build item 22n: the cosmos's names
+                          "plane": 2, "festival": 2, "moon": 2, "age": 5, "event": 7})
         ids = [p["id"] for rows in pats.values() for p in rows]
         self.assertEqual(len(ids), len(set(ids)))
         for rows in pats.values():
@@ -147,7 +149,8 @@ class Patterns(unittest.TestCase):
         self.assertEqual([p["id"] for p in pats["month"] if p.get("rollable")], ["pattern_month_month", "pattern_month_moon", "pattern_month_fall"])
         self.assertEqual(pats["institution"][3]["only_form"], "form_house")
         self.assertEqual({k: len(v) for k, v in DOC["words"].items()},
-                         {"region_words": 12, "building_words": 12, "phenomenon_tails": 12, "site_words": 8})
+                         {"region_words": 12, "building_words": 12, "phenomenon_tails": 12, "site_words": 8,
+                          "plane_words": 10, "moon_words": 8, "festival_words": 4, "folk_festival_words": 5, "ruler_words": 4})
 
     def test_which_slots_take_an_adjective(self):
         """Decision 35: no in "of the …", months, days, people, phenomenon; yes in place names, the + root + form word,
@@ -302,8 +305,8 @@ class Stamps(unittest.TestCase):
         naming = {k for k in covered if k.startswith("naming:")}
         self.assertEqual(len([k for k in naming if k.startswith("naming:root:")]), 483)
         self.assertEqual(len([k for k in naming if k.startswith("naming:tag:")]), 22)
-        self.assertEqual(len([k for k in naming if k.startswith("naming:pattern:")]), 29)
-        self.assertEqual(len([k for k in naming if k.startswith("naming:words:")]), 4)
+        self.assertEqual(len([k for k in naming if k.startswith("naming:pattern:")]), 47)      # 29 and 22n's 18
+        self.assertEqual(len([k for k in naming if k.startswith("naming:words:")]), 9)        # 4 and 22n's 5
         self.assertIn("naming:settlement_tails", naming)
         self.assertEqual(dt.unreviewed(), {"missing": [], "changed": [], "gone": []})
 
